@@ -1,0 +1,76 @@
+import { Webpack } from "betterdiscord";
+
+const Filters = [
+    { name: "ActivityTimer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('timestamps', '.TEXT_FEEDBACK_POSITIVE'), searchExports: true },
+    { name: "AnchorClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('anchor', 'anchorUnderlineOnHover'), searchExports: true },
+    { name: "Animated", filter: x=> x.Easing && x.accelerate },
+    { name: "AvatarFetch", filter: /* @__PURE__ */ Webpack.Filters.bySource('src', 'statusColor', 'size', 'isMobile'), searchExports: true },
+    { name: "ButtonClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('lookFilled', 'button') },
+    { name: "CallButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('PRESS_JOIN_CALL_BUTTON') },
+    { name: "CardPopout", filter: /* @__PURE__ */ Webpack.Filters.byStrings('party', 'close', 'onSelect'), searchExports: true },
+    { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write'), searchExports: true },
+    { name: "DMSidebar", filter: /* @__PURE__ */ Webpack.Filters.bySource(".Z.CONTACTS_LIST") },
+    { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("fetchApplication") },
+    { name: "FetchGames", filter: /* @__PURE__ */ Webpack.Filters.byKeys("getDetectableGamesSupplemental") },
+    { name: "FetchUtils", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
+    { name: "FluxDispatcher", filter: /* @__PURE__ */ Webpack.Filters.byKeys('dispatch', 'subscribe', 'register') },
+    { name: "FormSwitch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"data-toggleable-component":"switch"', 'layout:"horizontal"'), searchExports: true },
+    { name: "GameProfile", filter: x => x.openGameProfileModal },
+    { name: "GameProfileCheck", filter: /* @__PURE__ */ Webpack.Filters.byStrings('gameProfileModalChecks',  'onOpened') },
+    { name: "GradientComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('darken', 's.Bd') },
+    { name: "HeaderBar", filter: /* @__PURE__ */ Webpack.Filters.byKeys("Icon", "Divider") }, 
+    { name: "intl", filter: x=>x.t && x.t.formatToMarkdownString },
+    { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('user', 'activity', 'onAction', 'onClose', 'themeType', 'embeddedActivity') },
+    { name: "LinkButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('route', 'iconClassName'), searchExports: true },
+    { name: "MediaProgressBar", filter: /* @__PURE__ */ Webpack.Filters.byStrings('start', 'end', 'duration', 'percentage'), searchExports: true },
+    { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
+    { name: "ModalRoot", filter: x => x.Modal },
+    { name: "OpenDM", filter: x => x.openPrivateChannel },
+    { name: "OpenVoiceChannel", filter: x=>x.selectVoiceChannel },
+    { name: "OpenSpotifyAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
+    { name: "Popout", filter: /* @__PURE__ */ Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
+    { name: "PopoutContainer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('type', 'position', 'data-popout-animating'), searchExports: true },
+    { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
+    { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
+    { name: "SpotifyButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'PRESS_PLAY_ON_SPOTIFY_BUTTON') },
+    { name: "Tooltip", filter: /* @__PURE__ */ Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
+    { name: "UpperIconClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('icon', 'upperContainer') },
+    { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId') },
+]
+
+export const bulkData = /* @__PURE__ */ Webpack.getBulk(...Filters);
+
+const CommonExport = () => {
+    const result = {};
+    Filters.forEach((component, index) => {
+        result[component.name] = component.target ? bulkData[index][component.target] : bulkData[index];
+    });
+    return result;
+}
+
+export const Common = CommonExport();
+
+export const { shell } = require('electron');
+export const { container } = /* @__PURE__ */ Webpack.getModule(m => m.container && m.panels);
+
+export const layoutUtils = /* @__PURE__ */ Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),
+    {
+        Panel: x => String(x).includes('.PANEL,'),
+        Button: x => String(x).includes('.BUTTON,')
+    }
+)
+export const ControllerIcon = "M5.79335761,5 L18.2066424,5 C19.7805584,5 21.0868816,6.21634264 21.1990185,7.78625885 L21.8575059,17.0050826 C21.9307825,18.0309548 21.1585512,18.9219909 20.132679,18.9952675 C20.088523,18.9984215 20.0442685,19 20,19 C18.8245863,19 17.8000084,18.2000338 17.5149287,17.059715 L17,15 L7,15 L6.48507125,17.059715 C6.19999155,18.2000338 5.1754137,19 4,19 C2.97151413,19 2.13776159,18.1662475 2.13776159,17.1377616 C2.13776159,17.0934931 2.1393401,17.0492386 2.1424941,17.0050826 L2.80098151,7.78625885 C2.91311838,6.21634264 4.21944161,5 5.79335761,5 Z M14.5,10 C15.3284271,10 16,9.32842712 16,8.5 C16,7.67157288 15.3284271,7 14.5,7 C13.6715729,7 13,7.67157288 13,8.5 C13,9.32842712 13.6715729,10 14.5,10 Z M18.5,13 C19.3284271,13 20,12.3284271 20,11.5 C20,10.6715729 19.3284271,10 18.5,10 C17.6715729,10 17,10.6715729 17,11.5 C17,12.3284271 17.6715729,13 18.5,13 Z M6,9 L4,9 L4,11 L6,11 L6,13 L8,13 L8,11 L10,11 L10,9 L8,9 L8,7 L6,7 L6,9 Z";
+export const useLocation = Object.values(/* @__PURE__ */ Webpack.getBySource(".location", "withRouter")).find(m => m.length === 0 && String(m).includes(".location"));
+export const NavigationUtils = /* @__PURE__ */ Webpack.getMangled("transitionTo - Transitioning to", {
+    transitionTo: /* @__PURE__ */ Webpack.Filters.byStrings("\"transitionTo - Transitioning to \""),
+    replace: /* @__PURE__ */ Webpack.Filters.byStrings("\"Replacing route with \""),
+    goBack: /* @__PURE__ */ Webpack.Filters.byStrings(".goBack()"),
+    goForward: /* @__PURE__ */ Webpack.Filters.byStrings(".goForward()"),
+    transitionToGuild: /* @__PURE__ */ Webpack.Filters.byStrings("\"transitionToGuild - Transitioning to \"")
+});
+export const ModalSystem = /* @__PURE__ */ Webpack.getMangled(".modalKey?", {
+    openModalLazy: /* @__PURE__ */ Webpack.Filters.byStrings(".modalKey?"),
+    openModal: /* @__PURE__ */ Webpack.Filters.byStrings(",instant:"),
+    closeModal: /* @__PURE__ */ Webpack.Filters.byStrings(".onCloseCallback()"),
+    closeAllModals: /* @__PURE__ */ Webpack.Filters.byStrings(".getState();for")
+});

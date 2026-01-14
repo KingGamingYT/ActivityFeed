@@ -381,9 +381,15 @@ function webpackify(css) {
 
 // modules/stores.js
 const GameStore = betterdiscord.Webpack.getStore("GameStore");
+const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
 const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
 const UserStore = betterdiscord.Webpack.getStore("UserStore");
 const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
+
+// activity_feed/common/SectionHeader.jsx
+function SectionHeader({ label }) {
+	return BdApi.React.createElement("div", { className: `_2cbe2fbfe32e4150-headerContainer ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-headerText" }, label));
+}
 
 // activity_feed/quick_launcher/launcher.tsx
 function LauncherGameBuilder({ game, runningGames }) {
@@ -407,7 +413,31 @@ function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
 	const gameList = useStateFromStores([RunningGameStore], () => RunningGameStore.getGamesSeen());
 	const _gameList = gameList.filter((game) => GameStore.getGameByName(game.name)).slice(0, 12);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement("div", { className: `_2cbe2fbfe32e4150-headerContainer ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-headerText" }, "Quick Launcher")), gameList.length === 0 ? BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dock _2cbe2fbfe32e4150-emptyState" }, BdApi.React.createElement("svg", { className: "_2cbe2fbfe32e4150-emptyIcon", name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyText" }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dock" }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dock _2cbe2fbfe32e4150-emptyState" }, BdApi.React.createElement("svg", { className: "_2cbe2fbfe32e4150-emptyIcon", name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyText" }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dock" }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
+}
+
+// activity_feed/now_playing/columnBuilder.tsx
+function NowPlayingColumnBuilder({}) {
+	return;
+}
+
+// activity_feed/common.js
+function chunkArray(cards, num) {
+	let chunkLength = Math.max(cards.length / num, 1);
+	const chunks = [];
+	for (let i = 0; i < num; i++) {
+		if (chunkLength * (i + 1) <= cards.length) chunks.push(cards.slice(chunkLength * i, chunkLength * (i + 1)));
+	}
+	return chunks.reverse();
+}
+
+// activity_feed/now_playing/baseBuilder.tsx
+function NowPlayingBuilder(props) {
+	Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_MOUNTED" });
+	const user = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
+	const nowPlayingCards = useStateFromStores([NowPlayingViewStore], () => NowPlayingViewStore.nowPlayingCards);
+	const cardColumns = chunkArray(nowPlayingCards, 2);
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyState" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyTitle" }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptySubtitle" }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-nowPlayingContainer" }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-nowPlayingColumn" }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column, currentUser: user })))));
 }
 
 // activity_feed/base.tsx
@@ -417,7 +447,7 @@ function Scroller({ children, padding }) {
 function TabBaseBuilder() {
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-activityFeed" }, BdApi.React.createElement(Common.HeaderBar, { className: "_2cbe2fbfe32e4150-headerBar", "aria-label": "Activity" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-iconWrapper" }, BdApi.React.createElement("svg", { className: Common.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-titleWrapper" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-title" }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-centerContainer" }, BdApi.React.createElement(QuickLauncherBuilder, { className: "_2cbe2fbfe32e4150-quickLauncher", style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-activityFeed" }, BdApi.React.createElement(Common.HeaderBar, { className: "_2cbe2fbfe32e4150-headerBar", "aria-label": "Activity" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-iconWrapper" }, BdApi.React.createElement("svg", { className: Common.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-titleWrapper" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-title" }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-centerContainer" }, BdApi.React.createElement(QuickLauncherBuilder, { className: "_2cbe2fbfe32e4150-quickLauncher", style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: "_2cbe2fbfe32e4150-nowPlaying", style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/builder.tsx

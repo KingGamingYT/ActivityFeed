@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { Common, ControllerIcon } from "@./modules/common";
 import { UserStore } from "@./modules/stores";
 import { QuickLauncherBuilder } from "./quick_launcher/launcher";
+import { NowPlayingBuilder } from "./now_playing/baseBuilder";
 
 function Scroller({ children, padding }) {
     return <div className={`_2cbe2fbfe32e4150-scrollerBase`} style={{ overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" }}>{children}</div>
@@ -59,6 +60,7 @@ export function TabBaseBuilder() {
             <Scroller>
                 <div className="_2cbe2fbfe32e4150-centerContainer">
                     <QuickLauncherBuilder className="_2cbe2fbfe32e4150-quickLauncher" style={{ position: "relative", padding: "0 20px 0 20px" }} />
+                    <NowPlayingBuilder className="_2cbe2fbfe32e4150-nowPlaying" style={{ position: "relative", padding: "0 20px 20px 20px" }} />
                     <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>
                 </div>
             </Scroller>

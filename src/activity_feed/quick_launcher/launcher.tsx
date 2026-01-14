@@ -1,6 +1,7 @@
 import { createElement, useState, useMemo } from 'react';
 import { Common, shell } from '@./modules/common';
 import { GameStore, RunningGameStore, useStateFromStores } from '@./modules/stores';
+import { SectionHeader } from '../common/SectionHeader';
 
 /*function notLauncherGameBuilder({game, runningGames}) {
     const [shouldDisable, setDisable] = useState(false);
@@ -82,9 +83,7 @@ export function QuickLauncherBuilder(props) {
 
     return (
         <div {...props}>
-            <div className={`_2cbe2fbfe32e4150-headerContainer ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}}>
-                <div className="_2cbe2fbfe32e4150-headerText">Quick Launcher</div>
-            </div>
+            <SectionHeader label="Quick Launcher" />
             {   
                 gameList.length === 0 
                 ?

@@ -1,15 +1,24 @@
-export function NowPlayingCardBuilder({card, v2Enabled}) {
+import { activityCheck, GradGen } from "../common/methods/common";
+import styleModule from "../ActivityFeed.module.css";
 
+export function NowPlayingCardBuilder({card, v2Enabled}) {
+    const user = card.party.priorityMembers[0].user;
+    const status = card.party.priorityMembers[0].status;
+    const activities = card.party.currentActivities;
+    const currentGame = card.party.currentActivities[0]?.game;
+    const voice = card.party.voiceChannels;
+    const streams = card.party.applicationStreams;
+    const isSpotify = card.party.isSpotifyActivity;
+    const filterCheck = activityCheck({activities: activities, spotify: isSpotify});
+    const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 
     return (
-        <div className={v2Enabled ? "_2cbe2fbfe32e4150-cardV2" : "_2cbe2fbfe32e4150-card"} style=={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})`}}>
-            <CardHeader />
-            <CardBody />
+        <div className={v2Enabled ? styleModule.cardV2 : styleModule.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
         </div>
     )
 }
 
-function notNowPlayingCardBuilder({card, v2Enabled}) {
+/*function notNowPlayingCardBuilder({card, v2Enabled}) {
     const [showPopout, setShowPopout] = useState(false);
     const refDOM = useRef(null);
 
@@ -127,3 +136,4 @@ function notNowPlayingCardBuilder({card, v2Enabled}) {
         )
     ])
 }
+*/

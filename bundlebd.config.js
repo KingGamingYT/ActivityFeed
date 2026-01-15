@@ -13,8 +13,13 @@ const mapped = Object.fromEntries(
   ])
 );
 
+const regex = /^[0-9]/;
+const paragraph = `[hash:16]`;
+console.log(paragraph)
+
 module.exports = defineConfig({
 	input: "src",
 	output: "dist",
-	importAliases: mapped
+	importAliases: mapped,
+  generateCSSModuleScopedName: `[hash:16]_[local]`
 });

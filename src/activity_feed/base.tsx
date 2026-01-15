@@ -1,11 +1,11 @@
-import { createElement } from "react";
 import { Common, ControllerIcon } from "@./modules/common";
 import { UserStore } from "@./modules/stores";
 import { QuickLauncherBuilder } from "./quick_launcher/launcher";
 import { NowPlayingBuilder } from "./now_playing/baseBuilder";
+import styleModule from "./ActivityFeed.module.css";
 
 function Scroller({ children, padding }) {
-    return <div className={`_2cbe2fbfe32e4150-scrollerBase`} style={{ overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" }}>{children}</div>
+    return <div className={styleModule.scrollerBase}style={{ overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" }}>{children}</div>
 }
 
 /*
@@ -46,21 +46,21 @@ export function TabBaseBuilder() {
     document.title = "Activity";
     const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"]
     return (
-        <div className="_2cbe2fbfe32e4150-activityFeed">
-            <Common.HeaderBar className="_2cbe2fbfe32e4150-headerBar" aria-label="Activity">
-                <div className="_2cbe2fbfe32e4150-iconWrapper">
+        <div className={styleModule.activityFeed}>
+            <Common.HeaderBar className={styleModule.headerBar} aria-label="Activity">
+                <div className={styleModule.iconWrapper}>
                     <svg className={Common.UpperIconClasses.icon} style={{  width: 24, height: 24 }} viewBox="0 0 24 24" fill="none">
                         <path d={ControllerIcon} fill="var(--channel-icon)" /*transform="transform(0.4)"*/ />
                     </svg>
                 </div>
-                <div className="_2cbe2fbfe32e4150-titleWrapper">
-                    <div className="_2cbe2fbfe32e4150-title">Activity</div>
+                <div className={styleModule.titleWrapper}>
+                    <div className={styleModule.title}>Activity</div>
                 </div>
             </Common.HeaderBar>
             <Scroller>
-                <div className="_2cbe2fbfe32e4150-centerContainer">
-                    <QuickLauncherBuilder className="_2cbe2fbfe32e4150-quickLauncher" style={{ position: "relative", padding: "0 20px 0 20px" }} />
-                    <NowPlayingBuilder className="_2cbe2fbfe32e4150-nowPlaying" style={{ position: "relative", padding: "0 20px 20px 20px" }} />
+                <div className={styleModule.centerContainer}>
+                    <QuickLauncherBuilder className={styleModule.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px" }} />
+                    <NowPlayingBuilder className={styleModule.nowPlaying} style={{ position: "relative", padding: "0 20px 20px 20px" }} />
                     <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>
                 </div>
             </Scroller>

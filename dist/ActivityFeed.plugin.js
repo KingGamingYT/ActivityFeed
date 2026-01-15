@@ -355,30 +355,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 const NewsStore = new GameNewsStore();
 NewsStore === betterdiscord.Webpack.getStore("GameNewsStore");
 
-// activity_feed/styles.js
-const styles = Object.assign(
-	{
-		wrapper: betterdiscord.Webpack.getByKeys("wrapper", "svg", "mask").wrapper,
-		customButtons: betterdiscord.Webpack.getByKeys("customButtons", "absolute").customButtons,
-		hasText: betterdiscord.Webpack.getModule((x) => x.primary && x.hasText && !x.hasTrailing).hasText,
-		sm: betterdiscord.Webpack.getModule((x) => x.primary && x.hasText && !x.hasTrailing).sm,
-		interactiveSelected: betterdiscord.Webpack.getByKeys("icon", "upperContainer").interactiveSelected
-	},
-	betterdiscord.Webpack.getByKeys("itemCard"),
-	betterdiscord.Webpack.getByKeys("tabularNumbers"),
-	betterdiscord.Webpack.getByKeys("colorPrimary", "grow"),
-	betterdiscord.Webpack.getByKeys("bar", "container", "progress"),
-	betterdiscord.Webpack.getModule((x) => x.buttonContainer && Object.keys(x).length === 1)
-);
-const activityPanelCSS = webpackify(`\n._2cbe2fbfe32e4150-activityFeed {\n  	background: var(--background-gradient-chat, var(--background-base-lower));\n  	border-top: 1px solid var(--app-border-frame);\n  	display: flex;\n  	flex-direction: column;\n  	width: 100%;\n  	overflow: hidden;\n}\n\n._2cbe2fbfe32e4150-scrollerBase {\n  	contain: layout size;\n  	height: 100%;\n  	/*\n  	background: no-repeat bottom;\n  	background-size: 100%;\n  	background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);\n  	*/\n  	&::-webkit-scrollbar {\n  	background: none;\n  	border-radius: 8px;\n  	width: 16px;\n  	}\n  	&::-webkit-scrollbar-thumb {\n  			background-clip: padding-box;\n  			border: solid 4px #0000;\n  			border-radius: 8px;\n  	}\n  	&:hover::-webkit-scrollbar-thumb {\n  			background-color: var(--bg-overlay-6, var(--background-tertiary));\n  	}\n}\n\n._2cbe2fbfe32e4150-centerContainer {\n  	display: flex;\n  	flex-direction: column;\n  	width: 1280px;\n  	max-width: 100%;\n  	min-width: 480px;\n  	margin: 0 auto;\n}\n\n._2cbe2fbfe32e4150-title {\n  	align-items: center;\n  	display: flex;\n  	justify-content: flex-start;\n  	overflow: hidden;\n  	white-space: nowrap;\n  	font-size: 16px;\n  	font-weight: 500;\n  	line-height: 1.25;\n  	color: var(--header-primary);\n}\n\n._2cbe2fbfe32e4150-titleWrapper {\n  	flex: 0 0 auto;\n  	margin: 0 8px 0 0;\n  	min-width: auto;\n}\n\n._2cbe2fbfe32e4150-iconWrapper {\n  	align-items: center;\n  	display: flex;\n  	flex: 0 0 auto;\n  	height: var(--space-32);\n  	justify-content: center;\n  	margin: 0;\n  	position: relative;\n  	width: var(--space-32);\n}\n\n._2cbe2fbfe32e4150-headerBar {\n  	height: calc(var(--custom-channel-header-height) - 1px);\n  	min-height: calc(var(--custom-channel-header-height) - 1px);\n}\n\n._2cbe2fbfe32e4150-headerContainer {\n  	flex-direction: row;\n}\n\n._2cbe2fbfe32e4150-headerText {\n  	display: flex;\n  	flex: 1;\n  	font-size: 18px;\n  	font-weight: 500;\n  	line-height: 22px;\n  	margin-top: 20px;\n  	width: 100%;\n  	color: var(--text-default);\n}\n\n._2cbe2fbfe32e4150-feedCarousel {\n  	display: flex;\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-carousel {\n  	background-color: var(--background-secondary-alt);\n  	border-radius: 5px;\n  	flex: 1 1 75%;\n  	min-height: 388px;\n  	margin-right: 20px;\n  	overflow: hidden;\n  	position: relative;\n  	transform: translateZ(0);\n}\n\n._2cbe2fbfe32e4150-article {\n  	background-color: var(--background-secondary-alt);\n  	border-radius: 5px;\n  	bottom: 0;\n  	box-sizing: border-box;\n  	height: 100%;\n  	left: 0;\n  	overflow: hidden;\n  	padding: 20px;\n  	position: absolute;\n  	right: 0;\n  	top: 0;\n  	display: flex;\n  	flex-direction: column;\n  	justify-content: flex-end;\n}\n\n._2cbe2fbfe32e4150-background {\n  	background-repeat: no-repeat;\n  	background-size: cover;\n  	bottom: 7.5%;\n  	mask: linear-gradient(0deg, transparent, #000);\n  	min-width: 300px;\n  	background-position: top;\n}\n\n._2cbe2fbfe32e4150-backgroundImage {\n  	background-position: top;\n  	background-repeat: no-repeat;\n  	background-size: cover;\n  	bottom: 0;\n}\n\n._2cbe2fbfe32e4150-background, ._2cbe2fbfe32e4150-backgroundImage {\n  	left: 0;\n  	position: absolute;\n  	right: 0;\n  	top: 0;\n}\n\n._2cbe2fbfe32e4150-feedOverflowMenu {\n  	position: absolute;\n  	top: 0;\n  	right: 0;\n  	padding: 8px 12px;\n}\n\n._2cbe2fbfe32e4150-applicationArea {\n  	color: var(--text-default);\n  	display: flex;\n  	flex-direction: column;\n  	justify-content: center;\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-details {\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-titleStandard {\n  	margin-top: 8px;\n  	overflow: hidden;\n  	text-overflow: ellipsis;\n  	white-space: nowrap;\n  	font-size: 24px;\n  	line-height: 28px;\n}\n\n._2cbe2fbfe32e4150-title {\n  	color: var(--header-primary);\n  	display: block;\n  	font-weight: 500;\n}\n\n._2cbe2fbfe32e4150-description {\n  	color: var(--text-default);\n  	display: -webkit-box;\n  	font-size: 16px;\n  	font-weight: 500;\n  	line-height: 1.2;\n  	margin-top: 8px;\n  	max-height: 40px;\n  	overflow: hidden;\n  	text-overflow: ellipsis;\n  	-webkit-line-clamp: 2;\n  	line-clamp: 2;\n  	-webkit-box-orient: vertical;\n  	img, br+br {\n  			display: none;\n  	}\n  	a {\n  			color: inherit;\n  	}\n  	p, b, i {\n  			all: inherit;\n  			display: contents\n  	}\n  	.sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n}\n\n._2cbe2fbfe32e4150-timestamp {\n  	color: var(--text-muted);\n  	font-size: 12px;\n  	font-weight: 600;\n  	margin-top: 8px;\n  	text-transform: uppercase;\n}\n\n._2cbe2fbfe32e4150-gameIcon {\n  	position: relative;\n  	pointer-events: auto;\n  	cursor: pointer;\n  	height: 40px;\n  	width: 40px;\n  	flex-shrink: 0;\n  	border-radius: 3px;\n}\n\n._2cbe2fbfe32e4150-pagination {\n  	-webkit-box-flex: 1;\n  	flex: 1 1 25%;\n  	min-width: 0;\n}\n\n._2cbe2fbfe32e4150-verticalPaginationItemContainer {\n  	margin: 0;\n  	overflow: hidden;\n}\n\n._2cbe2fbfe32e4150-scrollerWrap {\n  	-webkit-box-flex: 1;\n  	display: flex;\n  	flex: 1;\n  	height: 100%;\n  	min-height: 1px;\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-scroller {\n  	-webkit-box-flex: 1;\n  	contain: layout;\n  	flex: 1;\n  	min-height: 1px;\n}\n  	\n._2cbe2fbfe32e4150-paginationItem, ._2cbe2fbfe32e4150-paginationItem:before {\n  	transition: all .2s ease;\n}\n\n._2cbe2fbfe32e4150-paginationItem:first-child {\n  	margin-top: 0;\n}\n\n._2cbe2fbfe32e4150-paginationItem {\n  	-webkit-box-align: center;\n  	align-items: center;\n  	background: var(--background-secondary-alt);\n  	border-radius: 5px;\n  	box-sizing: border-box;\n  	cursor: pointer;\n  	display: flex;\n  	height: 91px;\n  	margin-top: 8px;\n  	overflow: hidden;\n  	padding: 16px;\n  	position: relative;\n  	transform: translateZ(0);\n}\n\n._2cbe2fbfe32e4150-paginationItem:before {\n  	background: #fff;\n  	border-radius: 20px;\n  	content: "";\n  	height: 40px;\n  	left: -5px;\n  	position: absolute;\n  	top: 50%;\n  	transform: translateY(-50%) translateX(-100%);\n  	transition-delay: .2s;\n  	width: 10px;\n  	z-index: 1;\n}\n\n._2cbe2fbfe32e4150-paginationItem:after {\n  	background-blend-mode: color;\n  	border-radius: 5px;\n  	bottom: 0;\n  	content: "";\n  	left: 0;\n  	position: absolute;\n  	right: 0;\n  	top: 0;\n}\n\n._2cbe2fbfe32e4150-splashArt {\n  	filter: grayscale(100%);\n  	height: 100%;\n  	opacity: .2;\n  	width: 100%;\n  	background-position-x: 50%;\n  	background-position-y: 40%;\n  	background-repeat: no-repeat;\n  	background-size: cover;\n  	bottom: 0;\n  	left: 0;\n  	pointer-events: none;\n  	position: absolute;\n  	top: 0;\n}\n\n._2cbe2fbfe32e4150-paginationSubtitle, ._2cbe2fbfe32e4150-paginationTitle {\n  	font-weight: 600;\n}\n\n._2cbe2fbfe32e4150-paginationText {\n  	overflow: hidden;\n}\n\n._2cbe2fbfe32e4150-paginationContent {\n  	overflow: hidden;\n  	position: relative;\n  	z-index: 1;\n}\n\n._2cbe2fbfe32e4150-paginationTitle {\n  	color: var(--header-primary);\n  	font-size: 16px;\n  	line-height: 1.25;\n  	max-height: 40px;\n}\n\n._2cbe2fbfe32e4150-paginationSubtitle {\n  	color: var(--text-muted);\n  	font-size: 12px;\n  	margin-top: 4px;\n  	overflow: hidden;\n  	text-overflow: ellipsis;\n  	white-space: nowrap;\n}\n\n._2cbe2fbfe32e4150-selectedPage {\n  	background: var(--background-surface-higher);\n  	cursor: default;\n}\n\n._2cbe2fbfe32e4150-selectedPage:before {\n  	transform: translateY(-50%) translateX(0);\n}\n\n._2cbe2fbfe32e4150-selectedPage ._2cbe2fbfe32e4150-splashArt {\n  	filter: grayscale(0);\n}\n\n._2cbe2fbfe32e4150-smallCarousel {\n  	-webkit-box-flex: 1;\n  	border-radius: 5px;\n  	flex: 1;\n  	height: 220px;\n  	overflow: hidden;\n  	position: relative;\n  	transform: translateZ(0);\n}\n\n._2cbe2fbfe32e4150-titleRowSimple {\n  	-webkit-box-align: center;\n  	-webkit-box-pack: justify;\n  	align-items: center;\n  	display: flex;\n  	flex-wrap: wrap;\n  	justify-content: space-between;\n}\n\n._2cbe2fbfe32e4150-paginationSmall {\n  	bottom: 0;\n  	height: 64px;\n  	left: 0;\n  	margin: 0 auto;\n  	min-width: 0;\n  	right: 0;\n  	position: absolute;\n  	z-index: 3;\n  	display: flex;\n}\n\n._2cbe2fbfe32e4150-arrow {\n  	color: var(--text-muted);\n  	z-index: 2;\n}\n\nsvg._2cbe2fbfe32e4150-arrow {\n  	height: 26px;\n  	width: 26px;\n}\n\n._2cbe2fbfe32e4150-arrowContainer {\n  	color: var(--white);\n  	cursor: pointer;\n  	font-size: 0;\n  	height: 50px;\n  	line-height: 0;\n  	position: absolute;\n  	top: 50%;\n  	transform: translateY(-50%);\n  	width: 50px;\n}\n\n._2cbe2fbfe32e4150-arrow, ._2cbe2fbfe32e4150-arrowContainer {\n  	box-sizing: border-box;\n  	pointer-events: all;\n}\n\n._2cbe2fbfe32e4150-button {\n  	-webkit-box-align: center;\n  	-webkit-box-pack: center;\n  	align-items: center;\n  	background: none;\n  	border: none;\n  	border-radius: 3px;\n  	display: flex;\n  	font-size: 14px;\n  	font-weight: 500;\n  	justify-content: center;\n  	line-height: 16px;\n  	position: relative;\n  	user-select: none;\n}\n\n._2cbe2fbfe32e4150-prevButtonContainer {\n  	left: 6px;\n}\n\n._2cbe2fbfe32e4150-nextButtonContainer {\n  	right: 6px;\n}\n\n._2cbe2fbfe32e4150-left {\n  	transform: rotate(-90deg);\n}\n\n._2cbe2fbfe32e4150-right {\n  	transform: rotate(90deg);\n}\n\n._2cbe2fbfe32e4150-horizontalPaginationItemContainer {\n  	-webkit-box-align: center;\n  	-webkit-box-flex: initial;\n  	align-items: center;\n  	display: flex;\n  	flex: initial;\n  	margin: 0 auto;\n  	overflow-y: hidden;\n}\n\n._2cbe2fbfe32e4150-dot {\n  	background-color: #fff;\n  	border-radius: 2px;\n  	cursor: pointer;\n  	height: 8px;\n  	margin-right: 8px;\n  	pointer-events: all;\n  	transform: translateZ(0);\n  	width: 8px;\n}\n\n._2cbe2fbfe32e4150-dotNormal {\n  	opacity: 0.2;\n}\n\n._2cbe2fbfe32e4150-dotSelected {\n  	opacity: 0.6;\n}\n\n._2cbe2fbfe32e4150-dock {\n  	margin-top: 10px;\n  	display: flex;\n  	overflow: hidden;\n  	flex-wrap: nowrap;\n  	max-width: 1280px;\n}\n\n._2cbe2fbfe32e4150-dockItem {\n  	border-radius: 5px;\n  	box-sizing: border-box;\n  	cursor: pointer;\n  	height: 100px;\n  	padding: 10px;\n  	width: 90px;\n  	flex-direction: column;\n}\n\n._2cbe2fbfe32e4150-dockIcon:first-child {\n  	margin-left: 0;\n}\n\n._2cbe2fbfe32e4150-dockIcon {\n  	background-size: 100%;\n  	border-radius: 3px;\n  	height: 40px;\n  	margin-bottom: 8px;\n  	transition: opacity .2s ease-in-out;\n  	width: 40px;\n}\n\n._2cbe2fbfe32e4150-dockItemText {\n  	font-weight: 500;\n  	height: 31px;\n  	line-height: normal;\n  	overflow: hidden;\n  	text-align: center;\n  	text-overflow: ellipsis;\n  	white-space: normal;\n  	width: 100%;\n  	font-size: 12px;\n  	color: var(--text-default);\n}\n\n._2cbe2fbfe32e4150-dockItemPlay {\n  	display: none;\n  	z-index: 9999;\n}\n\n._2cbe2fbfe32e4150-dockItemPlay:disabled, ._2cbe2fbfe32e4150-dockItemPlay[aria-disabled=true] {\n  	background-color: var(--green-active, var(--button-positive-background-active)) !important;\n}\n\n._2cbe2fbfe32e4150-dockItem:hover {\n  	background: var(--background-base-lowest);\n}\n\n._2cbe2fbfe32e4150-dockItem:hover ._2cbe2fbfe32e4150-dockItemText {\n  	display: none;\n}\n\n._2cbe2fbfe32e4150-dockItem:hover ._2cbe2fbfe32e4150-dockItemPlay {\n  	display: flex;\n}\n\n._2cbe2fbfe32e4150-nowPlayingContainer {\n  	display: flex;\n  	margin-top: var(--space-lg);\n  	gap: var(--space-lg);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn {\n  	display: flex;\n  	flex-direction: column;\n  	gap: var(--space-lg);\n  	width: calc(50% - (var(--space-lg) / 2))\n}\n\n._2cbe2fbfe32e4150-nowPlayingContainer .itemCard {\n  	flex: 1 0 0;\n  	margin: 16px 16px 0 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-card {\n  	border-radius: 5px;\n  	box-sizing: border-box;\n  	cursor: default;\n  	overflow: hidden;\n  	transform: translateZ(0);\n}\n  	\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-cardHeader {\n  	padding: 20px;\n  	position: relative;\n  	flex-direction: row;\n  	background: var(--background-base-lowest);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-header {\n  	display: flex;\n  	align-items: center;\n  	width: 100%;\n  	height: 40px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-header > .wrapper {\n  	display: flex;\n  	cursor: pointer;\n  	margin-right: 20px;\n  	transition: opacity .2s ease;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-nameTag {\n  	line-height: 17px;\n  	overflow: hidden;\n  	text-overflow: ellipsis;\n  	vertical-align: middle;\n  	white-space: nowrap;\n  	color: var(--text-default);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn .username {\n  	cursor: pointer;\n  	font-size: 16px;\n  	font-weight: 500;\n  	line-height: 20px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn .username:hover {\n  	text-decoration: underline;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-card:hover ._2cbe2fbfe32e4150-headerIcon {\n  	display: none;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-headerActions {\n  	display: none;\n  	margin-left: 8px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-card:hover ._2cbe2fbfe32e4150-headerActions {\n  	display: flex;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-headerActions > div[aria-expanded="false"] {\n  	display: none;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-headerActions {\n  	._2cbe2fbfe32e4150-button.lookFilled {\n  			background: var(--control-secondary-background-default);\n  			border: unset;\n  			color: var(--white);\n  			padding: 2px 16px;\n  			width: unset;\n  			svg {\n  					display: none;\n  			} \n  	}\n  	._2cbe2fbfe32e4150-button.lookFilled:hover {\n  			background-color: var(--control-secondary-background-hover) !important;\n  	}\n  	._2cbe2fbfe32e4150-button.lookFilled:active {\n  			background-color: var(--control-secondary-background-active) !important; \n  	}\n  	.lookFilled.colorPrimary {\n  			background: unset !important;\n  			border: unset !important;\n  	}\n  	.lookFilled.colorPrimary:hover {\n  			color: var(--interactive-background-hover);\n  			svg {\n  					stroke: var(--interactive-background-hover);\n  			}\n  	}\n  	.lookFilled.colorPrimary:active {\n  			color: var(--interactive-background-active);\n  			svg {\n  					stroke: var(--interactive-background-active);\n  			}\n  	}\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-overflowMenu {\n  	cursor: pointer;\n  	height: 24px;\n  	margin-left: 8px;\n  	transition: opacity .2s linear;\n  	width: 24px;\n  	color: var(--interactive-icon-hover);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-overflowMenu:hover {\n  	color: var(--interactive-icon-default);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-headerIcon {\n  	border-radius: 4px;\n  	display: block;\n  	height: 30px;\n  	justify-self: end;\n  	width: 30px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-splashArt {\n  	filter: grayscale(100%);\n  	mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);\n  	opacity: .3;\n  	width: 300px;\n  	background-position-x: 50%;\n  	background-position-y: 40%;\n  	background-repeat: no-repeat;\n  	background-size: cover;\n  	bottom: 0;\n  	left: 0;\n  	pointer-events: none;\n  	position: absolute;\n  	top: 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-server {\n  	mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);\n  	right: 0;\n  	left: unset;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-cardBody {\n  	display: flex;\n  	padding: 0 20px;\n  	background: var(--background-mod-strong)\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-section {\n  	-webkit-box-flex: 1;\n  	flex: 1 0 calc(50% - 20px);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-game {\n  	padding: 20px 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-gameBody {\n  	flex-direction: column;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-activityContainer:last-child:not(:only-child, :nth-child(1 of ._2cbe2fbfe32e4150-activityContainer)) ._2cbe2fbfe32e4150-sectionDivider {\n  	display: none;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-activity {\n  	flex-direction: row;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-activity:last-child:not(:only-child) {\n  	margin-top: 20px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-activity ._2cbe2fbfe32e4150-serviceButtonWrapper {\n  	gap: 6px;\n  	display: flex;\n  	flex-direction: row;\n  	.sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-richActivity {\n  	margin-top: 20px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-activityFeed {\n  	-webkit-box-flex: 1;\n  	flex: 1 1 50%;\n  	min-width: 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn :is(._2cbe2fbfe32e4150-gameInfoRich, ._2cbe2fbfe32e4150-gameNameWrapper) {\n  	-webkit-box-flex: 1;\n  	display: flex;\n  	flex: 1;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-gameInfoRich {\n  	align-items: center;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-gameInfo {\n  	margin-left: 20px;\n  	min-width: 0;\n  	color: var(--text-default);\n  	font-weight: 500;\n  	flex: 1;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn :is(._2cbe2fbfe32e4150-gameName, ._2cbe2fbfe32e4150-gameNameWrapper, ._2cbe2fbfe32e4150-streamInfo) {\n  	overflow: hidden;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-gameName {\n  	font-size: 16px;\n  	line-height: 20px;\n  	margin-right: 10px;\n  	max-width: fit-content;\n  	text-overflow: ellipsis;\n  	white-space: nowrap;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-gameName._2cbe2fbfe32e4150-clickable:hover {\n  	text-decoration: underline;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-playTime:not(a) {\n  	color: var(--text-muted);\n}\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-playTime {\n  	font-size: 12px;\n  	font-weight: 500;\n  	line-height: 14px;\n  	margin-top: 4px;\n  	overflow: hidden;\n  	text-overflow: ellipsis;\n  	white-space: nowrap;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets {\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assetsLargeImageActivityFeed {\n  	width: 90px;\n  	height: 90px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assetsSmallImageActivityFeed {\n  	height: 30px;\n  	width: 30px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-assetsLargeImage {\n  	display: block;\n  	border-radius: 4px; \n  	object-fit: cover;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-assetsLargeImageActivityFeedTwitch {\n  	border-radius: 5px;\n  	height: 260px;\n  	mask: linear-gradient(0deg, transparent 10%, #000 80%);\n  	width: 100%;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets:has(._2cbe2fbfe32e4150-assetsSmallImage) ._2cbe2fbfe32e4150-assetsLargeImage {\n  	mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-richActivity ._2cbe2fbfe32e4150-assetsSmallImage, ._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-richActivity ._2cbe2fbfe32e4150-smallEmptyIcon {\n  	border-radius: 50%;\n  	position: absolute;\n  	bottom: -4px;\n  	right: -4px; \n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-activity ._2cbe2fbfe32e4150-smallEmptyIcon {\n  	width: 40px;\n  	height: 40px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-largeEmptyIcon {\n  	width: 90px;\n  	height: 90px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-largeEmptyIcon path {\n  	transform: scale(3.65) !important;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-richActivity svg.assetsSmallImage {\n  	border-radius: unset !important;\n}   \n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-richActivity ._2cbe2fbfe32e4150-smallEmptyIcon path {\n  	transform: scale(1.3) !important;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-twitchImageContainer {\n  	background: var(--background-secondary-alt);\n  	border-radius: 5px;\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-twitchBackgroundImage {\n  	display: inline-block;\n  	min-height: 260px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-twitchImageOverlay {\n  	bottom: 0;\n  	left: 0;\n  	padding: 16px;\n  	position: absolute;\n  	right: 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-streamName {\n  	color: var(--text-default);\n  	font-size: 14px;\n  	font-weight: 500;\n  	margin-top: 8px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-assets ._2cbe2fbfe32e4150-streamGame {\n  	color: var(--text-muted);\n  	font-size: 12px;\n  	font-weight: 600;\n  	margin-top: 8px;\n  	text-transform: uppercase;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-contentImagesActivityFeed {\n  	margin-left: 20px;\n  	color: var(--text-default);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn :is(._2cbe2fbfe32e4150-gameInfo, ._2cbe2fbfe32e4150-contentImagesActivityFeed) {\n  	align-self: center;\n  	display: grid;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-content {\n  	flex: 1;\n  	overflow: hidden;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-details {\n  	font-weight: 600;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-ellipsis {\n  	overflow: hidden;\n  	text-overflow: ellipsis;\n  	white-space: nowrap;\n}\n\n._2cbe2fbfe32e4150-textRow {\n  	display: block;\n  	font-size: 14px;\n  	line-height: 16px;\n  	margin-bottom: 4px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-content .bar {\n  	background-color: var(--opacity-white-24);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-sectionDivider {\n  	display: flex;\n  	width: 100%;\n  	border-bottom: 2px solid;\n  	margin: 20px 0 20px 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSection {\n  	display: flex;\n  	flex: 1 1 auto;\n  	flex-wrap: nowrap;\n  	align-items: center;\n  	justify-content: flex-start;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionAssets {\n  	align-items: center;\n  	border-radius: 50%;\n  	display: flex;\n  	justify-content: center;\n  	position: relative;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionIconWrapper {\n  	align-items: center;\n  	border-radius: 50%;\n  	bottom: -4px;\n  	display: flex;\n  	height: 20px;\n  	justify-content: center;\n  	position: absolute;\n  	right: -3px;\n  	width: 20px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionIcon {\n  	color: var(--header-secondary);\n  	height: 12px;\n  	width: 12px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionGuildImage {\n  	border-radius: 50%;\n  	mask: url('https://discord.com/assets/a90b040155ee449f.svg');\n  	mask-size: 100%;\n  	mask-type: luminance;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSection ._2cbe2fbfe32e4150-details {\n  	flex: 1;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionDetails {\n  	cursor: pointer;\n  	margin-left: 20px;\n  	min-width: 0;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionDetails:hover :is(._2cbe2fbfe32e4150-voiceSectionText, ._2cbe2fbfe32e4150-voiceSectionSubtext) {\n  	text-decoration: underline;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionText {\n  	color: var(--text-default);\n  	font-size: 14px;\n  	font-weight: 600;\n  	line-height: 1.2857142857142858;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSectionSubtext {\n  	color: var(--text-muted);\n  	font-size: 12px;\n  	font-weight: 400;\n  	line-height: 1.3333333333333333;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-userList {\n  	flex: 0 1 auto;\n  	justify-content: flex-end;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-voiceSection button {\n  	flex: 0 1 auto;\n  	width: auto;\n  	margin-left: 20px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-actionsActivity .buttonContainer {\n  	flex-direction: inherit;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-partyStatusWrapper {\n  	display: flex;\n  	gap: 4px;\n  	align-items: center;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-partyStatusWrapper button {\n  	flex: 0 1 50%;\n  	max-height: 24px;\n  	min-height: 24px;\n  	width: auto !important;\n  	justify-self: flex-end;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-partyStatusWrapper .disabledButtonWrapper {\n  	flex: 1;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-partyStatusWrapper .disabledButtonOverlay {\n  	height: 24px;\n  	width: 100%;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-partyList {\n  	display: flex;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-player:first-of-type {\n  	mask: url(#svg-mask-voice-user-summary-item);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-emptyUser:not(:first-of-type), ._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-player:not(:first-of-type) {\n  	margin-left: -4px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-emptyUser:not(:last-of-type), ._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-player:not(:last-of-type) {\n  	mask: url(#svg-mask-voice-user-summary-item);\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-emptyUser, ._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-player {\n  	width: 16px;\n  	height: 16px;\n  	border-radius: 50%;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-emptyUser svg {\n  	margin-left: 3px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-partyPlayerCount {\n  	color: var(--app-message-embed-secondary-text);\n  	font-size: 12px;\n  	font-weight: 500;\n  	line-height: 1.3333333333333333;\n}\n\n._2cbe2fbfe32e4150-nowPlaying ._2cbe2fbfe32e4150-emptyState {\n  	border: 1px solid;\n  	border-radius: 5px;\n  	box-sizing: border-box;\n  	margin-top: 20px;\n  	padding: 20px;\n  	width: 100%;\n}\n\n._2cbe2fbfe32e4150-quickLauncher ._2cbe2fbfe32e4150-emptyState, ._2cbe2fbfe32e4150-blacklist._2cbe2fbfe32e4150-emptyState {\n  	border-bottom: 1px solid;\n  	font-size: 14px;\n  	padding: 20px 0;\n  	justify-content: flex-start;\n  	align-items: center;\n}\n\n._2cbe2fbfe32e4150-emptyTitle {\n  	font-size: 16px;\n  	line-height: 20px;\n  	color: var(--text-default);\n}\n\n._2cbe2fbfe32e4150-emptySubtitle {\n  	font-size: 14px;\n  	color: var(--text-muted);\n}\n\n.theme-light ._2cbe2fbfe32e4150-nowPlaying ._2cbe2fbfe32e4150-emptyState {\n  	background-color: #fff;\n  	border-color: var(--interactive-background-hover);\n}\n\n.theme-dark ._2cbe2fbfe32e4150-nowPlaying ._2cbe2fbfe32e4150-emptyState {\n  	background-color: rgba(79, 84, 92, .3);\n  	border-color: var(--background-mod-strong);\n}\n\n.theme-light ._2cbe2fbfe32e4150-quickLauncher ._2cbe2fbfe32e4150-emptyState, .theme-light ._2cbe2fbfe32e4150-blacklist._2cbe2fbfe32e4150-emptyState {\n  	border-color: rgba(220,221,222,.6);\n  	color: #b9bbbe;\n}\n\n.theme-dark ._2cbe2fbfe32e4150-quickLauncher ._2cbe2fbfe32e4150-emptyState, .theme-dark ._2cbe2fbfe32e4150-blacklist._2cbe2fbfe32e4150-emptyState {\n  	border-color: rgba(47,49,54,.6);\n  	color: #72767d;\n}\n\n.theme-light ._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-sectionDivider {\n  	border-color: var(--interactive-background-hover);\n}\n\n.theme-dark ._2cbe2fbfe32e4150-nowPlayingColumn ._2cbe2fbfe32e4150-sectionDivider {\n  	border-color: var(--background-mod-strong);\n}\n\n.theme-dark ._2cbe2fbfe32e4150-voiceSectionIconWrapper {\n  	background-color: var(--primary-800);\n}\n\n.theme-light ._2cbe2fbfe32e4150-voiceSectionIconWrapper {\n  	background: var(--primary-300);\n}\n\n._2cbe2fbfe32e4150-emptyIcon {\n  	height: 24px;\n  	margin-right: 8px;\n  	width: 24px;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn .tabularNumbers {\n  	color: var(--text-default) !important;\n}\n\n._2cbe2fbfe32e4150-nowPlayingColumn :is(._2cbe2fbfe32e4150-actionsActivity, .customButtons) {\n  	gap: 8px;\n}\n\n.customButtons {\n  	display: flex;\n  	flex-direction: column;\n}\n\n._2cbe2fbfe32e4150-blacklist {\n  	display: flex;\n  	flex-direction: column;\n  	gap: 8px;\n}\n\n._2cbe2fbfe32e4150-blacklist ._2cbe2fbfe32e4150-sectionDivider, ._2cbe2fbfe32e4150-settingsDivider._2cbe2fbfe32e4150-sectionDivider {\n  	display: flex;\n  	width: 100%;\n  	border-bottom: 2px solid;\n  	margin: 4px 0 4px 0;\n  	border-color: var(--background-mod-strong);\n}\n\n._2cbe2fbfe32e4150-blacklist ._2cbe2fbfe32e4150-sectionDivider:last-child {\n  	display: none;\n}\n\n._2cbe2fbfe32e4150-blacklistItem {\n  	display: flex;\n}\n\n._2cbe2fbfe32e4150-blacklistItem ._2cbe2fbfe32e4150-blacklistItemIcon {\n  	border-radius: 8px;\n  	height: 32px;\n  	width: 32px;\n}\n\n._2cbe2fbfe32e4150-blacklistItem ._2cbe2fbfe32e4150-blacklistItemName {\n  	margin-left: 20px;\n  	margin-bottom: 0;\n  	min-width: 0;\n  	font-weight: 500;\n  	align-content: center;\n  	flex: 1;\n}\n\n._2cbe2fbfe32e4150-blacklistItem button {\n  	flex: 0 1 auto;\n  	align-self: center;\n  	width: auto;\n  	margin-left: 20px;\n}\n\n._2cbe2fbfe32e4150-search {\n  	padding: 12px;\n  	margin: 12px 0;\n  	input::placeholder {\n  			font-weight: 600;\n  			font-size: 14px;\n  			color: var(--text-muted);\n  	}\n  	svg {\n  			path {\n  					fill: var(--text-muted);\n  			}\n  			circle {\n  					color: var(--text-muted);\n  			}\n  			path, circle {\n  					stroke: var(--text-muted);\n  					stroke-width: 3px;\n  			}\n  	}\n}\n\n._2cbe2fbfe32e4150-cardV2 {\n  	background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));\n  	border-radius: var(--radius-md);\n  	outline: 1px solid var(--border-normal);\n  	outline-offset: -1px;\n  	box-sizing: border-box;\n  	background-clip: border-box;\n  	overflow: hidden;\n  	transform: translateZ(0);\n\n  	._2cbe2fbfe32e4150-headerActions ._2cbe2fbfe32e4150-button.lookFilled, ._2cbe2fbfe32e4150-cardBody button {\n  			color: var(--white);\n  			background: var(--opacity-white-24);\n  			&:hover {\n  					background: var(--opacity-white-36);\n  			}\n  			&:active {\n  					background: var(--opacity-white-32);\n  			}\n  	}\n\n  	._2cbe2fbfe32e4150-cardHeader {\n  			padding: var(--space-lg);\n  			position: relative;\n  			flex-direction: row;\n  			background: unset;\n  	}\n  	._2cbe2fbfe32e4150-nameTag {\n  			color: var(--white);\n  	}\n  	._2cbe2fbfe32e4150-splashArt, ._2cbe2fbfe32e4150-server {\n  			background-position: center;\n  			background-repeat: no-repeat;\n  			background-size: cover;\n  			filter: unset;\n  			mask: radial-gradient(100% 100% at top right, var(--white) 0, transparent 100%);\n  			opacity: .3;\n  			position: absolute;\n  			top: 0;\n  			left: unset;\n  			right: 0;\n  			width: 300px;\n  			height: 120px;\n  			pointer-events: none;\n  			z-index: -1;\n  	}\n  	&:hover {\n  			._2cbe2fbfe32e4150-headerIcon {\n  					display: none;\n  			}\n  			._2cbe2fbfe32e4150-headerActions {\n  					display: flex;\n  			}\n  	}\n  	._2cbe2fbfe32e4150-cardBody {\n  			display: flex;\n  			gap: var(--space-lg);\n  			padding: 0 var(--space-lg) var(--space-lg);\n  			background: unset;\n  	}\n  	._2cbe2fbfe32e4150-section {\n  			background: var(--background-mod-normal);\n  			border-radius: var(--radius-sm);\n  			padding: var(--space-sm);\n  	}\n  	._2cbe2fbfe32e4150-game {\n  			padding: 0;\n  	}\n  	._2cbe2fbfe32e4150-sectionDivider {\n  			border-color: var(--opacity-white-12) !important;\n  			border-width: 1px;\n  			margin: 12px 0 12px 0;\n  	}\n  	._2cbe2fbfe32e4150-voiceSectionText {\n  			color: var(--white);\n  	}\n  	._2cbe2fbfe32e4150-headerIcon, ._2cbe2fbfe32e4150-gameIcon, ._2cbe2fbfe32e4150-assetsLargeImage._2cbe2fbfe32e4150-assetsLargeImage {\n  			border-radius: var(--radius-sm);\n  	}\n  	._2cbe2fbfe32e4150-gameInfo {\n  			color: var(--white);\n  	}\n  	._2cbe2fbfe32e4150-playTime:not(a), ._2cbe2fbfe32e4150-voiceSectionSubtext {\n  			color: var(--app-message-embed-secondary-text) !important;\n  	}\n  	._2cbe2fbfe32e4150-serviceButtonWrapper {\n  			gap: 8px !important;\n  	}\n  	._2cbe2fbfe32e4150-contentImagesActivityFeed {\n  			color: var(--white);\n  	}\n  	._2cbe2fbfe32e4150-textRow {\n  			font-size: 16px;\n  			line-height: 18px;\n  	}\n  	._2cbe2fbfe32e4150-state {\n  			color: var(--app-message-embed-secondary-text);\n  			font-size: 14px;\n  			line-height: 16px;\n  	}\n  	.tabularNumbers {\n  			color: var(--app-message-embed-secondary-text) !important;\n  	}\n  	.bar {\n  			background-color: var(--opacity-white-24);\n  	}\n  	.progress {\n  			background-color: var(--white);\n  	}\n  	._2cbe2fbfe32e4150-activity:last-child:not(:only-child) {\n  			margin-top: 12px;\n  	}\n}\n`);
-function webpackify(css) {
-	for (const key in styles) {
-		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
-		css = css.replace(regex, `.${styles[key]}$1`);
-	}
-	return css;
-}
-
 // modules/stores.js
 const GameStore = betterdiscord.Webpack.getStore("GameStore");
 const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
@@ -386,9 +362,1506 @@ const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
 const UserStore = betterdiscord.Webpack.getStore("UserStore");
 const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
 
-// activity_feed/common/SectionHeader.jsx
+// styles
+let _styles = "";
+function _loadStyle(path, css) {
+	_styles += "/*" + path + "*/\n" + css + "\n";
+}
+
+// activity_feed/ActivityFeed.module.css
+const css = `
+._0ba2b6a9e50a96c2_activityFeed {
+		background: var(--background-gradient-chat, var(--background-base-lower));
+		border-top: 1px solid var(--app-border-frame);
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		overflow: hidden;
+}
+
+._0ba2b6a9e50a96c2_scrollerBase {
+		contain: layout size;
+		height: 100%;
+		/*
+		background: no-repeat bottom;
+		background-size: 100%;
+		background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
+		*/
+		&::-webkit-scrollbar {
+		background: none;
+		border-radius: 8px;
+		width: 16px;
+		}
+		&::-webkit-scrollbar-thumb {
+				background-clip: padding-box;
+				border: solid 4px #0000;
+				border-radius: 8px;
+		}
+		&:hover::-webkit-scrollbar-thumb {
+				background-color: var(--bg-overlay-6, var(--background-tertiary));
+		}
+}
+
+._0ba2b6a9e50a96c2_centerContainer {
+		display: flex;
+		flex-direction: column;
+		width: 1280px;
+		max-width: 100%;
+		min-width: 480px;
+		margin: 0 auto;
+}
+
+._0ba2b6a9e50a96c2_title {
+		align-items: center;
+		display: flex;
+		justify-content: flex-start;
+		overflow: hidden;
+		white-space: nowrap;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.25;
+		color: var(--header-primary);
+}
+
+._0ba2b6a9e50a96c2_titleWrapper {
+		flex: 0 0 auto;
+		margin: 0 8px 0 0;
+		min-width: auto;
+}
+
+._0ba2b6a9e50a96c2_iconWrapper {
+		align-items: center;
+		display: flex;
+		flex: 0 0 auto;
+		height: var(--space-32);
+		justify-content: center;
+		margin: 0;
+		position: relative;
+		width: var(--space-32);
+}
+
+._0ba2b6a9e50a96c2_headerBar {
+		height: calc(var(--custom-channel-header-height) - 1px);
+		min-height: calc(var(--custom-channel-header-height) - 1px);
+}
+
+._0ba2b6a9e50a96c2_headerContainer {
+		flex-direction: row;
+}
+
+._0ba2b6a9e50a96c2_headerText {
+		display: flex;
+		flex: 1;
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 22px;
+		margin-top: 20px;
+		width: 100%;
+		color: var(--text-default);
+}
+
+._0ba2b6a9e50a96c2_feedCarousel {
+		display: flex;
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_carousel {
+		background-color: var(--background-secondary-alt);
+		border-radius: 5px;
+		flex: 1 1 75%;
+		min-height: 388px;
+		margin-right: 20px;
+		overflow: hidden;
+		position: relative;
+		transform: translateZ(0);
+}
+
+._0ba2b6a9e50a96c2_article {
+		background-color: var(--background-secondary-alt);
+		border-radius: 5px;
+		bottom: 0;
+		box-sizing: border-box;
+		height: 100%;
+		left: 0;
+		overflow: hidden;
+		padding: 20px;
+		position: absolute;
+		right: 0;
+		top: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+}
+
+._0ba2b6a9e50a96c2_background {
+		background-repeat: no-repeat;
+		background-size: cover;
+		bottom: 7.5%;
+		mask: linear-gradient(0deg, transparent, #000);
+		min-width: 300px;
+		background-position: top;
+}
+
+._0ba2b6a9e50a96c2_backgroundImage {
+		background-position: top;
+		background-repeat: no-repeat;
+		background-size: cover;
+		bottom: 0;
+}
+
+._0ba2b6a9e50a96c2_background, ._0ba2b6a9e50a96c2_backgroundImage {
+		left: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+}
+
+._0ba2b6a9e50a96c2_feedOverflowMenu {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: 8px 12px;
+}
+
+._0ba2b6a9e50a96c2_applicationArea {
+		color: var(--text-default);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_details {
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_titleStandard {
+		margin-top: 8px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 24px;
+		line-height: 28px;
+}
+
+._0ba2b6a9e50a96c2_title {
+		color: var(--header-primary);
+		display: block;
+		font-weight: 500;
+}
+
+._0ba2b6a9e50a96c2_description {
+		color: var(--text-default);
+		display: -webkit-box;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.2;
+		margin-top: 8px;
+		max-height: 40px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		img, br+br {
+				display: none;
+		}
+		a {
+				color: inherit;
+		}
+		p, b, i {
+				all: inherit;
+				display: contents
+		}
+		._0ba2b6a9e50a96c2_sharedFilePreviewYouTubeVideo {
+				display: none;
+		}
+}
+
+._0ba2b6a9e50a96c2_timestamp {
+		color: var(--text-muted);
+		font-size: 12px;
+		font-weight: 600;
+		margin-top: 8px;
+		text-transform: uppercase;
+}
+
+._0ba2b6a9e50a96c2_gameIcon {
+		position: relative;
+		pointer-events: auto;
+		cursor: pointer;
+		height: 40px;
+		width: 40px;
+		flex-shrink: 0;
+		border-radius: 3px;
+}
+
+._0ba2b6a9e50a96c2_pagination {
+		-webkit-box-flex: 1;
+		flex: 1 1 25%;
+		min-width: 0;
+}
+
+._0ba2b6a9e50a96c2_verticalPaginationItemContainer {
+		margin: 0;
+		overflow: hidden;
+}
+
+._0ba2b6a9e50a96c2_scrollerWrap {
+		-webkit-box-flex: 1;
+		display: flex;
+		flex: 1;
+		height: 100%;
+		min-height: 1px;
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_scroller {
+		-webkit-box-flex: 1;
+		contain: layout;
+		flex: 1;
+		min-height: 1px;
+}
+		
+._0ba2b6a9e50a96c2_paginationItem, ._0ba2b6a9e50a96c2_paginationItem:before {
+		transition: all .2s ease;
+}
+
+._0ba2b6a9e50a96c2_paginationItem:first-child {
+		margin-top: 0;
+}
+
+._0ba2b6a9e50a96c2_paginationItem {
+		-webkit-box-align: center;
+		align-items: center;
+		background: var(--background-secondary-alt);
+		border-radius: 5px;
+		box-sizing: border-box;
+		cursor: pointer;
+		display: flex;
+		height: 91px;
+		margin-top: 8px;
+		overflow: hidden;
+		padding: 16px;
+		position: relative;
+		transform: translateZ(0);
+}
+
+._0ba2b6a9e50a96c2_paginationItem:before {
+		background: #fff;
+		border-radius: 20px;
+		content: "";
+		height: 40px;
+		left: -5px;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%) translateX(-100%);
+		transition-delay: .2s;
+		width: 10px;
+		z-index: 1;
+}
+
+._0ba2b6a9e50a96c2_paginationItem:after {
+		background-blend-mode: color;
+		border-radius: 5px;
+		bottom: 0;
+		content: "";
+		left: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+}
+
+._0ba2b6a9e50a96c2_splashArt {
+		filter: grayscale(100%);
+		height: 100%;
+		opacity: .2;
+		width: 100%;
+		background-position-x: 50%;
+		background-position-y: 40%;
+		background-repeat: no-repeat;
+		background-size: cover;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+}
+
+._0ba2b6a9e50a96c2_paginationSubtitle, ._0ba2b6a9e50a96c2_paginationTitle {
+		font-weight: 600;
+}
+
+._0ba2b6a9e50a96c2_paginationText {
+		overflow: hidden;
+}
+
+._0ba2b6a9e50a96c2_paginationContent {
+		overflow: hidden;
+		position: relative;
+		z-index: 1;
+}
+
+._0ba2b6a9e50a96c2_paginationTitle {
+		color: var(--header-primary);
+		font-size: 16px;
+		line-height: 1.25;
+		max-height: 40px;
+}
+
+._0ba2b6a9e50a96c2_paginationSubtitle {
+		color: var(--text-muted);
+		font-size: 12px;
+		margin-top: 4px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._0ba2b6a9e50a96c2_selectedPage {
+		background: var(--background-surface-higher);
+		cursor: default;
+}
+
+._0ba2b6a9e50a96c2_selectedPage:before {
+		transform: translateY(-50%) translateX(0);
+}
+
+._0ba2b6a9e50a96c2_selectedPage ._0ba2b6a9e50a96c2_splashArt {
+		filter: grayscale(0);
+}
+
+._0ba2b6a9e50a96c2_smallCarousel {
+		-webkit-box-flex: 1;
+		border-radius: 5px;
+		flex: 1;
+		height: 220px;
+		overflow: hidden;
+		position: relative;
+		transform: translateZ(0);
+}
+
+._0ba2b6a9e50a96c2_titleRowSimple {
+		-webkit-box-align: center;
+		-webkit-box-pack: justify;
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+}
+
+._0ba2b6a9e50a96c2_paginationSmall {
+		bottom: 0;
+		height: 64px;
+		left: 0;
+		margin: 0 auto;
+		min-width: 0;
+		right: 0;
+		position: absolute;
+		z-index: 3;
+		display: flex;
+}
+
+._0ba2b6a9e50a96c2_arrow {
+		color: var(--text-muted);
+		z-index: 2;
+}
+
+svg._0ba2b6a9e50a96c2_arrow {
+		height: 26px;
+		width: 26px;
+}
+
+._0ba2b6a9e50a96c2_arrowContainer {
+		color: var(--white);
+		cursor: pointer;
+		font-size: 0;
+		height: 50px;
+		line-height: 0;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 50px;
+}
+
+._0ba2b6a9e50a96c2_arrow, ._0ba2b6a9e50a96c2_arrowContainer {
+		box-sizing: border-box;
+		pointer-events: all;
+}
+
+._0ba2b6a9e50a96c2_button {
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		align-items: center;
+		background: none;
+		border: none;
+		border-radius: 3px;
+		display: flex;
+		font-size: 14px;
+		font-weight: 500;
+		justify-content: center;
+		line-height: 16px;
+		position: relative;
+		user-select: none;
+}
+
+._0ba2b6a9e50a96c2_prevButtonContainer {
+		left: 6px;
+}
+
+._0ba2b6a9e50a96c2_nextButtonContainer {
+		right: 6px;
+}
+
+._0ba2b6a9e50a96c2_left {
+		transform: rotate(-90deg);
+}
+
+._0ba2b6a9e50a96c2_right {
+		transform: rotate(90deg);
+}
+
+._0ba2b6a9e50a96c2_horizontalPaginationItemContainer {
+		-webkit-box-align: center;
+		-webkit-box-flex: initial;
+		align-items: center;
+		display: flex;
+		flex: initial;
+		margin: 0 auto;
+		overflow-y: hidden;
+}
+
+._0ba2b6a9e50a96c2_dot {
+		background-color: #fff;
+		border-radius: 2px;
+		cursor: pointer;
+		height: 8px;
+		margin-right: 8px;
+		pointer-events: all;
+		transform: translateZ(0);
+		width: 8px;
+}
+
+._0ba2b6a9e50a96c2_dotNormal {
+		opacity: 0.2;
+}
+
+._0ba2b6a9e50a96c2_dotSelected {
+		opacity: 0.6;
+}
+
+._0ba2b6a9e50a96c2_dock {
+		margin-top: 10px;
+		display: flex;
+		overflow: hidden;
+		flex-wrap: nowrap;
+		max-width: 1280px;
+}
+
+._0ba2b6a9e50a96c2_dockItem {
+		border-radius: 5px;
+		box-sizing: border-box;
+		cursor: pointer;
+		height: 100px;
+		padding: 10px;
+		width: 90px;
+		flex-direction: column;
+}
+
+._0ba2b6a9e50a96c2_dockIcon:first-child {
+		margin-left: 0;
+}
+
+._0ba2b6a9e50a96c2_dockIcon {
+		background-size: 100%;
+		border-radius: 3px;
+		height: 40px;
+		margin-bottom: 8px;
+		transition: opacity .2s ease-in-out;
+		width: 40px;
+}
+
+._0ba2b6a9e50a96c2_dockItemText {
+		font-weight: 500;
+		height: 31px;
+		line-height: normal;
+		overflow: hidden;
+		text-align: center;
+		text-overflow: ellipsis;
+		white-space: normal;
+		width: 100%;
+		font-size: 12px;
+		color: var(--text-default);
+}
+
+._0ba2b6a9e50a96c2_dockItemPlay {
+		display: none;
+		z-index: 9999;
+}
+
+._0ba2b6a9e50a96c2_dockItemPlay:disabled, ._0ba2b6a9e50a96c2_dockItemPlay[aria-disabled=true] {
+		background-color: var(--green-active, var(--button-positive-background-active)) !important;
+}
+
+._0ba2b6a9e50a96c2_dockItem:hover {
+		background: var(--background-base-lowest);
+}
+
+._0ba2b6a9e50a96c2_dockItem:hover ._0ba2b6a9e50a96c2_dockItemText {
+		display: none;
+}
+
+._0ba2b6a9e50a96c2_dockItem:hover ._0ba2b6a9e50a96c2_dockItemPlay {
+		display: flex;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingContainer {
+		display: flex;
+		margin-top: var(--space-lg);
+		gap: var(--space-lg);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+		width: calc(50% - (var(--space-lg) / 2))
+}
+
+._0ba2b6a9e50a96c2_nowPlayingContainer ._0ba2b6a9e50a96c2_itemCard {
+		flex: 1 0 0;
+		margin: 16px 16px 0 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_card {
+		border-radius: 5px;
+		box-sizing: border-box;
+		cursor: default;
+		overflow: hidden;
+		transform: translateZ(0);
+}
+		
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_cardHeader {
+		padding: 20px;
+		position: relative;
+		flex-direction: row;
+		background: var(--background-base-lowest);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_header {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: 40px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_header > ._0ba2b6a9e50a96c2_wrapper {
+		display: flex;
+		cursor: pointer;
+		margin-right: 20px;
+		transition: opacity .2s ease;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_nameTag {
+		line-height: 17px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		vertical-align: middle;
+		white-space: nowrap;
+		color: var(--text-default);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_username {
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 20px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_username:hover {
+		text-decoration: underline;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_card:hover ._0ba2b6a9e50a96c2_headerIcon {
+		display: none;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerActions {
+		display: none;
+		margin-left: 8px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_card:hover ._0ba2b6a9e50a96c2_headerActions {
+		display: flex;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerActions > div[aria-expanded="false"] {
+		display: none;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerActions {
+		._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled {
+				background: var(--control-secondary-background-default);
+				border: unset;
+				color: var(--white);
+				padding: 2px 16px;
+				width: unset;
+				svg {
+						display: none;
+				} 
+		}
+		._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled:hover {
+				background-color: var(--control-secondary-background-hover) !important;
+		}
+		._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled:active {
+				background-color: var(--control-secondary-background-active) !important; 
+		}
+		._0ba2b6a9e50a96c2_lookFilled._0ba2b6a9e50a96c2_colorPrimary {
+				background: unset !important;
+				border: unset !important;
+		}
+		._0ba2b6a9e50a96c2_lookFilled._0ba2b6a9e50a96c2_colorPrimary:hover {
+				color: var(--interactive-background-hover);
+				svg {
+						stroke: var(--interactive-background-hover);
+				}
+		}
+		._0ba2b6a9e50a96c2_lookFilled._0ba2b6a9e50a96c2_colorPrimary:active {
+				color: var(--interactive-background-active);
+				svg {
+						stroke: var(--interactive-background-active);
+				}
+		}
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_overflowMenu {
+		cursor: pointer;
+		height: 24px;
+		margin-left: 8px;
+		transition: opacity .2s linear;
+		width: 24px;
+		color: var(--interactive-icon-hover);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_overflowMenu:hover {
+		color: var(--interactive-icon-default);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerIcon {
+		border-radius: 4px;
+		display: block;
+		height: 30px;
+		justify-self: end;
+		width: 30px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_splashArt {
+		filter: grayscale(100%);
+		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
+		opacity: .3;
+		width: 300px;
+		background-position-x: 50%;
+		background-position-y: 40%;
+		background-repeat: no-repeat;
+		background-size: cover;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_server {
+		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
+		right: 0;
+		left: unset;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_cardBody {
+		display: flex;
+		padding: 0 20px;
+		background: var(--background-mod-strong)
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_section {
+		-webkit-box-flex: 1;
+		flex: 1 0 calc(50% - 20px);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_game {
+		padding: 20px 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameBody {
+		flex-direction: column;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activityContainer:last-child:not(:only-child, :nth-child(1 of ._0ba2b6a9e50a96c2_activityContainer)) ._0ba2b6a9e50a96c2_sectionDivider {
+		display: none;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity {
+		flex-direction: row;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity:last-child:not(:only-child) {
+		margin-top: 20px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity ._0ba2b6a9e50a96c2_serviceButtonWrapper {
+		gap: 6px;
+		display: flex;
+		flex-direction: row;
+		._0ba2b6a9e50a96c2_sm:not(._0ba2b6a9e50a96c2_hasText) {
+				padding: 0;
+				width: calc(var(--custom-button-button-sm-height) + 4px);
+		}
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity {
+		margin-top: 20px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activityFeed {
+		-webkit-box-flex: 1;
+		flex: 1 1 50%;
+		min-width: 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_gameInfoRich, ._0ba2b6a9e50a96c2_gameNameWrapper) {
+		-webkit-box-flex: 1;
+		display: flex;
+		flex: 1;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameInfoRich {
+		align-items: center;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameInfo {
+		margin-left: 20px;
+		min-width: 0;
+		color: var(--text-default);
+		font-weight: 500;
+		flex: 1;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_gameName, ._0ba2b6a9e50a96c2_gameNameWrapper, ._0ba2b6a9e50a96c2_streamInfo) {
+		overflow: hidden;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameName {
+		font-size: 16px;
+		line-height: 20px;
+		margin-right: 10px;
+		max-width: fit-content;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameName._0ba2b6a9e50a96c2_clickable:hover {
+		text-decoration: underline;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_playTime:not(a) {
+		color: var(--text-muted);
+}
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_playTime {
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 14px;
+		margin-top: 4px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets {
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assetsLargeImageActivityFeed {
+		width: 90px;
+		height: 90px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assetsSmallImageActivityFeed {
+		height: 30px;
+		width: 30px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_assetsLargeImage {
+		display: block;
+		border-radius: 4px; 
+		object-fit: cover;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_assetsLargeImageActivityFeedTwitch {
+		border-radius: 5px;
+		height: 260px;
+		mask: linear-gradient(0deg, transparent 10%, #000 80%);
+		width: 100%;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets:has(._0ba2b6a9e50a96c2_assetsSmallImage) ._0ba2b6a9e50a96c2_assetsLargeImage {
+		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity ._0ba2b6a9e50a96c2_assetsSmallImage, ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity ._0ba2b6a9e50a96c2_smallEmptyIcon {
+		border-radius: 50%;
+		position: absolute;
+		bottom: -4px;
+		right: -4px; 
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity ._0ba2b6a9e50a96c2_smallEmptyIcon {
+		width: 40px;
+		height: 40px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_largeEmptyIcon {
+		width: 90px;
+		height: 90px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_largeEmptyIcon path {
+		transform: scale(3.65) !important;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity svg._0ba2b6a9e50a96c2_assetsSmallImage {
+		border-radius: unset !important;
+}   
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity ._0ba2b6a9e50a96c2_smallEmptyIcon path {
+		transform: scale(1.3) !important;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_twitchImageContainer {
+		background: var(--background-secondary-alt);
+		border-radius: 5px;
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_twitchBackgroundImage {
+		display: inline-block;
+		min-height: 260px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_twitchImageOverlay {
+		bottom: 0;
+		left: 0;
+		padding: 16px;
+		position: absolute;
+		right: 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_streamName {
+		color: var(--text-default);
+		font-size: 14px;
+		font-weight: 500;
+		margin-top: 8px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_streamGame {
+		color: var(--text-muted);
+		font-size: 12px;
+		font-weight: 600;
+		margin-top: 8px;
+		text-transform: uppercase;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_contentImagesActivityFeed {
+		margin-left: 20px;
+		color: var(--text-default);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_gameInfo, ._0ba2b6a9e50a96c2_contentImagesActivityFeed) {
+		align-self: center;
+		display: grid;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_content {
+		flex: 1;
+		overflow: hidden;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_details {
+		font-weight: 600;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_ellipsis {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._0ba2b6a9e50a96c2_textRow {
+		display: block;
+		font-size: 14px;
+		line-height: 16px;
+		margin-bottom: 4px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_content ._0ba2b6a9e50a96c2_bar {
+		background-color: var(--opacity-white-24);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_sectionDivider {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 20px 0 20px 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSection {
+		display: flex;
+		flex: 1 1 auto;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: flex-start;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionAssets {
+		align-items: center;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		position: relative;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionIconWrapper {
+		align-items: center;
+		border-radius: 50%;
+		bottom: -4px;
+		display: flex;
+		height: 20px;
+		justify-content: center;
+		position: absolute;
+		right: -3px;
+		width: 20px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionIcon {
+		color: var(--header-secondary);
+		height: 12px;
+		width: 12px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionGuildImage {
+		border-radius: 50%;
+		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
+		mask-size: 100%;
+		mask-type: luminance;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSection ._0ba2b6a9e50a96c2_details {
+		flex: 1;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionDetails {
+		cursor: pointer;
+		margin-left: 20px;
+		min-width: 0;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionDetails:hover :is(._0ba2b6a9e50a96c2_voiceSectionText, ._0ba2b6a9e50a96c2_voiceSectionSubtext) {
+		text-decoration: underline;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionText {
+		color: var(--text-default);
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 1.2857142857142858;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionSubtext {
+		color: var(--text-muted);
+		font-size: 12px;
+		font-weight: 400;
+		line-height: 1.3333333333333333;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_userList {
+		flex: 0 1 auto;
+		justify-content: flex-end;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSection button {
+		flex: 0 1 auto;
+		width: auto;
+		margin-left: 20px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_actionsActivity ._0ba2b6a9e50a96c2_buttonContainer {
+		flex-direction: inherit;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper {
+		display: flex;
+		gap: 4px;
+		align-items: center;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper button {
+		flex: 0 1 50%;
+		max-height: 24px;
+		min-height: 24px;
+		width: auto !important;
+		justify-self: flex-end;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper ._0ba2b6a9e50a96c2_disabledButtonWrapper {
+		flex: 1;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper ._0ba2b6a9e50a96c2_disabledButtonOverlay {
+		height: 24px;
+		width: 100%;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyList {
+		display: flex;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player:first-of-type {
+		mask: url(#svg-mask-voice-user-summary-item);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser:not(:first-of-type), ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player:not(:first-of-type) {
+		margin-left: -4px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser:not(:last-of-type), ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player:not(:last-of-type) {
+		mask: url(#svg-mask-voice-user-summary-item);
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser, ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser svg {
+		margin-left: 3px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyPlayerCount {
+		color: var(--app-message-embed-secondary-text);
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.3333333333333333;
+}
+
+._0ba2b6a9e50a96c2_nowPlaying ._0ba2b6a9e50a96c2_emptyState {
+		border: 1px solid;
+		border-radius: 5px;
+		box-sizing: border-box;
+		margin-top: 20px;
+		padding: 20px;
+		width: 100%;
+}
+
+._0ba2b6a9e50a96c2_quickLauncher ._0ba2b6a9e50a96c2_emptyState, ._0ba2b6a9e50a96c2_blacklist._0ba2b6a9e50a96c2_emptyState {
+		border-bottom: 1px solid;
+		font-size: 14px;
+		padding: 20px 0;
+		justify-content: flex-start;
+		align-items: center;
+}
+
+._0ba2b6a9e50a96c2_emptyTitle {
+		font-size: 16px;
+		line-height: 20px;
+		color: var(--text-default);
+}
+
+._0ba2b6a9e50a96c2_emptySubtitle {
+		font-size: 14px;
+		color: var(--text-muted);
+}
+
+._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_nowPlaying ._0ba2b6a9e50a96c2_emptyState {
+		background-color: #fff;
+		border-color: var(--interactive-background-hover);
+}
+
+._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_nowPlaying ._0ba2b6a9e50a96c2_emptyState {
+		background-color: rgba(79, 84, 92, .3);
+		border-color: var(--background-mod-strong);
+}
+
+._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_quickLauncher ._0ba2b6a9e50a96c2_emptyState, ._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_blacklist._0ba2b6a9e50a96c2_emptyState {
+		border-color: rgba(220,221,222,.6);
+		color: #b9bbbe;
+}
+
+._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_quickLauncher ._0ba2b6a9e50a96c2_emptyState, ._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_blacklist._0ba2b6a9e50a96c2_emptyState {
+		border-color: rgba(47,49,54,.6);
+		color: #72767d;
+}
+
+._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_sectionDivider {
+		border-color: var(--interactive-background-hover);
+}
+
+._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_sectionDivider {
+		border-color: var(--background-mod-strong);
+}
+
+._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_voiceSectionIconWrapper {
+		background-color: var(--primary-800);
+}
+
+._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_voiceSectionIconWrapper {
+		background: var(--primary-300);
+}
+
+._0ba2b6a9e50a96c2_emptyIcon {
+		height: 24px;
+		margin-right: 8px;
+		width: 24px;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_tabularNumbers {
+		color: var(--text-default) !important;
+}
+
+._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_actionsActivity, ._0ba2b6a9e50a96c2_customButtons) {
+		gap: 8px;
+}
+
+._0ba2b6a9e50a96c2_customButtons {
+		display: flex;
+		flex-direction: column;
+}
+
+._0ba2b6a9e50a96c2_blacklist {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+}
+
+._0ba2b6a9e50a96c2_blacklist ._0ba2b6a9e50a96c2_sectionDivider, ._0ba2b6a9e50a96c2_settingsDivider._0ba2b6a9e50a96c2_sectionDivider {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 4px 0 4px 0;
+		border-color: var(--background-mod-strong);
+}
+
+._0ba2b6a9e50a96c2_blacklist ._0ba2b6a9e50a96c2_sectionDivider:last-child {
+		display: none;
+}
+
+._0ba2b6a9e50a96c2_blacklistItem {
+		display: flex;
+}
+
+._0ba2b6a9e50a96c2_blacklistItem ._0ba2b6a9e50a96c2_blacklistItemIcon {
+		border-radius: 8px;
+		height: 32px;
+		width: 32px;
+}
+
+._0ba2b6a9e50a96c2_blacklistItem ._0ba2b6a9e50a96c2_blacklistItemName {
+		margin-left: 20px;
+		margin-bottom: 0;
+		min-width: 0;
+		font-weight: 500;
+		align-content: center;
+		flex: 1;
+}
+
+._0ba2b6a9e50a96c2_blacklistItem button {
+		flex: 0 1 auto;
+		align-self: center;
+		width: auto;
+		margin-left: 20px;
+}
+
+._0ba2b6a9e50a96c2_search {
+		padding: 12px;
+		margin: 12px 0;
+		input::placeholder {
+				font-weight: 600;
+				font-size: 14px;
+				color: var(--text-muted);
+		}
+		svg {
+				path {
+						fill: var(--text-muted);
+				}
+				circle {
+						color: var(--text-muted);
+				}
+				path, circle {
+						stroke: var(--text-muted);
+						stroke-width: 3px;
+				}
+		}
+}
+
+._0ba2b6a9e50a96c2_cardV2 {
+		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
+		border-radius: var(--radius-md);
+		outline: 1px solid var(--border-normal);
+		outline-offset: -1px;
+		box-sizing: border-box;
+		background-clip: border-box;
+		overflow: hidden;
+		transform: translateZ(0);
+
+		._0ba2b6a9e50a96c2_headerActions ._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled, ._0ba2b6a9e50a96c2_cardBody button {
+				color: var(--white);
+				background: var(--opacity-white-24);
+				&:hover {
+						background: var(--opacity-white-36);
+				}
+				&:active {
+						background: var(--opacity-white-32);
+				}
+		}
+
+		._0ba2b6a9e50a96c2_cardHeader {
+				padding: var(--space-lg);
+				position: relative;
+				flex-direction: row;
+				background: unset;
+		}
+		._0ba2b6a9e50a96c2_nameTag {
+				color: var(--white);
+		}
+		._0ba2b6a9e50a96c2_splashArt, ._0ba2b6a9e50a96c2_server {
+				background-position: center;
+				background-repeat: no-repeat;
+				background-size: cover;
+				filter: unset;
+				mask: radial-gradient(100% 100% at top right, var(--white) 0, transparent 100%);
+				opacity: .3;
+				position: absolute;
+				top: 0;
+				left: unset;
+				right: 0;
+				width: 300px;
+				height: 120px;
+				pointer-events: none;
+				z-index: -1;
+		}
+		&:hover {
+				._0ba2b6a9e50a96c2_headerIcon {
+						display: none;
+				}
+				._0ba2b6a9e50a96c2_headerActions {
+						display: flex;
+				}
+		}
+		._0ba2b6a9e50a96c2_cardBody {
+				display: flex;
+				gap: var(--space-lg);
+				padding: 0 var(--space-lg) var(--space-lg);
+				background: unset;
+		}
+		._0ba2b6a9e50a96c2_section {
+				background: var(--background-mod-normal);
+				border-radius: var(--radius-sm);
+				padding: var(--space-sm);
+		}
+		._0ba2b6a9e50a96c2_game {
+				padding: 0;
+		}
+		._0ba2b6a9e50a96c2_sectionDivider {
+				border-color: var(--opacity-white-12) !important;
+				border-width: 1px;
+				margin: 12px 0 12px 0;
+		}
+		._0ba2b6a9e50a96c2_voiceSectionText {
+				color: var(--white);
+		}
+		._0ba2b6a9e50a96c2_headerIcon, ._0ba2b6a9e50a96c2_gameIcon, ._0ba2b6a9e50a96c2_assetsLargeImage._0ba2b6a9e50a96c2_assetsLargeImage {
+				border-radius: var(--radius-sm);
+		}
+		._0ba2b6a9e50a96c2_gameInfo {
+				color: var(--white);
+		}
+		._0ba2b6a9e50a96c2_playTime:not(a), ._0ba2b6a9e50a96c2_voiceSectionSubtext {
+				color: var(--app-message-embed-secondary-text) !important;
+		}
+		._0ba2b6a9e50a96c2_serviceButtonWrapper {
+				gap: 8px !important;
+		}
+		._0ba2b6a9e50a96c2_contentImagesActivityFeed {
+				color: var(--white);
+		}
+		._0ba2b6a9e50a96c2_textRow {
+				font-size: 16px;
+				line-height: 18px;
+		}
+		._0ba2b6a9e50a96c2_state {
+				color: var(--app-message-embed-secondary-text);
+				font-size: 14px;
+				line-height: 16px;
+		}
+		._0ba2b6a9e50a96c2_tabularNumbers {
+				color: var(--app-message-embed-secondary-text) !important;
+		}
+		._0ba2b6a9e50a96c2_bar {
+				background-color: var(--opacity-white-24);
+		}
+		._0ba2b6a9e50a96c2_progress {
+				background-color: var(--white);
+		}
+		._0ba2b6a9e50a96c2_activity:last-child:not(:only-child) {
+				margin-top: 12px;
+		}
+}`;
+_loadStyle("ActivityFeed.module.css", css);
+const modules_7e65654a = {
+	"activityFeed": "_0ba2b6a9e50a96c2_activityFeed",
+	"scrollerBase": "_0ba2b6a9e50a96c2_scrollerBase",
+	"centerContainer": "_0ba2b6a9e50a96c2_centerContainer",
+	"title": "_0ba2b6a9e50a96c2_title",
+	"titleWrapper": "_0ba2b6a9e50a96c2_titleWrapper",
+	"iconWrapper": "_0ba2b6a9e50a96c2_iconWrapper",
+	"headerBar": "_0ba2b6a9e50a96c2_headerBar",
+	"headerContainer": "_0ba2b6a9e50a96c2_headerContainer",
+	"headerText": "_0ba2b6a9e50a96c2_headerText",
+	"feedCarousel": "_0ba2b6a9e50a96c2_feedCarousel",
+	"carousel": "_0ba2b6a9e50a96c2_carousel",
+	"article": "_0ba2b6a9e50a96c2_article",
+	"background": "_0ba2b6a9e50a96c2_background",
+	"backgroundImage": "_0ba2b6a9e50a96c2_backgroundImage",
+	"feedOverflowMenu": "_0ba2b6a9e50a96c2_feedOverflowMenu",
+	"applicationArea": "_0ba2b6a9e50a96c2_applicationArea",
+	"details": "_0ba2b6a9e50a96c2_details",
+	"titleStandard": "_0ba2b6a9e50a96c2_titleStandard",
+	"description": "_0ba2b6a9e50a96c2_description",
+	"sharedFilePreviewYouTubeVideo": "_0ba2b6a9e50a96c2_sharedFilePreviewYouTubeVideo",
+	"timestamp": "_0ba2b6a9e50a96c2_timestamp",
+	"gameIcon": "_0ba2b6a9e50a96c2_gameIcon",
+	"pagination": "_0ba2b6a9e50a96c2_pagination",
+	"verticalPaginationItemContainer": "_0ba2b6a9e50a96c2_verticalPaginationItemContainer",
+	"scrollerWrap": "_0ba2b6a9e50a96c2_scrollerWrap",
+	"scroller": "_0ba2b6a9e50a96c2_scroller",
+	"paginationItem": "_0ba2b6a9e50a96c2_paginationItem",
+	"splashArt": "_0ba2b6a9e50a96c2_splashArt",
+	"paginationSubtitle": "_0ba2b6a9e50a96c2_paginationSubtitle",
+	"paginationTitle": "_0ba2b6a9e50a96c2_paginationTitle",
+	"paginationText": "_0ba2b6a9e50a96c2_paginationText",
+	"paginationContent": "_0ba2b6a9e50a96c2_paginationContent",
+	"selectedPage": "_0ba2b6a9e50a96c2_selectedPage",
+	"smallCarousel": "_0ba2b6a9e50a96c2_smallCarousel",
+	"titleRowSimple": "_0ba2b6a9e50a96c2_titleRowSimple",
+	"paginationSmall": "_0ba2b6a9e50a96c2_paginationSmall",
+	"arrow": "_0ba2b6a9e50a96c2_arrow",
+	"arrowContainer": "_0ba2b6a9e50a96c2_arrowContainer",
+	"button": "_0ba2b6a9e50a96c2_button",
+	"prevButtonContainer": "_0ba2b6a9e50a96c2_prevButtonContainer",
+	"nextButtonContainer": "_0ba2b6a9e50a96c2_nextButtonContainer",
+	"left": "_0ba2b6a9e50a96c2_left",
+	"right": "_0ba2b6a9e50a96c2_right",
+	"horizontalPaginationItemContainer": "_0ba2b6a9e50a96c2_horizontalPaginationItemContainer",
+	"dot": "_0ba2b6a9e50a96c2_dot",
+	"dotNormal": "_0ba2b6a9e50a96c2_dotNormal",
+	"dotSelected": "_0ba2b6a9e50a96c2_dotSelected",
+	"dock": "_0ba2b6a9e50a96c2_dock",
+	"dockItem": "_0ba2b6a9e50a96c2_dockItem",
+	"dockIcon": "_0ba2b6a9e50a96c2_dockIcon",
+	"dockItemText": "_0ba2b6a9e50a96c2_dockItemText",
+	"dockItemPlay": "_0ba2b6a9e50a96c2_dockItemPlay",
+	"nowPlayingContainer": "_0ba2b6a9e50a96c2_nowPlayingContainer",
+	"nowPlayingColumn": "_0ba2b6a9e50a96c2_nowPlayingColumn",
+	"itemCard": "_0ba2b6a9e50a96c2_itemCard",
+	"card": "_0ba2b6a9e50a96c2_card",
+	"cardHeader": "_0ba2b6a9e50a96c2_cardHeader",
+	"header": "_0ba2b6a9e50a96c2_header",
+	"wrapper": "_0ba2b6a9e50a96c2_wrapper",
+	"nameTag": "_0ba2b6a9e50a96c2_nameTag",
+	"username": "_0ba2b6a9e50a96c2_username",
+	"headerIcon": "_0ba2b6a9e50a96c2_headerIcon",
+	"headerActions": "_0ba2b6a9e50a96c2_headerActions",
+	"lookFilled": "_0ba2b6a9e50a96c2_lookFilled",
+	"colorPrimary": "_0ba2b6a9e50a96c2_colorPrimary",
+	"overflowMenu": "_0ba2b6a9e50a96c2_overflowMenu",
+	"server": "_0ba2b6a9e50a96c2_server",
+	"cardBody": "_0ba2b6a9e50a96c2_cardBody",
+	"section": "_0ba2b6a9e50a96c2_section",
+	"game": "_0ba2b6a9e50a96c2_game",
+	"gameBody": "_0ba2b6a9e50a96c2_gameBody",
+	"activityContainer": "_0ba2b6a9e50a96c2_activityContainer",
+	"sectionDivider": "_0ba2b6a9e50a96c2_sectionDivider",
+	"activity": "_0ba2b6a9e50a96c2_activity",
+	"serviceButtonWrapper": "_0ba2b6a9e50a96c2_serviceButtonWrapper",
+	"sm": "_0ba2b6a9e50a96c2_sm",
+	"hasText": "_0ba2b6a9e50a96c2_hasText",
+	"richActivity": "_0ba2b6a9e50a96c2_richActivity",
+	"gameInfoRich": "_0ba2b6a9e50a96c2_gameInfoRich",
+	"gameNameWrapper": "_0ba2b6a9e50a96c2_gameNameWrapper",
+	"gameInfo": "_0ba2b6a9e50a96c2_gameInfo",
+	"gameName": "_0ba2b6a9e50a96c2_gameName",
+	"streamInfo": "_0ba2b6a9e50a96c2_streamInfo",
+	"clickable": "_0ba2b6a9e50a96c2_clickable",
+	"playTime": "_0ba2b6a9e50a96c2_playTime",
+	"assets": "_0ba2b6a9e50a96c2_assets",
+	"assetsLargeImageActivityFeed": "_0ba2b6a9e50a96c2_assetsLargeImageActivityFeed",
+	"assetsSmallImageActivityFeed": "_0ba2b6a9e50a96c2_assetsSmallImageActivityFeed",
+	"assetsLargeImage": "_0ba2b6a9e50a96c2_assetsLargeImage",
+	"assetsLargeImageActivityFeedTwitch": "_0ba2b6a9e50a96c2_assetsLargeImageActivityFeedTwitch",
+	"assetsSmallImage": "_0ba2b6a9e50a96c2_assetsSmallImage",
+	"smallEmptyIcon": "_0ba2b6a9e50a96c2_smallEmptyIcon",
+	"largeEmptyIcon": "_0ba2b6a9e50a96c2_largeEmptyIcon",
+	"twitchImageContainer": "_0ba2b6a9e50a96c2_twitchImageContainer",
+	"twitchBackgroundImage": "_0ba2b6a9e50a96c2_twitchBackgroundImage",
+	"twitchImageOverlay": "_0ba2b6a9e50a96c2_twitchImageOverlay",
+	"streamName": "_0ba2b6a9e50a96c2_streamName",
+	"streamGame": "_0ba2b6a9e50a96c2_streamGame",
+	"contentImagesActivityFeed": "_0ba2b6a9e50a96c2_contentImagesActivityFeed",
+	"content": "_0ba2b6a9e50a96c2_content",
+	"ellipsis": "_0ba2b6a9e50a96c2_ellipsis",
+	"textRow": "_0ba2b6a9e50a96c2_textRow",
+	"bar": "_0ba2b6a9e50a96c2_bar",
+	"voiceSection": "_0ba2b6a9e50a96c2_voiceSection",
+	"voiceSectionAssets": "_0ba2b6a9e50a96c2_voiceSectionAssets",
+	"voiceSectionIconWrapper": "_0ba2b6a9e50a96c2_voiceSectionIconWrapper",
+	"voiceSectionIcon": "_0ba2b6a9e50a96c2_voiceSectionIcon",
+	"voiceSectionGuildImage": "_0ba2b6a9e50a96c2_voiceSectionGuildImage",
+	"voiceSectionDetails": "_0ba2b6a9e50a96c2_voiceSectionDetails",
+	"voiceSectionText": "_0ba2b6a9e50a96c2_voiceSectionText",
+	"voiceSectionSubtext": "_0ba2b6a9e50a96c2_voiceSectionSubtext",
+	"userList": "_0ba2b6a9e50a96c2_userList",
+	"actionsActivity": "_0ba2b6a9e50a96c2_actionsActivity",
+	"buttonContainer": "_0ba2b6a9e50a96c2_buttonContainer",
+	"partyStatusWrapper": "_0ba2b6a9e50a96c2_partyStatusWrapper",
+	"disabledButtonWrapper": "_0ba2b6a9e50a96c2_disabledButtonWrapper",
+	"disabledButtonOverlay": "_0ba2b6a9e50a96c2_disabledButtonOverlay",
+	"partyList": "_0ba2b6a9e50a96c2_partyList",
+	"player": "_0ba2b6a9e50a96c2_player",
+	"emptyUser": "_0ba2b6a9e50a96c2_emptyUser",
+	"partyPlayerCount": "_0ba2b6a9e50a96c2_partyPlayerCount",
+	"nowPlaying": "_0ba2b6a9e50a96c2_nowPlaying",
+	"emptyState": "_0ba2b6a9e50a96c2_emptyState",
+	"quickLauncher": "_0ba2b6a9e50a96c2_quickLauncher",
+	"blacklist": "_0ba2b6a9e50a96c2_blacklist",
+	"emptyTitle": "_0ba2b6a9e50a96c2_emptyTitle",
+	"emptySubtitle": "_0ba2b6a9e50a96c2_emptySubtitle",
+	"theme-light": "_0ba2b6a9e50a96c2_themeLight",
+	"theme-dark": "_0ba2b6a9e50a96c2_themeDark",
+	"emptyIcon": "_0ba2b6a9e50a96c2_emptyIcon",
+	"tabularNumbers": "_0ba2b6a9e50a96c2_tabularNumbers",
+	"customButtons": "_0ba2b6a9e50a96c2_customButtons",
+	"settingsDivider": "_0ba2b6a9e50a96c2_settingsDivider",
+	"blacklistItem": "_0ba2b6a9e50a96c2_blacklistItem",
+	"blacklistItemIcon": "_0ba2b6a9e50a96c2_blacklistItemIcon",
+	"blacklistItemName": "_0ba2b6a9e50a96c2_blacklistItemName",
+	"search": "_0ba2b6a9e50a96c2_search",
+	"cardV2": "_0ba2b6a9e50a96c2_cardV2",
+	"state": "_0ba2b6a9e50a96c2_state",
+	"progress": "_0ba2b6a9e50a96c2_progress"
+};
+
+// activity_feed/common/components/SectionHeader.jsx
 function SectionHeader({ label }) {
-	return BdApi.React.createElement("div", { className: `_2cbe2fbfe32e4150-headerContainer ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-headerText" }, label));
+	return BdApi.React.createElement("div", { className: `${modules_7e65654a.headerContainer} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: modules_7e65654a.headerText }, label));
 }
 
 // activity_feed/quick_launcher/launcher.tsx
@@ -396,10 +1869,10 @@ function LauncherGameBuilder({ game, runningGames }) {
 	const [shouldDisable, setDisable] = react.useState(false);
 	setTimeout(() => setDisable(false), 1e4);
 	const disableCheck = react.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
-	return BdApi.React.createElement("div", { className: `_2cbe2fbfe32e4150-dockItem ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dockIcon", style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dockItemText" }, game.name), BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${modules_7e65654a.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: modules_7e65654a.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: modules_7e65654a.dockItemText }, game.name), BdApi.React.createElement(
 		"button",
 		{
-			className: `_2cbe2fbfe32e4150-dockItemPlay ${Common.ButtonClasses.button} ${Common.ButtonClasses.lookFilled} ${Common.ButtonClasses.colorGreen} ${Common.ButtonClasses.sizeSmall} ${Common.ButtonClasses.fullWidth} ${Common.ButtonClasses.grow}`,
+			className: `${modules_7e65654a.dockItemPlay} ${Common.ButtonClasses.button} ${Common.ButtonClasses.lookFilled} ${Common.ButtonClasses.colorGreen} ${Common.ButtonClasses.sizeSmall} ${Common.ButtonClasses.fullWidth} ${Common.ButtonClasses.grow}`,
 			disabled: disableCheck,
 			onClick: () => {
 				setDisable(true);
@@ -413,15 +1886,10 @@ function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
 	const gameList = useStateFromStores([RunningGameStore], () => RunningGameStore.getGamesSeen());
 	const _gameList = gameList.filter((game) => GameStore.getGameByName(game.name)).slice(0, 12);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dock _2cbe2fbfe32e4150-emptyState" }, BdApi.React.createElement("svg", { className: "_2cbe2fbfe32e4150-emptyIcon", name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyText" }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-dock" }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: `${modules_7e65654a.dock} ${modules_7e65654a.emptyState}` }, BdApi.React.createElement("svg", { className: modules_7e65654a.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: modules_7e65654a.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: modules_7e65654a.dock }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
 }
 
-// activity_feed/now_playing/columnBuilder.tsx
-function NowPlayingColumnBuilder({}) {
-	return;
-}
-
-// activity_feed/common.js
+// activity_feed/common/methods/common.js
 function chunkArray(cards, num) {
 	let chunkLength = Math.max(cards.length / num, 1);
 	const chunks = [];
@@ -430,24 +1898,119 @@ function chunkArray(cards, num) {
 	}
 	return chunks.reverse();
 }
+function GradGen(check, isSpotify, activity, game, voice, stream) {
+	let input;
+	switch (true) {
+		case !!check.streaming:
+			input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
+			break;
+		case !!isSpotify:
+			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
+			break;
+		case !!activity?.name.includes("YouTube Music"):
+			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
+			break;
+		case !!game?.icon:
+			input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon}.png?size=1024&keep_aspect_ratio=true`;
+			break;
+		case !!activity?.platform?.includes("xbox"):
+			input = "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png";
+			break;
+		case (!!activity?.assets && activity?.assets.large_image?.includes("external")):
+			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
+			break;
+		case !!activity:
+			input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`;
+			break;
+		case !!voice[0]?.guild:
+			input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`;
+			break;
+		case (!!voice && stream):
+			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
+			break;
+	}
+	return Common.GradientComponent(input || null);
+}
+function activityCheck({ activities, spotify }) {
+	let pass = {
+		playing: 0,
+		xbox: 0,
+		playstation: 0,
+		streaming: 0,
+		listening: 0,
+		spotify: 0,
+		watching: 0,
+		competing: 0,
+		custom: 0
+	};
+	for (let i = 0; i < activities.length; i++) {
+		if (activities[i].activity.type == 4) {
+			pass.custom = 1;
+		}
+		if (activities[i].activity.type == 0) {
+			pass.playing = 1;
+		}
+		if (activities[i]?.activity.platform?.includes("xbox")) {
+			pass.xbox = 1;
+		}
+		if (activities[i]?.activity.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
+			pass.playstation = 1;
+		}
+		if (activities[i].activity.type == 1) {
+			pass.streaming = 1;
+		}
+		if (activities[i].activity.type == 2) {
+			pass.listening = 1;
+		}
+		if (spotify) {
+			pass.spotify = 1;
+		}
+		if (activities[i].activity.type == 3) {
+			pass.watching = 1;
+		}
+		if (activities[i].activity.type == 5) {
+			pass.competing = 1;
+		}
+	}
+	return pass;
+}
+
+// activity_feed/now_playing/cardBuilder.tsx
+function NowPlayingCardBuilder({ card, v2Enabled }) {
+	card.party.priorityMembers[0].user;
+	card.party.priorityMembers[0].status;
+	const activities = card.party.currentActivities;
+	const currentGame = card.party.currentActivities[0]?.game;
+	const voice = card.party.voiceChannels;
+	const streams = card.party.applicationStreams;
+	const isSpotify = card.party.isSpotifyActivity;
+	const filterCheck = activityCheck({ activities, spotify: isSpotify });
+	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
+	return BdApi.React.createElement("div", { className: v2Enabled ? modules_7e65654a.cardV2 : modules_7e65654a.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } });
+}
 
 // activity_feed/now_playing/baseBuilder.tsx
+function NowPlayingColumnBuilder({ nowPlayingCards }) {
+	return nowPlayingCards.map((card) => [
+		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") }),
+		betterdiscord.Data.load("cardTypeDebug") && BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: false })
+	]);
+}
 function NowPlayingBuilder(props) {
 	Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_MOUNTED" });
-	const user = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
 	const nowPlayingCards = useStateFromStores([NowPlayingViewStore], () => NowPlayingViewStore.nowPlayingCards);
 	const cardColumns = chunkArray(nowPlayingCards, 2);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyState" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptyTitle" }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-emptySubtitle" }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-nowPlayingContainer" }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-nowPlayingColumn" }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column, currentUser: user })))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: modules_7e65654a.emptyState }, BdApi.React.createElement("div", { className: modules_7e65654a.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: modules_7e65654a.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: modules_7e65654a.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: modules_7e65654a.nowPlayingColumn }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
 }
 
 // activity_feed/base.tsx
 function Scroller({ children, padding }) {
-	return BdApi.React.createElement("div", { className: `_2cbe2fbfe32e4150-scrollerBase`, style: { overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" } }, children);
+	return BdApi.React.createElement("div", { className: modules_7e65654a.scrollerBase, style: { overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" } }, children);
 }
 function TabBaseBuilder() {
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-activityFeed" }, BdApi.React.createElement(Common.HeaderBar, { className: "_2cbe2fbfe32e4150-headerBar", "aria-label": "Activity" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-iconWrapper" }, BdApi.React.createElement("svg", { className: Common.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-titleWrapper" }, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-title" }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: "_2cbe2fbfe32e4150-centerContainer" }, BdApi.React.createElement(QuickLauncherBuilder, { className: "_2cbe2fbfe32e4150-quickLauncher", style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: "_2cbe2fbfe32e4150-nowPlaying", style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: modules_7e65654a.activityFeed }, BdApi.React.createElement(Common.HeaderBar, { className: modules_7e65654a.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: modules_7e65654a.iconWrapper }, BdApi.React.createElement("svg", { className: Common.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: modules_7e65654a.titleWrapper }, BdApi.React.createElement("div", { className: modules_7e65654a.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: modules_7e65654a.centerContainer }, BdApi.React.createElement(QuickLauncherBuilder, { className: modules_7e65654a.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: modules_7e65654a.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/builder.tsx
@@ -548,8 +2111,7 @@ class ActivityFeed {
 			);
 			return ret;
 		}
-		console.log(activityPanelCSS);
-		betterdiscord.DOM.addStyle("activityPanelCSS", activityPanelCSS);
+		betterdiscord.DOM.addStyle("activityPanelCSS", css);
 		betterdiscord.Patcher.after(Common.DMSidebar, "Z", (that, [props], res) => {
 			const panel = betterdiscord.Utils.findInTree(res, (m) => m?.homeLink, { walkable: ["props", "children"] });
 			const selected = useSelectedState();

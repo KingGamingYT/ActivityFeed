@@ -1,9 +1,10 @@
 import { Data } from 'betterdiscord';
 import { Common } from "@./modules/common";
-import { NowPlayingViewStore, UserStore, useStateFromStores } from "@./modules/stores";
-import { chunkArray } from "../common";
+import { NowPlayingViewStore, useStateFromStores } from "@./modules/stores";
+import { chunkArray } from "../common/methods/common";
 import { SectionHeader } from "../common/components/SectionHeader";
-import { NowPlayingCardBuilder } from "./common/cardBuilder";
+import { NowPlayingCardBuilder } from "./cardBuilder";
+import styleModule from "../ActivityFeed.module.css";
 
 /*function notNowPlayingBuilder({props}) {
     FluxDispatcher.dispatch({type: 'NOW_PLAYING_MOUNTED'});
@@ -41,20 +42,17 @@ import { NowPlayingCardBuilder } from "./common/cardBuilder";
 }
 */
 
-function NowPlayingColumnBuilder({nowPlayingCards, currentUser}) {
+function NowPlayingColumnBuilder({nowPlayingCards}) {
     return (
-        nowPlayingCards.map(card => ({
-            <>
-                <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards')} />
-                {Data.load('cardTypeDebug') && <NowPlayingCardBuilder card={card} v2Enabled={false} />}
-            </>
-        }))
+        nowPlayingCards.map(card => ([
+            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards')} />,
+            Data.load('cardTypeDebug') && <NowPlayingCardBuilder card={card} v2Enabled={false} />
+        ]))
     )
 }
 
 export function NowPlayingBuilder(props) {
     Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_MOUNTED'});
-    const user = useStateFromStores([ UserStore ], () => UserStore.getCurrentUser());
     const nowPlayingCards = useStateFromStores([ NowPlayingViewStore ], () => NowPlayingViewStore.nowPlayingCards);
     const cardColumns = chunkArray(nowPlayingCards, 2);
 
@@ -63,14 +61,14 @@ export function NowPlayingBuilder(props) {
             <SectionHeader label="Now Playing" />
             {
                 nowPlayingCards.length === 0 ?
-                    <div className="_2cbe2fbfe32e4150-emptyState">
-                        <div className="_2cbe2fbfe32e4150-emptyTitle">Nobody is playing anything right now...</div>
-                        <div className="_2cbe2fbfe32e4150-emptySubtitle">When someone starts playing a game we'll show it here!</div>
+                    <div className={styleModule.emptyState}>
+                        <div className={styleModule.emptyTitle}>Nobody is playing anything right now...</div>
+                        <div className={styleModule.emptySubtitle}>When someone starts playing a game we'll show it here!</div>
                     </div>
                 :
-                    <div className="_2cbe2fbfe32e4150-nowPlayingContainer">
-                        {cardColumns.map((column, index) => <div className="_2cbe2fbfe32e4150-nowPlayingColumn">
-                            <NowPlayingColumnBuilder nowPlayingCards={column} currentUser={user} />
+                    <div className={styleModule.nowPlayingContainer}>
+                        {cardColumns.map((column, index) => <div className={styleModule.nowPlayingColumn}>
+                            <NowPlayingColumnBuilder nowPlayingCards={column} />
                         </div>)}
                     </div>
             }

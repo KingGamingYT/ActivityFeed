@@ -924,9 +924,11 @@ function SectionHeader({ label }) {
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
 const css$1 = `
-.af7ba0bd18d4ab70_quickLauncher {}
+._8e586c23073d00b5_quickLauncher {
+		display: block;
+}
 
-.af7ba0bd18d4ab70_dock {
+._8e586c23073d00b5_dock {
 		margin-top: 10px;
 		display: flex;
 		overflow: hidden;
@@ -934,7 +936,7 @@ const css$1 = `
 		max-width: 1280px;
 }
 
-.af7ba0bd18d4ab70_dockItem {
+._8e586c23073d00b5_dockItem {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: pointer;
@@ -944,11 +946,11 @@ const css$1 = `
 		flex-direction: column;
 }
 
-.af7ba0bd18d4ab70_dockIcon:first-child {
+._8e586c23073d00b5_dockIcon:first-child {
 		margin-left: 0;
 }
 
-.af7ba0bd18d4ab70_dockIcon {
+._8e586c23073d00b5_dockIcon {
 		background-size: 100%;
 		border-radius: 3px;
 		height: 40px;
@@ -957,7 +959,7 @@ const css$1 = `
 		width: 40px;
 }
 
-.af7ba0bd18d4ab70_dockItemText {
+._8e586c23073d00b5_dockItemText {
 		font-weight: 500;
 		height: 31px;
 		line-height: normal;
@@ -970,41 +972,41 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-.af7ba0bd18d4ab70_dockItemPlay {
+._8e586c23073d00b5_dockItemPlay {
 		display: none;
 		z-index: 9999;
 }
 
-.af7ba0bd18d4ab70_dockItemPlay:disabled, .af7ba0bd18d4ab70_dockItemPlay[aria-disabled=true] {
+._8e586c23073d00b5_dockItemPlay:disabled, ._8e586c23073d00b5_dockItemPlay[aria-disabled=true] {
 		background-color: var(--green-active, var(--button-positive-background-active)) !important;
 }
 
-.af7ba0bd18d4ab70_dockItem:hover {
+._8e586c23073d00b5_dockItem:hover {
 		background: var(--background-base-lowest);
 }
 
-.af7ba0bd18d4ab70_dockItem:hover .af7ba0bd18d4ab70_dockItemText {
+._8e586c23073d00b5_dockItem:hover ._8e586c23073d00b5_dockItemText {
 		display: none;
 }
 
-.af7ba0bd18d4ab70_dockItem:hover .af7ba0bd18d4ab70_dockItemPlay {
+._8e586c23073d00b5_dockItem:hover ._8e586c23073d00b5_dockItemPlay {
 		display: flex;
 }
 
-.af7ba0bd18d4ab70_emptyIcon {
+._8e586c23073d00b5_emptyIcon {
 		height: 24px;
 		margin-right: 8px;
 		width: 24px;
 }`;
 _loadStyle("QuickLauncher.module.css", css$1);
 const modules_1116a9ae = {
-	"quickLauncher": "af7ba0bd18d4ab70_quickLauncher",
-	"dock": "af7ba0bd18d4ab70_dock",
-	"dockItem": "af7ba0bd18d4ab70_dockItem",
-	"dockIcon": "af7ba0bd18d4ab70_dockIcon",
-	"dockItemText": "af7ba0bd18d4ab70_dockItemText",
-	"dockItemPlay": "af7ba0bd18d4ab70_dockItemPlay",
-	"emptyIcon": "af7ba0bd18d4ab70_emptyIcon"
+	"quickLauncher": "_8e586c23073d00b5_quickLauncher",
+	"dock": "_8e586c23073d00b5_dock",
+	"dockItem": "_8e586c23073d00b5_dockItem",
+	"dockIcon": "_8e586c23073d00b5_dockIcon",
+	"dockItemText": "_8e586c23073d00b5_dockItemText",
+	"dockItemPlay": "_8e586c23073d00b5_dockItemPlay",
+	"emptyIcon": "_8e586c23073d00b5_emptyIcon"
 };
 const QuickLauncherClasses = modules_1116a9ae;
 
@@ -1030,7 +1032,7 @@ function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
 	const gameList = useStateFromStores([RunningGameStore], () => RunningGameStore.getGamesSeen());
 	const _gameList = gameList.filter((game) => GameStore.getGameByName(game.name)).slice(0, 12);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: `${QuickLaucherClasses.dock} ${QuickLauncherClasses.emptyState}` }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: ActivityModuleClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: QuickLauncherClasses.dock }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dock} ${QuickLauncherClasses.emptyState}` }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: QuickLauncherClasses.dock }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
 }
 
 // activity_feed/components/common/methods/common.js
@@ -1117,6 +1119,16 @@ function activityCheck({ activities, spotify }) {
 		}
 	}
 	return pass;
+}
+
+// activity_feed/components/now_playing/card_shop/components/CardBody.tsx
+function CardBody({}) {
+	return;
+}
+
+// activity_feed/components/now_playing/card_shop/components/CardHeader.tsx
+function CardHeader({}) {
+	return;
 }
 
 // activity_feed/components/now_playing/NowPlaying.module.css
@@ -1866,7 +1878,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const isSpotify = card.party.isSpotifyActivity;
 	const filterCheck = activityCheck({ activities, spotify: isSpotify });
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
-	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } });
+	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(CardHeader, null), BdApi.React.createElement(CardBody, null));
 }
 
 // activity_feed/components/now_playing/baseBuilder.tsx
@@ -1880,7 +1892,7 @@ function NowPlayingBuilder(props) {
 	Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_MOUNTED" });
 	const nowPlayingCards = useStateFromStores([NowPlayingViewStore], () => NowPlayingViewStore.nowPlayingCards);
 	const cardColumns = chunkArray(nowPlayingCards, 2);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: acivityFeedClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: MainClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
 }
 
 // activity_feed/base.tsx

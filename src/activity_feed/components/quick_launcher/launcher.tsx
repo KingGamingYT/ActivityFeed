@@ -1,10 +1,9 @@
-import { createElement, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Common, shell } from '@./modules/common';
 import { GameStore, RunningGameStore, useStateFromStores } from '@./modules/stores';
 import { SectionHeader } from '../common/components/SectionHeader';
-import ActivityFeedClasses from "@./ActivityFeed.module.css";
+import MainClasses from "@./activity_feed/ActivityFeed.module.css";
 import QuickLauncherClasses from "./QuickLauncher.module.css";
-
 /*function notLauncherGameBuilder({game, runningGames}) {
     const [shouldDisable, setDisable] = useState(false);
     //console.log(runningGames);
@@ -89,11 +88,11 @@ export function QuickLauncherBuilder(props) {
             {   
                 gameList.length === 0 
                 ?
-                    <div className={`${QuickLaucherClasses.dock} ${QuickLauncherClasses.emptyState}`}>
+                    <div className={`${QuickLauncherClasses.dock} ${QuickLauncherClasses.emptyState}`}>
                         <svg className={QuickLauncherClasses.emptyIcon} name="OpenExternal" width={16} height={16} viewBox="0 0 24 24">
                             <path fill="currentColor" transform="translate(3, 4)" d="M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" />
                         </svg>
-                        <div className={ActivityModuleClasses.emptyText}>Discord can quickly launch most games you’ve recently played on this computer. Go ahead and launch one to see it appear here!</div>
+                        <div className={MainClasses.emptyText}>Discord can quickly launch most games you’ve recently played on this computer. Go ahead and launch one to see it appear here!</div>
                     </div>
                 : 
                     <div className={QuickLauncherClasses.dock}>{_gameList.map(game => <LauncherGameBuilder game={game} runningGames={runningGames} />)}</div>

@@ -1,8 +1,6 @@
 import { Webpack } from "betterdiscord";
-import { styleModule } as nowPlayingClasses from "./now_playing/NowPlaying.module.css";
-import { styleModule } as quickLauncherClasses from "./quick_launcher/QuickLauncher.module.css";
-
-
+import NowPlayingClasses from "./now_playing/NowPlaying.module.css";
+import QuickLauncherClasses from "./quick_launcher/QuickLauncher.module.css";
 
 const styles = Object.assign({
         wrapper: Webpack.getByKeys('wrapper', 'svg', 'mask').wrapper,
@@ -16,8 +14,8 @@ const styles = Object.assign({
     Webpack.getByKeys('colorPrimary', 'grow'),
     Webpack.getByKeys('bar', 'container', 'progress'),
     Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1),
-    nowPlayingClasses,
-    quickLauncherClasses
+    NowPlayingClasses,
+    QuickLauncherClasses
 );
 
 export const extraCSS = webpackify(`

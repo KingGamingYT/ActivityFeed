@@ -1,5 +1,6 @@
 import { activityCheck, GradGen } from "../common/methods/common";
-import nowPlayingClasses from "./NowPlaying.module.css";
+import { CardHeader, CardBody } from "./card_shop/index";
+import NowPlayingClasses from "./NowPlaying.module.css";
 
 export function NowPlayingCardBuilder({card, v2Enabled}) {
     const user = card.party.priorityMembers[0].user;
@@ -13,7 +14,9 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 
     return (
-        <div className={v2Enabled ? nowPlayingClasses.cardV2 : nowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
+        <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
+            <CardHeader />
+            <CardBody />
         </div>
     )
 }

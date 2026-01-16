@@ -4,8 +4,8 @@ import { NowPlayingViewStore, useStateFromStores } from "@./modules/stores";
 import { chunkArray } from "../common/methods/common";
 import { SectionHeader } from "../common/components/SectionHeader";
 import { NowPlayingCardBuilder } from "./cardBuilder";
-import activityFeedClasses from "@./activity_feed/ActivityFeed.module.css";
-import nowPlayingClasses from "./NowPlaying.module.css";
+import MainClasses from "@./activity_feed/ActivityFeed.module.css";
+import NowPlayingClasses from "./NowPlaying.module.css";
 
 /*function notNowPlayingBuilder({props}) {
     FluxDispatcher.dispatch({type: 'NOW_PLAYING_MOUNTED'});
@@ -62,13 +62,13 @@ export function NowPlayingBuilder(props) {
             <SectionHeader label="Now Playing" />
             {
                 nowPlayingCards.length === 0 ?
-                    <div className={acivityFeedClasses.emptyState}>
-                        <div className={activityFeedClasses.emptyTitle}>Nobody is playing anything right now...</div>
-                        <div className={activityFeedClasses.emptySubtitle}>When someone starts playing a game we'll show it here!</div>
+                    <div className={MainClasses.emptyState}>
+                        <div className={MainClasses.emptyTitle}>Nobody is playing anything right now...</div>
+                        <div className={MainClasses.emptySubtitle}>When someone starts playing a game we'll show it here!</div>
                     </div>
                 :
-                    <div className={nowPlayingClasses.nowPlayingContainer}>
-                        {cardColumns.map((column, index) => <div className={nowPlayingClasses.nowPlayingColumn}>
+                    <div className={NowPlayingClasses.nowPlayingContainer}>
+                        {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn}>
                             <NowPlayingColumnBuilder nowPlayingCards={column} />
                         </div>)}
                     </div>

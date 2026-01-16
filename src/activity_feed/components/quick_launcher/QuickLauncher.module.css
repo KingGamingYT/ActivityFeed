@@ -1,4 +1,6 @@
-.quickLauncher {}
+.quickLauncher {
+    display: block;
+}
 
 .dock {
     margin-top: 10px;

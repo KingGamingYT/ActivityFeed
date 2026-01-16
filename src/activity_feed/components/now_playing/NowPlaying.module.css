@@ -1,0 +1,651 @@
+.nowPlayingContainer {
+    display: flex;
+    margin-top: var(--space-lg);
+    gap: var(--space-lg);
+}
+
+.nowPlayingColumn {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    width: calc(50% - (var(--space-lg) / 2))
+}
+
+.nowPlayingContainer .itemCard {
+    flex: 1 0 0;
+    margin: 16px 16px 0 0;
+}
+
+.nowPlayingColumn .card {
+    border-radius: 5px;
+    box-sizing: border-box;
+    cursor: default;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+    
+.nowPlayingColumn .cardHeader {
+    padding: 20px;
+    position: relative;
+    flex-direction: row;
+    background: var(--background-base-lowest);
+}
+
+.nowPlayingColumn .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+}
+
+.nowPlayingColumn .header > .wrapper {
+    display: flex;
+    cursor: pointer;
+    margin-right: 20px;
+    transition: opacity .2s ease;
+}
+
+.nowPlayingColumn .nameTag {
+    line-height: 17px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+    color: var(--text-default);
+}
+
+.nowPlayingColumn .username {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.nowPlayingColumn .username:hover {
+    text-decoration: underline;
+}
+
+.nowPlayingColumn .card:hover .headerIcon {
+    display: none;
+}
+
+.nowPlayingColumn .headerActions {
+    display: none;
+    margin-left: 8px;
+}
+
+.nowPlayingColumn .card:hover .headerActions {
+    display: flex;
+}
+
+.nowPlayingColumn .headerActions > div[aria-expanded="false"] {
+    display: none;
+}
+
+.nowPlayingColumn .headerActions {
+    .button.lookFilled {
+        background: var(--control-secondary-background-default);
+        border: unset;
+        color: var(--white);
+        padding: 2px 16px;
+        width: unset;
+        svg {
+            display: none;
+        } 
+    }
+    .button.lookFilled:hover {
+        background-color: var(--control-secondary-background-hover) !important;
+    }
+    .button.lookFilled:active {
+        background-color: var(--control-secondary-background-active) !important; 
+    }
+    .lookFilled.colorPrimary {
+        background: unset !important;
+        border: unset !important;
+    }
+    .lookFilled.colorPrimary:hover {
+        color: var(--interactive-background-hover);
+        svg {
+            stroke: var(--interactive-background-hover);
+        }
+    }
+    .lookFilled.colorPrimary:active {
+        color: var(--interactive-background-active);
+        svg {
+            stroke: var(--interactive-background-active);
+        }
+    }
+}
+
+.nowPlayingColumn .overflowMenu {
+    cursor: pointer;
+    height: 24px;
+    margin-left: 8px;
+    transition: opacity .2s linear;
+    width: 24px;
+    color: var(--interactive-icon-hover);
+}
+
+.nowPlayingColumn .overflowMenu:hover {
+    color: var(--interactive-icon-default);
+}
+
+.nowPlayingColumn .headerIcon {
+    border-radius: 4px;
+    display: block;
+    height: 30px;
+    justify-self: end;
+    width: 30px;
+}
+
+.nowPlayingColumn .splashArt {
+    filter: grayscale(100%);
+    mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
+    opacity: .3;
+    width: 300px;
+    background-position-x: 50%;
+    background-position-y: 40%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+}
+
+.nowPlayingColumn .server {
+    mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
+    right: 0;
+    left: unset;
+}
+
+.nowPlayingColumn .cardBody {
+    display: flex;
+    padding: 0 20px;
+    background: var(--background-mod-strong)
+}
+
+.nowPlayingColumn .section {
+    -webkit-box-flex: 1;
+    flex: 1 0 calc(50% - 20px);
+}
+
+.nowPlayingColumn .game {
+    padding: 20px 0;
+}
+
+.nowPlayingColumn .gameBody {
+    flex-direction: column;
+}
+
+.nowPlayingColumn .activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {
+    display: none;
+}
+
+.nowPlayingColumn .activity {
+    flex-direction: row;
+}
+
+.nowPlayingColumn .activity:last-child:not(:only-child) {
+    margin-top: 20px;
+}
+
+.nowPlayingColumn .activity .serviceButtonWrapper {
+    gap: 6px;
+    display: flex;
+    flex-direction: row;
+    .sm:not(.hasText) {
+        padding: 0;
+        width: calc(var(--custom-button-button-sm-height) + 4px);
+    }
+}
+
+.nowPlayingColumn .richActivity {
+    margin-top: 20px;
+}
+
+.nowPlayingColumn .activityFeed {
+    -webkit-box-flex: 1;
+    flex: 1 1 50%;
+    min-width: 0;
+}
+
+.nowPlayingColumn :is(.gameInfoRich, .gameNameWrapper) {
+    -webkit-box-flex: 1;
+    display: flex;
+    flex: 1;
+}
+
+.nowPlayingColumn .gameInfoRich {
+    align-items: center;
+}
+
+.nowPlayingColumn .gameInfo {
+    margin-left: 20px;
+    min-width: 0;
+    color: var(--text-default);
+    font-weight: 500;
+    flex: 1;
+}
+
+.nowPlayingColumn :is(.gameName, .gameNameWrapper, .streamInfo) {
+    overflow: hidden;
+}
+
+.nowPlayingColumn .gameName {
+    font-size: 16px;
+    line-height: 20px;
+    margin-right: 10px;
+    max-width: fit-content;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nowPlayingColumn .gameName.clickable:hover {
+    text-decoration: underline;
+}
+
+.nowPlayingColumn .playTime:not(a) {
+    color: var(--text-muted);
+}
+.nowPlayingColumn .playTime {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+    margin-top: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nowPlayingColumn .assets {
+    position: relative;
+}
+
+.nowPlayingColumn .assetsLargeImageActivityFeed {
+    width: 90px;
+    height: 90px;
+}
+
+.nowPlayingColumn .assetsSmallImageActivityFeed {
+    height: 30px;
+    width: 30px;
+}
+
+.nowPlayingColumn .assets .assetsLargeImage {
+    display: block;
+    border-radius: 4px; 
+    object-fit: cover;
+}
+
+.nowPlayingColumn .assets .assetsLargeImageActivityFeedTwitch {
+    border-radius: 5px;
+    height: 260px;
+    mask: linear-gradient(0deg, transparent 10%, #000 80%);
+    width: 100%;
+}
+
+.nowPlayingColumn .assets:has(.assetsSmallImage) .assetsLargeImage {
+    mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
+}
+
+.nowPlayingColumn .richActivity .assetsSmallImage, .nowPlayingColumn .richActivity .smallEmptyIcon {
+    border-radius: 50%;
+    position: absolute;
+    bottom: -4px;
+    right: -4px; 
+}
+
+.nowPlayingColumn .activity .smallEmptyIcon {
+    width: 40px;
+    height: 40px;
+}
+
+.nowPlayingColumn .assets .largeEmptyIcon {
+    width: 90px;
+    height: 90px;
+}
+
+.nowPlayingColumn .assets .largeEmptyIcon path {
+    transform: scale(3.65) !important;
+}
+
+.nowPlayingColumn .richActivity svg.assetsSmallImage {
+    border-radius: unset !important;
+}   
+
+.nowPlayingColumn .richActivity .smallEmptyIcon path {
+    transform: scale(1.3) !important;
+}
+
+.nowPlayingColumn .assets .twitchImageContainer {
+    background: var(--background-secondary-alt);
+    border-radius: 5px;
+    position: relative;
+}
+
+.nowPlayingColumn .assets .twitchBackgroundImage {
+    display: inline-block;
+    min-height: 260px;
+}
+
+.nowPlayingColumn .assets .twitchImageOverlay {
+    bottom: 0;
+    left: 0;
+    padding: 16px;
+    position: absolute;
+    right: 0;
+}
+
+.nowPlayingColumn .assets .streamName {
+    color: var(--text-default);
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.nowPlayingColumn .assets .streamGame {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+.nowPlayingColumn .contentImagesActivityFeed {
+    margin-left: 20px;
+    color: var(--text-default);
+}
+
+.nowPlayingColumn :is(.gameInfo, .contentImagesActivityFeed) {
+    align-self: center;
+    display: grid;
+}
+
+.nowPlayingColumn .content {
+    flex: 1;
+    overflow: hidden;
+}
+
+.nowPlayingColumn .details {
+    font-weight: 600;
+}
+
+.nowPlayingColumn .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.textRow {
+    display: block;
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 4px;
+}
+
+.nowPlayingColumn .content .bar {
+    background-color: var(--opacity-white-24);
+}
+
+.nowPlayingColumn .sectionDivider {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid;
+    margin: 20px 0 20px 0;
+}
+
+.nowPlayingColumn .voiceSection {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.nowPlayingColumn .voiceSectionAssets {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.nowPlayingColumn .voiceSectionIconWrapper {
+    align-items: center;
+    border-radius: 50%;
+    bottom: -4px;
+    display: flex;
+    height: 20px;
+    justify-content: center;
+    position: absolute;
+    right: -3px;
+    width: 20px;
+}
+
+.nowPlayingColumn .voiceSectionIcon {
+    color: var(--header-secondary);
+    height: 12px;
+    width: 12px;
+}
+
+.nowPlayingColumn .voiceSectionGuildImage {
+    border-radius: 50%;
+    mask: url('https://discord.com/assets/a90b040155ee449f.svg');
+    mask-size: 100%;
+    mask-type: luminance;
+}
+
+.nowPlayingColumn .voiceSection .details {
+    flex: 1;
+}
+
+.nowPlayingColumn .voiceSectionDetails {
+    cursor: pointer;
+    margin-left: 20px;
+    min-width: 0;
+}
+
+.nowPlayingColumn .voiceSectionDetails:hover :is(.voiceSectionText, .voiceSectionSubtext) {
+    text-decoration: underline;
+}
+
+.nowPlayingColumn .voiceSectionText {
+    color: var(--text-default);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2857142857142858;
+}
+
+.nowPlayingColumn .voiceSectionSubtext {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.3333333333333333;
+}
+
+.nowPlayingColumn .userList {
+    flex: 0 1 auto;
+    justify-content: flex-end;
+}
+
+.nowPlayingColumn .voiceSection button {
+    flex: 0 1 auto;
+    width: auto;
+    margin-left: 20px;
+}
+
+.nowPlayingColumn .actionsActivity .buttonContainer {
+    flex-direction: inherit;
+}
+
+.nowPlayingColumn .partyStatusWrapper {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.nowPlayingColumn .partyStatusWrapper button {
+    flex: 0 1 50%;
+    max-height: 24px;
+    min-height: 24px;
+    width: auto !important;
+    justify-self: flex-end;
+}
+
+.nowPlayingColumn .partyStatusWrapper .disabledButtonWrapper {
+    flex: 1;
+}
+
+.nowPlayingColumn .partyStatusWrapper .disabledButtonOverlay {
+    height: 24px;
+    width: 100%;
+}
+
+.nowPlayingColumn .partyList {
+    display: flex;
+}
+
+.nowPlayingColumn .player:first-of-type {
+    mask: url(#svg-mask-voice-user-summary-item);
+}
+
+.nowPlayingColumn .emptyUser:not(:first-of-type), .nowPlayingColumn .player:not(:first-of-type) {
+    margin-left: -4px;
+}
+
+.nowPlayingColumn .emptyUser:not(:last-of-type), .nowPlayingColumn .player:not(:last-of-type) {
+    mask: url(#svg-mask-voice-user-summary-item);
+}
+
+.nowPlayingColumn .emptyUser, .nowPlayingColumn .player {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.nowPlayingColumn .emptyUser svg {
+    margin-left: 3px;
+}
+
+.nowPlayingColumn .partyPlayerCount {
+    color: var(--app-message-embed-secondary-text);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3333333333333333;
+}
+
+.nowPlaying .emptyState {
+    border: 1px solid;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    padding: 20px;
+    width: 100%;
+}
+
+.cardV2 {
+    background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
+    border-radius: var(--radius-md);
+    outline: 1px solid var(--border-normal);
+    outline-offset: -1px;
+    box-sizing: border-box;
+    background-clip: border-box;
+    overflow: hidden;
+    transform: translateZ(0);
+
+    .headerActions .button.lookFilled, .cardBody button {
+        color: var(--white);
+        background: var(--opacity-white-24);
+        &:hover {
+            background: var(--opacity-white-36);
+        }
+        &:active {
+            background: var(--opacity-white-32);
+        }
+    }
+
+    .cardHeader {
+        padding: var(--space-lg);
+        position: relative;
+        flex-direction: row;
+        background: unset;
+    }
+    .nameTag {
+        color: var(--white);
+    }
+    .splashArt, .server {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        filter: unset;
+        mask: radial-gradient(100% 100% at top right, var(--white) 0, transparent 100%);
+        opacity: .3;
+        position: absolute;
+        top: 0;
+        left: unset;
+        right: 0;
+        width: 300px;
+        height: 120px;
+        pointer-events: none;
+        z-index: -1;
+    }
+    &:hover {
+        .headerIcon {
+            display: none;
+        }
+        .headerActions {
+            display: flex;
+        }
+    }
+    .cardBody {
+        display: flex;
+        gap: var(--space-lg);
+        padding: 0 var(--space-lg) var(--space-lg);
+        background: unset;
+    }
+    .section {
+        background: var(--background-mod-normal);
+        border-radius: var(--radius-sm);
+        padding: var(--space-sm);
+    }
+    .game {
+        padding: 0;
+    }
+    .sectionDivider {
+        border-color: var(--opacity-white-12) !important;
+        border-width: 1px;
+        margin: 12px 0 12px 0;
+    }
+    .voiceSectionText {
+        color: var(--white);
+    }
+    .headerIcon, .gameIcon, .assetsLargeImage.assetsLargeImage {
+        border-radius: var(--radius-sm);
+    }
+    .gameInfo {
+        color: var(--white);
+    }
+    .playTime:not(a), .voiceSectionSubtext {
+        color: var(--app-message-embed-secondary-text) !important;
+    }
+    .serviceButtonWrapper {
+        gap: 8px !important;
+    }
+    .contentImagesActivityFeed {
+        color: var(--white);
+    }
+    .textRow {
+        font-size: 16px;
+        line-height: 18px;
+    }
+    .state {
+        color: var(--app-message-embed-secondary-text);
+        font-size: 14px;
+        line-height: 16px;
+    }
+    .activity:last-child:not(:only-child) {
+        margin-top: 12px;
+    }
+}

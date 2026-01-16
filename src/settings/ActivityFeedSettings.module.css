@@ -1,0 +1,65 @@
+.blacklist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.blacklist .sectionDivider, .settingsDivider.sectionDivider {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid;
+    margin: 4px 0 4px 0;
+    border-color: var(--background-mod-strong);
+}
+
+.blacklist .sectionDivider:last-child {
+    display: none;
+}
+
+.blacklistItem {
+    display: flex;
+}
+
+.blacklistItem .blacklistItemIcon {
+    border-radius: 8px;
+    height: 32px;
+    width: 32px;
+}
+
+.blacklistItem .blacklistItemName {
+    margin-left: 20px;
+    margin-bottom: 0;
+    min-width: 0;
+    font-weight: 500;
+    align-content: center;
+    flex: 1;
+}
+
+.blacklistItem button {
+    flex: 0 1 auto;
+    align-self: center;
+    width: auto;
+    margin-left: 20px;
+}
+
+.search {
+    padding: 12px;
+    margin: 12px 0;
+    input::placeholder {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+    svg {
+        path {
+            fill: var(--text-muted);
+        }
+        circle {
+            color: var(--text-muted);
+        }
+        path, circle {
+            stroke: var(--text-muted);
+            stroke-width: 3px;
+        }
+    }
+}

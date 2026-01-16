@@ -367,10 +367,13 @@ let _styles = "";
 function _loadStyle(path, css) {
 	_styles += "/*" + path + "*/\n" + css + "\n";
 }
+function styles() {
+	return _styles;
+}
 
 // activity_feed/ActivityFeed.module.css
-const css = `
-._0ba2b6a9e50a96c2_activityFeed {
+const css$2 = `
+._6eb0556b6899d715_activityFeed {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-border-frame);
 		display: flex;
@@ -379,7 +382,7 @@ const css = `
 		overflow: hidden;
 }
 
-._0ba2b6a9e50a96c2_scrollerBase {
+._6eb0556b6899d715_scrollerBase {
 		contain: layout size;
 		height: 100%;
 		/*
@@ -402,7 +405,7 @@ const css = `
 		}
 }
 
-._0ba2b6a9e50a96c2_centerContainer {
+._6eb0556b6899d715_centerContainer {
 		display: flex;
 		flex-direction: column;
 		width: 1280px;
@@ -411,7 +414,7 @@ const css = `
 		margin: 0 auto;
 }
 
-._0ba2b6a9e50a96c2_title {
+._6eb0556b6899d715_title {
 		align-items: center;
 		display: flex;
 		justify-content: flex-start;
@@ -423,13 +426,13 @@ const css = `
 		color: var(--header-primary);
 }
 
-._0ba2b6a9e50a96c2_titleWrapper {
+._6eb0556b6899d715_titleWrapper {
 		flex: 0 0 auto;
 		margin: 0 8px 0 0;
 		min-width: auto;
 }
 
-._0ba2b6a9e50a96c2_iconWrapper {
+._6eb0556b6899d715_iconWrapper {
 		align-items: center;
 		display: flex;
 		flex: 0 0 auto;
@@ -440,16 +443,16 @@ const css = `
 		width: var(--space-32);
 }
 
-._0ba2b6a9e50a96c2_headerBar {
+._6eb0556b6899d715_headerBar {
 		height: calc(var(--custom-channel-header-height) - 1px);
 		min-height: calc(var(--custom-channel-header-height) - 1px);
 }
 
-._0ba2b6a9e50a96c2_headerContainer {
+._6eb0556b6899d715_headerContainer {
 		flex-direction: row;
 }
 
-._0ba2b6a9e50a96c2_headerText {
+._6eb0556b6899d715_headerText {
 		display: flex;
 		flex: 1;
 		font-size: 18px;
@@ -460,12 +463,12 @@ const css = `
 		color: var(--text-default);
 }
 
-._0ba2b6a9e50a96c2_feedCarousel {
+._6eb0556b6899d715_feedCarousel {
 		display: flex;
 		position: relative;
 }
 
-._0ba2b6a9e50a96c2_carousel {
+._6eb0556b6899d715_carousel {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		flex: 1 1 75%;
@@ -476,7 +479,7 @@ const css = `
 		transform: translateZ(0);
 }
 
-._0ba2b6a9e50a96c2_article {
+._6eb0556b6899d715_article {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		bottom: 0;
@@ -493,7 +496,7 @@ const css = `
 		justify-content: flex-end;
 }
 
-._0ba2b6a9e50a96c2_background {
+._6eb0556b6899d715_background {
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 7.5%;
@@ -502,28 +505,28 @@ const css = `
 		background-position: top;
 }
 
-._0ba2b6a9e50a96c2_backgroundImage {
+._6eb0556b6899d715_backgroundImage {
 		background-position: top;
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 0;
 }
 
-._0ba2b6a9e50a96c2_background, ._0ba2b6a9e50a96c2_backgroundImage {
+._6eb0556b6899d715_background, ._6eb0556b6899d715_backgroundImage {
 		left: 0;
 		position: absolute;
 		right: 0;
 		top: 0;
 }
 
-._0ba2b6a9e50a96c2_feedOverflowMenu {
+._6eb0556b6899d715_feedOverflowMenu {
 		position: absolute;
 		top: 0;
 		right: 0;
 		padding: 8px 12px;
 }
 
-._0ba2b6a9e50a96c2_applicationArea {
+._6eb0556b6899d715_applicationArea {
 		color: var(--text-default);
 		display: flex;
 		flex-direction: column;
@@ -531,11 +534,11 @@ const css = `
 		position: relative;
 }
 
-._0ba2b6a9e50a96c2_details {
+._6eb0556b6899d715_details {
 		position: relative;
 }
 
-._0ba2b6a9e50a96c2_titleStandard {
+._6eb0556b6899d715_titleStandard {
 		margin-top: 8px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -544,13 +547,13 @@ const css = `
 		line-height: 28px;
 }
 
-._0ba2b6a9e50a96c2_title {
+._6eb0556b6899d715_title {
 		color: var(--header-primary);
 		display: block;
 		font-weight: 500;
 }
 
-._0ba2b6a9e50a96c2_description {
+._6eb0556b6899d715_description {
 		color: var(--text-default);
 		display: -webkit-box;
 		font-size: 16px;
@@ -573,12 +576,12 @@ const css = `
 				all: inherit;
 				display: contents
 		}
-		._0ba2b6a9e50a96c2_sharedFilePreviewYouTubeVideo {
+		._6eb0556b6899d715_sharedFilePreviewYouTubeVideo {
 				display: none;
 		}
 }
 
-._0ba2b6a9e50a96c2_timestamp {
+._6eb0556b6899d715_timestamp {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -586,7 +589,7 @@ const css = `
 		text-transform: uppercase;
 }
 
-._0ba2b6a9e50a96c2_gameIcon {
+._6eb0556b6899d715_gameIcon {
 		position: relative;
 		pointer-events: auto;
 		cursor: pointer;
@@ -596,18 +599,18 @@ const css = `
 		border-radius: 3px;
 }
 
-._0ba2b6a9e50a96c2_pagination {
+._6eb0556b6899d715_pagination {
 		-webkit-box-flex: 1;
 		flex: 1 1 25%;
 		min-width: 0;
 }
 
-._0ba2b6a9e50a96c2_verticalPaginationItemContainer {
+._6eb0556b6899d715_verticalPaginationItemContainer {
 		margin: 0;
 		overflow: hidden;
 }
 
-._0ba2b6a9e50a96c2_scrollerWrap {
+._6eb0556b6899d715_scrollerWrap {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
@@ -616,22 +619,22 @@ const css = `
 		position: relative;
 }
 
-._0ba2b6a9e50a96c2_scroller {
+._6eb0556b6899d715_scroller {
 		-webkit-box-flex: 1;
 		contain: layout;
 		flex: 1;
 		min-height: 1px;
 }
 		
-._0ba2b6a9e50a96c2_paginationItem, ._0ba2b6a9e50a96c2_paginationItem:before {
+._6eb0556b6899d715_paginationItem, ._6eb0556b6899d715_paginationItem:before {
 		transition: all .2s ease;
 }
 
-._0ba2b6a9e50a96c2_paginationItem:first-child {
+._6eb0556b6899d715_paginationItem:first-child {
 		margin-top: 0;
 }
 
-._0ba2b6a9e50a96c2_paginationItem {
+._6eb0556b6899d715_paginationItem {
 		-webkit-box-align: center;
 		align-items: center;
 		background: var(--background-secondary-alt);
@@ -647,7 +650,7 @@ const css = `
 		transform: translateZ(0);
 }
 
-._0ba2b6a9e50a96c2_paginationItem:before {
+._6eb0556b6899d715_paginationItem:before {
 		background: #fff;
 		border-radius: 20px;
 		content: "";
@@ -661,7 +664,7 @@ const css = `
 		z-index: 1;
 }
 
-._0ba2b6a9e50a96c2_paginationItem:after {
+._6eb0556b6899d715_paginationItem:after {
 		background-blend-mode: color;
 		border-radius: 5px;
 		bottom: 0;
@@ -672,7 +675,7 @@ const css = `
 		top: 0;
 }
 
-._0ba2b6a9e50a96c2_splashArt {
+._6eb0556b6899d715_splashArt {
 		filter: grayscale(100%);
 		height: 100%;
 		opacity: .2;
@@ -688,28 +691,28 @@ const css = `
 		top: 0;
 }
 
-._0ba2b6a9e50a96c2_paginationSubtitle, ._0ba2b6a9e50a96c2_paginationTitle {
+._6eb0556b6899d715_paginationSubtitle, ._6eb0556b6899d715_paginationTitle {
 		font-weight: 600;
 }
 
-._0ba2b6a9e50a96c2_paginationText {
+._6eb0556b6899d715_paginationText {
 		overflow: hidden;
 }
 
-._0ba2b6a9e50a96c2_paginationContent {
+._6eb0556b6899d715_paginationContent {
 		overflow: hidden;
 		position: relative;
 		z-index: 1;
 }
 
-._0ba2b6a9e50a96c2_paginationTitle {
+._6eb0556b6899d715_paginationTitle {
 		color: var(--header-primary);
 		font-size: 16px;
 		line-height: 1.25;
 		max-height: 40px;
 }
 
-._0ba2b6a9e50a96c2_paginationSubtitle {
+._6eb0556b6899d715_paginationSubtitle {
 		color: var(--text-muted);
 		font-size: 12px;
 		margin-top: 4px;
@@ -718,20 +721,20 @@ const css = `
 		white-space: nowrap;
 }
 
-._0ba2b6a9e50a96c2_selectedPage {
+._6eb0556b6899d715_selectedPage {
 		background: var(--background-surface-higher);
 		cursor: default;
 }
 
-._0ba2b6a9e50a96c2_selectedPage:before {
+._6eb0556b6899d715_selectedPage:before {
 		transform: translateY(-50%) translateX(0);
 }
 
-._0ba2b6a9e50a96c2_selectedPage ._0ba2b6a9e50a96c2_splashArt {
+._6eb0556b6899d715_selectedPage ._6eb0556b6899d715_splashArt {
 		filter: grayscale(0);
 }
 
-._0ba2b6a9e50a96c2_smallCarousel {
+._6eb0556b6899d715_smallCarousel {
 		-webkit-box-flex: 1;
 		border-radius: 5px;
 		flex: 1;
@@ -741,7 +744,7 @@ const css = `
 		transform: translateZ(0);
 }
 
-._0ba2b6a9e50a96c2_titleRowSimple {
+._6eb0556b6899d715_titleRowSimple {
 		-webkit-box-align: center;
 		-webkit-box-pack: justify;
 		align-items: center;
@@ -750,7 +753,7 @@ const css = `
 		justify-content: space-between;
 }
 
-._0ba2b6a9e50a96c2_paginationSmall {
+._6eb0556b6899d715_paginationSmall {
 		bottom: 0;
 		height: 64px;
 		left: 0;
@@ -762,17 +765,17 @@ const css = `
 		display: flex;
 }
 
-._0ba2b6a9e50a96c2_arrow {
+._6eb0556b6899d715_arrow {
 		color: var(--text-muted);
 		z-index: 2;
 }
 
-svg._0ba2b6a9e50a96c2_arrow {
+svg._6eb0556b6899d715_arrow {
 		height: 26px;
 		width: 26px;
 }
 
-._0ba2b6a9e50a96c2_arrowContainer {
+._6eb0556b6899d715_arrowContainer {
 		color: var(--white);
 		cursor: pointer;
 		font-size: 0;
@@ -784,12 +787,12 @@ svg._0ba2b6a9e50a96c2_arrow {
 		width: 50px;
 }
 
-._0ba2b6a9e50a96c2_arrow, ._0ba2b6a9e50a96c2_arrowContainer {
+._6eb0556b6899d715_arrow, ._6eb0556b6899d715_arrowContainer {
 		box-sizing: border-box;
 		pointer-events: all;
 }
 
-._0ba2b6a9e50a96c2_button {
+._6eb0556b6899d715_button {
 		-webkit-box-align: center;
 		-webkit-box-pack: center;
 		align-items: center;
@@ -805,23 +808,23 @@ svg._0ba2b6a9e50a96c2_arrow {
 		user-select: none;
 }
 
-._0ba2b6a9e50a96c2_prevButtonContainer {
+._6eb0556b6899d715_prevButtonContainer {
 		left: 6px;
 }
 
-._0ba2b6a9e50a96c2_nextButtonContainer {
+._6eb0556b6899d715_nextButtonContainer {
 		right: 6px;
 }
 
-._0ba2b6a9e50a96c2_left {
+._6eb0556b6899d715_left {
 		transform: rotate(-90deg);
 }
 
-._0ba2b6a9e50a96c2_right {
+._6eb0556b6899d715_right {
 		transform: rotate(90deg);
 }
 
-._0ba2b6a9e50a96c2_horizontalPaginationItemContainer {
+._6eb0556b6899d715_horizontalPaginationItemContainer {
 		-webkit-box-align: center;
 		-webkit-box-flex: initial;
 		align-items: center;
@@ -831,7 +834,7 @@ svg._0ba2b6a9e50a96c2_arrow {
 		overflow-y: hidden;
 }
 
-._0ba2b6a9e50a96c2_dot {
+._6eb0556b6899d715_dot {
 		background-color: #fff;
 		border-radius: 2px;
 		cursor: pointer;
@@ -842,15 +845,88 @@ svg._0ba2b6a9e50a96c2_arrow {
 		width: 8px;
 }
 
-._0ba2b6a9e50a96c2_dotNormal {
+._6eb0556b6899d715_dotNormal {
 		opacity: 0.2;
 }
 
-._0ba2b6a9e50a96c2_dotSelected {
+._6eb0556b6899d715_dotSelected {
 		opacity: 0.6;
 }
 
-._0ba2b6a9e50a96c2_dock {
+._6eb0556b6899d715_emptyTitle {
+		font-size: 16px;
+		line-height: 20px;
+		color: var(--text-default);
+}
+
+._6eb0556b6899d715_emptySubtitle {
+		font-size: 14px;
+		color: var(--text-muted);
+}`;
+_loadStyle("ActivityFeed.module.css", css$2);
+const modules_7e65654a = {
+	"activityFeed": "_6eb0556b6899d715_activityFeed",
+	"scrollerBase": "_6eb0556b6899d715_scrollerBase",
+	"centerContainer": "_6eb0556b6899d715_centerContainer",
+	"title": "_6eb0556b6899d715_title",
+	"titleWrapper": "_6eb0556b6899d715_titleWrapper",
+	"iconWrapper": "_6eb0556b6899d715_iconWrapper",
+	"headerBar": "_6eb0556b6899d715_headerBar",
+	"headerContainer": "_6eb0556b6899d715_headerContainer",
+	"headerText": "_6eb0556b6899d715_headerText",
+	"feedCarousel": "_6eb0556b6899d715_feedCarousel",
+	"carousel": "_6eb0556b6899d715_carousel",
+	"article": "_6eb0556b6899d715_article",
+	"background": "_6eb0556b6899d715_background",
+	"backgroundImage": "_6eb0556b6899d715_backgroundImage",
+	"feedOverflowMenu": "_6eb0556b6899d715_feedOverflowMenu",
+	"applicationArea": "_6eb0556b6899d715_applicationArea",
+	"details": "_6eb0556b6899d715_details",
+	"titleStandard": "_6eb0556b6899d715_titleStandard",
+	"description": "_6eb0556b6899d715_description",
+	"sharedFilePreviewYouTubeVideo": "_6eb0556b6899d715_sharedFilePreviewYouTubeVideo",
+	"timestamp": "_6eb0556b6899d715_timestamp",
+	"gameIcon": "_6eb0556b6899d715_gameIcon",
+	"pagination": "_6eb0556b6899d715_pagination",
+	"verticalPaginationItemContainer": "_6eb0556b6899d715_verticalPaginationItemContainer",
+	"scrollerWrap": "_6eb0556b6899d715_scrollerWrap",
+	"scroller": "_6eb0556b6899d715_scroller",
+	"paginationItem": "_6eb0556b6899d715_paginationItem",
+	"splashArt": "_6eb0556b6899d715_splashArt",
+	"paginationSubtitle": "_6eb0556b6899d715_paginationSubtitle",
+	"paginationTitle": "_6eb0556b6899d715_paginationTitle",
+	"paginationText": "_6eb0556b6899d715_paginationText",
+	"paginationContent": "_6eb0556b6899d715_paginationContent",
+	"selectedPage": "_6eb0556b6899d715_selectedPage",
+	"smallCarousel": "_6eb0556b6899d715_smallCarousel",
+	"titleRowSimple": "_6eb0556b6899d715_titleRowSimple",
+	"paginationSmall": "_6eb0556b6899d715_paginationSmall",
+	"arrow": "_6eb0556b6899d715_arrow",
+	"arrowContainer": "_6eb0556b6899d715_arrowContainer",
+	"button": "_6eb0556b6899d715_button",
+	"prevButtonContainer": "_6eb0556b6899d715_prevButtonContainer",
+	"nextButtonContainer": "_6eb0556b6899d715_nextButtonContainer",
+	"left": "_6eb0556b6899d715_left",
+	"right": "_6eb0556b6899d715_right",
+	"horizontalPaginationItemContainer": "_6eb0556b6899d715_horizontalPaginationItemContainer",
+	"dot": "_6eb0556b6899d715_dot",
+	"dotNormal": "_6eb0556b6899d715_dotNormal",
+	"dotSelected": "_6eb0556b6899d715_dotSelected",
+	"emptyTitle": "_6eb0556b6899d715_emptyTitle",
+	"emptySubtitle": "_6eb0556b6899d715_emptySubtitle"
+};
+const MainClasses = modules_7e65654a;
+
+// activity_feed/components/common/components/SectionHeader.jsx
+function SectionHeader({ label }) {
+	return BdApi.React.createElement("div", { className: `${MainClasses.headerContainer} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: MainClasses.headerText }, label));
+}
+
+// activity_feed/components/quick_launcher/QuickLauncher.module.css
+const css$1 = `
+.af7ba0bd18d4ab70_quickLauncher {}
+
+.af7ba0bd18d4ab70_dock {
 		margin-top: 10px;
 		display: flex;
 		overflow: hidden;
@@ -858,7 +934,7 @@ svg._0ba2b6a9e50a96c2_arrow {
 		max-width: 1280px;
 }
 
-._0ba2b6a9e50a96c2_dockItem {
+.af7ba0bd18d4ab70_dockItem {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: pointer;
@@ -868,11 +944,11 @@ svg._0ba2b6a9e50a96c2_arrow {
 		flex-direction: column;
 }
 
-._0ba2b6a9e50a96c2_dockIcon:first-child {
+.af7ba0bd18d4ab70_dockIcon:first-child {
 		margin-left: 0;
 }
 
-._0ba2b6a9e50a96c2_dockIcon {
+.af7ba0bd18d4ab70_dockIcon {
 		background-size: 100%;
 		border-radius: 3px;
 		height: 40px;
@@ -881,7 +957,7 @@ svg._0ba2b6a9e50a96c2_arrow {
 		width: 40px;
 }
 
-._0ba2b6a9e50a96c2_dockItemText {
+.af7ba0bd18d4ab70_dockItemText {
 		font-weight: 500;
 		height: 31px;
 		line-height: normal;
@@ -894,985 +970,53 @@ svg._0ba2b6a9e50a96c2_arrow {
 		color: var(--text-default);
 }
 
-._0ba2b6a9e50a96c2_dockItemPlay {
+.af7ba0bd18d4ab70_dockItemPlay {
 		display: none;
 		z-index: 9999;
 }
 
-._0ba2b6a9e50a96c2_dockItemPlay:disabled, ._0ba2b6a9e50a96c2_dockItemPlay[aria-disabled=true] {
+.af7ba0bd18d4ab70_dockItemPlay:disabled, .af7ba0bd18d4ab70_dockItemPlay[aria-disabled=true] {
 		background-color: var(--green-active, var(--button-positive-background-active)) !important;
 }
 
-._0ba2b6a9e50a96c2_dockItem:hover {
+.af7ba0bd18d4ab70_dockItem:hover {
 		background: var(--background-base-lowest);
 }
 
-._0ba2b6a9e50a96c2_dockItem:hover ._0ba2b6a9e50a96c2_dockItemText {
+.af7ba0bd18d4ab70_dockItem:hover .af7ba0bd18d4ab70_dockItemText {
 		display: none;
 }
 
-._0ba2b6a9e50a96c2_dockItem:hover ._0ba2b6a9e50a96c2_dockItemPlay {
+.af7ba0bd18d4ab70_dockItem:hover .af7ba0bd18d4ab70_dockItemPlay {
 		display: flex;
 }
 
-._0ba2b6a9e50a96c2_nowPlayingContainer {
-		display: flex;
-		margin-top: var(--space-lg);
-		gap: var(--space-lg);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-lg);
-		width: calc(50% - (var(--space-lg) / 2))
-}
-
-._0ba2b6a9e50a96c2_nowPlayingContainer ._0ba2b6a9e50a96c2_itemCard {
-		flex: 1 0 0;
-		margin: 16px 16px 0 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_card {
-		border-radius: 5px;
-		box-sizing: border-box;
-		cursor: default;
-		overflow: hidden;
-		transform: translateZ(0);
-}
-		
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_cardHeader {
-		padding: 20px;
-		position: relative;
-		flex-direction: row;
-		background: var(--background-base-lowest);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_header {
-		display: flex;
-		align-items: center;
-		width: 100%;
-		height: 40px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_header > ._0ba2b6a9e50a96c2_wrapper {
-		display: flex;
-		cursor: pointer;
-		margin-right: 20px;
-		transition: opacity .2s ease;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_nameTag {
-		line-height: 17px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		vertical-align: middle;
-		white-space: nowrap;
-		color: var(--text-default);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_username {
-		cursor: pointer;
-		font-size: 16px;
-		font-weight: 500;
-		line-height: 20px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_username:hover {
-		text-decoration: underline;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_card:hover ._0ba2b6a9e50a96c2_headerIcon {
-		display: none;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerActions {
-		display: none;
-		margin-left: 8px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_card:hover ._0ba2b6a9e50a96c2_headerActions {
-		display: flex;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerActions > div[aria-expanded="false"] {
-		display: none;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerActions {
-		._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled {
-				background: var(--control-secondary-background-default);
-				border: unset;
-				color: var(--white);
-				padding: 2px 16px;
-				width: unset;
-				svg {
-						display: none;
-				} 
-		}
-		._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled:hover {
-				background-color: var(--control-secondary-background-hover) !important;
-		}
-		._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled:active {
-				background-color: var(--control-secondary-background-active) !important; 
-		}
-		._0ba2b6a9e50a96c2_lookFilled._0ba2b6a9e50a96c2_colorPrimary {
-				background: unset !important;
-				border: unset !important;
-		}
-		._0ba2b6a9e50a96c2_lookFilled._0ba2b6a9e50a96c2_colorPrimary:hover {
-				color: var(--interactive-background-hover);
-				svg {
-						stroke: var(--interactive-background-hover);
-				}
-		}
-		._0ba2b6a9e50a96c2_lookFilled._0ba2b6a9e50a96c2_colorPrimary:active {
-				color: var(--interactive-background-active);
-				svg {
-						stroke: var(--interactive-background-active);
-				}
-		}
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_overflowMenu {
-		cursor: pointer;
-		height: 24px;
-		margin-left: 8px;
-		transition: opacity .2s linear;
-		width: 24px;
-		color: var(--interactive-icon-hover);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_overflowMenu:hover {
-		color: var(--interactive-icon-default);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_headerIcon {
-		border-radius: 4px;
-		display: block;
-		height: 30px;
-		justify-self: end;
-		width: 30px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_splashArt {
-		filter: grayscale(100%);
-		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
-		opacity: .3;
-		width: 300px;
-		background-position-x: 50%;
-		background-position-y: 40%;
-		background-repeat: no-repeat;
-		background-size: cover;
-		bottom: 0;
-		left: 0;
-		pointer-events: none;
-		position: absolute;
-		top: 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_server {
-		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
-		right: 0;
-		left: unset;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_cardBody {
-		display: flex;
-		padding: 0 20px;
-		background: var(--background-mod-strong)
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_section {
-		-webkit-box-flex: 1;
-		flex: 1 0 calc(50% - 20px);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_game {
-		padding: 20px 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameBody {
-		flex-direction: column;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activityContainer:last-child:not(:only-child, :nth-child(1 of ._0ba2b6a9e50a96c2_activityContainer)) ._0ba2b6a9e50a96c2_sectionDivider {
-		display: none;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity {
-		flex-direction: row;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity:last-child:not(:only-child) {
-		margin-top: 20px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity ._0ba2b6a9e50a96c2_serviceButtonWrapper {
-		gap: 6px;
-		display: flex;
-		flex-direction: row;
-		._0ba2b6a9e50a96c2_sm:not(._0ba2b6a9e50a96c2_hasText) {
-				padding: 0;
-				width: calc(var(--custom-button-button-sm-height) + 4px);
-		}
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity {
-		margin-top: 20px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activityFeed {
-		-webkit-box-flex: 1;
-		flex: 1 1 50%;
-		min-width: 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_gameInfoRich, ._0ba2b6a9e50a96c2_gameNameWrapper) {
-		-webkit-box-flex: 1;
-		display: flex;
-		flex: 1;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameInfoRich {
-		align-items: center;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameInfo {
-		margin-left: 20px;
-		min-width: 0;
-		color: var(--text-default);
-		font-weight: 500;
-		flex: 1;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_gameName, ._0ba2b6a9e50a96c2_gameNameWrapper, ._0ba2b6a9e50a96c2_streamInfo) {
-		overflow: hidden;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameName {
-		font-size: 16px;
-		line-height: 20px;
-		margin-right: 10px;
-		max-width: fit-content;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_gameName._0ba2b6a9e50a96c2_clickable:hover {
-		text-decoration: underline;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_playTime:not(a) {
-		color: var(--text-muted);
-}
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_playTime {
-		font-size: 12px;
-		font-weight: 500;
-		line-height: 14px;
-		margin-top: 4px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets {
-		position: relative;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assetsLargeImageActivityFeed {
-		width: 90px;
-		height: 90px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assetsSmallImageActivityFeed {
-		height: 30px;
-		width: 30px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_assetsLargeImage {
-		display: block;
-		border-radius: 4px; 
-		object-fit: cover;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_assetsLargeImageActivityFeedTwitch {
-		border-radius: 5px;
-		height: 260px;
-		mask: linear-gradient(0deg, transparent 10%, #000 80%);
-		width: 100%;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets:has(._0ba2b6a9e50a96c2_assetsSmallImage) ._0ba2b6a9e50a96c2_assetsLargeImage {
-		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity ._0ba2b6a9e50a96c2_assetsSmallImage, ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity ._0ba2b6a9e50a96c2_smallEmptyIcon {
-		border-radius: 50%;
-		position: absolute;
-		bottom: -4px;
-		right: -4px; 
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_activity ._0ba2b6a9e50a96c2_smallEmptyIcon {
-		width: 40px;
-		height: 40px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_largeEmptyIcon {
-		width: 90px;
-		height: 90px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_largeEmptyIcon path {
-		transform: scale(3.65) !important;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity svg._0ba2b6a9e50a96c2_assetsSmallImage {
-		border-radius: unset !important;
-}   
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_richActivity ._0ba2b6a9e50a96c2_smallEmptyIcon path {
-		transform: scale(1.3) !important;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_twitchImageContainer {
-		background: var(--background-secondary-alt);
-		border-radius: 5px;
-		position: relative;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_twitchBackgroundImage {
-		display: inline-block;
-		min-height: 260px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_twitchImageOverlay {
-		bottom: 0;
-		left: 0;
-		padding: 16px;
-		position: absolute;
-		right: 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_streamName {
-		color: var(--text-default);
-		font-size: 14px;
-		font-weight: 500;
-		margin-top: 8px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_assets ._0ba2b6a9e50a96c2_streamGame {
-		color: var(--text-muted);
-		font-size: 12px;
-		font-weight: 600;
-		margin-top: 8px;
-		text-transform: uppercase;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_contentImagesActivityFeed {
-		margin-left: 20px;
-		color: var(--text-default);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_gameInfo, ._0ba2b6a9e50a96c2_contentImagesActivityFeed) {
-		align-self: center;
-		display: grid;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_content {
-		flex: 1;
-		overflow: hidden;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_details {
-		font-weight: 600;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_ellipsis {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-}
-
-._0ba2b6a9e50a96c2_textRow {
-		display: block;
-		font-size: 14px;
-		line-height: 16px;
-		margin-bottom: 4px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_content ._0ba2b6a9e50a96c2_bar {
-		background-color: var(--opacity-white-24);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_sectionDivider {
-		display: flex;
-		width: 100%;
-		border-bottom: 2px solid;
-		margin: 20px 0 20px 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSection {
-		display: flex;
-		flex: 1 1 auto;
-		flex-wrap: nowrap;
-		align-items: center;
-		justify-content: flex-start;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionAssets {
-		align-items: center;
-		border-radius: 50%;
-		display: flex;
-		justify-content: center;
-		position: relative;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionIconWrapper {
-		align-items: center;
-		border-radius: 50%;
-		bottom: -4px;
-		display: flex;
-		height: 20px;
-		justify-content: center;
-		position: absolute;
-		right: -3px;
-		width: 20px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionIcon {
-		color: var(--header-secondary);
-		height: 12px;
-		width: 12px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionGuildImage {
-		border-radius: 50%;
-		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
-		mask-size: 100%;
-		mask-type: luminance;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSection ._0ba2b6a9e50a96c2_details {
-		flex: 1;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionDetails {
-		cursor: pointer;
-		margin-left: 20px;
-		min-width: 0;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionDetails:hover :is(._0ba2b6a9e50a96c2_voiceSectionText, ._0ba2b6a9e50a96c2_voiceSectionSubtext) {
-		text-decoration: underline;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionText {
-		color: var(--text-default);
-		font-size: 14px;
-		font-weight: 600;
-		line-height: 1.2857142857142858;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSectionSubtext {
-		color: var(--text-muted);
-		font-size: 12px;
-		font-weight: 400;
-		line-height: 1.3333333333333333;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_userList {
-		flex: 0 1 auto;
-		justify-content: flex-end;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_voiceSection button {
-		flex: 0 1 auto;
-		width: auto;
-		margin-left: 20px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_actionsActivity ._0ba2b6a9e50a96c2_buttonContainer {
-		flex-direction: inherit;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper {
-		display: flex;
-		gap: 4px;
-		align-items: center;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper button {
-		flex: 0 1 50%;
-		max-height: 24px;
-		min-height: 24px;
-		width: auto !important;
-		justify-self: flex-end;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper ._0ba2b6a9e50a96c2_disabledButtonWrapper {
-		flex: 1;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyStatusWrapper ._0ba2b6a9e50a96c2_disabledButtonOverlay {
-		height: 24px;
-		width: 100%;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyList {
-		display: flex;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player:first-of-type {
-		mask: url(#svg-mask-voice-user-summary-item);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser:not(:first-of-type), ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player:not(:first-of-type) {
-		margin-left: -4px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser:not(:last-of-type), ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player:not(:last-of-type) {
-		mask: url(#svg-mask-voice-user-summary-item);
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser, ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_player {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_emptyUser svg {
-		margin-left: 3px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_partyPlayerCount {
-		color: var(--app-message-embed-secondary-text);
-		font-size: 12px;
-		font-weight: 500;
-		line-height: 1.3333333333333333;
-}
-
-._0ba2b6a9e50a96c2_nowPlaying ._0ba2b6a9e50a96c2_emptyState {
-		border: 1px solid;
-		border-radius: 5px;
-		box-sizing: border-box;
-		margin-top: 20px;
-		padding: 20px;
-		width: 100%;
-}
-
-._0ba2b6a9e50a96c2_quickLauncher ._0ba2b6a9e50a96c2_emptyState, ._0ba2b6a9e50a96c2_blacklist._0ba2b6a9e50a96c2_emptyState {
-		border-bottom: 1px solid;
-		font-size: 14px;
-		padding: 20px 0;
-		justify-content: flex-start;
-		align-items: center;
-}
-
-._0ba2b6a9e50a96c2_emptyTitle {
-		font-size: 16px;
-		line-height: 20px;
-		color: var(--text-default);
-}
-
-._0ba2b6a9e50a96c2_emptySubtitle {
-		font-size: 14px;
-		color: var(--text-muted);
-}
-
-._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_nowPlaying ._0ba2b6a9e50a96c2_emptyState {
-		background-color: #fff;
-		border-color: var(--interactive-background-hover);
-}
-
-._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_nowPlaying ._0ba2b6a9e50a96c2_emptyState {
-		background-color: rgba(79, 84, 92, .3);
-		border-color: var(--background-mod-strong);
-}
-
-._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_quickLauncher ._0ba2b6a9e50a96c2_emptyState, ._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_blacklist._0ba2b6a9e50a96c2_emptyState {
-		border-color: rgba(220,221,222,.6);
-		color: #b9bbbe;
-}
-
-._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_quickLauncher ._0ba2b6a9e50a96c2_emptyState, ._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_blacklist._0ba2b6a9e50a96c2_emptyState {
-		border-color: rgba(47,49,54,.6);
-		color: #72767d;
-}
-
-._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_sectionDivider {
-		border-color: var(--interactive-background-hover);
-}
-
-._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_sectionDivider {
-		border-color: var(--background-mod-strong);
-}
-
-._0ba2b6a9e50a96c2_themeDark ._0ba2b6a9e50a96c2_voiceSectionIconWrapper {
-		background-color: var(--primary-800);
-}
-
-._0ba2b6a9e50a96c2_themeLight ._0ba2b6a9e50a96c2_voiceSectionIconWrapper {
-		background: var(--primary-300);
-}
-
-._0ba2b6a9e50a96c2_emptyIcon {
+.af7ba0bd18d4ab70_emptyIcon {
 		height: 24px;
 		margin-right: 8px;
 		width: 24px;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn ._0ba2b6a9e50a96c2_tabularNumbers {
-		color: var(--text-default) !important;
-}
-
-._0ba2b6a9e50a96c2_nowPlayingColumn :is(._0ba2b6a9e50a96c2_actionsActivity, ._0ba2b6a9e50a96c2_customButtons) {
-		gap: 8px;
-}
-
-._0ba2b6a9e50a96c2_customButtons {
-		display: flex;
-		flex-direction: column;
-}
-
-._0ba2b6a9e50a96c2_blacklist {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-}
-
-._0ba2b6a9e50a96c2_blacklist ._0ba2b6a9e50a96c2_sectionDivider, ._0ba2b6a9e50a96c2_settingsDivider._0ba2b6a9e50a96c2_sectionDivider {
-		display: flex;
-		width: 100%;
-		border-bottom: 2px solid;
-		margin: 4px 0 4px 0;
-		border-color: var(--background-mod-strong);
-}
-
-._0ba2b6a9e50a96c2_blacklist ._0ba2b6a9e50a96c2_sectionDivider:last-child {
-		display: none;
-}
-
-._0ba2b6a9e50a96c2_blacklistItem {
-		display: flex;
-}
-
-._0ba2b6a9e50a96c2_blacklistItem ._0ba2b6a9e50a96c2_blacklistItemIcon {
-		border-radius: 8px;
-		height: 32px;
-		width: 32px;
-}
-
-._0ba2b6a9e50a96c2_blacklistItem ._0ba2b6a9e50a96c2_blacklistItemName {
-		margin-left: 20px;
-		margin-bottom: 0;
-		min-width: 0;
-		font-weight: 500;
-		align-content: center;
-		flex: 1;
-}
-
-._0ba2b6a9e50a96c2_blacklistItem button {
-		flex: 0 1 auto;
-		align-self: center;
-		width: auto;
-		margin-left: 20px;
-}
-
-._0ba2b6a9e50a96c2_search {
-		padding: 12px;
-		margin: 12px 0;
-		input::placeholder {
-				font-weight: 600;
-				font-size: 14px;
-				color: var(--text-muted);
-		}
-		svg {
-				path {
-						fill: var(--text-muted);
-				}
-				circle {
-						color: var(--text-muted);
-				}
-				path, circle {
-						stroke: var(--text-muted);
-						stroke-width: 3px;
-				}
-		}
-}
-
-._0ba2b6a9e50a96c2_cardV2 {
-		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
-		border-radius: var(--radius-md);
-		outline: 1px solid var(--border-normal);
-		outline-offset: -1px;
-		box-sizing: border-box;
-		background-clip: border-box;
-		overflow: hidden;
-		transform: translateZ(0);
-
-		._0ba2b6a9e50a96c2_headerActions ._0ba2b6a9e50a96c2_button._0ba2b6a9e50a96c2_lookFilled, ._0ba2b6a9e50a96c2_cardBody button {
-				color: var(--white);
-				background: var(--opacity-white-24);
-				&:hover {
-						background: var(--opacity-white-36);
-				}
-				&:active {
-						background: var(--opacity-white-32);
-				}
-		}
-
-		._0ba2b6a9e50a96c2_cardHeader {
-				padding: var(--space-lg);
-				position: relative;
-				flex-direction: row;
-				background: unset;
-		}
-		._0ba2b6a9e50a96c2_nameTag {
-				color: var(--white);
-		}
-		._0ba2b6a9e50a96c2_splashArt, ._0ba2b6a9e50a96c2_server {
-				background-position: center;
-				background-repeat: no-repeat;
-				background-size: cover;
-				filter: unset;
-				mask: radial-gradient(100% 100% at top right, var(--white) 0, transparent 100%);
-				opacity: .3;
-				position: absolute;
-				top: 0;
-				left: unset;
-				right: 0;
-				width: 300px;
-				height: 120px;
-				pointer-events: none;
-				z-index: -1;
-		}
-		&:hover {
-				._0ba2b6a9e50a96c2_headerIcon {
-						display: none;
-				}
-				._0ba2b6a9e50a96c2_headerActions {
-						display: flex;
-				}
-		}
-		._0ba2b6a9e50a96c2_cardBody {
-				display: flex;
-				gap: var(--space-lg);
-				padding: 0 var(--space-lg) var(--space-lg);
-				background: unset;
-		}
-		._0ba2b6a9e50a96c2_section {
-				background: var(--background-mod-normal);
-				border-radius: var(--radius-sm);
-				padding: var(--space-sm);
-		}
-		._0ba2b6a9e50a96c2_game {
-				padding: 0;
-		}
-		._0ba2b6a9e50a96c2_sectionDivider {
-				border-color: var(--opacity-white-12) !important;
-				border-width: 1px;
-				margin: 12px 0 12px 0;
-		}
-		._0ba2b6a9e50a96c2_voiceSectionText {
-				color: var(--white);
-		}
-		._0ba2b6a9e50a96c2_headerIcon, ._0ba2b6a9e50a96c2_gameIcon, ._0ba2b6a9e50a96c2_assetsLargeImage._0ba2b6a9e50a96c2_assetsLargeImage {
-				border-radius: var(--radius-sm);
-		}
-		._0ba2b6a9e50a96c2_gameInfo {
-				color: var(--white);
-		}
-		._0ba2b6a9e50a96c2_playTime:not(a), ._0ba2b6a9e50a96c2_voiceSectionSubtext {
-				color: var(--app-message-embed-secondary-text) !important;
-		}
-		._0ba2b6a9e50a96c2_serviceButtonWrapper {
-				gap: 8px !important;
-		}
-		._0ba2b6a9e50a96c2_contentImagesActivityFeed {
-				color: var(--white);
-		}
-		._0ba2b6a9e50a96c2_textRow {
-				font-size: 16px;
-				line-height: 18px;
-		}
-		._0ba2b6a9e50a96c2_state {
-				color: var(--app-message-embed-secondary-text);
-				font-size: 14px;
-				line-height: 16px;
-		}
-		._0ba2b6a9e50a96c2_tabularNumbers {
-				color: var(--app-message-embed-secondary-text) !important;
-		}
-		._0ba2b6a9e50a96c2_bar {
-				background-color: var(--opacity-white-24);
-		}
-		._0ba2b6a9e50a96c2_progress {
-				background-color: var(--white);
-		}
-		._0ba2b6a9e50a96c2_activity:last-child:not(:only-child) {
-				margin-top: 12px;
-		}
 }`;
-_loadStyle("ActivityFeed.module.css", css);
-const modules_7e65654a = {
-	"activityFeed": "_0ba2b6a9e50a96c2_activityFeed",
-	"scrollerBase": "_0ba2b6a9e50a96c2_scrollerBase",
-	"centerContainer": "_0ba2b6a9e50a96c2_centerContainer",
-	"title": "_0ba2b6a9e50a96c2_title",
-	"titleWrapper": "_0ba2b6a9e50a96c2_titleWrapper",
-	"iconWrapper": "_0ba2b6a9e50a96c2_iconWrapper",
-	"headerBar": "_0ba2b6a9e50a96c2_headerBar",
-	"headerContainer": "_0ba2b6a9e50a96c2_headerContainer",
-	"headerText": "_0ba2b6a9e50a96c2_headerText",
-	"feedCarousel": "_0ba2b6a9e50a96c2_feedCarousel",
-	"carousel": "_0ba2b6a9e50a96c2_carousel",
-	"article": "_0ba2b6a9e50a96c2_article",
-	"background": "_0ba2b6a9e50a96c2_background",
-	"backgroundImage": "_0ba2b6a9e50a96c2_backgroundImage",
-	"feedOverflowMenu": "_0ba2b6a9e50a96c2_feedOverflowMenu",
-	"applicationArea": "_0ba2b6a9e50a96c2_applicationArea",
-	"details": "_0ba2b6a9e50a96c2_details",
-	"titleStandard": "_0ba2b6a9e50a96c2_titleStandard",
-	"description": "_0ba2b6a9e50a96c2_description",
-	"sharedFilePreviewYouTubeVideo": "_0ba2b6a9e50a96c2_sharedFilePreviewYouTubeVideo",
-	"timestamp": "_0ba2b6a9e50a96c2_timestamp",
-	"gameIcon": "_0ba2b6a9e50a96c2_gameIcon",
-	"pagination": "_0ba2b6a9e50a96c2_pagination",
-	"verticalPaginationItemContainer": "_0ba2b6a9e50a96c2_verticalPaginationItemContainer",
-	"scrollerWrap": "_0ba2b6a9e50a96c2_scrollerWrap",
-	"scroller": "_0ba2b6a9e50a96c2_scroller",
-	"paginationItem": "_0ba2b6a9e50a96c2_paginationItem",
-	"splashArt": "_0ba2b6a9e50a96c2_splashArt",
-	"paginationSubtitle": "_0ba2b6a9e50a96c2_paginationSubtitle",
-	"paginationTitle": "_0ba2b6a9e50a96c2_paginationTitle",
-	"paginationText": "_0ba2b6a9e50a96c2_paginationText",
-	"paginationContent": "_0ba2b6a9e50a96c2_paginationContent",
-	"selectedPage": "_0ba2b6a9e50a96c2_selectedPage",
-	"smallCarousel": "_0ba2b6a9e50a96c2_smallCarousel",
-	"titleRowSimple": "_0ba2b6a9e50a96c2_titleRowSimple",
-	"paginationSmall": "_0ba2b6a9e50a96c2_paginationSmall",
-	"arrow": "_0ba2b6a9e50a96c2_arrow",
-	"arrowContainer": "_0ba2b6a9e50a96c2_arrowContainer",
-	"button": "_0ba2b6a9e50a96c2_button",
-	"prevButtonContainer": "_0ba2b6a9e50a96c2_prevButtonContainer",
-	"nextButtonContainer": "_0ba2b6a9e50a96c2_nextButtonContainer",
-	"left": "_0ba2b6a9e50a96c2_left",
-	"right": "_0ba2b6a9e50a96c2_right",
-	"horizontalPaginationItemContainer": "_0ba2b6a9e50a96c2_horizontalPaginationItemContainer",
-	"dot": "_0ba2b6a9e50a96c2_dot",
-	"dotNormal": "_0ba2b6a9e50a96c2_dotNormal",
-	"dotSelected": "_0ba2b6a9e50a96c2_dotSelected",
-	"dock": "_0ba2b6a9e50a96c2_dock",
-	"dockItem": "_0ba2b6a9e50a96c2_dockItem",
-	"dockIcon": "_0ba2b6a9e50a96c2_dockIcon",
-	"dockItemText": "_0ba2b6a9e50a96c2_dockItemText",
-	"dockItemPlay": "_0ba2b6a9e50a96c2_dockItemPlay",
-	"nowPlayingContainer": "_0ba2b6a9e50a96c2_nowPlayingContainer",
-	"nowPlayingColumn": "_0ba2b6a9e50a96c2_nowPlayingColumn",
-	"itemCard": "_0ba2b6a9e50a96c2_itemCard",
-	"card": "_0ba2b6a9e50a96c2_card",
-	"cardHeader": "_0ba2b6a9e50a96c2_cardHeader",
-	"header": "_0ba2b6a9e50a96c2_header",
-	"wrapper": "_0ba2b6a9e50a96c2_wrapper",
-	"nameTag": "_0ba2b6a9e50a96c2_nameTag",
-	"username": "_0ba2b6a9e50a96c2_username",
-	"headerIcon": "_0ba2b6a9e50a96c2_headerIcon",
-	"headerActions": "_0ba2b6a9e50a96c2_headerActions",
-	"lookFilled": "_0ba2b6a9e50a96c2_lookFilled",
-	"colorPrimary": "_0ba2b6a9e50a96c2_colorPrimary",
-	"overflowMenu": "_0ba2b6a9e50a96c2_overflowMenu",
-	"server": "_0ba2b6a9e50a96c2_server",
-	"cardBody": "_0ba2b6a9e50a96c2_cardBody",
-	"section": "_0ba2b6a9e50a96c2_section",
-	"game": "_0ba2b6a9e50a96c2_game",
-	"gameBody": "_0ba2b6a9e50a96c2_gameBody",
-	"activityContainer": "_0ba2b6a9e50a96c2_activityContainer",
-	"sectionDivider": "_0ba2b6a9e50a96c2_sectionDivider",
-	"activity": "_0ba2b6a9e50a96c2_activity",
-	"serviceButtonWrapper": "_0ba2b6a9e50a96c2_serviceButtonWrapper",
-	"sm": "_0ba2b6a9e50a96c2_sm",
-	"hasText": "_0ba2b6a9e50a96c2_hasText",
-	"richActivity": "_0ba2b6a9e50a96c2_richActivity",
-	"gameInfoRich": "_0ba2b6a9e50a96c2_gameInfoRich",
-	"gameNameWrapper": "_0ba2b6a9e50a96c2_gameNameWrapper",
-	"gameInfo": "_0ba2b6a9e50a96c2_gameInfo",
-	"gameName": "_0ba2b6a9e50a96c2_gameName",
-	"streamInfo": "_0ba2b6a9e50a96c2_streamInfo",
-	"clickable": "_0ba2b6a9e50a96c2_clickable",
-	"playTime": "_0ba2b6a9e50a96c2_playTime",
-	"assets": "_0ba2b6a9e50a96c2_assets",
-	"assetsLargeImageActivityFeed": "_0ba2b6a9e50a96c2_assetsLargeImageActivityFeed",
-	"assetsSmallImageActivityFeed": "_0ba2b6a9e50a96c2_assetsSmallImageActivityFeed",
-	"assetsLargeImage": "_0ba2b6a9e50a96c2_assetsLargeImage",
-	"assetsLargeImageActivityFeedTwitch": "_0ba2b6a9e50a96c2_assetsLargeImageActivityFeedTwitch",
-	"assetsSmallImage": "_0ba2b6a9e50a96c2_assetsSmallImage",
-	"smallEmptyIcon": "_0ba2b6a9e50a96c2_smallEmptyIcon",
-	"largeEmptyIcon": "_0ba2b6a9e50a96c2_largeEmptyIcon",
-	"twitchImageContainer": "_0ba2b6a9e50a96c2_twitchImageContainer",
-	"twitchBackgroundImage": "_0ba2b6a9e50a96c2_twitchBackgroundImage",
-	"twitchImageOverlay": "_0ba2b6a9e50a96c2_twitchImageOverlay",
-	"streamName": "_0ba2b6a9e50a96c2_streamName",
-	"streamGame": "_0ba2b6a9e50a96c2_streamGame",
-	"contentImagesActivityFeed": "_0ba2b6a9e50a96c2_contentImagesActivityFeed",
-	"content": "_0ba2b6a9e50a96c2_content",
-	"ellipsis": "_0ba2b6a9e50a96c2_ellipsis",
-	"textRow": "_0ba2b6a9e50a96c2_textRow",
-	"bar": "_0ba2b6a9e50a96c2_bar",
-	"voiceSection": "_0ba2b6a9e50a96c2_voiceSection",
-	"voiceSectionAssets": "_0ba2b6a9e50a96c2_voiceSectionAssets",
-	"voiceSectionIconWrapper": "_0ba2b6a9e50a96c2_voiceSectionIconWrapper",
-	"voiceSectionIcon": "_0ba2b6a9e50a96c2_voiceSectionIcon",
-	"voiceSectionGuildImage": "_0ba2b6a9e50a96c2_voiceSectionGuildImage",
-	"voiceSectionDetails": "_0ba2b6a9e50a96c2_voiceSectionDetails",
-	"voiceSectionText": "_0ba2b6a9e50a96c2_voiceSectionText",
-	"voiceSectionSubtext": "_0ba2b6a9e50a96c2_voiceSectionSubtext",
-	"userList": "_0ba2b6a9e50a96c2_userList",
-	"actionsActivity": "_0ba2b6a9e50a96c2_actionsActivity",
-	"buttonContainer": "_0ba2b6a9e50a96c2_buttonContainer",
-	"partyStatusWrapper": "_0ba2b6a9e50a96c2_partyStatusWrapper",
-	"disabledButtonWrapper": "_0ba2b6a9e50a96c2_disabledButtonWrapper",
-	"disabledButtonOverlay": "_0ba2b6a9e50a96c2_disabledButtonOverlay",
-	"partyList": "_0ba2b6a9e50a96c2_partyList",
-	"player": "_0ba2b6a9e50a96c2_player",
-	"emptyUser": "_0ba2b6a9e50a96c2_emptyUser",
-	"partyPlayerCount": "_0ba2b6a9e50a96c2_partyPlayerCount",
-	"nowPlaying": "_0ba2b6a9e50a96c2_nowPlaying",
-	"emptyState": "_0ba2b6a9e50a96c2_emptyState",
-	"quickLauncher": "_0ba2b6a9e50a96c2_quickLauncher",
-	"blacklist": "_0ba2b6a9e50a96c2_blacklist",
-	"emptyTitle": "_0ba2b6a9e50a96c2_emptyTitle",
-	"emptySubtitle": "_0ba2b6a9e50a96c2_emptySubtitle",
-	"theme-light": "_0ba2b6a9e50a96c2_themeLight",
-	"theme-dark": "_0ba2b6a9e50a96c2_themeDark",
-	"emptyIcon": "_0ba2b6a9e50a96c2_emptyIcon",
-	"tabularNumbers": "_0ba2b6a9e50a96c2_tabularNumbers",
-	"customButtons": "_0ba2b6a9e50a96c2_customButtons",
-	"settingsDivider": "_0ba2b6a9e50a96c2_settingsDivider",
-	"blacklistItem": "_0ba2b6a9e50a96c2_blacklistItem",
-	"blacklistItemIcon": "_0ba2b6a9e50a96c2_blacklistItemIcon",
-	"blacklistItemName": "_0ba2b6a9e50a96c2_blacklistItemName",
-	"search": "_0ba2b6a9e50a96c2_search",
-	"cardV2": "_0ba2b6a9e50a96c2_cardV2",
-	"state": "_0ba2b6a9e50a96c2_state",
-	"progress": "_0ba2b6a9e50a96c2_progress"
+_loadStyle("QuickLauncher.module.css", css$1);
+const modules_1116a9ae = {
+	"quickLauncher": "af7ba0bd18d4ab70_quickLauncher",
+	"dock": "af7ba0bd18d4ab70_dock",
+	"dockItem": "af7ba0bd18d4ab70_dockItem",
+	"dockIcon": "af7ba0bd18d4ab70_dockIcon",
+	"dockItemText": "af7ba0bd18d4ab70_dockItemText",
+	"dockItemPlay": "af7ba0bd18d4ab70_dockItemPlay",
+	"emptyIcon": "af7ba0bd18d4ab70_emptyIcon"
 };
+const QuickLauncherClasses = modules_1116a9ae;
 
-// activity_feed/common/components/SectionHeader.jsx
-function SectionHeader({ label }) {
-	return BdApi.React.createElement("div", { className: `${modules_7e65654a.headerContainer} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: modules_7e65654a.headerText }, label));
-}
-
-// activity_feed/quick_launcher/launcher.tsx
+// activity_feed/components/quick_launcher/launcher.tsx
 function LauncherGameBuilder({ game, runningGames }) {
 	const [shouldDisable, setDisable] = react.useState(false);
 	setTimeout(() => setDisable(false), 1e4);
 	const disableCheck = react.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
-	return BdApi.React.createElement("div", { className: `${modules_7e65654a.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: modules_7e65654a.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: modules_7e65654a.dockItemText }, game.name), BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
 		"button",
 		{
-			className: `${modules_7e65654a.dockItemPlay} ${Common.ButtonClasses.button} ${Common.ButtonClasses.lookFilled} ${Common.ButtonClasses.colorGreen} ${Common.ButtonClasses.sizeSmall} ${Common.ButtonClasses.fullWidth} ${Common.ButtonClasses.grow}`,
+			className: `${QuickLauncherClasses.dockItemPlay} ${Common.ButtonClasses.button} ${Common.ButtonClasses.lookFilled} ${Common.ButtonClasses.colorGreen} ${Common.ButtonClasses.sizeSmall} ${Common.ButtonClasses.fullWidth} ${Common.ButtonClasses.grow}`,
 			disabled: disableCheck,
 			onClick: () => {
 				setDisable(true);
@@ -1886,10 +1030,10 @@ function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
 	const gameList = useStateFromStores([RunningGameStore], () => RunningGameStore.getGamesSeen());
 	const _gameList = gameList.filter((game) => GameStore.getGameByName(game.name)).slice(0, 12);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: `${modules_7e65654a.dock} ${modules_7e65654a.emptyState}` }, BdApi.React.createElement("svg", { className: modules_7e65654a.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: modules_7e65654a.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: modules_7e65654a.dock }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: `${QuickLaucherClasses.dock} ${QuickLauncherClasses.emptyState}` }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: ActivityModuleClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: QuickLauncherClasses.dock }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
 }
 
-// activity_feed/common/methods/common.js
+// activity_feed/components/common/methods/common.js
 function chunkArray(cards, num) {
 	let chunkLength = Math.max(cards.length / num, 1);
 	const chunks = [];
@@ -1975,7 +1119,743 @@ function activityCheck({ activities, spotify }) {
 	return pass;
 }
 
-// activity_feed/now_playing/cardBuilder.tsx
+// activity_feed/components/now_playing/NowPlaying.module.css
+const css = `
+._932dc34d1f525dd9_nowPlayingContainer {
+		display: flex;
+		margin-top: var(--space-lg);
+		gap: var(--space-lg);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+		width: calc(50% - (var(--space-lg) / 2))
+}
+
+._932dc34d1f525dd9_nowPlayingContainer ._932dc34d1f525dd9_itemCard {
+		flex: 1 0 0;
+		margin: 16px 16px 0 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_card {
+		border-radius: 5px;
+		box-sizing: border-box;
+		cursor: default;
+		overflow: hidden;
+		transform: translateZ(0);
+}
+		
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_cardHeader {
+		padding: 20px;
+		position: relative;
+		flex-direction: row;
+		background: var(--background-base-lowest);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_header {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: 40px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_header > ._932dc34d1f525dd9_wrapper {
+		display: flex;
+		cursor: pointer;
+		margin-right: 20px;
+		transition: opacity .2s ease;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_nameTag {
+		line-height: 17px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		vertical-align: middle;
+		white-space: nowrap;
+		color: var(--text-default);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_username {
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 20px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_username:hover {
+		text-decoration: underline;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_card:hover ._932dc34d1f525dd9_headerIcon {
+		display: none;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_headerActions {
+		display: none;
+		margin-left: 8px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_card:hover ._932dc34d1f525dd9_headerActions {
+		display: flex;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_headerActions > div[aria-expanded="false"] {
+		display: none;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_headerActions {
+		._932dc34d1f525dd9_button._932dc34d1f525dd9_lookFilled {
+				background: var(--control-secondary-background-default);
+				border: unset;
+				color: var(--white);
+				padding: 2px 16px;
+				width: unset;
+				svg {
+						display: none;
+				} 
+		}
+		._932dc34d1f525dd9_button._932dc34d1f525dd9_lookFilled:hover {
+				background-color: var(--control-secondary-background-hover) !important;
+		}
+		._932dc34d1f525dd9_button._932dc34d1f525dd9_lookFilled:active {
+				background-color: var(--control-secondary-background-active) !important; 
+		}
+		._932dc34d1f525dd9_lookFilled._932dc34d1f525dd9_colorPrimary {
+				background: unset !important;
+				border: unset !important;
+		}
+		._932dc34d1f525dd9_lookFilled._932dc34d1f525dd9_colorPrimary:hover {
+				color: var(--interactive-background-hover);
+				svg {
+						stroke: var(--interactive-background-hover);
+				}
+		}
+		._932dc34d1f525dd9_lookFilled._932dc34d1f525dd9_colorPrimary:active {
+				color: var(--interactive-background-active);
+				svg {
+						stroke: var(--interactive-background-active);
+				}
+		}
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_overflowMenu {
+		cursor: pointer;
+		height: 24px;
+		margin-left: 8px;
+		transition: opacity .2s linear;
+		width: 24px;
+		color: var(--interactive-icon-hover);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_overflowMenu:hover {
+		color: var(--interactive-icon-default);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_headerIcon {
+		border-radius: 4px;
+		display: block;
+		height: 30px;
+		justify-self: end;
+		width: 30px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_splashArt {
+		filter: grayscale(100%);
+		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
+		opacity: .3;
+		width: 300px;
+		background-position-x: 50%;
+		background-position-y: 40%;
+		background-repeat: no-repeat;
+		background-size: cover;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_server {
+		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
+		right: 0;
+		left: unset;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_cardBody {
+		display: flex;
+		padding: 0 20px;
+		background: var(--background-mod-strong)
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_section {
+		-webkit-box-flex: 1;
+		flex: 1 0 calc(50% - 20px);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_game {
+		padding: 20px 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_gameBody {
+		flex-direction: column;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_activityContainer:last-child:not(:only-child, :nth-child(1 of ._932dc34d1f525dd9_activityContainer)) ._932dc34d1f525dd9_sectionDivider {
+		display: none;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_activity {
+		flex-direction: row;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_activity:last-child:not(:only-child) {
+		margin-top: 20px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_activity ._932dc34d1f525dd9_serviceButtonWrapper {
+		gap: 6px;
+		display: flex;
+		flex-direction: row;
+		._932dc34d1f525dd9_sm:not(._932dc34d1f525dd9_hasText) {
+				padding: 0;
+				width: calc(var(--custom-button-button-sm-height) + 4px);
+		}
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_richActivity {
+		margin-top: 20px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_activityFeed {
+		-webkit-box-flex: 1;
+		flex: 1 1 50%;
+		min-width: 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn :is(._932dc34d1f525dd9_gameInfoRich, ._932dc34d1f525dd9_gameNameWrapper) {
+		-webkit-box-flex: 1;
+		display: flex;
+		flex: 1;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_gameInfoRich {
+		align-items: center;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_gameInfo {
+		margin-left: 20px;
+		min-width: 0;
+		color: var(--text-default);
+		font-weight: 500;
+		flex: 1;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn :is(._932dc34d1f525dd9_gameName, ._932dc34d1f525dd9_gameNameWrapper, ._932dc34d1f525dd9_streamInfo) {
+		overflow: hidden;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_gameName {
+		font-size: 16px;
+		line-height: 20px;
+		margin-right: 10px;
+		max-width: fit-content;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_gameName._932dc34d1f525dd9_clickable:hover {
+		text-decoration: underline;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_playTime:not(a) {
+		color: var(--text-muted);
+}
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_playTime {
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 14px;
+		margin-top: 4px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets {
+		position: relative;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assetsLargeImageActivityFeed {
+		width: 90px;
+		height: 90px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assetsSmallImageActivityFeed {
+		height: 30px;
+		width: 30px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_assetsLargeImage {
+		display: block;
+		border-radius: 4px; 
+		object-fit: cover;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_assetsLargeImageActivityFeedTwitch {
+		border-radius: 5px;
+		height: 260px;
+		mask: linear-gradient(0deg, transparent 10%, #000 80%);
+		width: 100%;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets:has(._932dc34d1f525dd9_assetsSmallImage) ._932dc34d1f525dd9_assetsLargeImage {
+		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_richActivity ._932dc34d1f525dd9_assetsSmallImage, ._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_richActivity ._932dc34d1f525dd9_smallEmptyIcon {
+		border-radius: 50%;
+		position: absolute;
+		bottom: -4px;
+		right: -4px; 
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_activity ._932dc34d1f525dd9_smallEmptyIcon {
+		width: 40px;
+		height: 40px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_largeEmptyIcon {
+		width: 90px;
+		height: 90px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_largeEmptyIcon path {
+		transform: scale(3.65) !important;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_richActivity svg._932dc34d1f525dd9_assetsSmallImage {
+		border-radius: unset !important;
+}   
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_richActivity ._932dc34d1f525dd9_smallEmptyIcon path {
+		transform: scale(1.3) !important;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_twitchImageContainer {
+		background: var(--background-secondary-alt);
+		border-radius: 5px;
+		position: relative;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_twitchBackgroundImage {
+		display: inline-block;
+		min-height: 260px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_twitchImageOverlay {
+		bottom: 0;
+		left: 0;
+		padding: 16px;
+		position: absolute;
+		right: 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_streamName {
+		color: var(--text-default);
+		font-size: 14px;
+		font-weight: 500;
+		margin-top: 8px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_assets ._932dc34d1f525dd9_streamGame {
+		color: var(--text-muted);
+		font-size: 12px;
+		font-weight: 600;
+		margin-top: 8px;
+		text-transform: uppercase;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_contentImagesActivityFeed {
+		margin-left: 20px;
+		color: var(--text-default);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn :is(._932dc34d1f525dd9_gameInfo, ._932dc34d1f525dd9_contentImagesActivityFeed) {
+		align-self: center;
+		display: grid;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_content {
+		flex: 1;
+		overflow: hidden;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_details {
+		font-weight: 600;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_ellipsis {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+
+._932dc34d1f525dd9_textRow {
+		display: block;
+		font-size: 14px;
+		line-height: 16px;
+		margin-bottom: 4px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_content ._932dc34d1f525dd9_bar {
+		background-color: var(--opacity-white-24);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_sectionDivider {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 20px 0 20px 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSection {
+		display: flex;
+		flex: 1 1 auto;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: flex-start;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionAssets {
+		align-items: center;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		position: relative;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionIconWrapper {
+		align-items: center;
+		border-radius: 50%;
+		bottom: -4px;
+		display: flex;
+		height: 20px;
+		justify-content: center;
+		position: absolute;
+		right: -3px;
+		width: 20px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionIcon {
+		color: var(--header-secondary);
+		height: 12px;
+		width: 12px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionGuildImage {
+		border-radius: 50%;
+		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
+		mask-size: 100%;
+		mask-type: luminance;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSection ._932dc34d1f525dd9_details {
+		flex: 1;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionDetails {
+		cursor: pointer;
+		margin-left: 20px;
+		min-width: 0;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionDetails:hover :is(._932dc34d1f525dd9_voiceSectionText, ._932dc34d1f525dd9_voiceSectionSubtext) {
+		text-decoration: underline;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionText {
+		color: var(--text-default);
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 1.2857142857142858;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSectionSubtext {
+		color: var(--text-muted);
+		font-size: 12px;
+		font-weight: 400;
+		line-height: 1.3333333333333333;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_userList {
+		flex: 0 1 auto;
+		justify-content: flex-end;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_voiceSection button {
+		flex: 0 1 auto;
+		width: auto;
+		margin-left: 20px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_actionsActivity ._932dc34d1f525dd9_buttonContainer {
+		flex-direction: inherit;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_partyStatusWrapper {
+		display: flex;
+		gap: 4px;
+		align-items: center;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_partyStatusWrapper button {
+		flex: 0 1 50%;
+		max-height: 24px;
+		min-height: 24px;
+		width: auto !important;
+		justify-self: flex-end;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_partyStatusWrapper ._932dc34d1f525dd9_disabledButtonWrapper {
+		flex: 1;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_partyStatusWrapper ._932dc34d1f525dd9_disabledButtonOverlay {
+		height: 24px;
+		width: 100%;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_partyList {
+		display: flex;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_player:first-of-type {
+		mask: url(#svg-mask-voice-user-summary-item);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_emptyUser:not(:first-of-type), ._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_player:not(:first-of-type) {
+		margin-left: -4px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_emptyUser:not(:last-of-type), ._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_player:not(:last-of-type) {
+		mask: url(#svg-mask-voice-user-summary-item);
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_emptyUser, ._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_player {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_emptyUser svg {
+		margin-left: 3px;
+}
+
+._932dc34d1f525dd9_nowPlayingColumn ._932dc34d1f525dd9_partyPlayerCount {
+		color: var(--app-message-embed-secondary-text);
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.3333333333333333;
+}
+
+._932dc34d1f525dd9_nowPlaying ._932dc34d1f525dd9_emptyState {
+		border: 1px solid;
+		border-radius: 5px;
+		box-sizing: border-box;
+		margin-top: 20px;
+		padding: 20px;
+		width: 100%;
+}
+
+._932dc34d1f525dd9_cardV2 {
+		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
+		border-radius: var(--radius-md);
+		outline: 1px solid var(--border-normal);
+		outline-offset: -1px;
+		box-sizing: border-box;
+		background-clip: border-box;
+		overflow: hidden;
+		transform: translateZ(0);
+
+		._932dc34d1f525dd9_headerActions ._932dc34d1f525dd9_button._932dc34d1f525dd9_lookFilled, ._932dc34d1f525dd9_cardBody button {
+				color: var(--white);
+				background: var(--opacity-white-24);
+				&:hover {
+						background: var(--opacity-white-36);
+				}
+				&:active {
+						background: var(--opacity-white-32);
+				}
+		}
+
+		._932dc34d1f525dd9_cardHeader {
+				padding: var(--space-lg);
+				position: relative;
+				flex-direction: row;
+				background: unset;
+		}
+		._932dc34d1f525dd9_nameTag {
+				color: var(--white);
+		}
+		._932dc34d1f525dd9_splashArt, ._932dc34d1f525dd9_server {
+				background-position: center;
+				background-repeat: no-repeat;
+				background-size: cover;
+				filter: unset;
+				mask: radial-gradient(100% 100% at top right, var(--white) 0, transparent 100%);
+				opacity: .3;
+				position: absolute;
+				top: 0;
+				left: unset;
+				right: 0;
+				width: 300px;
+				height: 120px;
+				pointer-events: none;
+				z-index: -1;
+		}
+		&:hover {
+				._932dc34d1f525dd9_headerIcon {
+						display: none;
+				}
+				._932dc34d1f525dd9_headerActions {
+						display: flex;
+				}
+		}
+		._932dc34d1f525dd9_cardBody {
+				display: flex;
+				gap: var(--space-lg);
+				padding: 0 var(--space-lg) var(--space-lg);
+				background: unset;
+		}
+		._932dc34d1f525dd9_section {
+				background: var(--background-mod-normal);
+				border-radius: var(--radius-sm);
+				padding: var(--space-sm);
+		}
+		._932dc34d1f525dd9_game {
+				padding: 0;
+		}
+		._932dc34d1f525dd9_sectionDivider {
+				border-color: var(--opacity-white-12) !important;
+				border-width: 1px;
+				margin: 12px 0 12px 0;
+		}
+		._932dc34d1f525dd9_voiceSectionText {
+				color: var(--white);
+		}
+		._932dc34d1f525dd9_headerIcon, ._932dc34d1f525dd9_gameIcon, ._932dc34d1f525dd9_assetsLargeImage._932dc34d1f525dd9_assetsLargeImage {
+				border-radius: var(--radius-sm);
+		}
+		._932dc34d1f525dd9_gameInfo {
+				color: var(--white);
+		}
+		._932dc34d1f525dd9_playTime:not(a), ._932dc34d1f525dd9_voiceSectionSubtext {
+				color: var(--app-message-embed-secondary-text) !important;
+		}
+		._932dc34d1f525dd9_serviceButtonWrapper {
+				gap: 8px !important;
+		}
+		._932dc34d1f525dd9_contentImagesActivityFeed {
+				color: var(--white);
+		}
+		._932dc34d1f525dd9_textRow {
+				font-size: 16px;
+				line-height: 18px;
+		}
+		._932dc34d1f525dd9_state {
+				color: var(--app-message-embed-secondary-text);
+				font-size: 14px;
+				line-height: 16px;
+		}
+		._932dc34d1f525dd9_activity:last-child:not(:only-child) {
+				margin-top: 12px;
+		}
+}`;
+_loadStyle("NowPlaying.module.css", css);
+const modules_7260a078 = {
+	"nowPlayingContainer": "_932dc34d1f525dd9_nowPlayingContainer",
+	"nowPlayingColumn": "_932dc34d1f525dd9_nowPlayingColumn",
+	"itemCard": "_932dc34d1f525dd9_itemCard",
+	"card": "_932dc34d1f525dd9_card",
+	"cardHeader": "_932dc34d1f525dd9_cardHeader",
+	"header": "_932dc34d1f525dd9_header",
+	"wrapper": "_932dc34d1f525dd9_wrapper",
+	"nameTag": "_932dc34d1f525dd9_nameTag",
+	"username": "_932dc34d1f525dd9_username",
+	"headerIcon": "_932dc34d1f525dd9_headerIcon",
+	"headerActions": "_932dc34d1f525dd9_headerActions",
+	"button": "_932dc34d1f525dd9_button",
+	"lookFilled": "_932dc34d1f525dd9_lookFilled",
+	"colorPrimary": "_932dc34d1f525dd9_colorPrimary",
+	"overflowMenu": "_932dc34d1f525dd9_overflowMenu",
+	"splashArt": "_932dc34d1f525dd9_splashArt",
+	"server": "_932dc34d1f525dd9_server",
+	"cardBody": "_932dc34d1f525dd9_cardBody",
+	"section": "_932dc34d1f525dd9_section",
+	"game": "_932dc34d1f525dd9_game",
+	"gameBody": "_932dc34d1f525dd9_gameBody",
+	"activityContainer": "_932dc34d1f525dd9_activityContainer",
+	"sectionDivider": "_932dc34d1f525dd9_sectionDivider",
+	"activity": "_932dc34d1f525dd9_activity",
+	"serviceButtonWrapper": "_932dc34d1f525dd9_serviceButtonWrapper",
+	"sm": "_932dc34d1f525dd9_sm",
+	"hasText": "_932dc34d1f525dd9_hasText",
+	"richActivity": "_932dc34d1f525dd9_richActivity",
+	"activityFeed": "_932dc34d1f525dd9_activityFeed",
+	"gameInfoRich": "_932dc34d1f525dd9_gameInfoRich",
+	"gameNameWrapper": "_932dc34d1f525dd9_gameNameWrapper",
+	"gameInfo": "_932dc34d1f525dd9_gameInfo",
+	"gameName": "_932dc34d1f525dd9_gameName",
+	"streamInfo": "_932dc34d1f525dd9_streamInfo",
+	"clickable": "_932dc34d1f525dd9_clickable",
+	"playTime": "_932dc34d1f525dd9_playTime",
+	"assets": "_932dc34d1f525dd9_assets",
+	"assetsLargeImageActivityFeed": "_932dc34d1f525dd9_assetsLargeImageActivityFeed",
+	"assetsSmallImageActivityFeed": "_932dc34d1f525dd9_assetsSmallImageActivityFeed",
+	"assetsLargeImage": "_932dc34d1f525dd9_assetsLargeImage",
+	"assetsLargeImageActivityFeedTwitch": "_932dc34d1f525dd9_assetsLargeImageActivityFeedTwitch",
+	"assetsSmallImage": "_932dc34d1f525dd9_assetsSmallImage",
+	"smallEmptyIcon": "_932dc34d1f525dd9_smallEmptyIcon",
+	"largeEmptyIcon": "_932dc34d1f525dd9_largeEmptyIcon",
+	"twitchImageContainer": "_932dc34d1f525dd9_twitchImageContainer",
+	"twitchBackgroundImage": "_932dc34d1f525dd9_twitchBackgroundImage",
+	"twitchImageOverlay": "_932dc34d1f525dd9_twitchImageOverlay",
+	"streamName": "_932dc34d1f525dd9_streamName",
+	"streamGame": "_932dc34d1f525dd9_streamGame",
+	"contentImagesActivityFeed": "_932dc34d1f525dd9_contentImagesActivityFeed",
+	"content": "_932dc34d1f525dd9_content",
+	"details": "_932dc34d1f525dd9_details",
+	"ellipsis": "_932dc34d1f525dd9_ellipsis",
+	"textRow": "_932dc34d1f525dd9_textRow",
+	"bar": "_932dc34d1f525dd9_bar",
+	"voiceSection": "_932dc34d1f525dd9_voiceSection",
+	"voiceSectionAssets": "_932dc34d1f525dd9_voiceSectionAssets",
+	"voiceSectionIconWrapper": "_932dc34d1f525dd9_voiceSectionIconWrapper",
+	"voiceSectionIcon": "_932dc34d1f525dd9_voiceSectionIcon",
+	"voiceSectionGuildImage": "_932dc34d1f525dd9_voiceSectionGuildImage",
+	"voiceSectionDetails": "_932dc34d1f525dd9_voiceSectionDetails",
+	"voiceSectionText": "_932dc34d1f525dd9_voiceSectionText",
+	"voiceSectionSubtext": "_932dc34d1f525dd9_voiceSectionSubtext",
+	"userList": "_932dc34d1f525dd9_userList",
+	"actionsActivity": "_932dc34d1f525dd9_actionsActivity",
+	"buttonContainer": "_932dc34d1f525dd9_buttonContainer",
+	"partyStatusWrapper": "_932dc34d1f525dd9_partyStatusWrapper",
+	"disabledButtonWrapper": "_932dc34d1f525dd9_disabledButtonWrapper",
+	"disabledButtonOverlay": "_932dc34d1f525dd9_disabledButtonOverlay",
+	"partyList": "_932dc34d1f525dd9_partyList",
+	"player": "_932dc34d1f525dd9_player",
+	"emptyUser": "_932dc34d1f525dd9_emptyUser",
+	"partyPlayerCount": "_932dc34d1f525dd9_partyPlayerCount",
+	"nowPlaying": "_932dc34d1f525dd9_nowPlaying",
+	"emptyState": "_932dc34d1f525dd9_emptyState",
+	"cardV2": "_932dc34d1f525dd9_cardV2",
+	"gameIcon": "_932dc34d1f525dd9_gameIcon",
+	"state": "_932dc34d1f525dd9_state"
+};
+const NowPlayingClasses = modules_7260a078;
+
+// activity_feed/components/now_playing/cardBuilder.tsx
 function NowPlayingCardBuilder({ card, v2Enabled }) {
 	card.party.priorityMembers[0].user;
 	card.party.priorityMembers[0].status;
@@ -1986,10 +1866,10 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const isSpotify = card.party.isSpotifyActivity;
 	const filterCheck = activityCheck({ activities, spotify: isSpotify });
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
-	return BdApi.React.createElement("div", { className: v2Enabled ? modules_7e65654a.cardV2 : modules_7e65654a.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } });
+	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } });
 }
 
-// activity_feed/now_playing/baseBuilder.tsx
+// activity_feed/components/now_playing/baseBuilder.tsx
 function NowPlayingColumnBuilder({ nowPlayingCards }) {
 	return nowPlayingCards.map((card) => [
 		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") }),
@@ -2000,17 +1880,17 @@ function NowPlayingBuilder(props) {
 	Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_MOUNTED" });
 	const nowPlayingCards = useStateFromStores([NowPlayingViewStore], () => NowPlayingViewStore.nowPlayingCards);
 	const cardColumns = chunkArray(nowPlayingCards, 2);
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: modules_7e65654a.emptyState }, BdApi.React.createElement("div", { className: modules_7e65654a.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: modules_7e65654a.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: modules_7e65654a.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: modules_7e65654a.nowPlayingColumn }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: acivityFeedClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
 }
 
 // activity_feed/base.tsx
 function Scroller({ children, padding }) {
-	return BdApi.React.createElement("div", { className: modules_7e65654a.scrollerBase, style: { overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" } }, children);
+	return BdApi.React.createElement("div", { className: MainClasses.scrollerBase, style: { overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" } }, children);
 }
 function TabBaseBuilder() {
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: modules_7e65654a.activityFeed }, BdApi.React.createElement(Common.HeaderBar, { className: modules_7e65654a.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: modules_7e65654a.iconWrapper }, BdApi.React.createElement("svg", { className: Common.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: modules_7e65654a.titleWrapper }, BdApi.React.createElement("div", { className: modules_7e65654a.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: modules_7e65654a.centerContainer }, BdApi.React.createElement(QuickLauncherBuilder, { className: modules_7e65654a.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: modules_7e65654a.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement("svg", { className: Common.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/builder.tsx
@@ -2111,7 +1991,7 @@ class ActivityFeed {
 			);
 			return ret;
 		}
-		betterdiscord.DOM.addStyle("activityPanelCSS", css);
+		betterdiscord.DOM.addStyle("activityPanelCSS", styles());
 		betterdiscord.Patcher.after(Common.DMSidebar, "Z", (that, [props], res) => {
 			const panel = betterdiscord.Utils.findInTree(res, (m) => m?.homeLink, { walkable: ["props", "children"] });
 			const selected = useSelectedState();

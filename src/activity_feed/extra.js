@@ -1,6 +1,6 @@
 import { Webpack } from "betterdiscord";
-import NowPlayingClasses from "./now_playing/NowPlaying.module.css";
-import QuickLauncherClasses from "./quick_launcher/QuickLauncher.module.css";
+import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css";
+import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css";
 
 const styles = Object.assign({
         wrapper: Webpack.getByKeys('wrapper', 'svg', 'mask').wrapper,

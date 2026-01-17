@@ -367,7 +367,7 @@ let _styles = "";
 function _loadStyle(path, css) {
 	_styles += "/*" + path + "*/\n" + css + "\n";
 }
-function styles() {
+function styles$1() {
 	return _styles;
 }
 
@@ -924,11 +924,11 @@ function SectionHeader({ label }) {
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
 const css$1 = `
-._8e586c23073d00b5_quickLauncher {
+._01420ea7ebdc5164_quickLauncher {
 		display: block;
 }
 
-._8e586c23073d00b5_dock {
+._01420ea7ebdc5164_dock {
 		margin-top: 10px;
 		display: flex;
 		overflow: hidden;
@@ -936,7 +936,7 @@ const css$1 = `
 		max-width: 1280px;
 }
 
-._8e586c23073d00b5_dockItem {
+._01420ea7ebdc5164_dockItem {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: pointer;
@@ -946,11 +946,11 @@ const css$1 = `
 		flex-direction: column;
 }
 
-._8e586c23073d00b5_dockIcon:first-child {
+._01420ea7ebdc5164_dockIcon:first-child {
 		margin-left: 0;
 }
 
-._8e586c23073d00b5_dockIcon {
+._01420ea7ebdc5164_dockIcon {
 		background-size: 100%;
 		border-radius: 3px;
 		height: 40px;
@@ -959,7 +959,7 @@ const css$1 = `
 		width: 40px;
 }
 
-._8e586c23073d00b5_dockItemText {
+._01420ea7ebdc5164_dockItemText {
 		font-weight: 500;
 		height: 31px;
 		line-height: normal;
@@ -972,41 +972,46 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-._8e586c23073d00b5_dockItemPlay {
+._01420ea7ebdc5164_dockItemPlay {
 		display: none;
 		z-index: 9999;
 }
 
-._8e586c23073d00b5_dockItemPlay:disabled, ._8e586c23073d00b5_dockItemPlay[aria-disabled=true] {
+._01420ea7ebdc5164_dockItemPlay:disabled, ._01420ea7ebdc5164_dockItemPlay[aria-disabled=true] {
 		background-color: var(--green-active, var(--button-positive-background-active)) !important;
 }
 
-._8e586c23073d00b5_dockItem:hover {
+._01420ea7ebdc5164_dockItem:hover {
 		background: var(--background-base-lowest);
 }
 
-._8e586c23073d00b5_dockItem:hover ._8e586c23073d00b5_dockItemText {
+._01420ea7ebdc5164_dockItem:hover ._01420ea7ebdc5164_dockItemText {
 		display: none;
 }
 
-._8e586c23073d00b5_dockItem:hover ._8e586c23073d00b5_dockItemPlay {
+._01420ea7ebdc5164_dockItem:hover ._01420ea7ebdc5164_dockItemPlay {
 		display: flex;
 }
 
-._8e586c23073d00b5_emptyIcon {
+._01420ea7ebdc5164_emptyState {
+		position: relative;
+}
+
+._01420ea7ebdc5164_emptyIcon {
 		height: 24px;
 		margin-right: 8px;
 		width: 24px;
 }`;
 _loadStyle("QuickLauncher.module.css", css$1);
 const modules_1116a9ae = {
-	"quickLauncher": "_8e586c23073d00b5_quickLauncher",
-	"dock": "_8e586c23073d00b5_dock",
-	"dockItem": "_8e586c23073d00b5_dockItem",
-	"dockIcon": "_8e586c23073d00b5_dockIcon",
-	"dockItemText": "_8e586c23073d00b5_dockItemText",
-	"dockItemPlay": "_8e586c23073d00b5_dockItemPlay",
-	"emptyIcon": "_8e586c23073d00b5_emptyIcon"
+	"quickLauncher": "_01420ea7ebdc5164_quickLauncher",
+	"dock": "_01420ea7ebdc5164_dock",
+	"dockItem": "_01420ea7ebdc5164_dockItem",
+	"dockIcon": "_01420ea7ebdc5164_dockIcon",
+	"dockItemText": "_01420ea7ebdc5164_dockItemText",
+	"dockItemPlay": "_01420ea7ebdc5164_dockItemPlay",
+	"emptyState": "_01420ea7ebdc5164_emptyState",
+	"emptyIcon": "_01420ea7ebdc5164_emptyIcon"
 };
 const QuickLauncherClasses = modules_1116a9ae;
 
@@ -1910,6 +1915,32 @@ function SettingsPanelBuilder() {
 	return;
 }
 
+// activity_feed/extra.js
+const styles = Object.assign(
+	{
+		wrapper: betterdiscord.Webpack.getByKeys("wrapper", "svg", "mask").wrapper,
+		customButtons: betterdiscord.Webpack.getByKeys("customButtons", "absolute").customButtons,
+		hasText: betterdiscord.Webpack.getModule((x) => x.primary && x.hasText && !x.hasTrailing).hasText,
+		sm: betterdiscord.Webpack.getModule((x) => x.primary && x.hasText && !x.hasTrailing).sm,
+		interactiveSelected: betterdiscord.Webpack.getByKeys("icon", "upperContainer").interactiveSelected
+	},
+	betterdiscord.Webpack.getByKeys("itemCard"),
+	betterdiscord.Webpack.getByKeys("tabularNumbers"),
+	betterdiscord.Webpack.getByKeys("colorPrimary", "grow"),
+	betterdiscord.Webpack.getByKeys("bar", "container", "progress"),
+	betterdiscord.Webpack.getModule((x) => x.buttonContainer && Object.keys(x).length === 1),
+	NowPlayingClasses,
+	QuickLauncherClasses
+);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.cardV2 {\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n`);
+function webpackify(css) {
+	for (const key in styles) {
+		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
+		css = css.replace(regex, `.${styles[key]}$1`);
+	}
+	return css;
+}
+
 // index.ts
 function useSelectedState() {
 	return useLocation().pathname.startsWith("/activity-feed");
@@ -2003,7 +2034,8 @@ class ActivityFeed {
 			);
 			return ret;
 		}
-		betterdiscord.DOM.addStyle("activityPanelCSS", styles());
+		betterdiscord.DOM.addStyle("activityPanelCSS", styles$1());
+		betterdiscord.DOM.addStyle("activityPanelSupplementalCSS", extraCSS);
 		betterdiscord.Patcher.after(Common.DMSidebar, "Z", (that, [props], res) => {
 			const panel = betterdiscord.Utils.findInTree(res, (m) => m?.homeLink, { walkable: ["props", "children"] });
 			const selected = useSelectedState();

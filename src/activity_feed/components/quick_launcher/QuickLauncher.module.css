@@ -67,6 +67,10 @@
     display: flex;
 }
 
+.emptyState {
+    position: relative;
+}
+
 .emptyIcon {
     height: 24px;
     margin-right: 8px;

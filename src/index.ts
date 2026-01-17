@@ -8,6 +8,7 @@ import { TabBaseBuilder } from "./activity_feed/base.js";
 import { SettingsPanelBuilder } from "./settings/builder.js";
 import styleModule, { css } from "./activity_feed/ActivityFeed.module.css"; 
 import styles from "styles";
+import { extraCSS } from "./activity_feed/extra";
 
 function useSelectedState() {
     return useLocation().pathname.startsWith("/activity-feed");
@@ -107,6 +108,7 @@ export default class ActivityFeed {
 
         //console.log(activityPanelCSS)
         DOM.addStyle('activityPanelCSS', styles());
+        DOM.addStyle('activityPanelSupplementalCSS', extraCSS)
 
         Patcher.after(Common.DMSidebar, "Z", (that, [props], res) => {
             const panel = Utils.findInTree(res, m => m?.homeLink, { walkable: [ "props", "children" ] });

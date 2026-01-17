@@ -63,3 +63,7 @@
         }
     }
 }
+
+.emptyState {
+    position: relative;
+}

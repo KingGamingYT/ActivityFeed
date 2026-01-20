@@ -1,4 +1,5 @@
 import { Webpack } from "betterdiscord";
+import MainClasses from "./ActivityFeed.module.css";
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css";
 
@@ -7,18 +8,24 @@ const styles = Object.assign({
         customButtons: Webpack.getByKeys('customButtons', 'absolute').customButtons,
         hasText: Webpack.getModule(x=>x.primary && x.hasText && !x.hasTrailing).hasText,
         sm: Webpack.getModule(x=>x.primary && x.hasText && !x.hasTrailing).sm,
-        interactiveSelected: Webpack.getByKeys('icon', 'upperContainer').interactiveSelected
+        interactiveSelected: Webpack.getByKeys('icon', 'upperContainer').interactiveSelected,
+        lookFilled: Webpack.getByKeys('colorPrimary', 'grow').lookFilled,
+        colorPrimary: Webpack.getByKeys('colorPrimary', 'grow').colorPrimary
     },
     Webpack.getByKeys('itemCard'),
     Webpack.getByKeys('tabularNumbers'),
-    Webpack.getByKeys('colorPrimary', 'grow'),
     Webpack.getByKeys('bar', 'container', 'progress'),
     Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1),
+    MainClasses,
     NowPlayingClasses,
     QuickLauncherClasses
 );
 
 export const extraCSS = webpackify(`
+    ._2cbe2fbfe32e4150-description .sharedFilePreviewYouTubeVideo {
+        display: none;
+    }
+
     .nowPlayingColumn .tabularNumbers {
         color: var(--text-default) !important;
     }
@@ -27,12 +34,82 @@ export const extraCSS = webpackify(`
         gap: 8px;
     }
 
+    .nowPlayingColumn .header > .wrapper {
+        display: flex;
+        cursor: pointer;
+        margin-right: 20px;
+        transition: opacity .2s ease;
+    }
+
     .customButtons {
         display: flex;
         flex-direction: column;
     }
 
+    .headerActions {
+        .button.lookFilled {
+            background: var(--control-secondary-background-default);
+            border: unset;
+            color: var(--white);
+            padding: 2px 16px;
+            width: unset;
+            svg {
+                display: none;
+            } 
+        }
+        .button.lookFilled:hover {
+            background-color: var(--control-secondary-background-hover) !important;
+        }
+        .button.lookFilled:active {
+            background-color: var(--control-secondary-background-active) !important; 
+        }
+        .lookFilled.colorPrimary {
+            background: unset !important;
+            border: unset !important;
+        }
+        .lookFilled.colorPrimary:hover {
+            color: var(--interactive-background-hover);
+            svg {
+                stroke: var(--interactive-background-hover);
+            }
+        }
+        .lookFilled.colorPrimary:active {
+            color: var(--interactive-background-active);
+            svg {
+                stroke: var(--interactive-background-active);
+            }
+        }
+    }
+
+    .activity .serviceButtonWrapper .sm:not(.hasText) {
+        padding: 0;
+        width: calc(var(--custom-button-button-sm-height) + 4px);
+    }
+
+    .content .bar {
+        background-color: var(--opacity-white-24);
+    }
+
+    .partyStatusWrapper .disabledButtonWrapper {
+        flex: 1;
+    }
+
+    .partyStatusWrapper .disabledButtonOverlay {
+        height: 24px;
+        width: 100%;
+    }
+
     .cardV2 {
+        .headerActions .button.lookFilled, .cardBody button {
+            color: var(--white);
+            background: var(--opacity-white-24);
+            &:hover {
+                background: var(--opacity-white-36);
+            }
+            &:active {
+                background: var(--opacity-white-32);
+            }
+        }
         .tabularNumbers {
             color: var(--app-message-embed-secondary-text) !important;
         }
@@ -94,5 +171,6 @@ function webpackify(css) {
         let regex = new RegExp(`\\.${key}([\\s,.):>])`, 'g');
         css = css.replace(regex, `.${styles[key]}$1`);
     }
+    console.log(css)
     return css;
 }

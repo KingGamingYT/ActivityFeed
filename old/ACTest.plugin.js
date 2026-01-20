@@ -22,7 +22,7 @@ const layoutUtils = Webpack.getMangled(Webpack.Filters.bySource('$Root', '.ACCOR
     }
 )
 const positionClasses = Webpack.getByKeys('noWrap');
-const buttonClasses = Webpack.getByKeys('lookFilled', 'button');
+const ButtonVoidClasses = Webpack.getByKeys('lookFilled', 'button');
 const anchorClasses = Webpack.getByKeys('anchor', 'anchorUnderlineOnHover');
 const FluxStore = Webpack.getModule(x => typeof x.ZP?.Store === 'function', {searchExports: false, searchDefault: false}).ZP
 const ApplicationStore = Webpack.getStore("ApplicationStore");
@@ -464,7 +464,7 @@ function SettingsPanelBuilder() {
                                     createElement('div', { className: "textRow_267ac" }, note)
                                 ]),
                                 createElement('button', { 
-                                    className: `button_267ac unhideBlacklisted_267ac ${buttonClasses.lookFilled} ${buttonClasses.colorPrimary} ${buttonClasses.sizeTiny} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
+                                    className: `button_267ac unhideBlacklisted_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.colorPrimary} ${ButtonVoidClasses.sizeTiny} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
                                     onClick: () => NewsStore.displaySet = NewsStore.getRandomFeeds(NewsStore.dataSet)},
                                     "Reroll"
                                 )
@@ -515,7 +515,7 @@ function BlacklistItemBuilder({game, blacklist, updateBlacklist, key}) {
             createElement('img', { className: "blacklistItemIcon_267ac", src: `https://cdn.discordapp.com/app-icons/${application?.id}/${application.icon}.webp?size=32&keep_aspect_ratio=false` }),
             createElement('div', { className: "blacklistItemName_267ac textRow_267ac" }, application.name || "Unknown Game"),
             createElement('button', { 
-                className: `button_267ac unhideBlacklisted_267ac ${buttonClasses.lookFilled} ${buttonClasses.colorPrimary} ${buttonClasses.sizeTiny} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
+                className: `button_267ac unhideBlacklisted_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.colorPrimary} ${ButtonVoidClasses.sizeTiny} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
                 onClick: () => ModalSystem.openModal((props) => 
                     createElement(ModalRoot.Modal, {
                         ...props,
@@ -786,7 +786,7 @@ function RegularActivityBuilder({user, activity, game, players, server, check, v
                     createElement(SpotifyButtons, { user: user, activity: activity }) 
                 ),
                 (!activity?.name.includes("YouTube Music") && activity?.assets) ? null : createElement('div', {
-                    className: `button_267ac actionsActivity_267ac ${buttonClasses.lookFilled} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
+                    className: `button_267ac actionsActivity_267ac ${ButtonVoidClasses.lookFilled} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
                     style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}, 
                     v2Enabled && activity?.party && activity?.party?.size ? null : createElement(ActivityButtons, {user: user, activity: activity})
                 )
@@ -838,7 +838,7 @@ function RichActivityBuilder({user, activity, v2Enabled}) {
                         : createElement(ActivityTimer, { activity: activity })
                     ]),
                     (width > 1240 && !activity?.name.includes("YouTube Music")) && createElement('div', {
-                        className: `button_267ac actionsActivity_267ac ${buttonClasses.lookFilled} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
+                        className: `button_267ac actionsActivity_267ac ${ButtonVoidClasses.lookFilled} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
                         style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}, 
                         v2Enabled && activity?.party && activity?.party?.size ? null : createElement(ActivityButtons, {user: user, activity: activity})
                     )
@@ -910,7 +910,7 @@ function TwitchCards({user, activity}) {
                 createElement('div', { className: "streamInfo_267ac" }, [
                     createElement('div', { className: "gameName_267ac" }, currentGame?.name),
                     createElement('a', { 
-                        className: `${buttonClasses.lookLink} ${anchorClasses.anchor} ${anchorClasses.anchorUnderlineOnHover} playTime_267ac`, 
+                        className: `${ButtonVoidClasses.lookLink} ${anchorClasses.anchor} ${anchorClasses.anchorUnderlineOnHover} playTime_267ac`, 
                         href: currentActivity.url, 
                         rel: "noreferrer nopener", 
                         target: "_blank", 
@@ -919,7 +919,7 @@ function TwitchCards({user, activity}) {
                 ])
             ),
             width > 1240 && createElement('div', {
-                className: `button_267ac actionsActivity_267ac ${buttonClasses.lookFilled} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
+                className: `button_267ac actionsActivity_267ac ${ButtonVoidClasses.lookFilled} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
                 style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}, 
                 createElement(ActivityButtons, {user: user, activity: currentActivity})
             ),
@@ -1228,10 +1228,10 @@ function NewsFeedMiniPaginationBuilder({article, handleDirection}) {
         createElement('div', { className: "paginationSmall_267ac" }, [
             createElement('button', { 
                 type: "button", 
-                className: `prevButtonContainer_267ac arrow_267ac button_267ac ${buttonClasses.lookFilled} ${buttonClasses.grow}`,
+                className: `prevButtonContainer_267ac arrow_267ac button_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.grow}`,
                 onClick: () => { setArticle({index: article.index - 1, direction: -1, idling: false, orientation: handleOrientation()}) },
                 disabled: article.index !== 0 ? false : true },
-                createElement('div', { className: `${buttonClasses.contents}`},
+                createElement('div', { className: `${ButtonVoidClasses.contents}`},
                     createElement('svg', { width: 24, height: 24, className: "arrow_267ac left_267ac"},
                         createElement('polygon', { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8"})
                     )
@@ -1249,10 +1249,10 @@ function NewsFeedMiniPaginationBuilder({article, handleDirection}) {
             ),
             createElement('button', { 
                 type: "button", 
-                className: `nextButtonContainer_267ac arrow_267ac button_267ac ${buttonClasses.lookFilled} ${buttonClasses.grow}`,
+                className: `nextButtonContainer_267ac arrow_267ac button_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.grow}`,
                 onClick: () => { setArticle({index: article.index + 1, direction: 1, idling: false, orientation: handleOrientation()}) },
                 disabled: article.index !== 3 ? false : true },
-                createElement('div', { className: `${buttonClasses.contents}`},
+                createElement('div', { className: `${ButtonVoidClasses.contents}`},
                     createElement('svg', { width: 24, height: 24, className: "arrow_267ac right_267ac"},
                         createElement('polygon', { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8"})
                     )
@@ -1497,10 +1497,10 @@ function NewsFeedBuilder() {
                 createElement('div', { className: "paginationSmall_267ac" }, [
                     createElement('button', { 
                         type: "button", 
-                        className: `prevButtonContainer_267ac arrow_267ac button_267ac ${buttonClasses.lookFilled} ${buttonClasses.grow}`,
+                        className: `prevButtonContainer_267ac arrow_267ac button_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.grow}`,
                         onClick: () => { setArticle({index: article.index - 1, direction: -1, idling: false, orientation: handleOrientation()}) },
                         disabled: article.index !== 0 ? false : true },
-                        createElement('div', { className: `${buttonClasses.contents}`},
+                        createElement('div', { className: `${ButtonVoidClasses.contents}`},
                             createElement('svg', { width: 24, height: 24, className: "arrow_267ac left_267ac"},
                                 createElement('polygon', { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8"})
                             )
@@ -1518,10 +1518,10 @@ function NewsFeedBuilder() {
                     ),
                     createElement('button', { 
                         type: "button", 
-                        className: `nextButtonContainer_267ac arrow_267ac button_267ac ${buttonClasses.lookFilled} ${buttonClasses.grow}`,
+                        className: `nextButtonContainer_267ac arrow_267ac button_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.grow}`,
                         onClick: () => { setArticle({index: article.index + 1, direction: 1, idling: false}) },
                         disabled: article.index !== 3 ? false : true },
-                        createElement('div', { className: `${buttonClasses.contents}`},
+                        createElement('div', { className: `${ButtonVoidClasses.contents}`},
                             createElement('svg', { width: 24, height: 24, className: "arrow_267ac right_267ac"},
                                 createElement('polygon', { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8"})
                             )
@@ -1549,10 +1549,10 @@ function LauncherGameBuilder({game, runningGames}) {
     return createElement('div', { className: `dockItem_267ac ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}, ${positionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, [
             createElement('div', { className: "dockIcon_267ac", style: { backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + GameStore.getGameByName(game.name).id + '/' + GameStore.getGameByName(game.name).icon + '.webp'})` } }),
             createElement('div', { className: "dockItemText_267ac" }, game.name),
-            createElement('button', { className: `dockItemPlay_267ac ${buttonClasses.button} ${buttonClasses.lookFilled} ${buttonClasses.colorGreen} ${buttonClasses.sizeSmall} ${buttonClasses.fullWidth} ${buttonClasses.grow}`, 
+            createElement('button', { className: `dockItemPlay_267ac ${ButtonVoidClasses.button} ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.colorGreen} ${ButtonVoidClasses.sizeSmall} ${ButtonVoidClasses.fullWidth} ${ButtonVoidClasses.grow}`, 
                 disabled: disableCheck,
                 onClick: () => { setDisable(true); shell.openExternal(game.exePath); timer }},  
-                createElement('div', { className: `${buttonClasses.contents}`}, "Play")
+                createElement('div', { className: `${ButtonVoidClasses.contents}`}, "Play")
             )
         ]
     )
@@ -1636,7 +1636,7 @@ function NowPlayingCardBuilder({card, v2Enabled}) {
                     style: { flex: "0" }}, [
                     createElement('button', { 
                         type: "button", 
-                        className: `button_267ac ${buttonClasses.lookFilled} ${buttonClasses.sizeSmall}`, 
+                        className: `button_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.sizeSmall}`, 
                         onClick: () => OpenDM.openPrivateChannel({recipientIds: user.id})
                     }, "Message"),
                     createElement('div', {}, 
@@ -1656,7 +1656,7 @@ function NowPlayingCardBuilder({card, v2Enabled}) {
                             },
                             createElement('button', {
                                 type: "button",
-                                className: `button_267ac ${buttonClasses.lookBlank} ${buttonClasses.grow}`,
+                                className: `button_267ac ${ButtonVoidClasses.lookBlank} ${ButtonVoidClasses.grow}`,
                             }, createElement('svg', { 
                                 width: 24, 
                                 height: 24, 

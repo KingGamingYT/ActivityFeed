@@ -18,5 +18,9 @@ export const settings = {
             note: "Re-roll currently displayed articles. Will not fetch new ones.",
             type: "button"
         }
+    },
+    default:  {
+        v2Cards: true,
+        cardTypeDebug: false
     }
 };

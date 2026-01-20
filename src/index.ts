@@ -21,8 +21,8 @@ function NavigatorButton() {
             selected: useSelectedState(), 
             route: "/activity-feed", 
             text: "Activity", 
-            icon: () => { return createElement('svg', {style: {width: "20", height: "20"}, viewBox: "0 0 20 20", fill: "none"},
-                    createElement('path', {d: ControllerIcon, fill: "var(--channel-icon)", transform: "scale(0.90)" })
+            icon: () => { return createElement('svg', { className: Common.LinkButtonClasses.linkButtonIcon, width: 20, height: 20, viewBox: "0 0 20 20", fill: "none"},
+                    createElement('path', {d: ControllerIcon, fill: "currentColor", transform: "scale(0.90)" })
                 )
             }
         }
@@ -241,6 +241,45 @@ export default class ActivityFeed {
                 createElement(BlacklistBuilder) 
                 */
             ]
+        }),
+        createElement(Components.SettingGroup, {
+            name: "Advanced/Debug",
+            collapsible: true,
+            shown: false,
+            children: 
+                createElement('div', { className: "toggleStack_267ac", style: { padding: "var(--space-16) 0 var(--space-16) 0" }},
+                    createElement(() => Object.keys(settings.debug).map((key) => {
+                        const { name, note, initial, type, changed } = settings.debug[key];
+                        const [state, setState] = useState(Data.load(key));
+
+                        if (type === "switch") {
+                            return createElement(Common.FormSwitch, {
+                                label: name,
+                                description: note,
+                                checked: state ?? initial,
+                                onChange: (v) => {
+                                    Data.save(key, v);
+                                    setState(v);
+                                    if (changed)
+                                        changed(v);
+                                }
+                            });
+                        }
+                        return (
+                            createElement('div', { className: "buttonItem_267ac", style: { display: "flex" }}, [
+                                createElement('div', { style: { display: "flex", flexDirection: "column", flex: 1 }}, [
+                                    createElement('div', { className: "blacklistItemName_267ac textRow_267ac", style: { fontWeight: 500, fontSize: "16px", color: "var(--text-primary)" } }, name),
+                                    createElement('div', { className: "textRow_267ac" }, note)
+                                ]),
+                                createElement('button', { 
+                                    className: `button_267ac unhideBlacklisted_267ac ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, 
+                                    onClick: () => NewsStore.displaySet = NewsStore.getRandomFeeds(NewsStore.dataSet)},
+                                    "Reroll"
+                                )
+                            ])
+                        )
+                    }))
+                ),
         })]
     }
 }

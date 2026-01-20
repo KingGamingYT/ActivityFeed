@@ -1,10 +1,12 @@
-import { activityCheck, GradGen } from "../common/methods/common";
+import { useEffect } from "react";
+import { activityCheck, GradGen, SplashGen } from "../common/methods/common";
+import { Common } from "@./modules/common";
+import { ApplicationStore, DetectableGameSupplementalStore, GameStore } from "@./modules/stores";
 import { CardHeader, CardBody } from "./card_shop/index";
 import NowPlayingClasses from "./NowPlaying.module.css";
 
 export function NowPlayingCardBuilder({card, v2Enabled}) {
     const user = card.party.priorityMembers[0].user;
-    const status = card.party.priorityMembers[0].status;
     const activities = card.party.currentActivities;
     const currentGame = card.party.currentActivities[0]?.game;
     const voice = card.party.voiceChannels;
@@ -13,9 +15,18 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const filterCheck = activityCheck({activities: activities, spotify: isSpotify});
     const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 
+    useEffect(() => { 
+        (async () => {
+            await Common.FetchGames.getDetectableGamesSupplemental([currentGame?.id]);
+        })()
+    }, [currentGame?.id]);
+    
+    const game = DetectableGameSupplementalStore.getGame(currentGame?.id) || (ApplicationStore.getApplication(currentGame?.id) && DetectableGameSupplementalStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id));
+    const splash = SplashGen(isSpotify, activities[0]?.activity, {currentGame: currentGame, data: game}, voice, streams[0]?.stream);
+
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
-            <CardHeader />
+            <CardHeader card={card} activities={activities} game={currentGame} splash={splash} user={user} voice={voice} isSpotify={isSpotify} />
             <CardBody />
         </div>
     )
@@ -66,7 +77,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
                     style: { flex: "0" }}, [
                     createElement('button', { 
                         type: "button", 
-                        className: `button_267ac ${buttonClasses.lookFilled} ${buttonClasses.sizeSmall}`, 
+                        className: `button_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.sizeSmall}`, 
                         onClick: () => OpenDM.openPrivateChannel({recipientIds: user.id})
                     }, "Message"),
                     createElement('div', {}, 
@@ -86,7 +97,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
                             },
                             createElement('button', {
                                 type: "button",
-                                className: `button_267ac ${buttonClasses.lookBlank} ${buttonClasses.grow}`,
+                                className: `button_267ac ${ButtonVoidClasses.lookBlank} ${ButtonVoidClasses.grow}`,
                             }, createElement('svg', { 
                                 width: 24, 
                                 height: 24, 

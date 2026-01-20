@@ -67,7 +67,7 @@ function NotSettingsPanelBuilder() {
                                     createElement('div', { className: "textRow_267ac" }, note)
                                 ]),
                                 createElement('button', { 
-                                    className: `button_267ac unhideBlacklisted_267ac ${buttonClasses.lookFilled} ${buttonClasses.colorPrimary} ${buttonClasses.sizeTiny} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
+                                    className: `button_267ac unhideBlacklisted_267ac ${ButtonVoidClasses.lookFilled} ${ButtonVoidClasses.colorPrimary} ${ButtonVoidClasses.sizeTiny} ${positionClasses.flex} ${positionClasses.noWrap} ${positionClasses.justifyStart}`, 
                                     onClick: () => NewsStore.displaySet = NewsStore.getRandomFeeds(NewsStore.dataSet)},
                                     "Reroll"
                                 )

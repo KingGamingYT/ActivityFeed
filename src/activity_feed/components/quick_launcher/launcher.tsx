@@ -14,10 +14,10 @@ import QuickLauncherClasses from "./QuickLauncher.module.css";
     return createElement('div', { className: `dockItem_267ac ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, [
             createElement('div', { className: "dockIcon_267ac", style: { backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + GameStore.getGameByName(game.name).id + '/' + GameStore.getGameByName(game.name).icon + '.webp'})` } }),
             createElement('div', { className: "dockItemText_267ac" }, game.name),
-            createElement('button', { className: `dockItemPlay_267ac ${Common.ButtonClasses.button} ${Common.ButtonClasses.lookFilled} ${Common.ButtonClasses.colorGreen} ${Common.ButtonClasses.sizeSmall} ${Common.ButtonClasses.fullWidth} ${Common.ButtonClasses.grow}`, 
+            createElement('button', { className: `dockItemPlay_267ac ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`, 
                 disabled: disableCheck,
                 onClick: () => { setDisable(true); shell.openExternal(game.exePath); timer }},  
-                createElement('div', { className: `${Common.ButtonClasses.contents}`}, "Play")
+                createElement('div', { className: `${Common.ButtonVoidClasses.contents}`}, "Play")
             )
         ]
     )
@@ -34,10 +34,10 @@ export function LauncherGameBuilder({game, runningGames}) {
             <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + GameStore.getGameByName(game.name).id + '/' + GameStore.getGameByName(game.name).icon + '.webp'})` }} />
             <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
             <button 
-                className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonClasses.button} ${Common.ButtonClasses.lookFilled} ${Common.ButtonClasses.colorGreen} ${Common.ButtonClasses.sizeSmall} ${Common.ButtonClasses.fullWidth} ${Common.ButtonClasses.grow}`} 
+                className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
                 disabled={disableCheck}
                 onClick={() => { setDisable(true); shell.openExternal(game.exePath); timer }}>
-                <div className={`${Common.ButtonClasses.contents}`}>Play</div>
+                <div className={`${Common.ButtonVoidClasses.contents}`}>Play</div>
             </button>
         </div>
     )

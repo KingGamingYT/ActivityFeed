@@ -1156,7 +1156,7 @@ function activityCheck({ activities, spotify }) {
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
-function CardBody({}) {
+function CardBody({ activities, user, voice, streams, check, v2Enabled }) {
 	return;
 }
 

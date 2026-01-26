@@ -12,7 +12,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const voice = card.party.voiceChannels;
     const streams = card.party.applicationStreams;
     const isSpotify = card.party.isSpotifyActivity;
-    const filterCheck = activityCheck({activities: activities, spotify: isSpotify});
+    const filterCheck = activityCheck(activities, isSpotify);
     const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 
     useEffect(() => { 
@@ -27,7 +27,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
             <CardHeader card={card} activities={activities} game={currentGame} splash={splash} user={user} voice={voice} isSpotify={isSpotify} />
-            <CardBody />
+            <CardBody activities={activities} user={user} voice={voice} streams={streams} check={filterCheck} isSpotify v2Enabled={v2Enabled} />
         </div>
     )
 }

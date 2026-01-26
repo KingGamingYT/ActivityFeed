@@ -1,3 +1,12 @@
+import { useState } from "react";
+import { Common } from "@modules/common";
+import { useWindowSize } from "@common/methods/common";
+import { FallbackAsset, GameIconAsset, ConsoleImageAsset } from "./common/index";
+
+export function RegularActivityBuilder({activity, user, game, players, server, check, v2Enabled}) {
+    
+}
+
 /*
 function RegularActivityBuilder({user, activity, game, players, server, check, v2Enabled}) {
     const [width, height] = useWindowSize();

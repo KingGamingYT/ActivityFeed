@@ -1,7 +1,7 @@
 import { Utils } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common } from "@./modules/common";
-import { TooltipBuilder } from "@activity_feed/TooltipBuilder";
+import Tooltip from "@activity_feed/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
@@ -44,7 +44,7 @@ function HeaderActions({card, user}) {
                     {...props}
                     ref={refDOM}
                     onClick={() => { setShowPopout(true) }}>
-                    <TooltipBuilder note={"More"}>
+                    <Tooltip note={"More"}>
                         <button className={`${MainClasses.button} ${Common.ButtonVoidClasses.lookBlank} ${Common.ButtonVoidClasses.grow}`} type={"button"}>
                             <svg className={`${NowPlayingClasses.overflowMenu}`} role="img" width="16" height="16" viewBox="0 0 24 24">
                                 <g fill="none" fillRule="evenodd">
@@ -53,7 +53,7 @@ function HeaderActions({card, user}) {
                                 </g>
                             </svg>
                         </button>
-                    </TooltipBuilder>
+                    </Tooltip>
                 </span>}
             </Common.Popout>
         </div>

@@ -1,6 +1,6 @@
 import { Common } from '@modules/common';
 
-export const TooltipBuilder = ({ note, position, children }) => {
+export default TooltipBuilder = ({ note, position, children }) => {
     return (
         <Common.Tooltip text={note} position={position || "top"}>
             {props => {

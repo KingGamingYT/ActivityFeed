@@ -1155,22 +1155,6 @@ function activityCheck({ activities, spotify }) {
 	return pass;
 }
 
-// activity_feed/components/now_playing/card_shop/components/CardBody.tsx
-function CardBody({ activities, user, voice, streams, check, v2Enabled }) {
-	return;
-}
-
-// activity_feed/TooltipBuilder.tsx
-const TooltipBuilder = ({ note, position, children }) => {
-	return BdApi.React.createElement(Common.Tooltip, { text: note, position: position || "top" }, (props) => {
-		children.props = {
-			...props,
-			...children.props
-		};
-		return children;
-	});
-};
-
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css = `
 .nowPlayingContainer_a62e48 {
@@ -1828,6 +1812,33 @@ const modules_7260a078 = {
 };
 const NowPlayingClasses = modules_7260a078;
 
+// activity_feed/components/now_playing/card_shop/components/CardBody.tsx
+function CardBody({ activities, user, voice, streams, check, v2Enabled }) {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities: activites, voice, streams }), (() => {
+		switch (true) {
+			case !!filterCheck.streaming:
+				BdApi.React.createElement(TwitchCard, { user, activity: activites[0] });
+				break;
+			case !!isSpotify:
+				BdApi.React.createElement(SpotifyCard, { user, activities: activites });
+				break;
+			default:
+				BdApi.React.createElement(ActivityCardWrapper, { user, activities: activites, voice, streams, check: filterCheck, v2Enabled });
+		}
+	})()))));
+}
+
+// activity_feed/TooltipBuilder.tsx
+const Tooltip = TooltipBuilder = ({ note, position, children }) => {
+	return BdApi.React.createElement(Common.Tooltip, { text: note, position: position || "top" }, (props) => {
+		children.props = {
+			...props,
+			...children.props
+		};
+		return children;
+	});
+};
+
 // activity_feed/components/now_playing/card_shop/components/CardHeader.tsx
 function Splash({ splash, className }) {
 	if (!splash) return;
@@ -1869,7 +1880,7 @@ function HeaderActions({ card, user }) {
 					setShowPopout(true);
 				}
 			},
-			BdApi.React.createElement(TooltipBuilder, { note: "More" }, BdApi.React.createElement("button", { className: `${MainClasses.button} ${Common.ButtonVoidClasses.lookBlank} ${Common.ButtonVoidClasses.grow}`, type: "button" }, BdApi.React.createElement("svg", { className: `${NowPlayingClasses.overflowMenu}`, role: "img", width: "16", height: "16", viewBox: "0 0 24 24" }, BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement("path", { d: "M24 0v24H0V0z" }), BdApi.React.createElement("path", { d: "M12 16c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2z", fill: "currentColor" })))))
+			BdApi.React.createElement(Tooltip, { note: "More" }, BdApi.React.createElement("button", { className: `${MainClasses.button} ${Common.ButtonVoidClasses.lookBlank} ${Common.ButtonVoidClasses.grow}`, type: "button" }, BdApi.React.createElement("svg", { className: `${NowPlayingClasses.overflowMenu}`, role: "img", width: "16", height: "16", viewBox: "0 0 24 24" }, BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement("path", { d: "M24 0v24H0V0z" }), BdApi.React.createElement("path", { d: "M12 16c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2z", fill: "currentColor" })))))
 		)
 	));
 }
@@ -1889,7 +1900,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const voice = card.party.voiceChannels;
 	const streams = card.party.applicationStreams;
 	const isSpotify = card.party.isSpotifyActivity;
-	const filterCheck = activityCheck({ activities, spotify: isSpotify });
+	const filterCheck = activityCheck(activities);
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 	react.useEffect(() => {
 		(async () => {
@@ -1898,7 +1909,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	}, [currentGame?.id]);
 	const game = DetectableGameSupplementalStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && DetectableGameSupplementalStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
 	const splash = SplashGen(isSpotify, activities[0]?.activity, { currentGame, data: game }, voice, streams[0]?.stream);
-	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(CardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(CardBody, null));
+	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(CardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(CardBody, { activities, user, voice, streams, check: filterCheck, isSpotify: true, v2Enabled }));
 }
 
 // activity_feed/components/now_playing/baseBuilder.tsx

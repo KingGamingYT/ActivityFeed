@@ -81,7 +81,7 @@ export function CardHeader({card, activities, game, splash, user, voice, isSpoti
         <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
-                <Common.AvatarFetch.qE imageClassName="avatar" src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} status={status} size="SIZE_40" />
+                <Common.AvatarFetch imageClassName="avatar" src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} status={status} size="SIZE_40" />
                 <DiscordTag user={user} voice={voice} />
                 <HeaderActions card={card} user={user} />
                 <HeaderIcon activities={activities} isSpotify={isSpotify} currentGame={game} />

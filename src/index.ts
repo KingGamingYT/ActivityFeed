@@ -110,7 +110,7 @@ export default class ActivityFeed {
         DOM.addStyle('activityPanelCSS', styles());
         DOM.addStyle('activityPanelSupplementalCSS', extraCSS)
 
-        Patcher.after(Common.DMSidebar, "Z", (that, [props], res) => {
+        Patcher.after(Common.DMSidebar, "A", (that, [props], res) => {
             const panel = Utils.findInTree(res, m => m?.homeLink, { walkable: [ "props", "children" ] });
             const selected = useSelectedState();
 
@@ -152,7 +152,7 @@ export default class ActivityFeed {
         })
         
         function fu() {
-            const appI = ReactUtils.getOwnerInstance(document.querySelector("div[class$=-app] > div[class$=-app]"), {
+            const appI = ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {
                 filter: m => typeof m.ensureChannelMatchesGuild === "function"
             });
             

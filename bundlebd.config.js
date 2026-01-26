@@ -21,5 +21,5 @@ module.exports = defineConfig({
 	input: "src",
 	output: "dist",
 	importAliases: mapped,
-  generateCSSModuleScopedName: `[hash:16]_[local]`
+  generateCSSModuleScopedName: `[local]_[hash:6]`
 });

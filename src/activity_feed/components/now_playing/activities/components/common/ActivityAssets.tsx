@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { Common } from "@./modules/common";
-import { TooltipBuilder } from '@activity_feed/TooltipBuilder';
+import Tooltip from '@activity_feed/TooltipBuilder';
+
+interface RichImageAsset {
+    url: string | (() => string),
+    tooltipText: string,
+    onClick?: React.MouseEventHandler<HTMLImageElement>,
+    type: "Large" | "Small"
+}
 
 export function ConsoleImageAsset({url, platform}) {
     return (
@@ -42,22 +49,22 @@ export function GameIconAsset({url, name}) {
     )
 }
 
-export function RichImageAsset({url, tooltipText, onClick, type}) {
+export function RichImageAsset({url, tooltipText, onClick, type}: RichImageAsset) {
     const [shouldFallback, setShouldFallback] = useState(false);
 
     return (
-        <TooltipBuilder note={tooltipText}>
+        <Tooltip note={tooltipText}>
             { shouldFallback ? ( <FallbackAsset className={`assets${type}Image`} /> ) :
                 <img 
                     className={`assets${type}Image`}
                     aria-label={tooltipText}
                     alt={tooltipText}
-                    src={url}
+                    src={`${url}`}
                     onClick={onClick}
                     onError={() => (setShouldFallback(true))}
                 ></img>
             }
-        </TooltipBuilder> 
+        </Tooltip> 
     )
 }
 

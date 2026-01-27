@@ -1,6 +1,12 @@
 import { Common } from '@modules/common';
 
-export default TooltipBuilder = ({ note, position, children }) => {
+interface TooltipBuilder {
+    note: string,
+    position?: string,
+    children: any
+}
+
+export default ({ note, position, children }: TooltipBuilder) => {
     return (
         <Common.Tooltip text={note} position={position || "top"}>
             {props => {

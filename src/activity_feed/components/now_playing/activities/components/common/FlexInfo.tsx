@@ -3,7 +3,7 @@ import { GuildStore, RelationshipStore, useStateFromStores } from '@modules/stor
 import { getVoiceParticipants } from '../../methods/getVoiceParticipants';
 import { activityCheck } from '../../methods/check';
 
-function Header({ activity, channel, check }) {
+function Header({ activity, channel }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     if (channel) {
         const nickname = useStateFromStores([ RelationshipStore ], () => RelationshipStore.getNickname(guildChannel?.ownerId || channel.getRecipientId()))
@@ -22,7 +22,7 @@ function Header({ activity, channel, check }) {
     )
 }
 
-function ActivityType({ type, filterCheck, activity, voice, channel, stream }) {
+function ActivityType({ type, filterCheck, activity, voice, channel }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     switch (type) {
         case "PLAYING": return (
@@ -73,28 +73,17 @@ function ActivityType({ type, filterCheck, activity, voice, channel, stream }) {
                 }
             </>
         )
-        case "STREAM": return (
-            <>
-                <Common.VoiceList
-                    className="userList"
-                    users={getVoiceParticipants({ voice })}
-                    maxUsers={getVoiceParticipants({ voice }).length}
-                    guildId={stream.guildId}
-                    channelId={stream.channelId}
-                />
-            </>
-        )
     }
 }
 
 export function FlexInfo(props) {
-    const { className, style, activity, voice, stream, channel, check, type } = props
+    const { className, style, activity, voice, channel, type } = props
     const filterCheck = activityCheck({ activities: [activity] });
 
     return (
         <div className={className} style={style}>
-            <Header activity={activity} channel={channel} check={check} />
-            <ActivityType filterCheck={filterCheck} activity={activity} voice={voice} stream={stream} channel={channel} type={type} />
+            <Header activity={activity} channel={channel} />
+            <ActivityType filterCheck={filterCheck} activity={activity} voice={voice} channel={channel} type={type} />
         </div>
     )
 }

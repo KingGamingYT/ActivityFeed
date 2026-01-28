@@ -15,7 +15,7 @@ interface RegularButtons {
 interface RichButtons {
     activity: Object,
     user: Object,
-    players: Object,
+    players?: Object,
     v2Enabled?: boolean
 }
 
@@ -26,7 +26,7 @@ export function RegularCardTrailing({activity, user, server, players, check, v2E
 
     return (
         <>
-            {server && <VoiceList
+            {server && <Common.VoiceList
                 className={`${NowPlayingClasses.userList}`}
                 users={players}
                 maxUsers={players.length}
@@ -34,7 +34,7 @@ export function RegularCardTrailing({activity, user, server, players, check, v2E
                 size="SIZE_32"
             />}
             {check.spotify !== 0 && <div className={`${NowPlayingClasses.serviceButtonWrapper}`}>
-                <SpotifyButtons user={user} activity={activity} />
+                <Common.SpotifyButtons user={user} activity={activity} />
             </div>}
             {!activity?.name.includes("YouTube Music") && activity?.assets ? null : <div 
                 className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}

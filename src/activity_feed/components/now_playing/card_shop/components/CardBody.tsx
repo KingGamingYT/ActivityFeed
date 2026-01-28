@@ -9,7 +9,7 @@ export function CardBody({activities, user, voice, streams, check, v2Enabled}) {
             <div className={NowPlayingClasses.section}>
                 <div className={NowPlayingClasses.game}>
                     <div className={`${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`} style={{ flex: "1 1 auto" }}>
-                        <VoiceCard activities={activites} voice={voice} streams={streams} />
+                        <VoiceCard activities={activities} voice={voice} streams={streams} />
                         {(() => {
                             switch(true) {
                                 case !! filterCheck.streaming: <TwitchCard user={user} activity={activites[0]} />; break;

@@ -4,6 +4,8 @@ import { ApplicationStore, DetectableGameSupplementalStore } from '@modules/stor
 import { GameProfileOpen } from '../methods/GameProfileOpen';
 import { ConsoleImageAsset, FallbackAsset, GameIconAsset, RichImageAsset } from './common/ActivityAssets';
 import { FlexInfo } from './common/FlexInfo';
+import { RichActivityBuilder, RegularActivityBuilder } from "./innerBuilder";
+import NowPlayingCards from "@now_playing/NowPlaying.module.css";
 
 function nActivityCard({user, activity, check}) {
     const gameId = activity?.application_id;
@@ -80,7 +82,23 @@ function nActivityCard({user, activity, check}) {
     )
 }
 
-export function ActivityCard({user, activities, currentActivity})
+export function ActivityCard({user, activities, currentActivity, currentGame, players, server, checkk, v2Enabled}) {
+    const gameId = currentActivity?.application_id;
+
+    useEffect(() => { 
+        (async () => {
+            await Common.FetchGames.getDetectableGamesSupplemental([gameId]);
+        })()
+    }, [gameId]);
+
+    return(
+        <>
+            <div className={NowPlayingCards.activityContainer}>
+                
+            </div>
+        </>
+    )
+}
 
 function ActivityCard({user, activities, currentActivity, currentGame, players, server, check, v2Enabled}) {
     const gameId = currentActivity?.application_id;

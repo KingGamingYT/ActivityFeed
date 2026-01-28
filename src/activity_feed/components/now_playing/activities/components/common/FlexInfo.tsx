@@ -1,6 +1,5 @@
 import { Common } from '@modules/common';
 import { GuildStore, RelationshipStore, useStateFromStores } from '@modules/stores';
-import { getVoiceParticipants } from '../../methods/getVoiceParticipants';
 import { activityCheck } from '../../methods/check';
 
 function Header({ activity, channel }) {

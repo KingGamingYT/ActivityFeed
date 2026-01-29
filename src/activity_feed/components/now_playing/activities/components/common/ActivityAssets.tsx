@@ -61,16 +61,17 @@ export function SpotifyAsset({activity, user}) {
 export function GameIconAsset({url, id, name}) {
     const [shouldFallback, setShouldFallback] = useState(false);
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: id});
+    console.log(useGameProfile)
 
     return (
         <>
             { shouldFallback ? ( <FallbackAsset className={NowPlayingClasses.gameIcon} style={{ width: "40px", height: "40px" }} /> ) :
                 <img 
                     className={NowPlayingClasses.gameIcon}
-                    style={{ width: "40px", height: "40px" }}
+                    style={{ width: "40px", height: "40px", cursor: useGameProfile && "pointer" }}
                     aria-label={Common.intl.intl.formatToPlainString(Common.intl.t['nh+jWk'], {game: name})}
                     src={url}
-                    onClick={() => useGameProfile}
+                    onClick={useGameProfile}
                     onError={() => (setShouldFallback(true))}
                 ></img>
             }

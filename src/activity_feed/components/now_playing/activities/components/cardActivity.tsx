@@ -6,7 +6,7 @@ import { ConsoleImageAsset, FallbackAsset, GameIconAsset, RichImageAsset } from 
 import { FlexInfo } from './common/FlexInfo';
 import { RichActivityBuilder, RegularActivityBuilder } from "./innerBuilder";
 import { PartyFooter } from "./common/CardTrailing";
-import NowPlayingCards from "@now_playing/NowPlaying.module.css";
+import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function ActivityCard({user, activities, currentActivity, currentGame, players, server, check, v2Enabled}) {
     const gameId = currentActivity?.application_id;
@@ -19,7 +19,7 @@ export function ActivityCard({user, activities, currentActivity, currentGame, pl
 
     return (
         <>
-            <div className={NowPlayingCards.activityContainer}>
+            <div className={NowPlayingClasses.activityContainer}>
                 <RegularActivityBuilder user={user} activity={currentActivity} game={currentGame} check={check} v2Enabled={v2Enabled} />
                 {currentActivity?.assets && currentActivity?.assets.large_image && <RichActivityBuilder user={user} activity={currentActivity} v2Enabled={v2Enabled} />}
             </div>

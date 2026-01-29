@@ -2,8 +2,9 @@ import { Common } from '@modules/common';
 import { ChannelStore, useStateFromStores } from '@modules/stores';
 import { FlexInfo } from './common/FlexInfo';
 import { VoiceGuildAsset } from "./common/ActivityAssets";
+import { useWindowSize } from "@common/methods/common";
 import { getVoiceParticipants } from '../methods/getVoiceParticipants';
-import NowPlayingClasses from "@now_playing/NowPlayingClasses.module.css";
+import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function nVoiceCard({voice, stream}) {
     const channel = useStateFromStores([ ChannelStore ], () => ChannelStore.getChannel(voice));
@@ -30,14 +31,14 @@ export function VoiceCard({activities, voice, streams}) {
     const [width, height] = useWindowSize();
     const stream = streams[0]?.stream;
     const streamUser = streams[0]?.streamUser;
-    const channel = stream && !channel ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
+    const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
     const members = stream && !channel ? getVoiceParticipants({voice: stream.channelId}) : voice[0]?.members;
     const server = voice[0]?.guild;
 
     return (
         <div className={NowPlayingClasses.voiceSection}>
             <div className={NowPlayingClasses.voiceSectionAssets}>
-                < 
+                
             </div>
         </div>
     )

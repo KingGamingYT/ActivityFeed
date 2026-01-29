@@ -1,21 +1,21 @@
 import { Common } from "@modules/common";
-import { RichImageAsset } from "./common/ActivityAssets";
 import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
-import { FallbackAsset, SpotifyAsset, GameIconAsset, XboxImageAsset } from "./common/index";
+import { RichImageAsset, FallbackAsset, SpotifyAsset, GameIconAsset, XboxImageAsset } from "./common/ActivityAssets";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function RegularActivityBuilder({activity, user, game, players, server, check, v2Enabled}) {
-
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.activity}`} style={{ flex: "1 1 auto" }}>
-            {() => {
+            {(() => {
                 switch (true) {
-                    case !! check.spotify: return <SpotifyAsset activity={activity} user={user} />
-                    case !! activity?.platform?.includes('xbox'): return <XboxImageAsset  url={'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'}/>
-                    default: return <GameIconAsset url={game?.id && `https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`} id={activity?.application_id} name={game?.name} />
+                    case !! check?.spotify: return <SpotifyAsset activity={activity} user={user} />
+                    case !! activity?.platform?.includes('xbox'): return <XboxImageAsset url={'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'}/>
+                    default: return <GameIconAsset url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`} id={activity?.application_id} name={game?.name} />
                 }
-            }}
+            })()}
+            <FlexInfo className={NowPlayingClasses.gameInfo} activity={activity} game={game} type="REGULAR" />
+            <RegularCardTrailing activity={activity} user={user} server={server} players={players} check={check} v2Enabled={v2Enabled} />
         </div>
     )
 }
@@ -98,13 +98,13 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                 <div className={`${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}`}>
                     <div className={`${NowPlayingClasses.assets}`} >
                         <RichImageAsset
-                            url={() => {
+                            url={(() => {
                                 switch (true) {
                                     case !! activity?.assets?.large_image?.includes('spotify'): return `https://i.scdn.co/image/${activity.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`;
                                     case !! activity?.assets?.large_image?.includes('external'): return `https://media.discordapp.net/${activity.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`;
                                     default: return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
                                 }
-                            }}
+                            })()}
                             tooltipText={activity.assets.large_text}
                             type="Large"
                         />
@@ -117,7 +117,7 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                             type="Small"
                         />}
                     </div>
-                    <FlexInfo className={`${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`} activity={activity} />
+                    <FlexInfo className={`${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`} activity={activity} type="RICH" />
                     <RichCardTrailing activity={activity} user={user} v2Enabled={v2Enabled} />
                 </div>
             </div>
@@ -125,7 +125,7 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
     )
 }
 
-function nRichActivityBuilder({user, activity, v2Enabled}) {
+/*function nRichActivityBuilder({user, activity, v2Enabled}) {
     const [width, height] = useWindowSize();
     const [shouldLargeFallback, setShouldLargeFallback] = useState(false);
     const [shouldSmallFallback, setShouldSmallFallback] = useState(false);
@@ -148,3 +148,4 @@ function nRichActivityBuilder({user, activity, v2Enabled}) {
         ])
     )
 }
+*/

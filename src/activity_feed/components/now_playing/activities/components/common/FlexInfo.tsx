@@ -1,8 +1,9 @@
 import { Common } from '@modules/common';
-import { GuildStore, RelationshipStore, useStateFromStores } from '@modules/stores';
-import { activityCheck } from '../../methods/check';
+import { GuildStore, useStateFromStores } from '@modules/stores';
+import { activityCheck, TimeClock } from '@common/methods/common';
+import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
-function Header({ activity, channel }) {
+/*function Header({ activity, channel, type }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     if (channel) {
         const nickname = useStateFromStores([ RelationshipStore ], () => RelationshipStore.getNickname(guildChannel?.ownerId || channel.getRecipientId()))
@@ -19,24 +20,25 @@ function Header({ activity, channel }) {
     return (
         <div className="nameNormal textRow ellipsis" style={{ fontWeight: "600" }}>{result}</div>
     )
-}
+}*/
 
-function ActivityType({ type, filterCheck, activity, voice, channel }) {
+function ActivityType({ type, filterCheck, activity, game, voice, channel }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     switch (type) {
-        case "PLAYING": return (
+        case "REGULAR": return (
             <>
-                {!(filterCheck?.listening || filterCheck?.watching) && <div className="details textRow ellipsis">{activity.details}</div>}
-                <div className="state textRow ellipsis">{
-                    activity?.state && activity?.party && activity?.party?.size ?
-                        `${activity.state} (${activity.party.size[0]} of ${activity.party.size[1]})`
-                        :
-                        activity?.party && activity?.party?.size ?
-                            `Party: (${activity.party.size[0]} of ${activity.party.size[1]})`
-                            :
-                            activity.state
-                }
+                <div className={NowPlayingClasses.gameNameWrapper}>
+                    <div className={NowPlayingClasses.gameName}>{game?.name}</div>
                 </div>
+                {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
+                    <TimeClock timestamp={ activity.created_at } />
+                </div>}
+            </>
+        )
+        case "RICH": return (
+            <>
+                <div className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}>{activity.details || activity?.state}</div>
+                {activity?.details && <div className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}>{activity?.state}</div>}
                 {
                     activity?.timestamps?.end ? <div className="mediaProgressBarContainer">
                         <Common.MediaProgressBar start={activity?.timestamps?.start || activity?.created_at} end={activity?.timestamps?.end} />
@@ -76,13 +78,12 @@ function ActivityType({ type, filterCheck, activity, voice, channel }) {
 }
 
 export function FlexInfo(props) {
-    const { className, style, activity, voice, channel, type } = props
+    const { className, style, activity, game, voice, channel, type } = props
     const filterCheck = activityCheck({ activities: [activity] });
 
     return (
         <div className={className} style={style}>
-            <Header activity={activity} channel={channel} />
-            <ActivityType filterCheck={filterCheck} activity={activity} voice={voice} channel={channel} type={type} />
+            <ActivityType filterCheck={filterCheck} activity={activity} game={game} voice={voice} channel={channel} type={type} />
         </div>
     )
 }

@@ -1,11 +1,11 @@
+import { ActivityCardWrapper } from './components/cardActivityWrapper';
 import { ActivityCard } from './components/cardActivity';
 import { TwitchCard } from './components/cardTwitch';
-import { SpotifyCard } from './components/cardSpotify';
 import { VoiceCard } from './components/cardVoice';
 
 export {
+    ActivityCardWrapper,
     ActivityCard,
     TwitchCard,
-    SpotifyCard,
     VoiceCard,
 }

@@ -159,11 +159,17 @@
     margin-top: 20px;
 }
 
+.activityActivityFeed {}
+
 .activityFeed {
     -webkit-box-flex: 1;
     flex: 1 1 50%;
     min-width: 0;
 }
+
+.body {}
+
+.bodyNormal {}
 
 :is(.gameInfoRich, .gameNameWrapper) {
     -webkit-box-flex: 1;

@@ -1,3 +1,4 @@
+import { useState, useLayoutEffect } from "react";
 import { Common } from '@./modules/common';
 
 export function chunkArray(cards, num) {
@@ -14,10 +15,27 @@ export function DateGen(date) {
     return ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][gdate.getMonth()] + " " + gdate.getDate() + ", " + gdate.getFullYear();
 }
 
+export function TimeClock({timestamp}) {
+    const time = Math.floor((Date.now() - new Date(parseInt(timestamp)))/1000)
+
+    if ( (time / 86400) > 1 ) {
+        return Common.intl.intl.formatToPlainString(Common.intl.t['2rUo/p'], { time: Math.floor(time / 86400) });
+    }
+    else if ( (time / 3600) > 1 ) {
+        return Common.intl.intl.formatToPlainString(Common.intl.t['eNoooU'], { time: Math.floor(time / 3600) });
+    }
+    else if ( (time / 60) > 1 ) {
+        return Common.intl.intl.formatToPlainString(Common.intl.t['03mIHW'], { time: Math.floor(time / 60) });
+    }
+    else if ( (time % 60) < 60 ) {
+        return Common.intl.intl.formatToPlainString(Common.intl.t['ahzZr+']);
+    }
+}
+
 export function GradGen(check, isSpotify, activity, game, voice, stream) {
     let input;
     switch (true) {
-        case !! check.streaming: input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
+        case !! check?.streaming: input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
         case !! activity?.name.includes("YouTube Music"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! activity?.platform?.includes("xbox"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
@@ -43,7 +61,8 @@ export function SplashGen(isSpotify, activity, game, voice, stream) {
     return input || null;
 }
 
-export function activityCheck({activities, spotify}) {
+export function activityCheck( activities, isSpotify ) {
+    if (!activities) return;
     let pass = {
         playing: 0,
         xbox: 0,
@@ -56,33 +75,49 @@ export function activityCheck({activities, spotify}) {
         custom: 0
     };
     for (let i = 0; i < activities.length; i++) {
-        if (activities[i].activity.type == 4) {
+        if (!activities[i]) {
+            return;
+        }
+        if (activities[i].type == 4) {
             pass.custom = 1;
         }
-        if (activities[i].activity.type == 0) {
+        if (activities[i].type == 0) {
             pass.playing = 1;
         }
-        if (activities[i]?.activity.platform?.includes("xbox")) {
+        if (activities[i]?.platform?.includes("xbox")) {
             pass.xbox = 1;
         }
-        if (activities[i]?.activity.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
+        if (activities[i]?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
             pass.playstation = 1;
         }
-        if (activities[i].activity.type == 1) {
+        if (activities[i].type == 1) {
             pass.streaming = 1;
         }
-        if (activities[i].activity.type == 2) {
+        if (activities[i].type == 2) {
             pass.listening = 1;
         }
-        if (spotify) {
+        if (isSpotify) {
             pass.spotify = 1;
         }
-        if (activities[i].activity.type == 3) {
+        if (activities[i].type == 3) {
             pass.watching = 1;
         }
-        if (activities[i].activity.type == 5) {
+        if (activities[i].type == 5) {
             pass.competing = 1;
         }
     }
     return pass;
+}
+
+export function useWindowSize() {
+    const [size, setSize] = useState([0, 0]);
+    useLayoutEffect(() => {
+        function updateSize() {
+            setSize([window.innerWidth, window.innerHeight]);
+        }
+        window.addEventListener('resize', updateSize);
+        updateSize();
+        return () => window.removeEventListener('resize', updateSize);
+    }, []);
+    return size;
 }

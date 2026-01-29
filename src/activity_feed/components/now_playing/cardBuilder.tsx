@@ -27,7 +27,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
             <CardHeader card={card} activities={activities} game={currentGame} splash={splash} user={user} voice={voice} isSpotify={isSpotify} />
-            <CardBody activities={activities} user={user} voice={voice} streams={streams} check={filterCheck} isSpotify v2Enabled={v2Enabled} />
+            <CardBody activities={activities} user={user} voice={voice} streams={streams} check={filterCheck} isSpotify={isSpotify} v2Enabled={v2Enabled} />
         </div>
     )
 }

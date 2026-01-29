@@ -1,5 +1,4 @@
 import { ActivityButtons } from '@modules/common';
-import { ActivityHeader } from './common/ActivityHeader';
 import { TwitchImageAsset } from './common/ActivityAssets';
 import { FlexInfo } from './common/FlexInfo'
 
@@ -23,7 +22,7 @@ export function TwitchCard({user, activities}) {
                     </div>
                     <FlexInfo className="contentImagesProfile content" activity={activity} type="TWITCH" />
                     <div className="buttonsWrapper actionsProfile">
-                        <ActivityButtons user={user} activity={activity} />
+                        <Common.ActivityButtons user={user} activity={activity} />
                     </div>
                 </div>
             </div>

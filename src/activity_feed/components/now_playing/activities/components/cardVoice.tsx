@@ -2,6 +2,7 @@ import { Common } from '@modules/common';
 import { ChannelStore, useStateFromStores } from '@modules/stores';
 import { FlexInfo } from './common/FlexInfo';
 import { VoiceGuildAsset } from "./common/ActivityAssets";
+import { VoiceCardTrailing } from "./common/CardTrailing";
 import { useWindowSize } from "@common/methods/common";
 import { getVoiceParticipants } from '../methods/getVoiceParticipants';
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
@@ -28,7 +29,6 @@ export function nVoiceCard({voice, stream}) {
 export function VoiceCard({activities, voice, streams}) {
     if (!voice.length && !streams.length) return;
 
-    const [width, height] = useWindowSize();
     const stream = streams[0]?.stream;
     const streamUser = streams[0]?.streamUser;
     const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
@@ -38,13 +38,15 @@ export function VoiceCard({activities, voice, streams}) {
     return (
         <div className={NowPlayingClasses.voiceSection}>
             <div className={NowPlayingClasses.voiceSectionAssets}>
-                
+                <VoiceGuildAsset channel={channel} streamUser={streamUser} />
             </div>
+            <FlexInfo channel={channel} stream={streamUser} server={server} />
+            <VoiceCardTrailing members={members} server={server} channel={channel} />
         </div>
     )
 }
 
-function VoiceCards({activities, voice, streams}) {
+function nVoiceCards({activities, voice, streams}) {
     if (!voice.length && !streams.length) return;
 
     const [width, height] = useWindowSize();

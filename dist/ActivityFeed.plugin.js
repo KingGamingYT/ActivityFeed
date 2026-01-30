@@ -385,7 +385,7 @@ function styles$1() {
 
 // activity_feed/ActivityFeed.module.css
 const css$2 = `
-.activityFeed_0f0118 {
+.activityFeed_3c7b69 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-border-frame);
 		display: flex;
@@ -394,7 +394,7 @@ const css$2 = `
 		overflow: hidden;
 }
 
-.scrollerBase_0f0118 {
+.scrollerBase_3c7b69 {
 		contain: layout size;
 		height: 100%;
 		background: no-repeat bottom;
@@ -415,7 +415,7 @@ const css$2 = `
 		}
 }
 
-.centerContainer_0f0118 {
+.centerContainer_3c7b69 {
 		display: flex;
 		flex-direction: column;
 		width: 1280px;
@@ -424,7 +424,7 @@ const css$2 = `
 		margin: 0 auto;
 }
 
-.title_0f0118 {
+.title_3c7b69 {
 		align-items: center;
 		display: flex;
 		justify-content: flex-start;
@@ -436,13 +436,13 @@ const css$2 = `
 		color: var(--header-primary);
 }
 
-.titleWrapper_0f0118 {
+.titleWrapper_3c7b69 {
 		flex: 0 0 auto;
 		margin: 0 8px 0 0;
 		min-width: auto;
 }
 
-.iconWrapper_0f0118 {
+.iconWrapper_3c7b69 {
 		align-items: center;
 		display: flex;
 		flex: 0 0 auto;
@@ -453,16 +453,16 @@ const css$2 = `
 		width: var(--space-32);
 }
 
-.headerBar_0f0118 {
+.headerBar_3c7b69 {
 		height: calc(var(--custom-channel-header-height) - 1px);
 		min-height: calc(var(--custom-channel-header-height) - 1px);
 }
 
-.headerContainer_0f0118 {
+.headerContainer_3c7b69 {
 		flex-direction: row;
 }
 
-.headerText_0f0118 {
+.headerText_3c7b69 {
 		display: flex;
 		flex: 1;
 		font-size: 18px;
@@ -473,336 +473,7 @@ const css$2 = `
 		color: var(--text-default);
 }
 
-.feedCarousel_0f0118 {
-		display: flex;
-		position: relative;
-}
-
-.carousel_0f0118 {
-		background-color: var(--background-secondary-alt);
-		border-radius: 5px;
-		flex: 1 1 75%;
-		min-height: 388px;
-		margin-right: 20px;
-		overflow: hidden;
-		position: relative;
-		transform: translateZ(0);
-}
-
-.article_0f0118 {
-		background-color: var(--background-secondary-alt);
-		border-radius: 5px;
-		bottom: 0;
-		box-sizing: border-box;
-		height: 100%;
-		left: 0;
-		overflow: hidden;
-		padding: 20px;
-		position: absolute;
-		right: 0;
-		top: 0;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-end;
-}
-
-.background_0f0118 {
-		background-repeat: no-repeat;
-		background-size: cover;
-		bottom: 7.5%;
-		mask: linear-gradient(0deg, transparent, #000);
-		min-width: 300px;
-		background-position: top;
-}
-
-.backgroundImage_0f0118 {
-		background-position: top;
-		background-repeat: no-repeat;
-		background-size: cover;
-		bottom: 0;
-}
-
-.background_0f0118, .backgroundImage_0f0118 {
-		left: 0;
-		position: absolute;
-		right: 0;
-		top: 0;
-}
-
-.feedOverflowMenu_0f0118 {
-		position: absolute;
-		top: 0;
-		right: 0;
-		padding: 8px 12px;
-}
-
-.applicationArea_0f0118 {
-		color: var(--text-default);
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		position: relative;
-}
-
-.details_0f0118 {
-		position: relative;
-}
-
-.titleStandard_0f0118 {
-		margin-top: 8px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: 24px;
-		line-height: 28px;
-}
-
-.title_0f0118 {
-		color: var(--header-primary);
-		display: block;
-		font-weight: 500;
-}
-
-.description_0f0118 {
-		color: var(--text-default);
-		display: -webkit-box;
-		font-size: 16px;
-		font-weight: 500;
-		line-height: 1.2;
-		margin-top: 8px;
-		max-height: 40px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		img, br+br {
-				display: none;
-		}
-		a {
-				color: inherit;
-		}
-		p, b, i {
-				all: inherit;
-				display: contents
-		}
-		.sharedFilePreviewYouTubeVideo_0f0118 {
-				display: none;
-		}
-}
-
-.timestamp_0f0118 {
-		color: var(--text-muted);
-		font-size: 12px;
-		font-weight: 600;
-		margin-top: 8px;
-		text-transform: uppercase;
-}
-
-.gameIcon_0f0118 {
-		position: relative;
-		pointer-events: auto;
-		cursor: pointer;
-		height: 40px;
-		width: 40px;
-		flex-shrink: 0;
-		border-radius: 3px;
-}
-
-.pagination_0f0118 {
-		-webkit-box-flex: 1;
-		flex: 1 1 25%;
-		min-width: 0;
-}
-
-.verticalPaginationItemContainer_0f0118 {
-		margin: 0;
-		overflow: hidden;
-}
-
-.scrollerWrap_0f0118 {
-		-webkit-box-flex: 1;
-		display: flex;
-		flex: 1;
-		height: 100%;
-		min-height: 1px;
-		position: relative;
-}
-
-.scroller_0f0118 {
-		-webkit-box-flex: 1;
-		contain: layout;
-		flex: 1;
-		min-height: 1px;
-}
-		
-.paginationItem_0f0118, .paginationItem_0f0118:before {
-		transition: all .2s ease;
-}
-
-.paginationItem_0f0118:first-child {
-		margin-top: 0;
-}
-
-.paginationItem_0f0118 {
-		-webkit-box-align: center;
-		align-items: center;
-		background: var(--background-secondary-alt);
-		border-radius: 5px;
-		box-sizing: border-box;
-		cursor: pointer;
-		display: flex;
-		height: 91px;
-		margin-top: 8px;
-		overflow: hidden;
-		padding: 16px;
-		position: relative;
-		transform: translateZ(0);
-}
-
-.paginationItem_0f0118:before {
-		background: #fff;
-		border-radius: 20px;
-		content: "";
-		height: 40px;
-		left: -5px;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%) translateX(-100%);
-		transition-delay: .2s;
-		width: 10px;
-		z-index: 1;
-}
-
-.paginationItem_0f0118:after {
-		background-blend-mode: color;
-		border-radius: 5px;
-		bottom: 0;
-		content: "";
-		left: 0;
-		position: absolute;
-		right: 0;
-		top: 0;
-}
-
-.splashArt_0f0118 {
-		filter: grayscale(100%);
-		height: 100%;
-		opacity: .2;
-		width: 100%;
-		background-position-x: 50%;
-		background-position-y: 40%;
-		background-repeat: no-repeat;
-		background-size: cover;
-		bottom: 0;
-		left: 0;
-		pointer-events: none;
-		position: absolute;
-		top: 0;
-}
-
-.paginationSubtitle_0f0118, .paginationTitle_0f0118 {
-		font-weight: 600;
-}
-
-.paginationText_0f0118 {
-		overflow: hidden;
-}
-
-.paginationContent_0f0118 {
-		overflow: hidden;
-		position: relative;
-		z-index: 1;
-}
-
-.paginationTitle_0f0118 {
-		color: var(--header-primary);
-		font-size: 16px;
-		line-height: 1.25;
-		max-height: 40px;
-}
-
-.paginationSubtitle_0f0118 {
-		color: var(--text-muted);
-		font-size: 12px;
-		margin-top: 4px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-}
-
-.selectedPage_0f0118 {
-		background: var(--background-surface-higher);
-		cursor: default;
-}
-
-.selectedPage_0f0118:before {
-		transform: translateY(-50%) translateX(0);
-}
-
-.selectedPage_0f0118 .splashArt_0f0118 {
-		filter: grayscale(0);
-}
-
-.smallCarousel_0f0118 {
-		-webkit-box-flex: 1;
-		border-radius: 5px;
-		flex: 1;
-		height: 220px;
-		overflow: hidden;
-		position: relative;
-		transform: translateZ(0);
-}
-
-.titleRowSimple_0f0118 {
-		-webkit-box-align: center;
-		-webkit-box-pack: justify;
-		align-items: center;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-}
-
-.paginationSmall_0f0118 {
-		bottom: 0;
-		height: 64px;
-		left: 0;
-		margin: 0 auto;
-		min-width: 0;
-		right: 0;
-		position: absolute;
-		z-index: 3;
-		display: flex;
-}
-
-.arrow_0f0118 {
-		color: var(--text-muted);
-		z-index: 2;
-}
-
-svg.arrow_0f0118 {
-		height: 26px;
-		width: 26px;
-}
-
-.arrowContainer_0f0118 {
-		color: var(--white);
-		cursor: pointer;
-		font-size: 0;
-		height: 50px;
-		line-height: 0;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 50px;
-}
-
-.arrow_0f0118, .arrowContainer_0f0118 {
-		box-sizing: border-box;
-		pointer-events: all;
-}
-
-.button_0f0118 {
+.button_3c7b69 {
 		-webkit-box-align: center;
 		-webkit-box-pack: center;
 		align-items: center;
@@ -816,114 +487,19 @@ svg.arrow_0f0118 {
 		line-height: 16px;
 		position: relative;
 		user-select: none;
-}
-
-.prevButtonContainer_0f0118 {
-		left: 6px;
-}
-
-.nextButtonContainer_0f0118 {
-		right: 6px;
-}
-
-.left_0f0118 {
-		transform: rotate(-90deg);
-}
-
-.right_0f0118 {
-		transform: rotate(90deg);
-}
-
-.horizontalPaginationItemContainer_0f0118 {
-		-webkit-box-align: center;
-		-webkit-box-flex: initial;
-		align-items: center;
-		display: flex;
-		flex: initial;
-		margin: 0 auto;
-		overflow-y: hidden;
-}
-
-.dot_0f0118 {
-		background-color: #fff;
-		border-radius: 2px;
-		cursor: pointer;
-		height: 8px;
-		margin-right: 8px;
-		pointer-events: all;
-		transform: translateZ(0);
-		width: 8px;
-}
-
-.dotNormal_0f0118 {
-		opacity: 0.2;
-}
-
-.dotSelected_0f0118 {
-		opacity: 0.6;
-}
-
-.emptyTitle_0f0118 {
-		font-size: 16px;
-		line-height: 20px;
-		color: var(--text-default);
-}
-
-.emptySubtitle_0f0118 {
-		font-size: 14px;
-		color: var(--text-muted);
 }`;
 _loadStyle("ActivityFeed.module.css", css$2);
 const modules_7e65654a = {
-	"activityFeed": "activityFeed_0f0118",
-	"scrollerBase": "scrollerBase_0f0118",
-	"centerContainer": "centerContainer_0f0118",
-	"title": "title_0f0118",
-	"titleWrapper": "titleWrapper_0f0118",
-	"iconWrapper": "iconWrapper_0f0118",
-	"headerBar": "headerBar_0f0118",
-	"headerContainer": "headerContainer_0f0118",
-	"headerText": "headerText_0f0118",
-	"feedCarousel": "feedCarousel_0f0118",
-	"carousel": "carousel_0f0118",
-	"article": "article_0f0118",
-	"background": "background_0f0118",
-	"backgroundImage": "backgroundImage_0f0118",
-	"feedOverflowMenu": "feedOverflowMenu_0f0118",
-	"applicationArea": "applicationArea_0f0118",
-	"details": "details_0f0118",
-	"titleStandard": "titleStandard_0f0118",
-	"description": "description_0f0118",
-	"sharedFilePreviewYouTubeVideo": "sharedFilePreviewYouTubeVideo_0f0118",
-	"timestamp": "timestamp_0f0118",
-	"gameIcon": "gameIcon_0f0118",
-	"pagination": "pagination_0f0118",
-	"verticalPaginationItemContainer": "verticalPaginationItemContainer_0f0118",
-	"scrollerWrap": "scrollerWrap_0f0118",
-	"scroller": "scroller_0f0118",
-	"paginationItem": "paginationItem_0f0118",
-	"splashArt": "splashArt_0f0118",
-	"paginationSubtitle": "paginationSubtitle_0f0118",
-	"paginationTitle": "paginationTitle_0f0118",
-	"paginationText": "paginationText_0f0118",
-	"paginationContent": "paginationContent_0f0118",
-	"selectedPage": "selectedPage_0f0118",
-	"smallCarousel": "smallCarousel_0f0118",
-	"titleRowSimple": "titleRowSimple_0f0118",
-	"paginationSmall": "paginationSmall_0f0118",
-	"arrow": "arrow_0f0118",
-	"arrowContainer": "arrowContainer_0f0118",
-	"button": "button_0f0118",
-	"prevButtonContainer": "prevButtonContainer_0f0118",
-	"nextButtonContainer": "nextButtonContainer_0f0118",
-	"left": "left_0f0118",
-	"right": "right_0f0118",
-	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer_0f0118",
-	"dot": "dot_0f0118",
-	"dotNormal": "dotNormal_0f0118",
-	"dotSelected": "dotSelected_0f0118",
-	"emptyTitle": "emptyTitle_0f0118",
-	"emptySubtitle": "emptySubtitle_0f0118"
+	"activityFeed": "activityFeed_3c7b69",
+	"scrollerBase": "scrollerBase_3c7b69",
+	"centerContainer": "centerContainer_3c7b69",
+	"title": "title_3c7b69",
+	"titleWrapper": "titleWrapper_3c7b69",
+	"iconWrapper": "iconWrapper_3c7b69",
+	"headerBar": "headerBar_3c7b69",
+	"headerContainer": "headerContainer_3c7b69",
+	"headerText": "headerText_3c7b69",
+	"button": "button_3c7b69"
 };
 const MainClasses = modules_7e65654a;
 
@@ -1854,8 +1430,8 @@ const modules_7260a078 = {
 const NowPlayingClasses = modules_7260a078;
 
 // activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
-function ActivityType({ type, filterCheck, activity, game, voice, channel }) {
-	const guildChannel = useStateFromStores([GuildStore], () => GuildStore.getGuild(channel?.guild_id));
+function ActivityType({ type, filterCheck, activity, game, voice, channel, stream }) {
+	useStateFromStores([GuildStore], () => GuildStore.getGuild(channel?.guild_id));
 	switch (type) {
 		case "REGULAR":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.gameNameWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, game?.name)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity.created_at })));
@@ -1863,16 +1439,26 @@ function ActivityType({ type, filterCheck, activity, game, voice, channel }) {
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity.details || activity?.state), activity?.details && BdApi.React.createElement("div", { className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity?.state), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common$1.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common$1.ActivityTimer, { activity }));
 		case "TWITCH":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, activity.state && BdApi.React.createElement("div", { className: "state textRow ellipsis" }, `${Common$1.intl.intl.formatToPlainString(Common$1.intl.t[`BMTj28`])} ${activity.state}`));
-		case "SPOTIFY":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, activity.state && BdApi.React.createElement("div", { className: "details textRow ellipsis" }, `by ${activity.state}`), activity.assets?.large_text && BdApi.React.createElement("div", { className: "state textRow ellipsis" }, `on ${activity.assets?.large_text}`), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common$1.MediaProgressBar, { start: activity?.timestamps?.start, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common$1.ActivityTimer, { activity }));
 		case "VOICE":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, guildChannel?.name && BdApi.React.createElement("div", { className: "state textRow ellipsis" }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t[`Xe4de2`], { channelName: guildChannel?.name })));
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`, onClick: () => Common$1.OpenVoiceChannel.selectVoiceChannel(channel.id) }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, server?.name || channel?.name || stream?.globalName), server && BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, channel?.name)));
 	}
 }
 function FlexInfo(props) {
-	const { className, style, activity, game, voice, channel, type } = props;
+	const { className, style, activity, game, voice, channel, stream, server: server2, type } = props;
 	const filterCheck = activityCheck({ activities: [activity] });
-	return BdApi.React.createElement("div", { className, style }, BdApi.React.createElement(ActivityType, { filterCheck, activity, game, voice, channel, type }));
+	return BdApi.React.createElement("div", { className, style }, BdApi.React.createElement(
+		ActivityType,
+		{
+			filterCheck,
+			activity,
+			game,
+			voice,
+			channel,
+			stream,
+			server: server2,
+			type
+		}
+	));
 }
 
 // activity_feed/components/now_playing/activities/components/common/CardTrailing.tsx
@@ -1938,6 +1524,21 @@ function RichCardTrailing({ activity, user, v2Enabled }) {
 		},
 		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common$1.ActivityButtons, { user, activity })
 	));
+}
+function VoiceCardTrailing({ members, server, channel }) {
+	const [width, height] = useWindowSize();
+	if (width <= 1240) return;
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(
+		Common$1.VoiceList,
+		{
+			className: NowPlayingClasses.userList,
+			users: members,
+			maxUsers: 5,
+			guildId: server?.id,
+			channelId: channel.id,
+			size: "SIZE_32"
+		}
+	), BdApi.React.createElement(Common$1.CallButtons, { channel }));
 }
 function PartyFooter({ party, players, user, activity }) {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionDivider, style: { margin: "8px 0 8px 0" } }), BdApi.React.createElement("div", { className: NowPlayingClasses.partyStatusWrapper }, BdApi.React.createElement(PartyMemberListBuilder, { activity, users: players }), BdApi.React.createElement(
@@ -2046,6 +1647,19 @@ function TwitchImageAsset({ url, imageId, altText }) {
 		}
 	));
 }
+function VoiceGuildAsset({ channel, server, streamUser }) {
+	console.log([channel, server, streamUser]);
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("img", { className: NowPlayingClasses.voiceSectionGuildImage, src: (() => {
+		switch (true) {
+			case !!server?.id:
+				`https://cdn.discordapp.com/icons/${server.id}/${server.icon}.png?size=40`;
+			case !!channel?.id:
+				`https://cdn.discordapp.com/channel-icons/${channel.id}/${channel.icon}.png?size=40`;
+			case !!streamUser?.id:
+				`https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=40`;
+		}
+	})() }), BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionIconWrapper }, BdApi.React.createElement("svg", { className: NowPlayingClasses.voiceSectionIcon, width: "24", height: "24", viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", d: "M12 3a1 1 0 0 0-1-1h-.06a1 1 0 0 0-.74.32L5.92 7H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h2.92l4.28 4.68a1 1 0 0 0 .74.32H11a1 1 0 0 0 1-1V3ZM15.1 20.75c-.58.14-1.1-.33-1.1-.92v-.03c0-.5.37-.92.85-1.05a7 7 0 0 0 0-13.5A1.11 1.11 0 0 1 14 4.2v-.03c0-.6.52-1.06 1.1-.92a9 9 0 0 1 0 17.5Z M15.16 16.51c-.57.28-1.16-.2-1.16-.83v-.14c0-.43.28-.8.63-1.02a3 3 0 0 0 0-5.04c-.35-.23-.63-.6-.63-1.02v-.14c0-.63.59-1.1 1.16-.83a5 5 0 0 1 0 9.02Z" }))));
+}
 
 // activity_feed/components/now_playing/activities/components/innerBuilder.tsx
 function RegularActivityBuilder({ activity, user, game, players, server, check, v2Enabled }) {
@@ -2136,13 +1750,12 @@ function getVoiceParticipants({ voice }) {
 // activity_feed/components/now_playing/activities/components/cardVoice.tsx
 function VoiceCard({ activities, voice, streams }) {
 	if (!voice.length && !streams.length) return;
-	useWindowSize();
 	const stream = streams[0]?.stream;
-	streams[0]?.streamUser;
+	const streamUser = streams[0]?.streamUser;
 	const channel = stream ? ChannelStore$1.getChannel(stream.channelId) : voice[0]?.channel;
-	stream && !channel ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
-	voice[0]?.guild;
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }));
+	const members = stream && !channel ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
+	const server = voice[0]?.guild;
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser })), BdApi.React.createElement(FlexInfo, { channel, stream: streamUser, server }), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel }));
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
@@ -2278,7 +1891,7 @@ const styles = Object.assign(
 	NowPlayingClasses,
 	QuickLauncherClasses
 );
-const extraCSS = webpackify(`\n  	._2cbe2fbfe32e4150-description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24);\n  					&:hover {\n  							background: var(--opacity-white-36);\n  					}\n  					&:active {\n  							background: var(--opacity-white-32);\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n`);
+const extraCSS = webpackify(`\n  	._2cbe2fbfe32e4150-description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");

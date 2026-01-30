@@ -22,7 +22,7 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
     )
 }*/
 
-function ActivityType({ type, filterCheck, activity, game, voice, channel }) {
+function ActivityType({ type, filterCheck, activity, game, voice, channel, stream }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     switch (type) {
         case "REGULAR": return (
@@ -52,38 +52,33 @@ function ActivityType({ type, filterCheck, activity, game, voice, channel }) {
                 {activity.state && <div className="state textRow ellipsis">{`${Common.intl.intl.formatToPlainString(Common.intl.t[`BMTj28`])} ${activity.state}`}</div>}
             </>
         )
-        case "SPOTIFY": return (
-            <>
-                {activity.state && <div className="details textRow ellipsis">{`by ${activity.state}`}</div>}
-                {activity.assets?.large_text && <div className="state textRow ellipsis">{`on ${activity.assets?.large_text}`}</div>}
-                {
-                    activity?.timestamps?.end ? <div className="mediaProgressBarContainer">
-                        <Common.MediaProgressBar start={activity?.timestamps?.start} end={activity?.timestamps?.end} />
-                    </div>
-                        : <Common.ActivityTimer activity={activity} />
-                }
-            </>
-        )
         case "VOICE": return (
             <>
-                { 
-                    guildChannel?.name && 
-                    <div className="state textRow ellipsis">
-                        {Common.intl.intl.formatToPlainString(Common.intl.t[`Xe4de2`], {channelName: guildChannel?.name})}
-                    </div> 
-                }
+                <div className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)}>
+                    <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || stream?.globalName}</div>
+                    {server && <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{channel?.name}</div>}
+                </div>
             </>
         )
     }
 }
 
 export function FlexInfo(props) {
-    const { className, style, activity, game, voice, channel, type } = props
+    const { className, style, activity, game, voice, channel, stream, server, type } = props
     const filterCheck = activityCheck({ activities: [activity] });
 
     return (
         <div className={className} style={style}>
-            <ActivityType filterCheck={filterCheck} activity={activity} game={game} voice={voice} channel={channel} type={type} />
+            <ActivityType 
+                filterCheck={filterCheck} 
+                activity={activity} 
+                game={game} 
+                voice={voice} 
+                channel={channel} 
+                stream={stream} 
+                server={server} 
+                type={type} 
+            />
         </div>
     )
 }

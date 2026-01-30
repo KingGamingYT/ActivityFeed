@@ -102,12 +102,12 @@ export const extraCSS = webpackify(`
     .cardV2 {
         .headerActions .button.lookFilled, .cardBody button {
             color: var(--white);
-            background: var(--opacity-white-24);
+            background: var(--opacity-white-24) !important;
             &:hover {
-                background: var(--opacity-white-36);
+                background: var(--opacity-white-36) !important;
             }
             &:active {
-                background: var(--opacity-white-32);
+                background: var(--opacity-white-32) !important;
             }
         }
         .tabularNumbers {

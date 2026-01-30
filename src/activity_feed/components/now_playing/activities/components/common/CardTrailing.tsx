@@ -94,6 +94,26 @@ export function RichCardTrailing({activity, user, v2Enabled}: RichButtons) {
     )
 }
 
+export function VoiceCardTrailing({members, server, channel}) {
+    const [width, height] = useWindowSize();
+    
+    if (width <= 1240) return;
+    return (
+        <>
+            <Common.VoiceList 
+                className={NowPlayingClasses.userList} 
+                users={members} 
+                maxUsers={5} 
+                guildId={server?.id}
+                channelId={channel.id}
+                size="SIZE_32"
+            />
+            <Common.CallButtons channel={channel} />
+        </>
+    )
+
+}
+
 export function PartyFooter({party, players, user, activity}) {
     return (
         <>

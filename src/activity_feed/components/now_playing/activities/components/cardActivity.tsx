@@ -4,7 +4,7 @@ import { ApplicationStore, DetectableGameSupplementalStore } from '@modules/stor
 import { GameProfileOpen } from '../methods/GameProfileOpen';
 import { ConsoleImageAsset, FallbackAsset, GameIconAsset, RichImageAsset } from './common/ActivityAssets';
 import { FlexInfo } from './common/FlexInfo';
-import { RichActivityBuilder, RegularActivityBuilder } from "./innerBuilder";
+import { RichActivityBuilder, RegularActivityBuilder } from "./InnerBuilder";
 import { PartyFooter } from "./common/CardTrailing";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 

@@ -29,7 +29,7 @@ const Filters = [
     { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
     { name: "ModalRoot", filter: x => x.Modal },
     { name: "OpenDM", filter: x => x.openPrivateChannel },
-    { name: "OpenVoiceChannel", filter: x=>x.selectVoiceChannel },
+    { name: "OpenVoiceChannel", filter: x=>x.selectVoiceChannel, searchExports: true },
     { name: "OpenSpotifyAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
     { name: "Popout", filter: /* @__PURE__ */ Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
     { name: "PopoutContainer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('type', 'position', 'data-popout-animating'), searchExports: true },

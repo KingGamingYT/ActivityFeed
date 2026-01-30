@@ -1,7 +1,7 @@
 import { Common, ControllerIcon } from "@./modules/common";
 import { UserStore } from "@./modules/stores";
 import { QuickLauncherBuilder } from "./components/quick_launcher/launcher";
-import { NowPlayingBuilder } from "./components/now_playing/baseBuilder";
+import { NowPlayingBuilder } from "./components/now_playing/BaseBuilder";
 import MainClasses from "./ActivityFeed.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css"
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css"

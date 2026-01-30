@@ -38,9 +38,16 @@ export function VoiceCard({activities, voice, streams}) {
     return (
         <div className={NowPlayingClasses.voiceSection}>
             <div className={NowPlayingClasses.voiceSectionAssets}>
-                <VoiceGuildAsset channel={channel} streamUser={streamUser} />
+                <VoiceGuildAsset channel={channel} streamUser={streamUser} server={server} />
             </div>
-            <FlexInfo channel={channel} stream={streamUser} server={server} />
+            <FlexInfo 
+                className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} 
+                onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)} 
+                channel={channel} 
+                stream={streamUser} 
+                server={server} 
+                type="VOICE" 
+            />
             <VoiceCardTrailing members={members} server={server} channel={channel} />
         </div>
     )

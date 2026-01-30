@@ -427,8 +427,8 @@
 }
 
 .voiceSection button {
-    flex: 0 1 auto;
-    width: auto;
+    flex: 0 1 auto !important;
+    width: auto !important;
     margin-left: 20px;
 }
 

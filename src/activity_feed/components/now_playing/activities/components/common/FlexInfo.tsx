@@ -22,7 +22,7 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
     )
 }*/
 
-function ActivityType({ type, filterCheck, activity, game, voice, channel, stream }) {
+function ActivityType({ type, activity, game, channel, server, stream }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     switch (type) {
         case "REGULAR": return (
@@ -54,26 +54,21 @@ function ActivityType({ type, filterCheck, activity, game, voice, channel, strea
         )
         case "VOICE": return (
             <>
-                <div className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)}>
-                    <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || stream?.globalName}</div>
-                    {server && <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{channel?.name}</div>}
-                </div>
+                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || stream?.globalName}</div>
+                {server && <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{channel?.name}</div>}
             </>
         )
     }
 }
 
 export function FlexInfo(props) {
-    const { className, style, activity, game, voice, channel, stream, server, type } = props
-    const filterCheck = activityCheck({ activities: [activity] });
+    const { className, style, onClick, activity, game, channel, stream, server, type } = props
 
     return (
-        <div className={className} style={style}>
-            <ActivityType 
-                filterCheck={filterCheck} 
+        <div className={className} style={style} onClick={onClick}>
+            <ActivityType  
                 activity={activity} 
                 game={game} 
-                voice={voice} 
                 channel={channel} 
                 stream={stream} 
                 server={server} 

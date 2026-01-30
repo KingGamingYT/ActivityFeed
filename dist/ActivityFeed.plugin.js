@@ -131,7 +131,7 @@ const NavigationUtils = betterdiscord.Webpack.getMangled("transitionTo - Transit
 	transitionToGuild: betterdiscord.Webpack.Filters.byStrings('"transitionToGuild - Transitioning to "')
 });
 
-// activity_feed/gameStore.tsx
+// activity_feed/Store.tsx
 class GameNewsStore extends betterdiscord.Utils.Store {
 	static displayName = "GameNewsStore";
 	article = {};
@@ -360,7 +360,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 }
 const NewsStore = new GameNewsStore();
-NewsStore === betterdiscord.Webpack.getStore("GameNewsStore");
 
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
@@ -765,25 +764,25 @@ function useWindowSize() {
 
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css = `
-.nowPlayingContainer_d86046 {
+.nowPlayingContainer_5736f3 {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_d86046 {
+.nowPlayingColumn_5736f3 {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_d86046 .itemCard_d86046 {
+.nowPlayingContainer_5736f3 .itemCard_5736f3 {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_d86046 {
+.card_5736f3 {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -791,21 +790,21 @@ const css = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_d86046 {
+.cardHeader_5736f3 {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_d86046 {
+.header_5736f3 {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_d86046 {
+.nameTag_5736f3 {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -814,35 +813,35 @@ const css = `
 		color: var(--text-default);
 }
 
-.username_d86046 {
+.username_5736f3 {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_d86046:hover {
+.username_5736f3:hover {
 		text-decoration: underline;
 }
 
-.card_d86046:hover .headerIcon_d86046 {
+.card_5736f3:hover .headerIcon_5736f3 {
 		display: none;
 }
 
-.headerActions_d86046 {
+.headerActions_5736f3 {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_d86046:hover .headerActions_d86046 {
+.card_5736f3:hover .headerActions_5736f3 {
 		display: flex;
 }
 
-.headerActions_d86046 > div[aria-expanded="false"] {
+.headerActions_5736f3 > div[aria-expanded="false"] {
 		display: none;
 }
 
-.overflowMenu_d86046 {
+.overflowMenu_5736f3 {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -851,11 +850,11 @@ const css = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_d86046:hover {
+.overflowMenu_5736f3:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_d86046 {
+.headerIcon_5736f3 {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -863,7 +862,7 @@ const css = `
 		width: 30px;
 }
 
-.splashArt_d86046 {
+.splashArt_5736f3 {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -879,76 +878,76 @@ const css = `
 		top: 0;
 }
 
-.server_d86046 {
+.server_5736f3 {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_d86046 {
+.cardBody_5736f3 {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_d86046 {
+.section_5736f3 {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_d86046 {
+.game_5736f3 {
 		padding: 20px 0;
 }
 
-.gameBody_d86046 {
+.gameBody_5736f3 {
 		flex-direction: column;
 }
 
-.activityContainer_d86046:last-child:not(:only-child, :nth-child(1 of .activityContainer_d86046)) .sectionDivider_d86046 {
+.activityContainer_5736f3:last-child:not(:only-child, :nth-child(1 of .activityContainer_5736f3)) .sectionDivider_5736f3 {
 		display: none;
 }
 
-.activity_d86046 {
+.activity_5736f3 {
 		flex-direction: row;
 }
 
-.activity_d86046:last-child:not(:only-child) {
+.activity_5736f3:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_d86046 .serviceButtonWrapper_d86046 {
+.activity_5736f3 .serviceButtonWrapper_5736f3 {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_d86046 {
+.richActivity_5736f3 {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_d86046 {}
+.activityActivityFeed_5736f3 {}
 
-.activityFeed_d86046 {
+.activityFeed_5736f3 {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_d86046 {}
+.body_5736f3 {}
 
-.bodyNormal_d86046 {}
+.bodyNormal_5736f3 {}
 
-:is(.gameInfoRich_d86046, .gameNameWrapper_d86046) {
+:is(.gameInfoRich_5736f3, .gameNameWrapper_5736f3) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_d86046 {
+.gameInfoRich_5736f3 {
 		align-items: center;
 }
 
-.gameInfo_d86046 {
+.gameInfo_5736f3 {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -956,11 +955,11 @@ const css = `
 		flex: 1;
 }
 
-:is(.gameName_d86046, .gameNameWrapper_d86046, .streamInfo_d86046) {
+:is(.gameName_5736f3, .gameNameWrapper_5736f3, .streamInfo_5736f3) {
 		overflow: hidden;
 }
 
-.gameName_d86046 {
+.gameName_5736f3 {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -969,14 +968,14 @@ const css = `
 		white-space: nowrap;
 }
 
-.gameName_d86046.clickable_d86046:hover {
+.gameName_5736f3.clickable_5736f3:hover {
 		text-decoration: underline;
 }
 
-.playTime_d86046:not(a) {
+.playTime_5736f3:not(a) {
 		color: var(--text-muted);
 }
-.playTime_d86046 {
+.playTime_5736f3 {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -986,78 +985,78 @@ const css = `
 		white-space: nowrap;
 }
 
-.assets_d86046 {
+.assets_5736f3 {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_d86046 {
+.assetsLargeImageActivityFeed_5736f3 {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_d86046 {
+.assetsSmallImageActivityFeed_5736f3 {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_d86046 .assetsLargeImage_d86046 {
+.assets_5736f3 .assetsLargeImage_5736f3 {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_d86046 .assetsLargeImageActivityFeedTwitch_d86046 {
+.assets_5736f3 .assetsLargeImageActivityFeedTwitch_5736f3 {
 		border-radius: 5px;
 		height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
 		width: 100%;
 }
 
-.assets_d86046:has(.assetsSmallImage_d86046) .assetsLargeImage_d86046 {
+.assets_5736f3:has(.assetsSmallImage_5736f3) .assetsLargeImage_5736f3 {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_d86046 .assetsSmallImage_d86046, .richActivity_d86046 .smallEmptyIcon_d86046 {
+.richActivity_5736f3 .assetsSmallImage_5736f3, .richActivity_5736f3 .smallEmptyIcon_5736f3 {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_d86046 .smallEmptyIcon_d86046 {
+.activity_5736f3 .smallEmptyIcon_5736f3 {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_d86046 .largeEmptyIcon_d86046 {
+.assets_5736f3 .largeEmptyIcon_5736f3 {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_d86046 .largeEmptyIcon_d86046 path {
+.assets_5736f3 .largeEmptyIcon_5736f3 path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_d86046 svg.assetsSmallImage_d86046 {
+.richActivity_5736f3 svg.assetsSmallImage_5736f3 {
 		border-radius: unset !important;
 }   
 
-.richActivity_d86046 .smallEmptyIcon_d86046 path {
+.richActivity_5736f3 .smallEmptyIcon_5736f3 path {
 		transform: scale(1.3) !important;
 }
 
-.assets_d86046 .twitchImageContainer_d86046 {
+.assets_5736f3 .twitchImageContainer_5736f3 {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_d86046 .twitchBackgroundImage_d86046 {
+.assets_5736f3 .twitchBackgroundImage_5736f3 {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_d86046 .twitchImageOverlay_d86046 {
+.assets_5736f3 .twitchImageOverlay_5736f3 {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -1065,14 +1064,14 @@ const css = `
 		right: 0;
 }
 
-.assets_d86046 .streamName_d86046 {
+.assets_5736f3 .streamName_5736f3 {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_d86046 .streamGame_d86046 {
+.assets_5736f3 .streamGame_5736f3 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -1080,46 +1079,46 @@ const css = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_d86046 {
+.contentImagesActivityFeed_5736f3 {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_d86046, .contentImagesActivityFeed_d86046) {
+:is(.gameInfo_5736f3, .contentImagesActivityFeed_5736f3) {
 		align-self: center;
 		display: grid;
 }
 
-.content_d86046 {
+.content_5736f3 {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_d86046 {
+.details_5736f3 {
 		font-weight: 600;
 }
 
-.ellipsis_d86046 {
+.ellipsis_5736f3 {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_d86046 {
+.textRow_5736f3 {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.sectionDivider_d86046 {
+.sectionDivider_5736f3 {
 		display: flex;
 		width: 100%;
 		border-bottom: 2px solid;
 		margin: 20px 0 20px 0;
 }
 
-.voiceSection_d86046 {
+.voiceSection_5736f3 {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -1127,7 +1126,7 @@ const css = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_d86046 {
+.voiceSectionAssets_5736f3 {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -1135,7 +1134,7 @@ const css = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_d86046 {
+.voiceSectionIconWrapper_5736f3 {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -1147,69 +1146,69 @@ const css = `
 		width: 20px;
 }
 
-.voiceSectionIcon_d86046 {
+.voiceSectionIcon_5736f3 {
 		color: var(--header-secondary);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_d86046 {
+.voiceSectionGuildImage_5736f3 {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_d86046 .details_d86046 {
+.voiceSection_5736f3 .details_5736f3 {
 		flex: 1;
 }
 
-.voiceSectionDetails_d86046 {
+.voiceSectionDetails_5736f3 {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_d86046:hover :is(.voiceSectionText_d86046, .voiceSectionSubtext_d86046) {
+.voiceSectionDetails_5736f3:hover :is(.voiceSectionText_5736f3, .voiceSectionSubtext_5736f3) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_d86046 {
+.voiceSectionText_5736f3 {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_d86046 {
+.voiceSectionSubtext_5736f3 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_d86046 {
+.userList_5736f3 {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_d86046 button {
+.voiceSection_5736f3 button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.actionsActivity_d86046 .buttonContainer_d86046 {
+.actionsActivity_5736f3 .buttonContainer_5736f3 {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_d86046 {
+.partyStatusWrapper_5736f3 {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_d86046 button {
+.partyStatusWrapper_5736f3 button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -1217,40 +1216,42 @@ const css = `
 		justify-self: flex-end;
 }
 
-.partyList_d86046 {
+.partyList_5736f3 {
 		display: flex;
 }
 
-.player_d86046:first-of-type {
+.player_5736f3:first-of-type {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_d86046:not(:first-of-type), .player_d86046:not(:first-of-type) {
+.userOverflow_5736f3 {}
+
+.emptyUser_5736f3:not(:first-of-type), .player_5736f3:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_d86046:not(:last-of-type), .player_d86046:not(:last-of-type) {
+.emptyUser_5736f3:not(:last-of-type), .player_5736f3:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_d86046, .player_d86046 {
+.emptyUser_5736f3, .player_5736f3 {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_d86046 svg {
+.emptyUser_5736f3 svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_d86046 {
+.partyPlayerCount_5736f3 {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 1.3333333333333333;
 }
 
-.nowPlaying_d86046 .emptyState_d86046 {
+.nowPlaying_5736f3 .emptyState_5736f3 {
 		border: 1px solid;
 		border-radius: 5px;
 		box-sizing: border-box;
@@ -1259,7 +1260,7 @@ const css = `
 		width: 100%;
 }
 
-.cardV2_d86046 {
+.cardV2_5736f3 {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -1269,16 +1270,16 @@ const css = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_d86046 {
+		.cardHeader_5736f3 {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_d86046 {
+		.nameTag_5736f3 {
 				color: var(--white);
 		}
-		.splashArt_d86046, .server_d86046 {
+		.splashArt_5736f3, .server_5736f3 {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -1295,137 +1296,138 @@ const css = `
 				z-index: -1;
 		}
 		&:hover {
-				.headerIcon_d86046 {
+				.headerIcon_5736f3 {
 						display: none;
 				}
-				.headerActions_d86046 {
+				.headerActions_5736f3 {
 						display: flex;
 				}
 		}
-		.cardBody_d86046 {
+		.cardBody_5736f3 {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_d86046 {
+		.section_5736f3 {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_d86046 {
+		.game_5736f3 {
 				padding: 0;
 		}
-		.sectionDivider_d86046 {
+		.sectionDivider_5736f3 {
 				border-color: var(--opacity-white-12) !important;
 				border-width: 1px;
 				margin: 12px 0 12px 0;
 		}
-		.voiceSectionText_d86046 {
+		.voiceSectionText_5736f3 {
 				color: var(--white);
 		}
-		.headerIcon_d86046, .gameIcon_d86046, .assetsLargeImage_d86046.assetsLargeImage_d86046 {
+		.headerIcon_5736f3, .gameIcon_5736f3, .assetsLargeImage_5736f3.assetsLargeImage_5736f3 {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_d86046 {
+		.gameInfo_5736f3 {
 				color: var(--white);
 		}
-		.playTime_d86046:not(a), .voiceSectionSubtext_d86046 {
+		.playTime_5736f3:not(a), .voiceSectionSubtext_5736f3 {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_d86046 {
+		.serviceButtonWrapper_5736f3 {
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_d86046 {
+		.contentImagesActivityFeed_5736f3 {
 				color: var(--white);
 		}
-		.textRow_d86046 {
+		.textRow_5736f3 {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_d86046 {
+		.state_5736f3 {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_d86046:last-child:not(:only-child) {
+		.activity_5736f3:last-child:not(:only-child) {
 				margin-top: 12px;
 		}
 }`;
 _loadStyle("NowPlaying.module.css", css);
 const modules_7260a078 = {
-	"nowPlayingContainer": "nowPlayingContainer_d86046",
-	"nowPlayingColumn": "nowPlayingColumn_d86046",
-	"itemCard": "itemCard_d86046",
-	"card": "card_d86046",
-	"cardHeader": "cardHeader_d86046",
-	"header": "header_d86046",
-	"nameTag": "nameTag_d86046",
-	"username": "username_d86046",
-	"headerIcon": "headerIcon_d86046",
-	"headerActions": "headerActions_d86046",
-	"overflowMenu": "overflowMenu_d86046",
-	"splashArt": "splashArt_d86046",
-	"server": "server_d86046",
-	"cardBody": "cardBody_d86046",
-	"section": "section_d86046",
-	"game": "game_d86046",
-	"gameBody": "gameBody_d86046",
-	"activityContainer": "activityContainer_d86046",
-	"sectionDivider": "sectionDivider_d86046",
-	"activity": "activity_d86046",
-	"serviceButtonWrapper": "serviceButtonWrapper_d86046",
-	"richActivity": "richActivity_d86046",
-	"activityActivityFeed": "activityActivityFeed_d86046",
-	"activityFeed": "activityFeed_d86046",
-	"body": "body_d86046",
-	"bodyNormal": "bodyNormal_d86046",
-	"gameInfoRich": "gameInfoRich_d86046",
-	"gameNameWrapper": "gameNameWrapper_d86046",
-	"gameInfo": "gameInfo_d86046",
-	"gameName": "gameName_d86046",
-	"streamInfo": "streamInfo_d86046",
-	"clickable": "clickable_d86046",
-	"playTime": "playTime_d86046",
-	"assets": "assets_d86046",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_d86046",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_d86046",
-	"assetsLargeImage": "assetsLargeImage_d86046",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_d86046",
-	"assetsSmallImage": "assetsSmallImage_d86046",
-	"smallEmptyIcon": "smallEmptyIcon_d86046",
-	"largeEmptyIcon": "largeEmptyIcon_d86046",
-	"twitchImageContainer": "twitchImageContainer_d86046",
-	"twitchBackgroundImage": "twitchBackgroundImage_d86046",
-	"twitchImageOverlay": "twitchImageOverlay_d86046",
-	"streamName": "streamName_d86046",
-	"streamGame": "streamGame_d86046",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_d86046",
-	"content": "content_d86046",
-	"details": "details_d86046",
-	"ellipsis": "ellipsis_d86046",
-	"textRow": "textRow_d86046",
-	"voiceSection": "voiceSection_d86046",
-	"voiceSectionAssets": "voiceSectionAssets_d86046",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_d86046",
-	"voiceSectionIcon": "voiceSectionIcon_d86046",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_d86046",
-	"voiceSectionDetails": "voiceSectionDetails_d86046",
-	"voiceSectionText": "voiceSectionText_d86046",
-	"voiceSectionSubtext": "voiceSectionSubtext_d86046",
-	"userList": "userList_d86046",
-	"actionsActivity": "actionsActivity_d86046",
-	"buttonContainer": "buttonContainer_d86046",
-	"partyStatusWrapper": "partyStatusWrapper_d86046",
-	"partyList": "partyList_d86046",
-	"player": "player_d86046",
-	"emptyUser": "emptyUser_d86046",
-	"partyPlayerCount": "partyPlayerCount_d86046",
-	"nowPlaying": "nowPlaying_d86046",
-	"emptyState": "emptyState_d86046",
-	"cardV2": "cardV2_d86046",
-	"gameIcon": "gameIcon_d86046",
-	"state": "state_d86046"
+	"nowPlayingContainer": "nowPlayingContainer_5736f3",
+	"nowPlayingColumn": "nowPlayingColumn_5736f3",
+	"itemCard": "itemCard_5736f3",
+	"card": "card_5736f3",
+	"cardHeader": "cardHeader_5736f3",
+	"header": "header_5736f3",
+	"nameTag": "nameTag_5736f3",
+	"username": "username_5736f3",
+	"headerIcon": "headerIcon_5736f3",
+	"headerActions": "headerActions_5736f3",
+	"overflowMenu": "overflowMenu_5736f3",
+	"splashArt": "splashArt_5736f3",
+	"server": "server_5736f3",
+	"cardBody": "cardBody_5736f3",
+	"section": "section_5736f3",
+	"game": "game_5736f3",
+	"gameBody": "gameBody_5736f3",
+	"activityContainer": "activityContainer_5736f3",
+	"sectionDivider": "sectionDivider_5736f3",
+	"activity": "activity_5736f3",
+	"serviceButtonWrapper": "serviceButtonWrapper_5736f3",
+	"richActivity": "richActivity_5736f3",
+	"activityActivityFeed": "activityActivityFeed_5736f3",
+	"activityFeed": "activityFeed_5736f3",
+	"body": "body_5736f3",
+	"bodyNormal": "bodyNormal_5736f3",
+	"gameInfoRich": "gameInfoRich_5736f3",
+	"gameNameWrapper": "gameNameWrapper_5736f3",
+	"gameInfo": "gameInfo_5736f3",
+	"gameName": "gameName_5736f3",
+	"streamInfo": "streamInfo_5736f3",
+	"clickable": "clickable_5736f3",
+	"playTime": "playTime_5736f3",
+	"assets": "assets_5736f3",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_5736f3",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_5736f3",
+	"assetsLargeImage": "assetsLargeImage_5736f3",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_5736f3",
+	"assetsSmallImage": "assetsSmallImage_5736f3",
+	"smallEmptyIcon": "smallEmptyIcon_5736f3",
+	"largeEmptyIcon": "largeEmptyIcon_5736f3",
+	"twitchImageContainer": "twitchImageContainer_5736f3",
+	"twitchBackgroundImage": "twitchBackgroundImage_5736f3",
+	"twitchImageOverlay": "twitchImageOverlay_5736f3",
+	"streamName": "streamName_5736f3",
+	"streamGame": "streamGame_5736f3",
+	"contentImagesActivityFeed": "contentImagesActivityFeed_5736f3",
+	"content": "content_5736f3",
+	"details": "details_5736f3",
+	"ellipsis": "ellipsis_5736f3",
+	"textRow": "textRow_5736f3",
+	"voiceSection": "voiceSection_5736f3",
+	"voiceSectionAssets": "voiceSectionAssets_5736f3",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper_5736f3",
+	"voiceSectionIcon": "voiceSectionIcon_5736f3",
+	"voiceSectionGuildImage": "voiceSectionGuildImage_5736f3",
+	"voiceSectionDetails": "voiceSectionDetails_5736f3",
+	"voiceSectionText": "voiceSectionText_5736f3",
+	"voiceSectionSubtext": "voiceSectionSubtext_5736f3",
+	"userList": "userList_5736f3",
+	"actionsActivity": "actionsActivity_5736f3",
+	"buttonContainer": "buttonContainer_5736f3",
+	"partyStatusWrapper": "partyStatusWrapper_5736f3",
+	"partyList": "partyList_5736f3",
+	"player": "player_5736f3",
+	"userOverflow": "userOverflow_5736f3",
+	"emptyUser": "emptyUser_5736f3",
+	"partyPlayerCount": "partyPlayerCount_5736f3",
+	"nowPlaying": "nowPlaying_5736f3",
+	"emptyState": "emptyState_5736f3",
+	"cardV2": "cardV2_5736f3",
+	"gameIcon": "gameIcon_5736f3",
+	"state": "state_5736f3"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -1462,8 +1464,10 @@ function FlexInfo(props) {
 function PartyMemberListBuilder({ activity, users }) {
 	const emptyNum = activity?.party?.size[1] - activity?.party?.size[0];
 	const anonNum = activity?.party?.size[0] - 1;
+	const anonUsers = [];
 	const emptyUsers = [];
 	for (let i = 0; i < anonNum; i++) {
+		anonUsers.push("anon");
 		emptyUsers.push("anon");
 	}
 	for (let i = 0; i < emptyNum; i++) {
@@ -1488,7 +1492,7 @@ function PartyMemberListBuilder({ activity, users }) {
 					);
 			}
 		}
-	), playerFill.length > 10 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}` }, `+${users.length + anonNum - 10}`));
+	), users.length + anonUsers.length > 10 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}` }, `+${users.length + anonNum - 10}`));
 }
 function RegularCardTrailing({ activity, user, server, players, check, v2Enabled }) {
 	const [width, height] = useWindowSize();
@@ -1756,7 +1760,7 @@ function VoiceCard({ activities, voice, streams }) {
 	const channel = stream ? ChannelStore$1.getChannel(stream.channelId) : voice[0]?.channel;
 	const members = stream && !channel ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
 	const server = voice[0]?.guild;
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser, server })), BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser, server })), BdApi.React.createElement(
 		FlexInfo,
 		{
 			className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`,
@@ -1766,7 +1770,7 @@ function VoiceCard({ activities, voice, streams }) {
 			server,
 			type: "VOICE"
 		}
-	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel }));
+	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), activities.length ? BdApi.React.createElement("div", { className: NowPlayingClasses.sectionDivider }) : null);
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
@@ -1981,6 +1985,7 @@ const sidebarItem = layoutUtils.Button(
 	}
 );
 class ActivityFeed {
+	GameNewsStore = NewsStore;
 	start() {
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist");
 		const Route = betterdiscord.Webpack.getByStrings('["impressionName","impressionProperties","disableTrack"]');

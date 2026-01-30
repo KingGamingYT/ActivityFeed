@@ -2,7 +2,7 @@ import { Webpack, Data, Patcher, DOM, Utils, Components, ReactUtils } from "bett
 import { createElement, useState } from "react";
 import { settings } from "./settings/settings.js";
 import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, useLocation } from "./modules/common.js";
-import { NewsStore } from "./activity_feed/gameStore.js";
+import { NewsStore } from "./activity_feed/Store.js";
 import { activityPanelCSS } from "./activity_feed/styles.js";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { SettingsPanelBuilder } from "./settings/builder.js";
@@ -77,6 +77,7 @@ layoutUtils.Button("activity_feed_sidebar_item",
 );
 
 export default class ActivityFeed {
+    GameNewsStore = NewsStore
     start() {
         //Patcher.after("ActivityFeed", FluxDispatcher, "dispatch", (that, props, res) => console.log(props))
         NewsStore.blacklist = Data.load('blacklist');

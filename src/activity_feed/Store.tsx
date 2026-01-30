@@ -253,5 +253,4 @@ class GameNewsStore extends Utils.Store {
         return e > 0 ? 1 : -1;
     }
 }
-export const NewsStore = new GameNewsStore;
-NewsStore === Webpack.getStore("GameNewsStore");
+export const NewsStore = new GameNewsStore();

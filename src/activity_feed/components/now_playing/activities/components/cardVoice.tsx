@@ -36,20 +36,23 @@ export function VoiceCard({activities, voice, streams}) {
     const server = voice[0]?.guild;
 
     return (
-        <div className={NowPlayingClasses.voiceSection}>
-            <div className={NowPlayingClasses.voiceSectionAssets}>
-                <VoiceGuildAsset channel={channel} streamUser={streamUser} server={server} />
+        <>
+            <div className={NowPlayingClasses.voiceSection}>
+                <div className={NowPlayingClasses.voiceSectionAssets}>
+                    <VoiceGuildAsset channel={channel} streamUser={streamUser} server={server} />
+                </div>
+                <FlexInfo 
+                    className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} 
+                    onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)} 
+                    channel={channel} 
+                    stream={streamUser} 
+                    server={server} 
+                    type="VOICE" 
+                />
+                <VoiceCardTrailing members={members} server={server} channel={channel} />
             </div>
-            <FlexInfo 
-                className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} 
-                onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)} 
-                channel={channel} 
-                stream={streamUser} 
-                server={server} 
-                type="VOICE" 
-            />
-            <VoiceCardTrailing members={members} server={server} channel={channel} />
-        </div>
+            {activities.length ? <div className={NowPlayingClasses.sectionDivider} /> : null}
+        </>
     )
 }
 

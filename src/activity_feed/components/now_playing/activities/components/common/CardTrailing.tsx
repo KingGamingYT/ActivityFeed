@@ -22,8 +22,10 @@ interface RichButtons {
 function PartyMemberListBuilder({activity, users}) {
     const emptyNum = activity?.party?.size[1] - activity?.party?.size[0];
     const anonNum = activity?.party?.size[0] - 1;
+    const anonUsers = [];
     const emptyUsers = [];
     for (let i = 0; i < (anonNum); i++ ) {
+        anonUsers.push("anon");
         emptyUsers.push("anon");
     }
     for (let i = 0; i < (emptyNum); i++ ) {
@@ -50,7 +52,7 @@ function PartyMemberListBuilder({activity, users}) {
                     }
                 }
             )}
-            {playerFill.length > 10 && <div className={`${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}`}>{`+${users.length + anonNum - 10}`}</div>}
+            {(users.length + anonUsers.length) > 10 && <div className={`${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}`}>{`+${users.length + anonNum - 10}`}</div>}
         </div>
     )
 }

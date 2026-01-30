@@ -458,6 +458,8 @@
     mask: url(#svg-mask-voice-user-summary-item);
 }
 
+.userOverflow {}
+
 .emptyUser:not(:first-of-type), .player:not(:first-of-type) {
     margin-left: -4px;
 }

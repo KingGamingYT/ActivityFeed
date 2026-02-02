@@ -101,3 +101,12 @@
     position: relative;
     user-select: none;
 }
+
+.sectionDivider {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid;
+    margin: 20px 0 20px 0;
+}
+
+.emptyText {}

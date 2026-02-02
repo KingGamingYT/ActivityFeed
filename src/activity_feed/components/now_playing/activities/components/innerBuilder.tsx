@@ -1,7 +1,7 @@
 import { Common } from "@modules/common";
 import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
-import { RichImageAsset, FallbackAsset, SpotifyAsset, GameIconAsset, XboxImageAsset } from "./common/ActivityAssets";
+import { RichImageAsset, SpotifyAsset, GameIconAsset, XboxImageAsset } from "./common/ActivityAssets";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function RegularActivityBuilder({activity, user, game, players, server, check, v2Enabled}) {

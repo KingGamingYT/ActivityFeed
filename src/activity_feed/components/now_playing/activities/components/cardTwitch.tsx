@@ -8,7 +8,6 @@ export function TwitchCard({user, activities}) {
     return (
         <div className="activityProfileContainer activityProfileContainerTwitch">
             <div className="activityProfile activity">
-                <ActivityHeader activity={activity} />
                 <div className="bodyNormal" style={{ display: "flex", alignItems: "center", width: "auto" }}>
                     <div className="assets" style={{ position: "relative" }}>
                         <TwitchImageAsset 

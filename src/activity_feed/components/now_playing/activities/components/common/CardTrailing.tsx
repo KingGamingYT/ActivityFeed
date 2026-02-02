@@ -47,7 +47,7 @@ function PartyMemberListBuilder({activity, users}) {
                         default: return <Common.AvatarFetch 
                             src={`https://cdn.discordapp.com/avatars/${player?.id}/${player?.avatar}.webp?size=16`}
                             size="SIZE_16"
-                            imageClassName={NowPlayingClasses.player}
+                            className={NowPlayingClasses.player}
                         />
                     }
                 }
@@ -61,6 +61,7 @@ export function RegularCardTrailing({activity, user, server, players, check, v2E
     const [width, height] = useWindowSize();
 
     if (width < 1240) return;
+    //console.log(server)
 
     return (
         <>
@@ -119,7 +120,7 @@ export function VoiceCardTrailing({members, server, channel}) {
 export function PartyFooter({party, players, user, activity}) {
     return (
         <>
-            <div className={NowPlayingClasses.sectionDivider} style={{ margin: "8px 0 8px 0" }} />
+            <div className={MainClasses.sectionDivider} style={{ margin: "8px 0 8px 0" }} />
             <div className={NowPlayingClasses.partyStatusWrapper}>
                 <PartyMemberListBuilder activity={activity} users={players} />
                 <div 
@@ -132,15 +133,3 @@ export function PartyFooter({party, players, user, activity}) {
         </>
     )
 }
-/*v2Enabled && currentActivity?.party && currentActivity?.party.size && [
-                createElement('div', { className: "sectionDivider_267ac", style: { margin: "8px 0 8px 0" } }),
-                createElement('div', { className: "partyStatusWrapper_267ac" }, [
-                    createElement(PartyMemberListBuilder, {
-                        activity: currentActivity,
-                        users: players
-                    }),
-                    createElement('div', { className: "partyPlayerCount_267ac", style: { flex: "1 1 100%" } }, intl.intl.formatToPlainString(intl.t['gLu7NU'], { partySize: currentActivity.party?.size[0], maxPartySize: currentActivity.party?.size[1] })),
-                    createElement(JoinButton, { user: user, activity: currentActivity })
-                ])
-            ],
-*/

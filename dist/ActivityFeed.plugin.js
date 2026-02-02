@@ -131,22 +131,39 @@ const NavigationUtils = betterdiscord.Webpack.getMangled("transitionTo - Transit
 	transitionToGuild: betterdiscord.Webpack.Filters.byStrings('"transitionToGuild - Transitioning to "')
 });
 
+// modules/stores.js
+const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
+const ChannelStore$1 = betterdiscord.Webpack.getStore("ChannelStore");
+const DetectableGameSupplementalStore = betterdiscord.Webpack.getStore("DetectableGameSupplementalStore");
+const GameStore = betterdiscord.Webpack.getStore("GameStore");
+const GuildStore = betterdiscord.Webpack.getStore("GuildStore");
+const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
+const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
+const UserStore = betterdiscord.Webpack.getStore("UserStore");
+const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
+const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
+const WindowStore = betterdiscord.Webpack.getStore("WindowStore");
+
 // activity_feed/Store.tsx
 class GameNewsStore extends betterdiscord.Utils.Store {
 	static displayName = "GameNewsStore";
 	article = {};
+	articleSet = {};
 	dataSet = {};
 	displaySet = [];
 	blacklist = [];
 	state = [];
 	lastTimeFetched;
+	idling;
 	constructor() {
 		super();
+		this.articleSet = {};
 		this.dataSet = {};
 		this.displaySet = [];
-		this.article = { index: 0, direction: 1, idling: true, orientation: this.getOrientation() }, this.blacklist = [];
+		this.article = {};
+		this.blacklist = [];
 		this.lastTimeFetched;
-		this.state = { size: [window.innerWidth, window.innerHeight] };
+		this.idling = true;
 		window.addEventListener("resize", this.listener);
 	}
 	listener = () => {
@@ -163,9 +180,9 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.dataSet;
 	}
 	setFeeds() {
-		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("ACTest", "dataSet"));
-		this.blacklist = betterdiscord.Data.load("ACTest", "blacklist") || [];
-		this.lastTimeFetched = betterdiscord.Data.load("ACTest", "lastTimeFetched");
+		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet"));
+		this.blacklist = betterdiscord.Data.load("blacklist") || [];
+		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
 		this.emitChange();
 		return;
 	}
@@ -177,7 +194,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	getBlacklistedGame(gameId) {
 		let b = this.blacklist;
-		return b.find((e) => e.game_id === gameId);
+		return b?.find((e) => e.game_id === gameId);
 	}
 	clearBlacklist() {
 		let b = this.blacklist;
@@ -204,10 +221,9 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		betterdiscord.Data.save("ACTest", "blacklist", this.blacklist);
 		return this.blacklist;
 	}
-	async #fetchMinecraftFeeds(id, applicationList) {
-		const rssFeed = await Promise.all([Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null)]);
+	async #fetchMinecraftFeeds(application) {
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null)]);
 		const article = rssFeed[0].result.results[0];
-		const application = this.getApplicationByGameId(id, applicationList);
 		return {
 			application,
 			appId: application.id,
@@ -218,10 +234,9 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			url: article?.url
 		};
 	}
-	async #fetchFortniteFeeds(steamId, applicationList) {
-		const rssFeed = await Promise.all([Net.fetch(`https://fortnite-api.com/v2/news`).then((r) => r.ok ? r.json() : null)]);
+	async #fetchFortniteFeeds(application) {
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://fortnite-api.com/v2/news`).then((r) => r.ok ? r.json() : null)]);
 		const article = rssFeed[0].data.br.motds[0];
-		const application = this.getApplicationByGameId(steamId, applicationList);
 		return {
 			application,
 			appId: application.id,
@@ -231,10 +246,9 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			title: article?.title
 		};
 	}
-	async #fetchSteamFeeds(steamId, applicationList) {
-		const rssFeed = await Promise.all([Net.fetch(`https://rssjson.vercel.app/api?url=https://store.steampowered.com/feeds/news/app/${steamId}`).then((r) => r.ok ? r.json() : null)]);
+	async #fetchSteamFeeds(gameId, application) {
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://store.steampowered.com/feeds/news/app/${gameId}`).then((r) => r.ok ? r.json() : null)]);
 		const article = this.getRSSItem(rssFeed);
-		const application = this.getApplicationByGameId(steamId, applicationList);
 		return {
 			application,
 			appId: application.id,
@@ -245,50 +259,74 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			url: article?.link?.[0]
 		};
 	}
-	async fetchFeeds(steamIds, applicationList) {
-		for (const steamId of steamIds) {
-			(async (steamId2) => {
+	async fetchFeeds() {
+		const gameData = await this.getFeedGameData();
+		for (const gameId of Object.keys(gameData)) {
+			(async (gameId2) => {
 				let feeds;
-				switch (steamId2) {
+				switch (gameId2) {
 					case "Minecraft":
-						feeds = await this.#fetchMinecraftFeeds(steamId2, applicationList);
+						feeds = await this.#fetchMinecraftFeeds(gameData[gameId2]);
 						break;
 					case "Fortnite":
-						feeds = await this.#fetchFortniteFeeds(steamId2, applicationList);
+						feeds = await this.#fetchFortniteFeeds(gameData[gameId2]);
 						break;
 					default:
-						feeds = await this.#fetchSteamFeeds(steamId2, applicationList);
+						feeds = await this.#fetchSteamFeeds(gameId2, gameData[gameId2]);
 				}
-				this.dataSet[steamId2] = {
-					id: steamId2,
-					application: feeds.application,
-					news: {
-						application_id: feeds.appId,
-						description: feeds.description,
-						thumbnail: feeds.thumbnail,
-						timestamp: feeds.timestamp,
-						title: feeds.title,
-						url: feeds?.url
-					},
-					type: "application_news"
-				};
-				betterdiscord.Data.save("ACTest", "dataSet", this.dataSet);
-			})(steamId);
+				if (this.filterFeeds(feeds, gameId2)) {
+					this.dataSet[gameId2] = {
+						id: gameId2,
+						application: feeds.application,
+						news: {
+							application_id: feeds.appId,
+							description: feeds.description,
+							thumbnail: feeds.thumbnail,
+							timestamp: feeds.timestamp,
+							title: feeds.title,
+							url: feeds?.url
+						},
+						type: "application_news"
+					};
+					betterdiscord.Data.save("dataSet", this.dataSet);
+				}
+			})(gameId);
 		}
 		this.lastTimeFetched = Date.now();
-		betterdiscord.Data.save("ACTest", "lastTimeFetched", this.lastTimeFetched);
+		betterdiscord.Data.save("lastTimeFetched", this.lastTimeFetched);
+	}
+	async getFeedGameData() {
+		const gameData = {};
+		const gameList = RunningGameStore.getGamesSeen().filter((game) => GameStore.getGameByName(game.name));
+		const gameIds = gameList.filter((game) => game.id || game.name === "Minecraft").map((game) => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
+		let applicationList;
+		await Common$1.FetchApplications.fetchApplications(gameIds).then(
+			applicationList = gameList.map((game) => ApplicationStore.getApplicationByName(game.name)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
+		);
+		const feedIds = applicationList.map((game) => {
+			const steamSku = game.thirdPartySkus.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite");
+			return steamSku?.sku || game.name;
+		});
+		for (let i = 0; i < feedIds.length; i++) {
+			gameData[feedIds[i]] = applicationList[i];
+		}
+		return gameData;
 	}
 	shouldFetch() {
 		if (Object.keys(this.getFeeds()).length === 0) {
 			this.setFeeds();
 		}
 		let t = this.lastTimeFetched;
-		let p = Object.values(this.getFeeds()).length;
-		return null == t || p < 5 || Date.now() - t > 216e5;
+		Object.values(this.getFeeds()).length;
+		return null == t || Date.now() - t > 216e5;
 	}
 	isFetched() {
 		let b = Object.values(this.getFeeds()).length > 5;
 		return b;
+	}
+	filterFeeds(f, g) {
+		const oW = new Date(Date.now() - 12096e5);
+		return new Date(f.timestamp) > oW && !this.getBlacklistedGame(g);
 	}
 	getByGameId(id) {
 		let d = this.dataSet;
@@ -315,63 +353,57 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 	}
 	getRandomFeeds(feeds) {
-		const oW = new Date(Date.now() - 12096e5);
 		let t = [];
 		let keys = Object.keys(feeds);
-		let _keys = keys.filter((key) => new Date(feeds[key].news.timestamp) > oW && !this.getBlacklistedGame(feeds[key].id));
-		if (_keys.length < 5) return;
+		if (keys.length < 5) return;
 		for (let g = 0; g < 4; g++) {
-			let rand = _keys.length * Math.random() << 0;
-			t.push(feeds[_keys[rand]]);
-			_keys.splice(rand, 1);
+			let rand = keys.length * Math.random() << 0;
+			t.push(feeds[keys[rand]]);
+			keys.splice(rand, 1);
 		}
 		return t;
 	}
 	getFeedsForDisplay() {
+		const aA = {};
 		const rG = this.displaySet;
 		const r = this.getRandomFeeds(this.getFeeds());
 		if (!this.shouldFetch() && !this.displaySet.length && r !== void 0) {
 			rG.push.apply(rG, r);
+			for (let i = 0; i < rG.length; i++) {
+				aA[i] = {
+					index: i,
+					direction: this.getDirection(i + 1 - (this.getCurrentArticle().index || 0)),
+					idling: this.idling,
+					orientation: this.getOrientation(),
+					article: rG[i]
+				};
+			}
+			this.articleSet = aA;
+			this.article = aA[0];
 		}
-		return rG;
+		return aA;
 	}
 	getCurrentArticle() {
 		return this.article;
 	}
-	setCurrentArticle({ index, direction, idling }) {
-		let a = this.getCurrentArticle();
-		return {
-			...a,
-			index,
-			direction: this.getDirection(direction),
-			idling
-		};
+	setCurrentArticle(i) {
+		this.article = this.articleSet[i];
 	}
 	getOrientation() {
-		this.article;
-		let window2 = this.state;
-		console.log(window2?.size);
-		const val = (window2?.size?.[0] > 1200 || window2?.size?.[1] < 600) && (window2?.size[0] < 1200 || window2?.size?.[1] > 600) ? "vertical" : "horizontal";
-		this.emitChange();
-		return val;
+		const [width, height] = this.state.length ? this.state.size : [WindowStore.windowSize.width, WindowStore.windowSize.height];
+		return (width > 1200 || height < 600) && (width < 1200 || height > 600) ? "vertical" : "horizontal";
 	}
 	getDirection(e) {
 		return e > 0 ? 1 : -1;
 	}
+	setIdling(e) {
+		this.idling = e;
+	}
+	isIdling() {
+		return this.idling;
+	}
 }
 const NewsStore = new GameNewsStore();
-
-// modules/stores.js
-const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
-const ChannelStore$1 = betterdiscord.Webpack.getStore("ChannelStore");
-const DetectableGameSupplementalStore = betterdiscord.Webpack.getStore("DetectableGameSupplementalStore");
-const GameStore = betterdiscord.Webpack.getStore("GameStore");
-const GuildStore = betterdiscord.Webpack.getStore("GuildStore");
-const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
-const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
-const UserStore = betterdiscord.Webpack.getStore("UserStore");
-const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
-const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
 
 // styles
 let _styles = "";
@@ -383,8 +415,8 @@ function styles$1() {
 }
 
 // activity_feed/ActivityFeed.module.css
-const css$2 = `
-.activityFeed_3c7b69 {
+const css$3 = `
+.activityFeed_f870d5 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-border-frame);
 		display: flex;
@@ -393,7 +425,7 @@ const css$2 = `
 		overflow: hidden;
 }
 
-.scrollerBase_3c7b69 {
+.scrollerBase_f870d5 {
 		contain: layout size;
 		height: 100%;
 		background: no-repeat bottom;
@@ -414,7 +446,7 @@ const css$2 = `
 		}
 }
 
-.centerContainer_3c7b69 {
+.centerContainer_f870d5 {
 		display: flex;
 		flex-direction: column;
 		width: 1280px;
@@ -423,7 +455,7 @@ const css$2 = `
 		margin: 0 auto;
 }
 
-.title_3c7b69 {
+.title_f870d5 {
 		align-items: center;
 		display: flex;
 		justify-content: flex-start;
@@ -435,13 +467,13 @@ const css$2 = `
 		color: var(--header-primary);
 }
 
-.titleWrapper_3c7b69 {
+.titleWrapper_f870d5 {
 		flex: 0 0 auto;
 		margin: 0 8px 0 0;
 		min-width: auto;
 }
 
-.iconWrapper_3c7b69 {
+.iconWrapper_f870d5 {
 		align-items: center;
 		display: flex;
 		flex: 0 0 auto;
@@ -452,16 +484,16 @@ const css$2 = `
 		width: var(--space-32);
 }
 
-.headerBar_3c7b69 {
+.headerBar_f870d5 {
 		height: calc(var(--custom-channel-header-height) - 1px);
 		min-height: calc(var(--custom-channel-header-height) - 1px);
 }
 
-.headerContainer_3c7b69 {
+.headerContainer_f870d5 {
 		flex-direction: row;
 }
 
-.headerText_3c7b69 {
+.headerText_f870d5 {
 		display: flex;
 		flex: 1;
 		font-size: 18px;
@@ -472,7 +504,7 @@ const css$2 = `
 		color: var(--text-default);
 }
 
-.button_3c7b69 {
+.button_f870d5 {
 		-webkit-box-align: center;
 		-webkit-box-pack: center;
 		align-items: center;
@@ -486,19 +518,30 @@ const css$2 = `
 		line-height: 16px;
 		position: relative;
 		user-select: none;
-}`;
-_loadStyle("ActivityFeed.module.css", css$2);
+}
+
+.sectionDivider_f870d5 {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 20px 0 20px 0;
+}
+
+.emptyText_f870d5 {}`;
+_loadStyle("ActivityFeed.module.css", css$3);
 const modules_7e65654a = {
-	"activityFeed": "activityFeed_3c7b69",
-	"scrollerBase": "scrollerBase_3c7b69",
-	"centerContainer": "centerContainer_3c7b69",
-	"title": "title_3c7b69",
-	"titleWrapper": "titleWrapper_3c7b69",
-	"iconWrapper": "iconWrapper_3c7b69",
-	"headerBar": "headerBar_3c7b69",
-	"headerContainer": "headerContainer_3c7b69",
-	"headerText": "headerText_3c7b69",
-	"button": "button_3c7b69"
+	"activityFeed": "activityFeed_f870d5",
+	"scrollerBase": "scrollerBase_f870d5",
+	"centerContainer": "centerContainer_f870d5",
+	"title": "title_f870d5",
+	"titleWrapper": "titleWrapper_f870d5",
+	"iconWrapper": "iconWrapper_f870d5",
+	"headerBar": "headerBar_f870d5",
+	"headerContainer": "headerContainer_f870d5",
+	"headerText": "headerText_f870d5",
+	"button": "button_f870d5",
+	"sectionDivider": "sectionDivider_f870d5",
+	"emptyText": "emptyText_f870d5"
 };
 const MainClasses = modules_7e65654a;
 
@@ -508,7 +551,7 @@ function SectionHeader({ label }) {
 }
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
-const css$1 = `
+const css$2 = `
 .quickLauncher_01420e {
 		display: block;
 }
@@ -587,7 +630,7 @@ const css$1 = `
 		margin-right: 8px;
 		width: 24px;
 }`;
-_loadStyle("QuickLauncher.module.css", css$1);
+_loadStyle("QuickLauncher.module.css", css$2);
 const modules_1116a9ae = {
 	"quickLauncher": "quickLauncher_01420e",
 	"dock": "dock_01420e",
@@ -763,26 +806,26 @@ function useWindowSize() {
 }
 
 // activity_feed/components/now_playing/NowPlaying.module.css
-const css = `
-.nowPlayingContainer_5736f3 {
+const css$1 = `
+.nowPlayingContainer_7f8479 {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_5736f3 {
+.nowPlayingColumn_7f8479 {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_5736f3 .itemCard_5736f3 {
+.nowPlayingContainer_7f8479 .itemCard_7f8479 {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_5736f3 {
+.card_7f8479 {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -790,21 +833,21 @@ const css = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_5736f3 {
+.cardHeader_7f8479 {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_5736f3 {
+.header_7f8479 {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_5736f3 {
+.nameTag_7f8479 {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -813,35 +856,35 @@ const css = `
 		color: var(--text-default);
 }
 
-.username_5736f3 {
+.username_7f8479 {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_5736f3:hover {
+.username_7f8479:hover {
 		text-decoration: underline;
 }
 
-.card_5736f3:hover .headerIcon_5736f3 {
+.card_7f8479:hover .headerIcon_7f8479 {
 		display: none;
 }
 
-.headerActions_5736f3 {
+.headerActions_7f8479 {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_5736f3:hover .headerActions_5736f3 {
+.card_7f8479:hover .headerActions_7f8479 {
 		display: flex;
 }
 
-.headerActions_5736f3 > div[aria-expanded="false"] {
+.headerActions_7f8479 > div[aria-expanded="false"] {
 		display: none;
 }
 
-.overflowMenu_5736f3 {
+.overflowMenu_7f8479 {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -850,11 +893,11 @@ const css = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_5736f3:hover {
+.overflowMenu_7f8479:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_5736f3 {
+.headerIcon_7f8479 {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -862,7 +905,7 @@ const css = `
 		width: 30px;
 }
 
-.splashArt_5736f3 {
+.splashArt_7f8479 {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -878,76 +921,72 @@ const css = `
 		top: 0;
 }
 
-.server_5736f3 {
+.server_7f8479 {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_5736f3 {
+.cardBody_7f8479 {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_5736f3 {
+.section_7f8479 {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_5736f3 {
+.game_7f8479 {
 		padding: 20px 0;
 }
 
-.gameBody_5736f3 {
+.gameBody_7f8479 {
 		flex-direction: column;
 }
 
-.activityContainer_5736f3:last-child:not(:only-child, :nth-child(1 of .activityContainer_5736f3)) .sectionDivider_5736f3 {
-		display: none;
-}
-
-.activity_5736f3 {
+.activity_7f8479 {
 		flex-direction: row;
 }
 
-.activity_5736f3:last-child:not(:only-child) {
+.activity_7f8479:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_5736f3 .serviceButtonWrapper_5736f3 {
+.activity_7f8479 .serviceButtonWrapper_7f8479 {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_5736f3 {
+.richActivity_7f8479 {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_5736f3 {}
+.activityActivityFeed_7f8479 {}
 
-.activityFeed_5736f3 {
+.activityFeed_7f8479 {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_5736f3 {}
+.body_7f8479 {}
 
-.bodyNormal_5736f3 {}
+.bodyNormal_7f8479 {}
 
-:is(.gameInfoRich_5736f3, .gameNameWrapper_5736f3) {
+:is(.gameInfoRich_7f8479, .gameNameWrapper_7f8479) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_5736f3 {
+.gameInfoRich_7f8479 {
 		align-items: center;
 }
 
-.gameInfo_5736f3 {
+.gameInfo_7f8479 {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -955,11 +994,11 @@ const css = `
 		flex: 1;
 }
 
-:is(.gameName_5736f3, .gameNameWrapper_5736f3, .streamInfo_5736f3) {
+:is(.gameName_7f8479, .gameNameWrapper_7f8479, .streamInfo_7f8479) {
 		overflow: hidden;
 }
 
-.gameName_5736f3 {
+.gameName_7f8479 {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -968,14 +1007,14 @@ const css = `
 		white-space: nowrap;
 }
 
-.gameName_5736f3.clickable_5736f3:hover {
+.gameName_7f8479.clickable_7f8479:hover {
 		text-decoration: underline;
 }
 
-.playTime_5736f3:not(a) {
+.playTime_7f8479:not(a) {
 		color: var(--text-muted);
 }
-.playTime_5736f3 {
+.playTime_7f8479 {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -985,78 +1024,78 @@ const css = `
 		white-space: nowrap;
 }
 
-.assets_5736f3 {
+.assets_7f8479 {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_5736f3 {
+.assetsLargeImageActivityFeed_7f8479 {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_5736f3 {
+.assetsSmallImageActivityFeed_7f8479 {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_5736f3 .assetsLargeImage_5736f3 {
+.assets_7f8479 .assetsLargeImage_7f8479 {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_5736f3 .assetsLargeImageActivityFeedTwitch_5736f3 {
+.assets_7f8479 .assetsLargeImageActivityFeedTwitch_7f8479 {
 		border-radius: 5px;
 		height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
 		width: 100%;
 }
 
-.assets_5736f3:has(.assetsSmallImage_5736f3) .assetsLargeImage_5736f3 {
+.assets_7f8479:has(.assetsSmallImage_7f8479) .assetsLargeImage_7f8479 {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_5736f3 .assetsSmallImage_5736f3, .richActivity_5736f3 .smallEmptyIcon_5736f3 {
+.richActivity_7f8479 .assetsSmallImage_7f8479, .richActivity_7f8479 .smallEmptyIcon_7f8479 {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_5736f3 .smallEmptyIcon_5736f3 {
+.activity_7f8479 .smallEmptyIcon_7f8479 {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_5736f3 .largeEmptyIcon_5736f3 {
+.assets_7f8479 .largeEmptyIcon_7f8479 {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_5736f3 .largeEmptyIcon_5736f3 path {
+.assets_7f8479 .largeEmptyIcon_7f8479 path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_5736f3 svg.assetsSmallImage_5736f3 {
+.richActivity_7f8479 svg.assetsSmallImage_7f8479 {
 		border-radius: unset !important;
 }   
 
-.richActivity_5736f3 .smallEmptyIcon_5736f3 path {
+.richActivity_7f8479 .smallEmptyIcon_7f8479 path {
 		transform: scale(1.3) !important;
 }
 
-.assets_5736f3 .twitchImageContainer_5736f3 {
+.assets_7f8479 .twitchImageContainer_7f8479 {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_5736f3 .twitchBackgroundImage_5736f3 {
+.assets_7f8479 .twitchBackgroundImage_7f8479 {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_5736f3 .twitchImageOverlay_5736f3 {
+.assets_7f8479 .twitchImageOverlay_7f8479 {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -1064,14 +1103,14 @@ const css = `
 		right: 0;
 }
 
-.assets_5736f3 .streamName_5736f3 {
+.assets_7f8479 .streamName_7f8479 {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_5736f3 .streamGame_5736f3 {
+.assets_7f8479 .streamGame_7f8479 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -1079,46 +1118,39 @@ const css = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_5736f3 {
+.contentImagesActivityFeed_7f8479 {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_5736f3, .contentImagesActivityFeed_5736f3) {
+:is(.gameInfo_7f8479, .contentImagesActivityFeed_7f8479) {
 		align-self: center;
 		display: grid;
 }
 
-.content_5736f3 {
+.content_7f8479 {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_5736f3 {
+.details_7f8479 {
 		font-weight: 600;
 }
 
-.ellipsis_5736f3 {
+.ellipsis_7f8479 {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_5736f3 {
+.textRow_7f8479 {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.sectionDivider_5736f3 {
-		display: flex;
-		width: 100%;
-		border-bottom: 2px solid;
-		margin: 20px 0 20px 0;
-}
-
-.voiceSection_5736f3 {
+.voiceSection_7f8479 {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -1126,7 +1158,7 @@ const css = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_5736f3 {
+.voiceSectionAssets_7f8479 {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -1134,7 +1166,7 @@ const css = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_5736f3 {
+.voiceSectionIconWrapper_7f8479 {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -1146,69 +1178,69 @@ const css = `
 		width: 20px;
 }
 
-.voiceSectionIcon_5736f3 {
+.voiceSectionIcon_7f8479 {
 		color: var(--header-secondary);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_5736f3 {
+.voiceSectionGuildImage_7f8479 {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_5736f3 .details_5736f3 {
+.voiceSection_7f8479 .details_7f8479 {
 		flex: 1;
 }
 
-.voiceSectionDetails_5736f3 {
+.voiceSectionDetails_7f8479 {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_5736f3:hover :is(.voiceSectionText_5736f3, .voiceSectionSubtext_5736f3) {
+.voiceSectionDetails_7f8479:hover :is(.voiceSectionText_7f8479, .voiceSectionSubtext_7f8479) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_5736f3 {
+.voiceSectionText_7f8479 {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_5736f3 {
+.voiceSectionSubtext_7f8479 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_5736f3 {
+.userList_7f8479 {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_5736f3 button {
+.voiceSection_7f8479 button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.actionsActivity_5736f3 .buttonContainer_5736f3 {
+.actionsActivity_7f8479 .buttonContainer_7f8479 {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_5736f3 {
+.partyStatusWrapper_7f8479 {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_5736f3 button {
+.partyStatusWrapper_7f8479 button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -1216,42 +1248,42 @@ const css = `
 		justify-self: flex-end;
 }
 
-.partyList_5736f3 {
+.partyList_7f8479 {
 		display: flex;
 }
 
-.player_5736f3:first-of-type {
+.player_7f8479:first-of-type:not(:only-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow_5736f3 {}
+.userOverflow_7f8479 {}
 
-.emptyUser_5736f3:not(:first-of-type), .player_5736f3:not(:first-of-type) {
+.emptyUser_7f8479:not(:first-of-type), .player_7f8479:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_5736f3:not(:last-of-type), .player_5736f3:not(:last-of-type) {
+.emptyUser_7f8479:not(:last-of-type), .player_7f8479:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_5736f3, .player_5736f3 {
+.emptyUser_7f8479, .player_7f8479 {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_5736f3 svg {
+.emptyUser_7f8479 svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_5736f3 {
+.partyPlayerCount_7f8479 {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 1.3333333333333333;
 }
 
-.nowPlaying_5736f3 .emptyState_5736f3 {
+.nowPlaying_7f8479 .emptyState_7f8479 {
 		border: 1px solid;
 		border-radius: 5px;
 		box-sizing: border-box;
@@ -1260,7 +1292,7 @@ const css = `
 		width: 100%;
 }
 
-.cardV2_5736f3 {
+.cardV2_7f8479 {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -1270,16 +1302,16 @@ const css = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_5736f3 {
+		.cardHeader_7f8479 {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_5736f3 {
+		.nameTag_7f8479 {
 				color: var(--white);
 		}
-		.splashArt_5736f3, .server_5736f3 {
+		.splashArt_7f8479, .server_7f8479 {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -1296,138 +1328,131 @@ const css = `
 				z-index: -1;
 		}
 		&:hover {
-				.headerIcon_5736f3 {
+				.headerIcon_7f8479 {
 						display: none;
 				}
-				.headerActions_5736f3 {
+				.headerActions_7f8479 {
 						display: flex;
 				}
 		}
-		.cardBody_5736f3 {
+		.cardBody_7f8479 {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_5736f3 {
+		.section_7f8479 {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_5736f3 {
+		.game_7f8479 {
 				padding: 0;
 		}
-		.sectionDivider_5736f3 {
-				border-color: var(--opacity-white-12) !important;
-				border-width: 1px;
-				margin: 12px 0 12px 0;
-		}
-		.voiceSectionText_5736f3 {
+		.voiceSectionText_7f8479 {
 				color: var(--white);
 		}
-		.headerIcon_5736f3, .gameIcon_5736f3, .assetsLargeImage_5736f3.assetsLargeImage_5736f3 {
+		.headerIcon_7f8479, .gameIcon_7f8479, .assetsLargeImage_7f8479.assetsLargeImage_7f8479 {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_5736f3 {
+		.gameInfo_7f8479 {
 				color: var(--white);
 		}
-		.playTime_5736f3:not(a), .voiceSectionSubtext_5736f3 {
+		.playTime_7f8479:not(a), .voiceSectionSubtext_7f8479 {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_5736f3 {
+		.serviceButtonWrapper_7f8479 {
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_5736f3 {
+		.contentImagesActivityFeed_7f8479 {
 				color: var(--white);
 		}
-		.textRow_5736f3 {
+		.textRow_7f8479 {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_5736f3 {
+		.state_7f8479 {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_5736f3:last-child:not(:only-child) {
+		.activity_7f8479:last-child:not(:only-child) {
 				margin-top: 12px;
 		}
 }`;
-_loadStyle("NowPlaying.module.css", css);
+_loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
-	"nowPlayingContainer": "nowPlayingContainer_5736f3",
-	"nowPlayingColumn": "nowPlayingColumn_5736f3",
-	"itemCard": "itemCard_5736f3",
-	"card": "card_5736f3",
-	"cardHeader": "cardHeader_5736f3",
-	"header": "header_5736f3",
-	"nameTag": "nameTag_5736f3",
-	"username": "username_5736f3",
-	"headerIcon": "headerIcon_5736f3",
-	"headerActions": "headerActions_5736f3",
-	"overflowMenu": "overflowMenu_5736f3",
-	"splashArt": "splashArt_5736f3",
-	"server": "server_5736f3",
-	"cardBody": "cardBody_5736f3",
-	"section": "section_5736f3",
-	"game": "game_5736f3",
-	"gameBody": "gameBody_5736f3",
-	"activityContainer": "activityContainer_5736f3",
-	"sectionDivider": "sectionDivider_5736f3",
-	"activity": "activity_5736f3",
-	"serviceButtonWrapper": "serviceButtonWrapper_5736f3",
-	"richActivity": "richActivity_5736f3",
-	"activityActivityFeed": "activityActivityFeed_5736f3",
-	"activityFeed": "activityFeed_5736f3",
-	"body": "body_5736f3",
-	"bodyNormal": "bodyNormal_5736f3",
-	"gameInfoRich": "gameInfoRich_5736f3",
-	"gameNameWrapper": "gameNameWrapper_5736f3",
-	"gameInfo": "gameInfo_5736f3",
-	"gameName": "gameName_5736f3",
-	"streamInfo": "streamInfo_5736f3",
-	"clickable": "clickable_5736f3",
-	"playTime": "playTime_5736f3",
-	"assets": "assets_5736f3",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_5736f3",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_5736f3",
-	"assetsLargeImage": "assetsLargeImage_5736f3",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_5736f3",
-	"assetsSmallImage": "assetsSmallImage_5736f3",
-	"smallEmptyIcon": "smallEmptyIcon_5736f3",
-	"largeEmptyIcon": "largeEmptyIcon_5736f3",
-	"twitchImageContainer": "twitchImageContainer_5736f3",
-	"twitchBackgroundImage": "twitchBackgroundImage_5736f3",
-	"twitchImageOverlay": "twitchImageOverlay_5736f3",
-	"streamName": "streamName_5736f3",
-	"streamGame": "streamGame_5736f3",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_5736f3",
-	"content": "content_5736f3",
-	"details": "details_5736f3",
-	"ellipsis": "ellipsis_5736f3",
-	"textRow": "textRow_5736f3",
-	"voiceSection": "voiceSection_5736f3",
-	"voiceSectionAssets": "voiceSectionAssets_5736f3",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_5736f3",
-	"voiceSectionIcon": "voiceSectionIcon_5736f3",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_5736f3",
-	"voiceSectionDetails": "voiceSectionDetails_5736f3",
-	"voiceSectionText": "voiceSectionText_5736f3",
-	"voiceSectionSubtext": "voiceSectionSubtext_5736f3",
-	"userList": "userList_5736f3",
-	"actionsActivity": "actionsActivity_5736f3",
-	"buttonContainer": "buttonContainer_5736f3",
-	"partyStatusWrapper": "partyStatusWrapper_5736f3",
-	"partyList": "partyList_5736f3",
-	"player": "player_5736f3",
-	"userOverflow": "userOverflow_5736f3",
-	"emptyUser": "emptyUser_5736f3",
-	"partyPlayerCount": "partyPlayerCount_5736f3",
-	"nowPlaying": "nowPlaying_5736f3",
-	"emptyState": "emptyState_5736f3",
-	"cardV2": "cardV2_5736f3",
-	"gameIcon": "gameIcon_5736f3",
-	"state": "state_5736f3"
+	"nowPlayingContainer": "nowPlayingContainer_7f8479",
+	"nowPlayingColumn": "nowPlayingColumn_7f8479",
+	"itemCard": "itemCard_7f8479",
+	"card": "card_7f8479",
+	"cardHeader": "cardHeader_7f8479",
+	"header": "header_7f8479",
+	"nameTag": "nameTag_7f8479",
+	"username": "username_7f8479",
+	"headerIcon": "headerIcon_7f8479",
+	"headerActions": "headerActions_7f8479",
+	"overflowMenu": "overflowMenu_7f8479",
+	"splashArt": "splashArt_7f8479",
+	"server": "server_7f8479",
+	"cardBody": "cardBody_7f8479",
+	"section": "section_7f8479",
+	"game": "game_7f8479",
+	"gameBody": "gameBody_7f8479",
+	"activity": "activity_7f8479",
+	"serviceButtonWrapper": "serviceButtonWrapper_7f8479",
+	"richActivity": "richActivity_7f8479",
+	"activityActivityFeed": "activityActivityFeed_7f8479",
+	"activityFeed": "activityFeed_7f8479",
+	"body": "body_7f8479",
+	"bodyNormal": "bodyNormal_7f8479",
+	"gameInfoRich": "gameInfoRich_7f8479",
+	"gameNameWrapper": "gameNameWrapper_7f8479",
+	"gameInfo": "gameInfo_7f8479",
+	"gameName": "gameName_7f8479",
+	"streamInfo": "streamInfo_7f8479",
+	"clickable": "clickable_7f8479",
+	"playTime": "playTime_7f8479",
+	"assets": "assets_7f8479",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_7f8479",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_7f8479",
+	"assetsLargeImage": "assetsLargeImage_7f8479",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_7f8479",
+	"assetsSmallImage": "assetsSmallImage_7f8479",
+	"smallEmptyIcon": "smallEmptyIcon_7f8479",
+	"largeEmptyIcon": "largeEmptyIcon_7f8479",
+	"twitchImageContainer": "twitchImageContainer_7f8479",
+	"twitchBackgroundImage": "twitchBackgroundImage_7f8479",
+	"twitchImageOverlay": "twitchImageOverlay_7f8479",
+	"streamName": "streamName_7f8479",
+	"streamGame": "streamGame_7f8479",
+	"contentImagesActivityFeed": "contentImagesActivityFeed_7f8479",
+	"content": "content_7f8479",
+	"details": "details_7f8479",
+	"ellipsis": "ellipsis_7f8479",
+	"textRow": "textRow_7f8479",
+	"voiceSection": "voiceSection_7f8479",
+	"voiceSectionAssets": "voiceSectionAssets_7f8479",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper_7f8479",
+	"voiceSectionIcon": "voiceSectionIcon_7f8479",
+	"voiceSectionGuildImage": "voiceSectionGuildImage_7f8479",
+	"voiceSectionDetails": "voiceSectionDetails_7f8479",
+	"voiceSectionText": "voiceSectionText_7f8479",
+	"voiceSectionSubtext": "voiceSectionSubtext_7f8479",
+	"userList": "userList_7f8479",
+	"actionsActivity": "actionsActivity_7f8479",
+	"buttonContainer": "buttonContainer_7f8479",
+	"partyStatusWrapper": "partyStatusWrapper_7f8479",
+	"partyList": "partyList_7f8479",
+	"player": "player_7f8479",
+	"userOverflow": "userOverflow_7f8479",
+	"emptyUser": "emptyUser_7f8479",
+	"partyPlayerCount": "partyPlayerCount_7f8479",
+	"nowPlaying": "nowPlaying_7f8479",
+	"emptyState": "emptyState_7f8479",
+	"cardV2": "cardV2_7f8479",
+	"gameIcon": "gameIcon_7f8479",
+	"state": "state_7f8479"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -1487,7 +1512,7 @@ function PartyMemberListBuilder({ activity, users }) {
 						{
 							src: `https://cdn.discordapp.com/avatars/${player?.id}/${player?.avatar}.webp?size=16`,
 							size: "SIZE_16",
-							imageClassName: NowPlayingClasses.player
+							className: NowPlayingClasses.player
 						}
 					);
 			}
@@ -1542,7 +1567,7 @@ function VoiceCardTrailing({ members, server, channel }) {
 	), BdApi.React.createElement(Common$1.CallButtons, { channel }));
 }
 function PartyFooter({ party, players, user, activity }) {
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionDivider, style: { margin: "8px 0 8px 0" } }), BdApi.React.createElement("div", { className: NowPlayingClasses.partyStatusWrapper }, BdApi.React.createElement(PartyMemberListBuilder, { activity, users: players }), BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider, style: { margin: "8px 0 8px 0" } }), BdApi.React.createElement("div", { className: NowPlayingClasses.partyStatusWrapper }, BdApi.React.createElement(PartyMemberListBuilder, { activity, users: players }), BdApi.React.createElement(
 		"div",
 		{
 			className: NowPlayingClasses.partyPlayerCount,
@@ -1706,7 +1731,7 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 	)), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`, activity, type: "RICH" }), BdApi.React.createElement(RichCardTrailing, { activity, user, v2Enabled }))));
 }
 
-// activity_feed/components/now_playing/activities/components/cardActivity.tsx
+// activity_feed/components/now_playing/activities/components/CardActivity.tsx
 function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
 	const gameId = currentActivity?.application_id;
 	react.useEffect(() => {
@@ -1714,7 +1739,7 @@ function ActivityCard({ user, activities, currentActivity, currentGame, players,
 			await Common$1.FetchGames.getDetectableGamesSupplemental([gameId]);
 		})();
 	}, [gameId]);
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && BdApi.React.createElement("div", { className: NowPlayingClasses.sectionDivider }));
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, players, server, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardActivityWrapper.tsx
@@ -1732,7 +1757,7 @@ function ActivityCardWrapper({ user, activities, voice, streams, check, v2Enable
 // activity_feed/components/now_playing/activities/components/CardTwitch.tsx
 function TwitchCard({ user, activities }) {
 	const activity = activities.filter((activity2) => activity2 && activity2.name && activity2.type === 1)[0];
-	return BdApi.React.createElement("div", { className: "activityProfileContainer activityProfileContainerTwitch" }, BdApi.React.createElement("div", { className: "activityProfile activity" }, BdApi.React.createElement(ActivityHeader, { activity }), BdApi.React.createElement("div", { className: "bodyNormal", style: { display: "flex", alignItems: "center", width: "auto" } }, BdApi.React.createElement("div", { className: "assets", style: { position: "relative" } }, BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: "activityProfileContainer activityProfileContainerTwitch" }, BdApi.React.createElement("div", { className: "activityProfile activity" }, BdApi.React.createElement("div", { className: "bodyNormal", style: { display: "flex", alignItems: "center", width: "auto" } }, BdApi.React.createElement("div", { className: "assets", style: { position: "relative" } }, BdApi.React.createElement(
 		TwitchImageAsset,
 		{
 			url: activity.name.includes("YouTube") ? `https://i.ytimg.com/vi/${activity?.assets?.large_image.substring(activity?.assets?.large_image.indexOf(":") + 1)}/hqdefault_live.jpg` : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity?.assets?.large_image.substring(activity?.assets?.large_image.indexOf(":") + 1)}-162x90.jpg`,
@@ -1770,7 +1795,7 @@ function VoiceCard({ activities, voice, streams }) {
 			server,
 			type: "VOICE"
 		}
-	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), activities.length ? BdApi.React.createElement("div", { className: NowPlayingClasses.sectionDivider }) : null);
+	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), activities.length ? BdApi.React.createElement("div", { className: MainClasses.sectionDivider }) : null);
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
@@ -1882,9 +1907,148 @@ function TabBaseBuilder() {
 	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement("svg", { className: Common$1.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
+// settings/followed_games/FollowBuilder.tsx
+function BlacklistBuilder({}) {
+	return;
+}
+
+// settings/ActivityFeedSettings.module.css
+const css = `
+.blacklist_4cc1c3 {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+}
+
+.settingsDivider_4cc1c3 {
+		margin-bottom: var(--space-12) !important;
+}
+
+.blacklist_4cc1c3 .sectionDivider_4cc1c3, .settingsDivider_4cc1c3 {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 4px 0 4px 0;
+		border-color: var(--background-mod-strong);
+}
+
+.blacklist_4cc1c3 .sectionDivider_4cc1c3:last-child {
+		display: none;
+}
+
+.blacklistItem_4cc1c3 {
+		display: flex;
+}
+
+.blacklistItem_4cc1c3 .blacklistItemIcon_4cc1c3 {
+		border-radius: 8px;
+		height: 32px;
+		width: 32px;
+}
+
+.blacklistItem_4cc1c3 .blacklistItemName_4cc1c3 {
+		margin-left: 20px;
+		margin-bottom: 0;
+		min-width: 0;
+		font-weight: 500;
+		align-content: center;
+		flex: 1;
+}
+
+.blacklistItem_4cc1c3 button {
+		flex: 0 1 auto;
+		align-self: center;
+		width: auto;
+		margin-left: 20px;
+}
+
+.search_4cc1c3 {
+		padding: 12px;
+		margin: 12px 0;
+		input::placeholder {
+				font-weight: 600;
+				font-size: 14px;
+				color: var(--text-muted);
+		}
+		svg {
+				path {
+						fill: var(--text-muted);
+				}
+				circle {
+						color: var(--text-muted);
+				}
+				path, circle {
+						stroke: var(--text-muted);
+						stroke-width: 3px;
+				}
+		}
+}
+
+.toggleStack_4cc1c3 {
+		padding: var(--space-16) 0 var(--space-16) 0;
+}
+
+.buttonItem_4cc1c3 {
+		display: flex;
+}`;
+_loadStyle("ActivityFeedSettings.module.css", css);
+const modules_a52d5642 = {
+	"blacklist": "blacklist_4cc1c3",
+	"settingsDivider": "settingsDivider_4cc1c3",
+	"sectionDivider": "sectionDivider_4cc1c3",
+	"blacklistItem": "blacklistItem_4cc1c3",
+	"blacklistItemIcon": "blacklistItemIcon_4cc1c3",
+	"blacklistItemName": "blacklistItemName_4cc1c3",
+	"search": "search_4cc1c3",
+	"toggleStack": "toggleStack_4cc1c3",
+	"buttonItem": "buttonItem_4cc1c3"
+};
+const SettingsClasses = modules_a52d5642;
+
 // settings/builder.tsx
 function SettingsPanelBuilder() {
-	return;
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
+		const { name, note, initial, changed } = settings.main[key];
+		const [state, setState] = react.useState(betterdiscord.Data.load(key));
+		return BdApi.React.createElement(
+			Common$1.FormSwitch,
+			{
+				label: name,
+				description: note,
+				checked: state ?? initial,
+				onChange: (v) => {
+					betterdiscord.Data.save(key, v);
+					setState(v);
+					if (changed) changed(v);
+				}
+			}
+		);
+	})), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blackList} ${SettingsClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(BlacklistBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
+		const { name, note, initial, type, changed } = settings.debug[key];
+		const [state, setState] = react.useState(betterdiscord.Data.load(key));
+		if (type === "switch") return BdApi.React.createElement(
+			Common$1.FormSwitch,
+			{
+				label: name,
+				description: note,
+				checked: state ?? initial,
+				onChange: (v) => {
+					betterdiscord.Data.save(key, v);
+					setState(v);
+					if (changed) changed(v);
+				}
+			}
+		);
+		if (type === "button") return BdApi.React.createElement("div", { className: SettingsClasses.buttonItem }, BdApi.React.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}`, style: { fontWeight: 500, fontSize: "16px", color: "var(--text-default)" } }, name), BdApi.React.createElement("div", { className: NowPlayingClasses.textRow }, note)), BdApi.React.createElement(
+			"button",
+			{
+				className: `${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${MainClasses.button} ${SettingsClasses.unhideBlacklisted}`,
+				onClick: () => NewsStore.displaySet = NewsStore.getRandomFeeds(NewsStore.dataSet)
+			},
+			"Reroll"
+		));
+		return;
+	}))));
 }
 
 // activity_feed/extra.js
@@ -1898,19 +2062,19 @@ const styles = Object.assign(
 		lookFilled: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").lookFilled,
 		colorPrimary: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").colorPrimary
 	},
-	betterdiscord.Webpack.getByKeys("itemCard"),
-	betterdiscord.Webpack.getByKeys("tabularNumbers"),
-	betterdiscord.Webpack.getByKeys("bar", "container", "progress"),
-	betterdiscord.Webpack.getModule((x) => x.buttonContainer && Object.keys(x).length === 1),
+	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("itemCard")),
+	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("tabularNumbers")),
+	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("bar", "container", "progress")),
+	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getModule((x) => x.buttonContainer && Object.keys(x).length === 1)),
 	MainClasses,
 	NowPlayingClasses,
 	QuickLauncherClasses
 );
-const extraCSS = webpackify(`\n  	._2cbe2fbfe32e4150-description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n`);
+const extraCSS = webpackify(`\n  	.description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
-		css = css.replace(regex, `.${styles[key]}$1`);
+		css = styles[key]?.value ? css.replace(regex, `.${styles[key].value}$1`) : css.replace(regex, `.${styles[key]}$1`);
 	}
 	console.log(css);
 	return css;

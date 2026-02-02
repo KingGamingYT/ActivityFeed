@@ -4,7 +4,11 @@
     gap: 8px;
 }
 
-.blacklist .sectionDivider, .settingsDivider.sectionDivider {
+.settingsDivider {
+    margin-bottom: var(--space-12) !important;
+}
+
+.blacklist .sectionDivider, .settingsDivider {
     display: flex;
     width: 100%;
     border-bottom: 2px solid;
@@ -64,6 +68,10 @@
     }
 }
 
-.emptyState {
-    position: relative;
+.toggleStack {
+    padding: var(--space-16) 0 var(--space-16) 0;
+}
+
+.buttonItem {
+    display: flex;
 }

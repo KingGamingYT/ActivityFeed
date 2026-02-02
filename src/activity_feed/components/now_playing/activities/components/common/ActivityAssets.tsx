@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Common } from "@./modules/common";
+import { Common } from "@modules/common";
 import Tooltip from '@activity_feed/TooltipBuilder';
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
 interface RichImageAsset {

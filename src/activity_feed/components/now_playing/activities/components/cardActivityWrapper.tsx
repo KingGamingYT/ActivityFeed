@@ -1,5 +1,5 @@
 import { Common } from "@modules/common";
-import { ActivityCard } from "./cardActivity";
+import { ActivityCard } from "./CardActivity";
 interface CardWrapper {
     user: Object,
     activities: Object,

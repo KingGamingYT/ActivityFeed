@@ -12,17 +12,17 @@ const styles = Object.assign({
         lookFilled: Webpack.getByKeys('colorPrimary', 'grow').lookFilled,
         colorPrimary: Webpack.getByKeys('colorPrimary', 'grow').colorPrimary
     },
-    Webpack.getByKeys('itemCard'),
-    Webpack.getByKeys('tabularNumbers'),
-    Webpack.getByKeys('bar', 'container', 'progress'),
-    Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1),
+    Object.getOwnPropertyDescriptors(Webpack.getByKeys('itemCard')),
+    Object.getOwnPropertyDescriptors(Webpack.getByKeys('tabularNumbers')),
+    Object.getOwnPropertyDescriptors(Webpack.getByKeys('bar', 'container', 'progress')),
+    Object.getOwnPropertyDescriptors(Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1)),
     MainClasses,
     NowPlayingClasses,
     QuickLauncherClasses
 );
 
 export const extraCSS = webpackify(`
-    ._2cbe2fbfe32e4150-description .sharedFilePreviewYouTubeVideo {
+    .description .sharedFilePreviewYouTubeVideo {
         display: none;
     }
 
@@ -81,6 +81,10 @@ export const extraCSS = webpackify(`
         }
     }
 
+    .activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {
+        display: none;
+    }
+
     .activity .serviceButtonWrapper .sm:not(.hasText) {
         padding: 0;
         width: calc(var(--custom-button-button-sm-height) + 4px);
@@ -119,6 +123,11 @@ export const extraCSS = webpackify(`
         .progress {
             background-color: var(--white);
         }
+        .sectionDivider {
+            border-color: var(--opacity-white-12) !important;
+            border-width: 1px;
+            margin: 12px 0 12px 0;
+        } 
     }
 
     .theme-light .nowPlaying .emptyState {
@@ -164,12 +173,19 @@ export const extraCSS = webpackify(`
         justify-content: flex-start;
         align-items: center;
     }
+
+    .blackList .emptyState {
+        position: relative;
+        padding: 0;
+        border-bottom: unset; 
+        line-height: 1.60;
+    }
 `);
 
 function webpackify(css) {
     for (const key in styles) {
         let regex = new RegExp(`\\.${key}([\\s,.):>])`, 'g');
-        css = css.replace(regex, `.${styles[key]}$1`);
+        css = styles[key]?.value ? css.replace(regex, `.${styles[key].value}$1`) : css.replace(regex, `.${styles[key]}$1`);
     }
     console.log(css)
     return css;

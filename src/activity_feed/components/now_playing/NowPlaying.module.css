@@ -137,10 +137,6 @@
     flex-direction: column;
 }
 
-.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {
-    display: none;
-}
-
 .activity {
     flex-direction: row;
 }
@@ -345,13 +341,6 @@
     margin-bottom: 4px;
 }
 
-.sectionDivider {
-    display: flex;
-    width: 100%;
-    border-bottom: 2px solid;
-    margin: 20px 0 20px 0;
-}
-
 .voiceSection {
     display: flex;
     flex: 1 1 auto;
@@ -454,7 +443,7 @@
     display: flex;
 }
 
-.player:first-of-type {
+.player:first-of-type:not(:only-of-type) {
     mask: url(#svg-mask-voice-user-summary-item);
 }
 
@@ -550,11 +539,6 @@
     }
     .game {
         padding: 0;
-    }
-    .sectionDivider {
-        border-color: var(--opacity-white-12) !important;
-        border-width: 1px;
-        margin: 12px 0 12px 0;
     }
     .voiceSectionText {
         color: var(--white);

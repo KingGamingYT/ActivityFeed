@@ -1,4 +1,4 @@
-export const settings = {
+export default {
     main: {
         v2Cards: {
             name: "Activity Cards V2",

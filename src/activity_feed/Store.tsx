@@ -1,22 +1,27 @@
-import { Webpack, Data, Utils } from "betterdiscord";
+import { Data, Utils, Net } from "betterdiscord";
+import { useState, useEffect } from "react";
 import { Common } from "@./modules/common";
+import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
 
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
     article = {};
+    articleSet = {};
     dataSet = {};
     displaySet = [];
     blacklist = [];
     state = [];
     lastTimeFetched;
+    idling;
     constructor() {
         super();
+        this.articleSet = {};
         this.dataSet = {};
         this.displaySet = [];
-        this.article = {index: 0, direction: 1, idling: true, orientation: this.getOrientation()},
+        this.article = {}
         this.blacklist = [];
         this.lastTimeFetched;
-        this.state = { size: [window.innerWidth, window.innerHeight] };
+        this.idling = true;
 
         window.addEventListener("resize", this.listener)
     }
@@ -34,9 +39,9 @@ class GameNewsStore extends Utils.Store {
     }
 
     setFeeds() {
-        this.dataSet = Object.assign(this.dataSet, Data.load('ACTest', 'dataSet'));
-        this.blacklist = Data.load('ACTest', 'blacklist') || [];
-        this.lastTimeFetched = Data.load('ACTest', 'lastTimeFetched');
+        this.dataSet = Object.assign(this.dataSet, Data.load('dataSet'));
+        this.blacklist = Data.load('blacklist') || [];
+        this.lastTimeFetched = Data.load('lastTimeFetched');
         this.emitChange();
         return;
     }
@@ -52,7 +57,7 @@ class GameNewsStore extends Utils.Store {
     getBlacklistedGame(gameId) {
         let b = this.blacklist;
 
-        return b.find(e => e.game_id === gameId);
+        return b?.find(e => e.game_id === gameId);
     }
 
     clearBlacklist() {
@@ -86,10 +91,9 @@ class GameNewsStore extends Utils.Store {
         return this.blacklist;
     }
 
-    async #fetchMinecraftFeeds(id, applicationList) {
+    async #fetchMinecraftFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])
         const article = rssFeed[0].result.results[0]
-        const application = this.getApplicationByGameId(id, applicationList)
         return {
             application, 
             appId: application.id, 
@@ -101,10 +105,9 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
-    async #fetchFortniteFeeds(steamId, applicationList) {
+    async #fetchFortniteFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://fortnite-api.com/v2/news`).then(r => r.ok ? r.json() : null) ])
         const article = rssFeed[0].data.br.motds[0]
-        const application = this.getApplicationByGameId(steamId, applicationList)
         return {
             application,
             appId: application.id,
@@ -115,10 +118,9 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
-    async #fetchSteamFeeds(steamId, applicationList) {
-        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://store.steampowered.com/feeds/news/app/${steamId}`).then(r => r.ok ? r.json() : null) ])
+    async #fetchSteamFeeds(gameId, application) {
+        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://store.steampowered.com/feeds/news/app/${gameId}`).then(r => r.ok ? r.json() : null) ])
         const article = this.getRSSItem(rssFeed)
-        const application = this.getApplicationByGameId(steamId, applicationList)
         return {
             application, 
             appId: application.id, 
@@ -130,34 +132,57 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
-    async fetchFeeds(steamIds, applicationList) {
-        for (const steamId of steamIds) {
-            (async (steamId) => {
+    async fetchFeeds() {
+        const gameData = await this.getFeedGameData();
+        for (const gameId of Object.keys(gameData)) {
+            (async (gameId) => {
                 let feeds;
-                switch (steamId) {
-                    case "Minecraft": feeds = await this.#fetchMinecraftFeeds(steamId, applicationList); break;
-                    case "Fortnite": feeds = await this.#fetchFortniteFeeds(steamId, applicationList); break;
-                    default: feeds = await this.#fetchSteamFeeds(steamId, applicationList);
+                switch (gameId) {
+                    case "Minecraft": feeds = await this.#fetchMinecraftFeeds(gameData[gameId]); break;
+                    case "Fortnite": feeds = await this.#fetchFortniteFeeds(gameData[gameId]); break;
+                    default: feeds = await this.#fetchSteamFeeds(gameId, gameData[gameId]);
                 }
-                this.dataSet[steamId] = {
-                    id: steamId,
-                    application: feeds.application,
-                    news: {
-                        application_id: feeds.appId,
-                        description: feeds.description,
-                        thumbnail: feeds.thumbnail,
-                        timestamp: feeds.timestamp,
-                        title: feeds.title,
-                        url: feeds?.url
-                    },
-                    type: "application_news"
+                if (this.filterFeeds(feeds, gameId)) {
+                    this.dataSet[gameId] = {
+                        id: gameId,
+                        application: feeds.application,
+                        news: {
+                            application_id: feeds.appId,
+                            description: feeds.description,
+                            thumbnail: feeds.thumbnail,
+                            timestamp: feeds.timestamp,
+                            title: feeds.title,
+                            url: feeds?.url
+                        },
+                        type: "application_news"
+                    }
+                    Data.save('dataSet', this.dataSet);
                 }
-                Data.save('ACTest', 'dataSet', this.dataSet);
-            })(steamId)
+            })(gameId)
         }
+
         this.lastTimeFetched = Date.now();
         
-        Data.save('ACTest', 'lastTimeFetched', this.lastTimeFetched);
+        Data.save('lastTimeFetched', this.lastTimeFetched);
+    }
+
+    async getFeedGameData() {
+        const gameData = {}
+        const gameList = RunningGameStore.getGamesSeen().filter(game => GameStore.getGameByName(game.name));
+        const gameIds = gameList.filter(game => game.id || game.name === "Minecraft").map(game => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
+        let applicationList;
+
+        await Common.FetchApplications.fetchApplications(gameIds).then(
+            applicationList = gameList.map(game => ApplicationStore.getApplicationByName(game.name)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
+        )
+
+        const feedIds = applicationList.map(game => { const steamSku = game.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"); return steamSku?.sku || game.name });
+
+        for (let i = 0; i < feedIds.length; i++) {
+            gameData[feedIds[i]] = applicationList[i];
+        }
+
+        return gameData;
     }
 
     shouldFetch() {
@@ -166,12 +191,17 @@ class GameNewsStore extends Utils.Store {
         }
         let t = this.lastTimeFetched;
         let p = Object.values(this.getFeeds()).length;
-        return null == t || p < 5 || Date.now() - t > 216e5;
+        return null == t || Date.now() - t > 216e5;
     }
 
     isFetched() {
         let b = Object.values(this.getFeeds()).length > 5;
         return b;
+    }
+
+    filterFeeds(f, g) {
+        const oW = new Date(Date.now() - 12096e5);
+        return new Date(f.timestamp) > oW && !this.getBlacklistedGame(g);
     }
 
     getByGameId(id) {
@@ -200,57 +230,64 @@ class GameNewsStore extends Utils.Store {
     }
 
     getRandomFeeds(feeds) {
-        const oW = new Date(Date.now() - 12096e5);
         let t = [];
         let keys = Object.keys(feeds);
-        //console.log(feeds)
-        let _keys = keys.filter((key) => new Date(feeds[key].news.timestamp) > oW && !this.getBlacklistedGame(feeds[key].id))
 
-        if (_keys.length < 5) return; 
+        if (keys.length < 5) return; 
         for (let g = 0; g < 4; g++) {
-            let rand = _keys.length * Math.random() << 0;
-            t.push(feeds[_keys[rand]]);
-            _keys.splice(rand, 1)
+            let rand = keys.length * Math.random() << 0;
+            t.push(feeds[keys[rand]]);
+            keys.splice(rand, 1)
         }
         return t;
     }
 
     getFeedsForDisplay() {
+        const aA = {};
         const rG = this.displaySet;
 
         const r = this.getRandomFeeds(this.getFeeds());
         if (!this.shouldFetch() && !this.displaySet.length && r !== undefined) {
             rG.push.apply(rG, r);
+            for (let i = 0; i < rG.length; i++) {
+                aA[i] = {
+                    index: i,
+                    direction: this.getDirection(i + 1 - (this.getCurrentArticle().index || 0)),
+                    idling: this.idling,
+                    orientation: this.getOrientation(),
+                    article: rG[i]
+                };
+            }
+            this.articleSet = aA;
+            this.article = aA[0];
         }
-        return rG;
+
+        return aA;
     }
 
     getCurrentArticle() {
         return this.article;
     }
 
-    setCurrentArticle({index, direction, idling}) {
-        let a = this.getCurrentArticle();
-
-        return ({
-            ...a, 
-            index,
-            direction: this.getDirection(direction),
-            idling
-        })
+    setCurrentArticle(i) {
+       this.article = this.articleSet[i];
     }
 
     getOrientation() {
-        let article = this.article;
-        let window = this.state;
-        console.log(window?.size)
-        const val  = ((window?.size?.[0] > 1200 || window?.size?.[1] < 600) && (window?.size[0] < 1200 || window?.size?.[1] > 600)) ? "vertical" : "horizontal";
-        this.emitChange();
-        return val;
+        const [width, height] = this.state.length ? this.state.size : [WindowStore.windowSize.width, WindowStore.windowSize.height];
+        return ((width > 1200 || height < 600) && (width < 1200 || height > 600)) ? "vertical" : "horizontal";
     }
 
     getDirection(e) {
         return e > 0 ? 1 : -1;
     }
+
+    setIdling(e) {
+        this.idling = e;
+    }
+
+    isIdling() {
+        return this.idling;
+    }
 }
-export const NewsStore = new GameNewsStore();
+export default new GameNewsStore();

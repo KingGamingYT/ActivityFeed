@@ -34,6 +34,88 @@ class GameNewsStore extends Utils.Store {
     componentDidMount() { window.addEventListener("resize", this.listener); }
     componentWillUnmount() { window.removeEventListener("resize", this.listener); }
 
+    setDebugFeeds() {
+        const application = ApplicationStore.getApplicationByName('Minecraft');
+        this.articleSet = {
+            0: {
+                index: 0,
+                direction: this.getDirection(0 + 1 - (this.getCurrentArticle().index || 0)),
+                idling: this.idling,
+                orientation: this.getOrientation(),
+                article: {
+                    id: "TEST",
+                    application: application,
+                    news: {
+                        application_id: application.id,
+                        description: "this is a test article! For more information, visit https://example.com.",
+                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                        timestamp: Date.now(),
+                        title: "Test Article 1",
+                        url: "https://example.com"
+                    },
+                    type: "application_news"
+                }
+            },
+            1: {
+                index: 1,
+                direction: this.getDirection(1 + 1 - (this.getCurrentArticle().index || 0)),
+                idling: this.idling,
+                orientation: this.getOrientation(),
+                article: {
+                    id: "TEST",
+                    application: application,
+                    news: {
+                        application_id: application.id,
+                        description: "this is a test article! For more information, visit https://example.com.",
+                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                        timestamp: Date.now(),
+                        title: "Test Article 2",
+                        url: "https://example.com"
+                    },
+                    type: "application_news"
+                }
+            },
+            2: {
+                index: 2,
+                direction: this.getDirection(2 + 1 - (this.getCurrentArticle().index || 0)),
+                idling: this.idling,
+                orientation: this.getOrientation(),
+                article: {
+                    id: "TEST",
+                    application: application,
+                    news: {
+                        application_id: application.id,
+                        description: "this is a test article! For more information, visit https://example.com.",
+                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                        timestamp: Date.now(),
+                        title: "Test Article 3",
+                        url: "https://example.com"
+                    },
+                    type: "application_news"
+                }
+            },
+            3: {
+                index: 3,
+                direction: this.getDirection(3 + 1 - (this.getCurrentArticle().index || 0)),
+                idling: this.idling,
+                orientation: this.getOrientation(),
+                article: {
+                    id: "TEST",
+                    application: application,
+                    news: {
+                        application_id: application.id,
+                        description: "this is a test article! For more information, visit https://example.com.",
+                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                        timestamp: Date.now(),
+                        title: "Test Article 4",
+                        url: "https://example.com"
+                    },
+                    type: "application_news"
+                }
+            }
+        }
+    }
+
     getFeeds() {
         return this.dataSet;
     }
@@ -243,7 +325,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     getFeedsForDisplay() {
-        const aA = {};
+        const aA = this.articleSet;
         const rG = this.displaySet;
 
         const r = this.getRandomFeeds(this.getFeeds());

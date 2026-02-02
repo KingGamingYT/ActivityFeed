@@ -1,6 +1,7 @@
 .feedCarousel {
     display: flex;
     position: relative;
+    margin: 20px;
 }
 
 .carousel {
@@ -30,6 +31,8 @@
     flex-direction: column;
     justify-content: flex-end;
 }
+
+.articleSkeleton {}
 
 .background {
     background-repeat: no-repeat;
@@ -68,6 +71,8 @@
     justify-content: center;
     position: relative;
 }
+
+.detailsContainer {}
 
 .details {
     position: relative;

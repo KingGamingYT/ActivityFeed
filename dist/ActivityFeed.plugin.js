@@ -176,6 +176,87 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	componentWillUnmount() {
 		window.removeEventListener("resize", this.listener);
 	}
+	setDebugFeeds() {
+		const application = ApplicationStore.getApplicationByName("Minecraft");
+		this.articleSet = {
+			0: {
+				index: 0,
+				direction: this.getDirection(0 + 1 - (this.getCurrentArticle().index || 0)),
+				idling: this.idling,
+				orientation: this.getOrientation(),
+				article: {
+					id: "TEST",
+					application,
+					news: {
+						application_id: application.id,
+						description: "this is a test article! For more information, visit https://example.com.",
+						thumbnail: "https://files.catbox.moe/mfrfxj.png",
+						timestamp: Date.now(),
+						title: "Test Article 1",
+						url: "https://example.com"
+					},
+					type: "application_news"
+				}
+			},
+			1: {
+				index: 1,
+				direction: this.getDirection(1 + 1 - (this.getCurrentArticle().index || 0)),
+				idling: this.idling,
+				orientation: this.getOrientation(),
+				article: {
+					id: "TEST",
+					application,
+					news: {
+						application_id: application.id,
+						description: "this is a test article! For more information, visit https://example.com.",
+						thumbnail: "https://files.catbox.moe/mfrfxj.png",
+						timestamp: Date.now(),
+						title: "Test Article 2",
+						url: "https://example.com"
+					},
+					type: "application_news"
+				}
+			},
+			2: {
+				index: 2,
+				direction: this.getDirection(2 + 1 - (this.getCurrentArticle().index || 0)),
+				idling: this.idling,
+				orientation: this.getOrientation(),
+				article: {
+					id: "TEST",
+					application,
+					news: {
+						application_id: application.id,
+						description: "this is a test article! For more information, visit https://example.com.",
+						thumbnail: "https://files.catbox.moe/mfrfxj.png",
+						timestamp: Date.now(),
+						title: "Test Article 3",
+						url: "https://example.com"
+					},
+					type: "application_news"
+				}
+			},
+			3: {
+				index: 3,
+				direction: this.getDirection(3 + 1 - (this.getCurrentArticle().index || 0)),
+				idling: this.idling,
+				orientation: this.getOrientation(),
+				article: {
+					id: "TEST",
+					application,
+					news: {
+						application_id: application.id,
+						description: "this is a test article! For more information, visit https://example.com.",
+						thumbnail: "https://files.catbox.moe/mfrfxj.png",
+						timestamp: Date.now(),
+						title: "Test Article 4",
+						url: "https://example.com"
+					},
+					type: "application_news"
+				}
+			}
+		};
+	}
 	getFeeds() {
 		return this.dataSet;
 	}
@@ -364,7 +445,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return t;
 	}
 	getFeedsForDisplay() {
-		const aA = {};
+		const aA = this.articleSet;
 		const rG = this.displaySet;
 		const r = this.getRandomFeeds(this.getFeeds());
 		if (!this.shouldFetch() && !this.displaySet.length && r !== void 0) {
@@ -404,6 +485,13 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 }
 const NewsStore = new GameNewsStore();
+
+// activity_feed/components/application_news/FeedBuilder.tsx
+function NewsFeedBuilder() {
+	if (NewsStore.shouldFetch() === true) NewsStore.fetchFeeds();
+	const articles = NewsStore.getFeedsForDisplay();
+	if (!Object.keys(articles).length) return;
+}
 
 // styles
 let _styles = "";
@@ -1904,7 +1992,7 @@ function Scroller({ children, padding }) {
 function TabBaseBuilder() {
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement("svg", { className: Common$1.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement("svg", { className: Common$1.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/followed_games/FollowBuilder.tsx

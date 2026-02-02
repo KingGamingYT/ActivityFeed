@@ -1,5 +1,6 @@
 import { Common, ControllerIcon } from "@./modules/common";
 import { UserStore } from "@./modules/stores";
+import { NewsFeedBuilder } from "./components/application_news/FeedBuilder";
 import { QuickLauncherBuilder } from "./components/quick_launcher/launcher";
 import { NowPlayingBuilder } from "./components/now_playing/BaseBuilder";
 import MainClasses from "./ActivityFeed.module.css";
@@ -61,6 +62,7 @@ export function TabBaseBuilder() {
             </Common.HeaderBar>
             <Scroller>
                 <div className={MainClasses.centerContainer}>
+                    <NewsFeedBuilder />
                     <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px" }} />
                     <NowPlayingBuilder className={NowPlayingClasses.nowPlaying} style={{ position: "relative", padding: "0 20px 20px 20px" }} />
                     <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>

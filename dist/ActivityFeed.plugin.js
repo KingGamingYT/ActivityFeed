@@ -130,6 +130,12 @@ const NavigationUtils = betterdiscord.Webpack.getMangled("transitionTo - Transit
 	goForward: betterdiscord.Webpack.Filters.byStrings(".goForward()"),
 	transitionToGuild: betterdiscord.Webpack.Filters.byStrings('"transitionToGuild - Transitioning to "')
 });
+const ModalSystem = betterdiscord.Webpack.getMangled(".modalKey?", {
+	openModalLazy: betterdiscord.Webpack.Filters.byStrings(".modalKey?"),
+	openModal: betterdiscord.Webpack.Filters.byStrings(",instant:"),
+	closeModal: betterdiscord.Webpack.Filters.byStrings(".onCloseCallback()"),
+	closeAllModals: betterdiscord.Webpack.Filters.byStrings(".getState();for")
+});
 
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
@@ -472,7 +478,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.article = this.articleSet[i];
 	}
 	getOrientation() {
-		const [width, height] = this.state.length ? this.state.size : [WindowStore.windowSize.width, WindowStore.windowSize.height];
+		const [width, height] = this.state.size?.length ? this.state.size : [WindowStore.windowSize().width, WindowStore.windowSize().height];
 		return (width > 1200 || height < 600) && (width < 1200 || height > 600) ? "vertical" : "horizontal";
 	}
 	getDirection(e) {
@@ -496,15 +502,164 @@ function styles$1() {
 	return _styles;
 }
 
-// activity_feed/components/application_news/ApplicationNews.module.css
+// activity_feed/ActivityFeed.module.css
 const css$4 = `
-.feedCarousel_3e4ed3 {
+.activityFeed_21141b {
+		background: var(--background-gradient-chat, var(--background-base-lower));
+		border-top: 1px solid var(--app-border-frame);
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		overflow: hidden;
+}
+
+.scrollerBase_21141b {
+		contain: layout size;
+		height: 100%;
+		background: no-repeat bottom;
+		background-size: 100%;
+		background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
+		&::-webkit-scrollbar {
+		background: none;
+		border-radius: 8px;
+		width: 16px;
+		}
+		&::-webkit-scrollbar-thumb {
+				background-clip: padding-box;
+				border: solid 4px #0000;
+				border-radius: 8px;
+		}
+		&:hover::-webkit-scrollbar-thumb {
+				background-color: var(--bg-overlay-6, var(--background-tertiary));
+		}
+}
+
+.centerContainer_21141b {
+		display: flex;
+		flex-direction: column;
+		width: 1280px;
+		max-width: 100%;
+		min-width: 480px;
+		margin: 0 auto;
+}
+
+.title_21141b {
+		align-items: center;
+		display: flex;
+		justify-content: flex-start;
+		overflow: hidden;
+		white-space: nowrap;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.25;
+		color: var(--text-strong);
+}
+
+.titleWrapper_21141b {
+		flex: 0 0 auto;
+		margin: 0 8px 0 0;
+		min-width: auto;
+}
+
+.iconWrapper_21141b {
+		align-items: center;
+		display: flex;
+		flex: 0 0 auto;
+		height: var(--space-32);
+		justify-content: center;
+		margin: 0;
+		position: relative;
+		width: var(--space-32);
+}
+
+.headerBar_21141b {
+		height: calc(var(--custom-channel-header-height) - 1px);
+		min-height: calc(var(--custom-channel-header-height) - 1px);
+}
+
+.headerContainer_21141b {
+		flex-direction: row;
+}
+
+.headerText_21141b {
+		display: flex;
+		flex: 1;
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 22px;
+		margin-top: 20px;
+		width: 100%;
+		color: var(--text-default);
+}
+
+.button_21141b {
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		align-items: center;
+		background: none;
+		border: none;
+		border-radius: 3px;
+		display: flex;
+		font-size: 14px;
+		font-weight: 500;
+		justify-content: center;
+		line-height: 16px;
+		position: relative;
+		user-select: none;
+}
+
+.sectionDivider_21141b {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 20px 0 20px 0;
+}
+
+.emptyState_21141b {
+		position: relative;
+}
+
+.emptyText_21141b {}
+
+.emptyTitle_21141b {
+		font-size: 16px;
+		line-height: 20px;
+		color: var(--text-default);
+}
+
+.emptySubtitle_21141b {
+		font-size: 14px;
+		color: var(--text-muted);
+}`;
+_loadStyle("ActivityFeed.module.css", css$4);
+const modules_7e65654a = {
+	"activityFeed": "activityFeed_21141b",
+	"scrollerBase": "scrollerBase_21141b",
+	"centerContainer": "centerContainer_21141b",
+	"title": "title_21141b",
+	"titleWrapper": "titleWrapper_21141b",
+	"iconWrapper": "iconWrapper_21141b",
+	"headerBar": "headerBar_21141b",
+	"headerContainer": "headerContainer_21141b",
+	"headerText": "headerText_21141b",
+	"button": "button_21141b",
+	"sectionDivider": "sectionDivider_21141b",
+	"emptyState": "emptyState_21141b",
+	"emptyText": "emptyText_21141b",
+	"emptyTitle": "emptyTitle_21141b",
+	"emptySubtitle": "emptySubtitle_21141b"
+};
+const MainClasses = modules_7e65654a;
+
+// activity_feed/components/application_news/ApplicationNews.module.css
+const css$3 = `
+.feedCarousel_47fd09 {
 		display: flex;
 		position: relative;
 		margin: 20px;
 }
 
-.carousel_3e4ed3 {
+.carousel_47fd09 {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		flex: 1 1 75%;
@@ -515,7 +670,7 @@ const css$4 = `
 		transform: translateZ(0);
 }
 
-.article_3e4ed3 {
+.article_47fd09 {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		bottom: 0;
@@ -532,9 +687,9 @@ const css$4 = `
 		justify-content: flex-end;
 }
 
-.articleSkeleton_3e4ed3 {}
+.articleSkeleton_47fd09 {}
 
-.background_3e4ed3 {
+.background_47fd09 {
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 7.5%;
@@ -543,28 +698,28 @@ const css$4 = `
 		background-position: top;
 }
 
-.backgroundImage_3e4ed3 {
+.backgroundImage_47fd09 {
 		background-position: top;
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 0;
 }
 
-.background_3e4ed3, .backgroundImage_3e4ed3 {
+.background_47fd09, .backgroundImage_47fd09 {
 		left: 0;
 		position: absolute;
 		right: 0;
 		top: 0;
 }
 
-.feedOverflowMenu_3e4ed3 {
+.feedOverflowMenu_47fd09 {
 		position: absolute;
 		top: 0;
 		right: 0;
 		padding: 8px 12px;
 }
 
-.applicationArea_3e4ed3 {
+.applicationArea_47fd09 {
 		color: var(--text-default);
 		display: flex;
 		flex-direction: column;
@@ -572,13 +727,13 @@ const css$4 = `
 		position: relative;
 }
 
-.detailsContainer_3e4ed3 {}
+.detailsContainer_47fd09 {}
 
-.details_3e4ed3 {
+.details_47fd09 {
 		position: relative;
 }
 
-.titleStandard_3e4ed3 {
+.titleStandard_47fd09 {
 		margin-top: 8px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -587,13 +742,13 @@ const css$4 = `
 		line-height: 28px;
 }
 
-.title_3e4ed3 {
-		color: var(--header-primary);
+.title_47fd09 {
+		color: var(--text-strong);
 		display: block;
 		font-weight: 500;
 }
 
-.description_3e4ed3 {
+.description_47fd09 {
 		color: var(--text-default);
 		display: -webkit-box;
 		font-size: 16px;
@@ -616,12 +771,12 @@ const css$4 = `
 				all: inherit;
 				display: contents
 		}
-		.sharedFilePreviewYouTubeVideo_3e4ed3 {
+		.sharedFilePreviewYouTubeVideo_47fd09 {
 				display: none;
 		}
 }
 
-.timestamp_3e4ed3 {
+.timestamp_47fd09 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -629,7 +784,7 @@ const css$4 = `
 		text-transform: uppercase;
 }
 
-.gameIcon_3e4ed3 {
+.gameIcon_47fd09 {
 		position: relative;
 		pointer-events: auto;
 		cursor: pointer;
@@ -639,18 +794,18 @@ const css$4 = `
 		border-radius: 3px;
 }
 
-.pagination_3e4ed3 {
+.pagination_47fd09 {
 		-webkit-box-flex: 1;
 		flex: 1 1 25%;
 		min-width: 0;
 }
 
-.verticalPaginationItemContainer_3e4ed3 {
+.verticalPaginationItemContainer_47fd09 {
 		margin: 0;
 		overflow: hidden;
 }
 
-.scrollerWrap_3e4ed3 {
+.scrollerWrap_47fd09 {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
@@ -659,22 +814,22 @@ const css$4 = `
 		position: relative;
 }
 
-.scroller_3e4ed3 {
+.scroller_47fd09 {
 		-webkit-box-flex: 1;
 		contain: layout;
 		flex: 1;
 		min-height: 1px;
 }
 		
-.paginationItem_3e4ed3, .paginationItem_3e4ed3:before {
+.paginationItem_47fd09, .paginationItem_47fd09:before {
 		transition: all .2s ease;
 }
 
-.paginationItem_3e4ed3:first-child {
+.paginationItem_47fd09:first-child {
 		margin-top: 0;
 }
 
-.paginationItem_3e4ed3 {
+.paginationItem_47fd09 {
 		-webkit-box-align: center;
 		align-items: center;
 		background: var(--background-secondary-alt);
@@ -690,7 +845,7 @@ const css$4 = `
 		transform: translateZ(0);
 }
 
-.paginationItem_3e4ed3:before {
+.paginationItem_47fd09:before {
 		background: #fff;
 		border-radius: 20px;
 		content: "";
@@ -704,7 +859,7 @@ const css$4 = `
 		z-index: 1;
 }
 
-.paginationItem_3e4ed3:after {
+.paginationItem_47fd09:after {
 		background-blend-mode: color;
 		border-radius: 5px;
 		bottom: 0;
@@ -715,7 +870,7 @@ const css$4 = `
 		top: 0;
 }
 
-.splashArt_3e4ed3 {
+.splashArt_47fd09 {
 		filter: grayscale(100%);
 		height: 100%;
 		opacity: .2;
@@ -731,28 +886,28 @@ const css$4 = `
 		top: 0;
 }
 
-.paginationSubtitle_3e4ed3, .paginationTitle_3e4ed3 {
+.paginationSubtitle_47fd09, .paginationTitle_47fd09 {
 		font-weight: 600;
 }
 
-.paginationText_3e4ed3 {
+.paginationText_47fd09 {
 		overflow: hidden;
 }
 
-.paginationContent_3e4ed3 {
+.paginationContent_47fd09 {
 		overflow: hidden;
 		position: relative;
 		z-index: 1;
 }
 
-.paginationTitle_3e4ed3 {
-		color: var(--header-primary);
+.paginationTitle_47fd09 {
+		color: var(--text-strong);
 		font-size: 16px;
 		line-height: 1.25;
 		max-height: 40px;
 }
 
-.paginationSubtitle_3e4ed3 {
+.paginationSubtitle_47fd09 {
 		color: var(--text-muted);
 		font-size: 12px;
 		margin-top: 4px;
@@ -761,20 +916,21 @@ const css$4 = `
 		white-space: nowrap;
 }
 
-.selectedPage_3e4ed3 {
+.selectedPage_47fd09 {
 		background: var(--background-surface-higher);
 		cursor: default;
 }
 
-.selectedPage_3e4ed3:before {
+.selectedPage_47fd09:before {
 		transform: translateY(-50%) translateX(0);
 }
 
-.selectedPage_3e4ed3 .splashArt_3e4ed3 {
+.selectedPage_47fd09 .splashArt_47fd09 {
 		filter: grayscale(0);
 }
 
-.smallCarousel_3e4ed3 {
+.smallCarousel_47fd09 {
+		background-color: var(--background-secondary-alt);
 		-webkit-box-flex: 1;
 		border-radius: 5px;
 		flex: 1;
@@ -784,7 +940,7 @@ const css$4 = `
 		transform: translateZ(0);
 }
 
-.titleRowSimple_3e4ed3 {
+.titleRowSimple_47fd09 {
 		-webkit-box-align: center;
 		-webkit-box-pack: justify;
 		align-items: center;
@@ -793,7 +949,7 @@ const css$4 = `
 		justify-content: space-between;
 }
 
-.paginationSmall_3e4ed3 {
+.paginationSmall_47fd09 {
 		bottom: 0;
 		height: 64px;
 		left: 0;
@@ -805,17 +961,17 @@ const css$4 = `
 		display: flex;
 }
 
-.arrow_3e4ed3 {
+.arrow_47fd09 {
 		color: var(--text-muted);
 		z-index: 2;
 }
 
-svg.arrow_3e4ed3 {
+svg.arrow_47fd09 {
 		height: 26px;
 		width: 26px;
 }
 
-.arrowContainer_3e4ed3 {
+.arrowContainer_47fd09 {
 		color: var(--white);
 		cursor: pointer;
 		font-size: 0;
@@ -827,28 +983,28 @@ svg.arrow_3e4ed3 {
 		width: 50px;
 }
 
-.arrow_3e4ed3, .arrowContainer_3e4ed3 {
+.arrow_47fd09, .arrowContainer_47fd09 {
 		box-sizing: border-box;
 		pointer-events: all;
 }
 
-.prevButtonContainer_3e4ed3 {
+.prevButtonContainer_47fd09 {
 		left: 6px;
 }
 
-.nextButtonContainer_3e4ed3 {
+.nextButtonContainer_47fd09 {
 		right: 6px;
 }
 
-.left_3e4ed3 {
+.left_47fd09 {
 		transform: rotate(-90deg);
 }
 
-.right_3e4ed3 {
+.right_47fd09 {
 		transform: rotate(90deg);
 }
 
-.horizontalPaginationItemContainer_3e4ed3 {
+.horizontalPaginationItemContainer_47fd09 {
 		-webkit-box-align: center;
 		-webkit-box-flex: initial;
 		align-items: center;
@@ -858,7 +1014,7 @@ svg.arrow_3e4ed3 {
 		overflow-y: hidden;
 }
 
-.dot_3e4ed3 {
+.dot_47fd09 {
 		background-color: #fff;
 		border-radius: 2px;
 		cursor: pointer;
@@ -869,63 +1025,149 @@ svg.arrow_3e4ed3 {
 		width: 8px;
 }
 
-.dotNormal_3e4ed3 {
+.dotNormal_47fd09 {
 		opacity: 0.2;
 }
 
-.dotSelected_3e4ed3 {
+.dotSelected_47fd09 {
 		opacity: 0.6;
 }`;
-_loadStyle("ApplicationNews.module.css", css$4);
+_loadStyle("ApplicationNews.module.css", css$3);
 const modules_98d78101 = {
-	"feedCarousel": "feedCarousel_3e4ed3",
-	"carousel": "carousel_3e4ed3",
-	"article": "article_3e4ed3",
-	"articleSkeleton": "articleSkeleton_3e4ed3",
-	"background": "background_3e4ed3",
-	"backgroundImage": "backgroundImage_3e4ed3",
-	"feedOverflowMenu": "feedOverflowMenu_3e4ed3",
-	"applicationArea": "applicationArea_3e4ed3",
-	"detailsContainer": "detailsContainer_3e4ed3",
-	"details": "details_3e4ed3",
-	"titleStandard": "titleStandard_3e4ed3",
-	"title": "title_3e4ed3",
-	"description": "description_3e4ed3",
-	"sharedFilePreviewYouTubeVideo": "sharedFilePreviewYouTubeVideo_3e4ed3",
-	"timestamp": "timestamp_3e4ed3",
-	"gameIcon": "gameIcon_3e4ed3",
-	"pagination": "pagination_3e4ed3",
-	"verticalPaginationItemContainer": "verticalPaginationItemContainer_3e4ed3",
-	"scrollerWrap": "scrollerWrap_3e4ed3",
-	"scroller": "scroller_3e4ed3",
-	"paginationItem": "paginationItem_3e4ed3",
-	"splashArt": "splashArt_3e4ed3",
-	"paginationSubtitle": "paginationSubtitle_3e4ed3",
-	"paginationTitle": "paginationTitle_3e4ed3",
-	"paginationText": "paginationText_3e4ed3",
-	"paginationContent": "paginationContent_3e4ed3",
-	"selectedPage": "selectedPage_3e4ed3",
-	"smallCarousel": "smallCarousel_3e4ed3",
-	"titleRowSimple": "titleRowSimple_3e4ed3",
-	"paginationSmall": "paginationSmall_3e4ed3",
-	"arrow": "arrow_3e4ed3",
-	"arrowContainer": "arrowContainer_3e4ed3",
-	"prevButtonContainer": "prevButtonContainer_3e4ed3",
-	"nextButtonContainer": "nextButtonContainer_3e4ed3",
-	"left": "left_3e4ed3",
-	"right": "right_3e4ed3",
-	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer_3e4ed3",
-	"dot": "dot_3e4ed3",
-	"dotNormal": "dotNormal_3e4ed3",
-	"dotSelected": "dotSelected_3e4ed3"
+	"feedCarousel": "feedCarousel_47fd09",
+	"carousel": "carousel_47fd09",
+	"article": "article_47fd09",
+	"articleSkeleton": "articleSkeleton_47fd09",
+	"background": "background_47fd09",
+	"backgroundImage": "backgroundImage_47fd09",
+	"feedOverflowMenu": "feedOverflowMenu_47fd09",
+	"applicationArea": "applicationArea_47fd09",
+	"detailsContainer": "detailsContainer_47fd09",
+	"details": "details_47fd09",
+	"titleStandard": "titleStandard_47fd09",
+	"title": "title_47fd09",
+	"description": "description_47fd09",
+	"sharedFilePreviewYouTubeVideo": "sharedFilePreviewYouTubeVideo_47fd09",
+	"timestamp": "timestamp_47fd09",
+	"gameIcon": "gameIcon_47fd09",
+	"pagination": "pagination_47fd09",
+	"verticalPaginationItemContainer": "verticalPaginationItemContainer_47fd09",
+	"scrollerWrap": "scrollerWrap_47fd09",
+	"scroller": "scroller_47fd09",
+	"paginationItem": "paginationItem_47fd09",
+	"splashArt": "splashArt_47fd09",
+	"paginationSubtitle": "paginationSubtitle_47fd09",
+	"paginationTitle": "paginationTitle_47fd09",
+	"paginationText": "paginationText_47fd09",
+	"paginationContent": "paginationContent_47fd09",
+	"selectedPage": "selectedPage_47fd09",
+	"smallCarousel": "smallCarousel_47fd09",
+	"titleRowSimple": "titleRowSimple_47fd09",
+	"paginationSmall": "paginationSmall_47fd09",
+	"arrow": "arrow_47fd09",
+	"arrowContainer": "arrowContainer_47fd09",
+	"prevButtonContainer": "prevButtonContainer_47fd09",
+	"nextButtonContainer": "nextButtonContainer_47fd09",
+	"left": "left_47fd09",
+	"right": "right_47fd09",
+	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer_47fd09",
+	"dot": "dot_47fd09",
+	"dotNormal": "dotNormal_47fd09",
+	"dotSelected": "dotSelected_47fd09"
 };
 const FeedClasses = modules_98d78101;
 
+// activity_feed/TooltipBuilder.tsx
+const Tooltip = ({ note, position, children }) => {
+	return BdApi.React.createElement(Common$1.Tooltip, { text: note, position: position || "top" }, (props) => {
+		children.props = {
+			...props,
+			...children.props
+		};
+		return children;
+	});
+};
+
+// activity_feed/components/application_news/components/OverflowBuilder.tsx
+function FeedPopout({ applicationId, gameId, close }) {
+	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
+	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common$1.Clipboard(applicationId) }), BdApi.React.createElement(
+		betterdiscord.ContextMenu.Item,
+		{
+			id: "unfollow-game",
+			label: "Unfollow Game",
+			action: () => ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common$1.ModalRoot.Modal,
+					{
+						...props,
+						title: "Are you sure?",
+						actions: [
+							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
+							{ text: confirmText, fullWidth: 1, onClick: () => {
+								NewsStore.blacklistGame(applicationId, gameId);
+								props.onClose();
+							} }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Do you want to hide this game from appearing in your Activity Feed? You can re-enable its visibility at any time in settings."), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, "This action will require you to restart Discord in order to see changes."))
+				)
+			)
+		}
+	));
+}
+function FeedOverflowBuilder({ applicationId, gameId, position }) {
+	const [showPopout, setShowPopout] = react.useState(false);
+	const refDOM = react.useRef(null);
+	return BdApi.React.createElement(
+		Common$1.Popout,
+		{
+			targetElementRef: refDOM,
+			clickTrap: true,
+			onRequestClose: () => setShowPopout(false),
+			renderPopout: () => BdApi.React.createElement(Common$1.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { applicationId, gameId, close: () => setShowPopout(false) })),
+			position,
+			shouldShow: showPopout
+		},
+		(props) => BdApi.React.createElement(
+			"div",
+			{
+				...props,
+				ref: refDOM,
+				onClick: () => setShowPopout(true),
+				style: { position: "absolute", zIndex: 2, top: "0", right: "0" }
+			},
+			BdApi.React.createElement(Tooltip, { note: "More" }, BdApi.React.createElement("div", { className: FeedClasses.feedOverflowMenu }, BdApi.React.createElement("svg", { width: "24", height: "24" }, BdApi.React.createElement("path", { d: "M4 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10-2a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z", fill: "white" }))))
+		)
+	);
+}
+
+// activity_feed/components/application_news/components/CarouselBuilder.tsx
+function FeedCarouselBuilder({ currentArticle }) {
+	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.article.application.id, gameId: currentArticle.id, position: "right" }));
+}
+
+// activity_feed/components/application_news/components/MiniCarouselBuilder.tsx
+function FeedMiniCarouselBuilder({ currentArticle }) {
+	return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.article.application.id, gameId: currentArticle.id, position: "right" }));
+}
+
+// activity_feed/components/application_news/components/MiniPaginationBuilder.tsx
+function FeedMiniPaginationBuilder({ articleSet, article }) {
+	return;
+}
+
+// activity_feed/components/application_news/components/PaginationBuilder.tsx
+function FeedPaginationBuilder({ articleSet, article }) {
+	return;
+}
+
 // activity_feed/components/application_news/components/SkeletonErrorBuilder.tsx
 function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
-	const type = NewsStore.getOrientation();
+	const type = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	if (type === "vertical") {
-		BdApi.React.createElement("div", { className: FeedClasses.feedCarousel }, BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+		return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel }, BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,
@@ -933,7 +1175,7 @@ function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 			}
 		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer }, BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, errorText), errorDescription && BdApi.React.createElement("div", { className: FeedClasses.description }, errorDescription))))));
 	} else if (type === "horizontal") {
-		BdApi.React.createElement("div", { className: FeedClasses.feedCarousel }, BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+		return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel }, BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,
@@ -957,156 +1199,29 @@ function NewsFeedBuilder() {
 			}
 		);
 	}
-}
-
-// activity_feed/ActivityFeed.module.css
-const css$3 = `
-.activityFeed_69390a {
-		background: var(--background-gradient-chat, var(--background-base-lower));
-		border-top: 1px solid var(--app-border-frame);
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		overflow: hidden;
-}
-
-.scrollerBase_69390a {
-		contain: layout size;
-		height: 100%;
-		background: no-repeat bottom;
-		background-size: 100%;
-		background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
-		&::-webkit-scrollbar {
-		background: none;
-		border-radius: 8px;
-		width: 16px;
+	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
+	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
+	react.useState(true);
+	const handleSwitch = (cur) => {
+		if (cur.idling) {
+			NewsStore.setCurrentArticle(cur.index === 3 ? cur.index - 3 : cur.index + 1);
 		}
-		&::-webkit-scrollbar-thumb {
-				background-clip: padding-box;
-				border: solid 4px #0000;
-				border-radius: 8px;
+		return;
+	};
+	react.useEffect(() => {
+		const interval = setInterval(() => {
+			handleSwitch(betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle));
+		}, 8e3);
+		return () => clearInterval(interval);
+	}, []);
+	return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel, onMouseOver: () => NewsStore.setIdling(false), onMouseLeave: () => NewsStore.setIdling(true) }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles, article: currentArticle })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, article: currentArticle })) : BdApi.React.createElement(
+		FeedSkeletonErrorBuilder,
+		{
+			errorText: "Activity Feed Unavailable",
+			errorDescription: "You've reached an ultra rare error! Reload Discord to try again. Error: orientation-match-failed"
 		}
-		&:hover::-webkit-scrollbar-thumb {
-				background-color: var(--bg-overlay-6, var(--background-tertiary));
-		}
+	));
 }
-
-.centerContainer_69390a {
-		display: flex;
-		flex-direction: column;
-		width: 1280px;
-		max-width: 100%;
-		min-width: 480px;
-		margin: 0 auto;
-}
-
-.title_69390a {
-		align-items: center;
-		display: flex;
-		justify-content: flex-start;
-		overflow: hidden;
-		white-space: nowrap;
-		font-size: 16px;
-		font-weight: 500;
-		line-height: 1.25;
-		color: var(--header-primary);
-}
-
-.titleWrapper_69390a {
-		flex: 0 0 auto;
-		margin: 0 8px 0 0;
-		min-width: auto;
-}
-
-.iconWrapper_69390a {
-		align-items: center;
-		display: flex;
-		flex: 0 0 auto;
-		height: var(--space-32);
-		justify-content: center;
-		margin: 0;
-		position: relative;
-		width: var(--space-32);
-}
-
-.headerBar_69390a {
-		height: calc(var(--custom-channel-header-height) - 1px);
-		min-height: calc(var(--custom-channel-header-height) - 1px);
-}
-
-.headerContainer_69390a {
-		flex-direction: row;
-}
-
-.headerText_69390a {
-		display: flex;
-		flex: 1;
-		font-size: 18px;
-		font-weight: 500;
-		line-height: 22px;
-		margin-top: 20px;
-		width: 100%;
-		color: var(--text-default);
-}
-
-.button_69390a {
-		-webkit-box-align: center;
-		-webkit-box-pack: center;
-		align-items: center;
-		background: none;
-		border: none;
-		border-radius: 3px;
-		display: flex;
-		font-size: 14px;
-		font-weight: 500;
-		justify-content: center;
-		line-height: 16px;
-		position: relative;
-		user-select: none;
-}
-
-.sectionDivider_69390a {
-		display: flex;
-		width: 100%;
-		border-bottom: 2px solid;
-		margin: 20px 0 20px 0;
-}
-
-.emptyState_69390a {
-		position: relative;
-}
-
-.emptyText_69390a {}
-
-.emptyTitle_69390a {
-		font-size: 16px;
-		line-height: 20px;
-		color: var(--text-default);
-}
-
-.emptySubtitle_69390a {
-		font-size: 14px;
-		color: var(--text-muted);
-}`;
-_loadStyle("ActivityFeed.module.css", css$3);
-const modules_7e65654a = {
-	"activityFeed": "activityFeed_69390a",
-	"scrollerBase": "scrollerBase_69390a",
-	"centerContainer": "centerContainer_69390a",
-	"title": "title_69390a",
-	"titleWrapper": "titleWrapper_69390a",
-	"iconWrapper": "iconWrapper_69390a",
-	"headerBar": "headerBar_69390a",
-	"headerContainer": "headerContainer_69390a",
-	"headerText": "headerText_69390a",
-	"button": "button_69390a",
-	"sectionDivider": "sectionDivider_69390a",
-	"emptyState": "emptyState_69390a",
-	"emptyText": "emptyText_69390a",
-	"emptyTitle": "emptyTitle_69390a",
-	"emptySubtitle": "emptySubtitle_69390a"
-};
-const MainClasses = modules_7e65654a;
 
 // activity_feed/components/common/components/SectionHeader.jsx
 function SectionHeader({ label }) {
@@ -2127,17 +2242,6 @@ function PartyFooter({ party, players, user, activity }) {
 	), BdApi.React.createElement(Common$1.JoinButton, { user, activity })));
 }
 
-// activity_feed/TooltipBuilder.tsx
-const Tooltip = ({ note, position, children }) => {
-	return BdApi.React.createElement(Common$1.Tooltip, { text: note, position: position || "top" }, (props) => {
-		children.props = {
-			...props,
-			...children.props
-		};
-		return children;
-	});
-};
-
 // activity_feed/components/now_playing/activities/components/common/ActivityAssets.tsx
 function XboxImageAsset({ url }) {
 	return BdApi.React.createElement(
@@ -2333,7 +2437,7 @@ function VoiceCard({ activities, voice, streams }) {
 	const stream = streams[0]?.stream;
 	const streamUser = streams[0]?.streamUser;
 	const channel = stream ? ChannelStore$1.getChannel(stream.channelId) : voice[0]?.channel;
-	const members = stream && !channel ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
+	const members = stream ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
 	const server = voice[0]?.guild;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser, server })), BdApi.React.createElement(
 		FlexInfo,

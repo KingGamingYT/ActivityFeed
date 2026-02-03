@@ -88,7 +88,7 @@
 }
 
 .title {
-    color: var(--header-primary);
+    color: var(--text-strong);
     display: block;
     font-weight: 500;
 }
@@ -246,7 +246,7 @@
 }
 
 .paginationTitle {
-    color: var(--header-primary);
+    color: var(--text-strong);
     font-size: 16px;
     line-height: 1.25;
     max-height: 40px;
@@ -275,6 +275,7 @@
 }
 
 .smallCarousel {
+    background-color: var(--background-secondary-alt);
     -webkit-box-flex: 1;
     border-radius: 5px;
     flex: 1;

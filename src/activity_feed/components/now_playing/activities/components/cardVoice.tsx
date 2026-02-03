@@ -13,7 +13,7 @@ export function VoiceCard({activities, voice, streams}) {
     const stream = streams[0]?.stream;
     const streamUser = streams[0]?.streamUser;
     const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
-    const members = stream && !channel ? getVoiceParticipants({voice: stream.channelId}) : voice[0]?.members;
+    const members = stream ? getVoiceParticipants({voice: stream.channelId}) : voice[0]?.members;
     const server = voice[0]?.guild;
 
     return (

@@ -356,7 +356,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     getOrientation() {
-        const [width, height] = this.state.length ? this.state.size : [WindowStore.windowSize.width, WindowStore.windowSize.height];
+        const [width, height] = this.state.size?.length ? this.state.size : [WindowStore.windowSize().width, WindowStore.windowSize().height];
         return ((width > 1200 || height < 600) && (width < 1200 || height > 600)) ? "vertical" : "horizontal";
     }
 

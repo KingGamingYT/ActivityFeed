@@ -40,8 +40,8 @@ class GameNewsStore extends Utils.Store {
             0: {
                 index: 0,
                 direction: this.getDirection(0 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.idling,
-                orientation: this.getOrientation(),
+                idling: this.isIdling(),
+                getOrientation() { this.getOrientation() },
                 article: {
                     id: "TEST",
                     application: application,
@@ -59,15 +59,15 @@ class GameNewsStore extends Utils.Store {
             1: {
                 index: 1,
                 direction: this.getDirection(1 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.idling,
-                orientation: this.getOrientation(),
+                idling: this.isIdling(),
+                getOrientation() { this.getOrientation() },
                 article: {
                     id: "TEST",
                     application: application,
                     news: {
                         application_id: application.id,
                         description: "this is a test article! For more information, visit https://example.com.",
-                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                        thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
                         timestamp: Date.now(),
                         title: "Test Article 2",
                         url: "https://example.com"
@@ -78,8 +78,8 @@ class GameNewsStore extends Utils.Store {
             2: {
                 index: 2,
                 direction: this.getDirection(2 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.idling,
-                orientation: this.getOrientation(),
+                idling: this.isIdling(),
+                getOrientation() { this.getOrientation() },
                 article: {
                     id: "TEST",
                     application: application,
@@ -97,15 +97,15 @@ class GameNewsStore extends Utils.Store {
             3: {
                 index: 3,
                 direction: this.getDirection(3 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.idling,
-                orientation: this.getOrientation(),
+                idling: this.isIdling(),
+                getOrientation() { this.getOrientation() },
                 article: {
                     id: "TEST",
                     application: application,
                     news: {
                         application_id: application.id,
                         description: "this is a test article! For more information, visit https://example.com.",
-                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                        thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
                         timestamp: Date.now(),
                         title: "Test Article 4",
                         url: "https://example.com"
@@ -114,6 +114,7 @@ class GameNewsStore extends Utils.Store {
                 }
             }
         }
+        this.article = this.articleSet[0]
     }
 
     getFeeds() {
@@ -335,8 +336,8 @@ class GameNewsStore extends Utils.Store {
                 aA[i] = {
                     index: i,
                     direction: this.getDirection(i + 1 - (this.getCurrentArticle().index || 0)),
-                    idling: this.idling,
-                    orientation: this.getOrientation(),
+                    idling: this.isIdling(),
+                    getOrientation() { this.getOrientation() },
                     article: rG[i]
                 };
             }

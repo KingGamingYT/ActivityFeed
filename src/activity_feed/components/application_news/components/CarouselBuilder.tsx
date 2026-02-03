@@ -1,3 +1,4 @@
+import { Common } from "@modules/common";
 import { FeedOverflowBuilder } from "./OverflowBuilder";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
@@ -7,6 +8,25 @@ export function FeedCarouselBuilder({currentArticle}) {
     return (
         <span className={FeedClasses.carousel}>
             <FeedOverflowBuilder applicationId={currentArticle.article.application.id} gameId={currentArticle.id} position="right" />
+            <a
+                tabindex={currentArticle.index}
+                className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}
+                href="noreferrer nopener"
+                target="_blank"
+                role="button"
+            >
+                <div className={`${FeedClasses.articleStandard} ${FeedClasses.article}`} style={{ opacity: 1, zIndex: 1 }}>
+                    <div className={FeedClasses.background}>
+                        <div 
+                            className={FeedClasses.backgroundImage}
+                            style={{ 
+                                backgroundImage: currentArticle.article.news?.thumbnail ? `url(${currentArticle.article.news?.thumbnail})`
+                                : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.article.id}/capsule_616x353.jpg)`
+                            }}
+                        />
+                    </div>
+                </div>
+            </a>
         </span>
     )
 }

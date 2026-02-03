@@ -30,13 +30,14 @@ export function NewsFeedBuilder() {
 
         return () => clearInterval(interval);
     }, [currentArticle]);
+    console.log(currentArticle)
 
     return (
         <div className={FeedClasses.feedCarousel} onMouseOver={() => NewsStore.setIdling(false)} onMouseLeave={() => NewsStore.setIdling(true)}>{
             orientation === "vertical" ? 
                 <>
                     <FeedCarouselBuilder currentArticle={currentArticle} />
-                    <FeedPaginationBuilder articleSet={articles} article={currentArticle} />
+                    <FeedPaginationBuilder articleSet={articles} />
                 </>
             : orientation === "horizontal" ?
                 <>

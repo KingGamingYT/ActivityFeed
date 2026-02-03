@@ -189,8 +189,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			0: {
 				index: 0,
 				direction: this.getDirection(0 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.idling,
-				orientation: this.getOrientation(),
+				idling: this.isIdling(),
+				getOrientation() {
+					this.getOrientation();
+				},
 				article: {
 					id: "TEST",
 					application,
@@ -208,15 +210,17 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			1: {
 				index: 1,
 				direction: this.getDirection(1 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.idling,
-				orientation: this.getOrientation(),
+				idling: this.isIdling(),
+				getOrientation() {
+					this.getOrientation();
+				},
 				article: {
 					id: "TEST",
 					application,
 					news: {
 						application_id: application.id,
 						description: "this is a test article! For more information, visit https://example.com.",
-						thumbnail: "https://files.catbox.moe/mfrfxj.png",
+						thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
 						timestamp: Date.now(),
 						title: "Test Article 2",
 						url: "https://example.com"
@@ -227,8 +231,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			2: {
 				index: 2,
 				direction: this.getDirection(2 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.idling,
-				orientation: this.getOrientation(),
+				idling: this.isIdling(),
+				getOrientation() {
+					this.getOrientation();
+				},
 				article: {
 					id: "TEST",
 					application,
@@ -246,15 +252,17 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			3: {
 				index: 3,
 				direction: this.getDirection(3 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.idling,
-				orientation: this.getOrientation(),
+				idling: this.isIdling(),
+				getOrientation() {
+					this.getOrientation();
+				},
 				article: {
 					id: "TEST",
 					application,
 					news: {
 						application_id: application.id,
 						description: "this is a test article! For more information, visit https://example.com.",
-						thumbnail: "https://files.catbox.moe/mfrfxj.png",
+						thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
 						timestamp: Date.now(),
 						title: "Test Article 4",
 						url: "https://example.com"
@@ -263,6 +271,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 				}
 			}
 		};
+		this.article = this.articleSet[0];
 	}
 	getFeeds() {
 		return this.dataSet;
@@ -461,8 +470,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 				aA[i] = {
 					index: i,
 					direction: this.getDirection(i + 1 - (this.getCurrentArticle().index || 0)),
-					idling: this.idling,
-					orientation: this.getOrientation(),
+					idling: this.isIdling(),
+					getOrientation() {
+						this.getOrientation();
+					},
 					article: rG[i]
 				};
 			}
@@ -1147,7 +1158,25 @@ function FeedOverflowBuilder({ applicationId, gameId, position }) {
 
 // activity_feed/components/application_news/components/CarouselBuilder.tsx
 function FeedCarouselBuilder({ currentArticle }) {
-	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.article.application.id, gameId: currentArticle.id, position: "right" }));
+	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.article.application.id, gameId: currentArticle.id, position: "right" }), BdApi.React.createElement(
+		"a",
+		{
+			tabindex: currentArticle.index,
+			className: `${Common$1.AnchorClasses.anchor} ${Common$1.AnchorClasses.anchorUnderlineOnHover}`,
+			href: "noreferrer nopener",
+			target: "_blank",
+			role: "button"
+		},
+		BdApi.React.createElement("div", { className: `${FeedClasses.articleStandard} ${FeedClasses.article}`, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+			"div",
+			{
+				className: FeedClasses.backgroundImage,
+				style: {
+					backgroundImage: currentArticle.article.news?.thumbnail ? `url(${currentArticle.article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.article.id}/capsule_616x353.jpg)`
+				}
+			}
+		)))
+	));
 }
 
 // activity_feed/components/application_news/components/MiniCarouselBuilder.tsx
@@ -1161,8 +1190,27 @@ function FeedMiniPaginationBuilder({ articleSet, article }) {
 }
 
 // activity_feed/components/application_news/components/PaginationBuilder.tsx
-function FeedPaginationBuilder({ articleSet, article }) {
-	return;
+function FeedPaginationBuilder({ articleSet }) {
+	return BdApi.React.createElement("div", { className: FeedClasses.pagination }, BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}` }, Object.keys(articleSet).map((article) => {
+		if (!articleSet[article]) return;
+		return BdApi.React.createElement(
+			"div",
+			{
+				className: articleSet[article].index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem,
+				onClick: () => NewsStore.setCurrentArticle(article),
+				key: article
+			},
+			BdApi.React.createElement(
+				"div",
+				{
+					className: FeedClasses.splashArt,
+					style: {
+						backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
+					}
+				}
+			)
+		);
+	}))));
 }
 
 // activity_feed/components/application_news/components/SkeletonErrorBuilder.tsx
@@ -1216,7 +1264,8 @@ function NewsFeedBuilder() {
 		}, 8e3);
 		return () => clearInterval(interval);
 	}, [currentArticle]);
-	return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel, onMouseOver: () => NewsStore.setIdling(false), onMouseLeave: () => NewsStore.setIdling(true) }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles, article: currentArticle })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, article: currentArticle })) : BdApi.React.createElement(
+	console.log(currentArticle);
+	return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel, onMouseOver: () => NewsStore.setIdling(false), onMouseLeave: () => NewsStore.setIdling(true) }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, article: currentArticle })) : BdApi.React.createElement(
 		FeedSkeletonErrorBuilder,
 		{
 			errorText: "Activity Feed Unavailable",

@@ -1,3 +1,5 @@
+.nowPlaying {}
+
 .nowPlayingContainer {
     display: flex;
     margin-top: var(--space-lg);
@@ -472,15 +474,6 @@
     font-size: 12px;
     font-weight: 500;
     line-height: 1.3333333333333333;
-}
-
-.nowPlaying .emptyState {
-    border: 1px solid;
-    border-radius: 5px;
-    box-sizing: border-box;
-    margin-top: 20px;
-    padding: 20px;
-    width: 100%;
 }
 
 .cardV2 {

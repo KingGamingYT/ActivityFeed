@@ -2,8 +2,8 @@ import { ThemeStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-export function ActivityFeedSkeletonErrorBuilder({errorText, errorDescription}) {
-	const type = NewsStore.getOrientation;
+export function FeedSkeletonErrorBuilder({errorText, errorDescription}) {
+	const type = NewsStore.getOrientation();
 
 	if (type === "vertical") {
 		<div className={FeedClasses.feedCarousel}>

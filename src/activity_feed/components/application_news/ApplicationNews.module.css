@@ -376,14 +376,3 @@ svg.arrow {
 .dotSelected {
     opacity: 0.6;
 }
-
-.emptyTitle {
-    font-size: 16px;
-    line-height: 20px;
-    color: var(--text-default);
-}
-
-.emptySubtitle {
-    font-size: 14px;
-    color: var(--text-muted);
-}

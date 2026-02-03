@@ -130,6 +130,15 @@ export const extraCSS = webpackify(`
         } 
     }
 
+    .nowPlaying .emptyState {
+        border: 1px solid;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 20px;
+        padding: 20px;
+        width: 100%;
+    }
+
     .theme-light .nowPlaying .emptyState {
         background-color: #fff;
         border-color: var(--interactive-background-hover);

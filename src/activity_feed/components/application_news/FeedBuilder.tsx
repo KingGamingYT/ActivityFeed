@@ -1,9 +1,15 @@
+import { FeedSkeletonErrorBuilder } from "./components";
 import NewsStore from "@activity_feed/Store";
 
 export function NewsFeedBuilder() {
 	if ( NewsStore.shouldFetch() === true ) NewsStore.fetchFeeds();
 	const articles = NewsStore.getFeedsForDisplay();
-	if (!Object.keys(articles).length) return 
+	if (!Object.keys(articles).length) {
+        return <FeedSkeletonErrorBuilder 
+            errorText="Activity Feed Unavailable"
+            errorDescription="You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
+        />
+    }
 }
 
 /*function NewsFeedBuilder() {

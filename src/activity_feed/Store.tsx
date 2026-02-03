@@ -352,7 +352,8 @@ class GameNewsStore extends Utils.Store {
     }
 
     setCurrentArticle(i) {
-       this.article = this.articleSet[i];
+        this.article = this.articleSet[i];
+        this.emitChange();
     }
 
     getOrientation() {
@@ -366,6 +367,7 @@ class GameNewsStore extends Utils.Store {
 
     setIdling(e) {
         this.idling = e;
+        this.emitChange();
     }
 
     isIdling() {

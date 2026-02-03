@@ -25,11 +25,11 @@ export function NewsFeedBuilder() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            handleSwitch(Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle))
+            handleSwitch(currentArticle)
         }, 8e3);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [currentArticle]);
 
     return (
         <div className={FeedClasses.feedCarousel} onMouseOver={() => NewsStore.setIdling(false)} onMouseLeave={() => NewsStore.setIdling(true)}>{

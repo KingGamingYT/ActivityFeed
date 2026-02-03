@@ -476,6 +476,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	setCurrentArticle(i) {
 		this.article = this.articleSet[i];
+		this.emitChange();
 	}
 	getOrientation() {
 		const [width, height] = this.state.size?.length ? this.state.size : [WindowStore.windowSize().width, WindowStore.windowSize().height];
@@ -486,6 +487,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	setIdling(e) {
 		this.idling = e;
+		this.emitChange();
 	}
 	isIdling() {
 		return this.idling;
@@ -1210,10 +1212,10 @@ function NewsFeedBuilder() {
 	};
 	react.useEffect(() => {
 		const interval = setInterval(() => {
-			handleSwitch(betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle));
+			handleSwitch(currentArticle);
 		}, 8e3);
 		return () => clearInterval(interval);
-	}, []);
+	}, [currentArticle]);
 	return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel, onMouseOver: () => NewsStore.setIdling(false), onMouseLeave: () => NewsStore.setIdling(true) }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles, article: currentArticle })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, article: currentArticle })) : BdApi.React.createElement(
 		FeedSkeletonErrorBuilder,
 		{

@@ -4,23 +4,23 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 function Subpagination({article, articleSet}) {
     const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
-    console.log(articleSet[article].index, NewsStore.getCurrentArticle().index, article.index - NewsStore.getCurrentArticle().index)
-    const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(articleSet[article].index - NewsStore.getCurrentArticle().index))
-
+    const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(article.index - NewsStore.getCurrentArticle().index))
     return (
         <div 
-            className={articleSet[article].index === NewsStore.getCurrentArticle().index ? 
-            `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}`
-            : FeedClasses.paginationItem}
-            onClick={() => NewsStore.setCurrentArticle(article, direction, isIdling)}
+            className={article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
+            onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false)}}
             key={article}>
             <div 
                 className={FeedClasses.splashArt}
                 style={{ 
-                    backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})`
-                    : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
+                    backgroundImage: article.news?.thumbnail ? `url(${article.news?.thumbnail})`
+                    : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${article.id}/capsule_616x353.jpg)`
                 }}
             />
+            <div className={FeedClasses.paginationText}>
+                <div className={`${FeedClasses.paginationTitle} ${FeedClasses.paginationContent}`}>{article.news?.title || "No Title"}</div>
+                <div className={`${FeedClasses.paginationSubtitle} ${FeedClasses.paginationContent}`}>{article.application.name || "Unknown Game"}</div>
+            </div>
         </div>
     )
 }
@@ -31,8 +31,8 @@ export function FeedPaginationBuilder({articleSet}) {
         <div className={FeedClasses.pagination}>
             <div className={FeedClasses.scrollerWrap}>
                 <div className={`${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}`}>{
-                    Object.keys(articleSet).map(article => {
-                        if (!articleSet[article]) return;
+                    articleSet.map(article => {
+                        if (!article) return;
 
                         return (
                            <Subpagination article={article} articleSet={articleSet} />

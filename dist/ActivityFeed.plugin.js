@@ -184,94 +184,67 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		window.removeEventListener("resize", this.listener);
 	}
 	setDebugFeeds() {
+		BdApi.Webpack.getByKeys("fetchApplications").fetchApplication("1402418491272986635");
 		const application = ApplicationStore.getApplicationByName("Minecraft");
-		this.articleSet = {
-			0: {
+		this.displaySet = [
+			{
 				index: 0,
-				direction: this.getDirection(0 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.isIdling(),
-				getOrientation() {
-					this.getOrientation();
+				id: "TEST",
+				application,
+				news: {
+					application_id: application.id,
+					description: "this is a test article! For more information, visit https://example.com.",
+					thumbnail: "https://files.catbox.moe/mfrfxj.png",
+					timestamp: Date.now(),
+					title: "Test Article 1",
+					url: "https://example.com"
 				},
-				article: {
-					id: "TEST",
-					application,
-					news: {
-						application_id: application.id,
-						description: "this is a test article! For more information, visit https://example.com.",
-						thumbnail: "https://files.catbox.moe/mfrfxj.png",
-						timestamp: Date.now(),
-						title: "Test Article 1",
-						url: "https://example.com"
-					},
-					type: "application_news"
-				}
+				type: "application_news"
 			},
-			1: {
+			{
 				index: 1,
-				direction: this.getDirection(1 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.isIdling(),
-				getOrientation() {
-					this.getOrientation();
+				id: "TEST",
+				application,
+				news: {
+					application_id: application.id,
+					description: "this is a test article! For more information, visit https://example.com.",
+					thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
+					timestamp: Date.now(),
+					title: "Test Article 2",
+					url: "https://example.com"
 				},
-				article: {
-					id: "TEST",
-					application,
-					news: {
-						application_id: application.id,
-						description: "this is a test article! For more information, visit https://example.com.",
-						thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-						timestamp: Date.now(),
-						title: "Test Article 2",
-						url: "https://example.com"
-					},
-					type: "application_news"
-				}
+				type: "application_news"
 			},
-			2: {
+			{
 				index: 2,
-				direction: this.getDirection(2 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.isIdling(),
-				getOrientation() {
-					this.getOrientation();
+				id: "TEST",
+				application,
+				news: {
+					application_id: application.id,
+					description: "this is a test article! For more information, visit https://example.com.",
+					thumbnail: "https://files.catbox.moe/mfrfxj.png",
+					timestamp: Date.now(),
+					title: "Test Article 3",
+					url: "https://example.com"
 				},
-				article: {
-					id: "TEST",
-					application,
-					news: {
-						application_id: application.id,
-						description: "this is a test article! For more information, visit https://example.com.",
-						thumbnail: "https://files.catbox.moe/mfrfxj.png",
-						timestamp: Date.now(),
-						title: "Test Article 3",
-						url: "https://example.com"
-					},
-					type: "application_news"
-				}
+				type: "application_news"
 			},
-			3: {
+			{
 				index: 3,
-				direction: this.getDirection(3 + 1 - (this.getCurrentArticle().index || 0)),
-				idling: this.isIdling(),
-				getOrientation() {
-					this.getOrientation();
+				id: "TEST",
+				application,
+				news: {
+					application_id: application.id,
+					description: "this is a test article! For more information, visit https://example.com.",
+					thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
+					timestamp: Date.now(),
+					title: "Test Article 4",
+					url: "https://example.com"
 				},
-				article: {
-					id: "TEST",
-					application,
-					news: {
-						application_id: application.id,
-						description: "this is a test article! For more information, visit https://example.com.",
-						thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-						timestamp: Date.now(),
-						title: "Test Article 4",
-						url: "https://example.com"
-					},
-					type: "application_news"
-				}
+				type: "application_news"
 			}
-		};
-		this.article = this.articleSet[0];
+		];
+		this.article = this.displaySet[0];
 	}
 	getFeeds() {
 		return this.dataSet;
@@ -461,34 +434,25 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return t;
 	}
 	getFeedsForDisplay() {
-		const aA = this.articleSet;
 		const rG = this.displaySet;
 		const r = this.getRandomFeeds(this.getFeeds());
 		if (!this.shouldFetch() && !this.displaySet.length && r !== void 0) {
 			rG.push.apply(rG, r);
 			for (let i = 0; i < rG.length; i++) {
-				aA[i] = {
-					index: i,
-					direction: this.getDirection(i + 1 - (this.getCurrentArticle().index || 0)),
-					idling: this.isIdling(),
-					getOrientation() {
-						this.getOrientation();
-					},
-					article: rG[i]
+				rG[i] = {
+					...rG[i],
+					index: i
 				};
 			}
-			this.articleSet = aA;
-			this.article = aA[0];
+			this.article = rG[0];
 		}
-		return aA;
+		return rG;
 	}
 	getCurrentArticle() {
 		return this.article;
 	}
-	setCurrentArticle(i, direction, isIdling) {
-		this.article = this.articleSet[i];
-		if (direction) this.article.direction = direction;
-		if (isIdling) this.article.idling = isIdling;
+	setCurrentArticle(i) {
+		this.article = this.displaySet[i];
 		this.emitChange();
 	}
 	getOrientation() {
@@ -496,7 +460,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return (width > 1200 || height < 600) && (width < 1200 || height > 600) ? "vertical" : "horizontal";
 	}
 	getDirection(e) {
-		return e > 0 ? 1 : -1;
+		return e >= 0 ? 1 : -1;
 	}
 	setIdling(e) {
 		this.idling = e;
@@ -1166,12 +1130,12 @@ function FeedOverflowBuilder({ applicationId, gameId, position }) {
 
 // activity_feed/components/application_news/components/CarouselBuilder.tsx
 function FeedCarouselBuilder({ currentArticle }) {
-	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.article.application.id, gameId: currentArticle.id, position: "right" }), BdApi.React.createElement(
+	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
 			tabindex: currentArticle.index,
 			className: `${Common$1.AnchorClasses.anchor} ${Common$1.AnchorClasses.anchorUnderlineOnHover}`,
-			href: currentArticle.article.news?.url || "#",
+			href: currentArticle.news?.url || "#",
 			rel: "noreferrer nopener",
 			target: "_blank",
 			role: "button"
@@ -1181,10 +1145,16 @@ function FeedCarouselBuilder({ currentArticle }) {
 			{
 				className: FeedClasses.backgroundImage,
 				style: {
-					backgroundImage: currentArticle.article.news?.thumbnail ? `url(${currentArticle.article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.article.id}/capsule_616x353.jpg)`
+					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
 				}
 			}
-		)))
+		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, BdApi.React.createElement(
+			"img",
+			{
+				className: FeedClasses.gameIcon,
+				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
+			}
+		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common$1.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))
 	));
 }
 
@@ -1200,14 +1170,16 @@ function FeedMiniPaginationBuilder({ articleSet, article }) {
 
 // activity_feed/components/application_news/components/PaginationBuilder.tsx
 function Subpagination({ article, articleSet }) {
-	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
-	console.log(articleSet[article].index, NewsStore.getCurrentArticle().index, article.index - NewsStore.getCurrentArticle().index);
-	const direction = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(articleSet[article].index - NewsStore.getCurrentArticle().index));
+	betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
+	betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(article.index - NewsStore.getCurrentArticle().index));
 	return BdApi.React.createElement(
 		"div",
 		{
-			className: articleSet[article].index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem,
-			onClick: () => NewsStore.setCurrentArticle(article, direction, isIdling),
+			className: article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem,
+			onClick: () => {
+				NewsStore.setCurrentArticle(article.index);
+				NewsStore.setIdling(false);
+			},
 			key: article
 		},
 		BdApi.React.createElement(
@@ -1215,15 +1187,16 @@ function Subpagination({ article, articleSet }) {
 			{
 				className: FeedClasses.splashArt,
 				style: {
-					backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
+					backgroundImage: article.news?.thumbnail ? `url(${article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${article.id}/capsule_616x353.jpg)`
 				}
 			}
-		)
+		),
+		BdApi.React.createElement("div", { className: FeedClasses.paginationText }, BdApi.React.createElement("div", { className: `${FeedClasses.paginationTitle} ${FeedClasses.paginationContent}` }, article.news?.title || "No Title"), BdApi.React.createElement("div", { className: `${FeedClasses.paginationSubtitle} ${FeedClasses.paginationContent}` }, article.application.name || "Unknown Game"))
 	);
 }
 function FeedPaginationBuilder({ articleSet }) {
-	return BdApi.React.createElement("div", { className: FeedClasses.pagination }, BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}` }, Object.keys(articleSet).map((article) => {
-		if (!articleSet[article]) return;
+	return BdApi.React.createElement("div", { className: FeedClasses.pagination }, BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}` }, articleSet.map((article) => {
+		if (!article) return;
 		return BdApi.React.createElement(Subpagination, { article, articleSet });
 	}))));
 }
@@ -1259,14 +1232,13 @@ function NewsFeedBuilder() {
 	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
 	const [time, setTime] = react.useState(new Date());
-	const direction = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(currentArticle.index - NewsStore.getCurrentArticle().index));
 	react.useEffect(() => {
-		console.log(currentArticle);
 		const inv = setInterval(() => {
 			const newTime = Math.round(((new Date()).getTime() - time.getTime()) / 1e3);
-			if (newTime > 5) {
-				if (Math.round(newTime) % 8 == 0) {
-					NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1, direction, isIdling);
+			if (newTime > 0) {
+				console.log(newTime);
+				if (Math.round(newTime) % 8 == 0 && isIdling) {
+					NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
 				}
 			}
 		}, 8e3);

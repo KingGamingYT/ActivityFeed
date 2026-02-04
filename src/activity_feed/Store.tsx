@@ -35,86 +35,67 @@ class GameNewsStore extends Utils.Store {
     componentWillUnmount() { window.removeEventListener("resize", this.listener); }
 
     setDebugFeeds() {
+        BdApi.Webpack.getByKeys("fetchApplications").fetchApplication('1402418491272986635');
         const application = ApplicationStore.getApplicationByName('Minecraft');
-        this.articleSet = {
-            0: {
+        this.displaySet = [
+            {
                 index: 0,
-                direction: this.getDirection(0 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.isIdling(),
-                getOrientation() { this.getOrientation() },
-                article: {
-                    id: "TEST",
-                    application: application,
-                    news: {
-                        application_id: application.id,
-                        description: "this is a test article! For more information, visit https://example.com.",
-                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
-                        timestamp: Date.now(),
-                        title: "Test Article 1",
-                        url: "https://example.com"
-                    },
-                    type: "application_news"
-                }
+                id: "TEST",
+                application: application,
+                news: {
+                    application_id: application.id,
+                    description: "this is a test article! For more information, visit https://example.com.",
+                    thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                    timestamp: Date.now(),
+                    title: "Test Article 1",
+                    url: "https://example.com"
+                },
+                type: "application_news"
             },
-            1: {
+            {
                 index: 1,
-                direction: this.getDirection(1 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.isIdling(),
-                getOrientation() { this.getOrientation() },
-                article: {
-                    id: "TEST",
-                    application: application,
-                    news: {
-                        application_id: application.id,
-                        description: "this is a test article! For more information, visit https://example.com.",
-                        thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-                        timestamp: Date.now(),
-                        title: "Test Article 2",
-                        url: "https://example.com"
-                    },
-                    type: "application_news"
-                }
+                id: "TEST",
+                application: application,
+                news: {
+                    application_id: application.id,
+                    description: "this is a test article! For more information, visit https://example.com.",
+                    thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
+                    timestamp: Date.now(),
+                    title: "Test Article 2",
+                    url: "https://example.com"
+                },
+                type: "application_news"
             },
-            2: {
+            {
                 index: 2,
-                direction: this.getDirection(2 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.isIdling(),
-                getOrientation() { this.getOrientation() },
-                article: {
-                    id: "TEST",
-                    application: application,
-                    news: {
-                        application_id: application.id,
-                        description: "this is a test article! For more information, visit https://example.com.",
-                        thumbnail: "https://files.catbox.moe/mfrfxj.png",
-                        timestamp: Date.now(),
-                        title: "Test Article 3",
-                        url: "https://example.com"
-                    },
-                    type: "application_news"
-                }
+                id: "TEST",
+                application: application,
+                news: {
+                    application_id: application.id,
+                    description: "this is a test article! For more information, visit https://example.com.",
+                    thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                    timestamp: Date.now(),
+                    title: "Test Article 3",
+                    url: "https://example.com"
+                },
+                type: "application_news"
             },
-            3: {
-                index: 3,
-                direction: this.getDirection(3 + 1 - (this.getCurrentArticle().index || 0)),
-                idling: this.isIdling(),
-                getOrientation() { this.getOrientation() },
-                article: {
-                    id: "TEST",
-                    application: application,
-                    news: {
-                        application_id: application.id,
-                        description: "this is a test article! For more information, visit https://example.com.",
-                        thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-                        timestamp: Date.now(),
-                        title: "Test Article 4",
-                        url: "https://example.com"
-                    },
-                    type: "application_news"
-                }
+            {
+            index: 3,
+            id: "TEST",
+            application: application,
+            news: {
+                application_id: application.id,
+                description: "this is a test article! For more information, visit https://example.com.",
+                thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
+                timestamp: Date.now(),
+                title: "Test Article 4",
+                url: "https://example.com"
+            },
+            type: "application_news"
             }
-        }
-        this.article = this.articleSet[0]
+        ]
+        this.article = this.displaySet[0]
     }
 
     getFeeds() {
@@ -326,36 +307,29 @@ class GameNewsStore extends Utils.Store {
     }
 
     getFeedsForDisplay() {
-        const aA = this.articleSet;
         const rG = this.displaySet;
 
         const r = this.getRandomFeeds(this.getFeeds());
         if (!this.shouldFetch() && !this.displaySet.length && r !== undefined) {
             rG.push.apply(rG, r);
             for (let i = 0; i < rG.length; i++) {
-                aA[i] = {
+                rG[i] = {
+                    ...rG[i],
                     index: i,
-                    direction: this.getDirection(i + 1 - (this.getCurrentArticle().index || 0)),
-                    idling: this.isIdling(),
-                    getOrientation() { this.getOrientation() },
-                    article: rG[i]
                 };
             }
-            this.articleSet = aA;
-            this.article = aA[0];
+            this.article = rG[0];
         }
 
-        return aA;
+        return rG;
     }
 
     getCurrentArticle() {
         return this.article
     }
 
-    setCurrentArticle(i, direction, isIdling) {
-        this.article = this.articleSet[i];
-        if (direction) this.article.direction = direction;
-        if (isIdling) this.article.idling = isIdling;
+    setCurrentArticle(i) {
+        this.article = this.displaySet[i];
         this.emitChange();
     }
 
@@ -365,7 +339,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     getDirection(e) {
-        return (e > 0) ? 1 : -1;
+        return e >= 0 ? 1 : -1;
     }
 
     setIdling(e) {

@@ -7,11 +7,11 @@ export function FeedCarouselBuilder({currentArticle}) {
 
     return (
         <span className={FeedClasses.carousel}>
-            <FeedOverflowBuilder applicationId={currentArticle.article.application.id} gameId={currentArticle.id} position="right" />
+            <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} position="right" />
             <a
                 tabindex={currentArticle.index}
                 className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}
-                href={currentArticle.article.news?.url || "#"}
+                href={currentArticle.news?.url || "#"}
                 rel="noreferrer nopener"
                 target="_blank"
                 role="button"
@@ -21,10 +21,26 @@ export function FeedCarouselBuilder({currentArticle}) {
                         <div 
                             className={FeedClasses.backgroundImage}
                             style={{ 
-                                backgroundImage: currentArticle.article.news?.thumbnail ? `url(${currentArticle.article.news?.thumbnail})`
-                                : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.article.id}/capsule_616x353.jpg)`
+                                backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})`
+                                : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
                             }}
                         />
+                    </div>
+                    <div className={FeedClasses.detailsContainer} style={{ opacity: 1, zIndex: 1 }}>
+                        <div className={FeedClasses.applicationArea}>
+                            <img
+                                className={FeedClasses.gameIcon}
+                                src={currentArticle.news?.application_id && currentArticle.application?.icon
+                                    ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false`
+                                    : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
+                                }
+                            />
+                            <div className={FeedClasses.details}>
+                                <div className={`${FeedClasses.titleStandard} ${FeedClasses.title}`}>{currentArticle.news?.title || "No Title"}</div>
+                                <div className={FeedClasses.description} dangerouslySetInnerHTML={{__html: currentArticle.news?.description || "No description available."}} />
+                                <div className={FeedClasses.timestamp}>{Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>

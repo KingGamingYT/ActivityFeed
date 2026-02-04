@@ -11,18 +11,17 @@ export function NewsFeedBuilder() {
     const orientation = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
     const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
     const [time, setTime] = useState<Date>(new Date());
-    const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(currentArticle.index - NewsStore.getCurrentArticle().index))
 
 
     useEffect(() => {
-    console.log(currentArticle)
         const inv = setInterval(() => {
             const newTime = Math.round((new Date().getTime() - time.getTime()) / 1000)
-            if (newTime > 5)
+            if (newTime > 0)
             {
-                if (Math.round(newTime) % 8 == 0)
+                console.log(newTime)
+                if (Math.round(newTime) % 8 == 0 && isIdling)
                 {
-                    NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1, direction, isIdling);
+                    NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
                 }
             }
         }, 8000);

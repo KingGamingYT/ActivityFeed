@@ -32,7 +32,11 @@
     justify-content: flex-end;
 }
 
+.articleStandard {}
+
 .articleSkeleton {}
+
+.articleSimple {}
 
 .background {
     background-repeat: no-repeat;

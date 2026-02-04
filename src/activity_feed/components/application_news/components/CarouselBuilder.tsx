@@ -11,7 +11,8 @@ export function FeedCarouselBuilder({currentArticle}) {
             <a
                 tabindex={currentArticle.index}
                 className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}
-                href="noreferrer nopener"
+                href={currentArticle.article.news?.url || "#"}
+                rel="noreferrer nopener"
                 target="_blank"
                 role="button"
             >

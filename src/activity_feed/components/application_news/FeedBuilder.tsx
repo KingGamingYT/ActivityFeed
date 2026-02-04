@@ -6,34 +6,38 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function NewsFeedBuilder() {
 	if ( NewsStore.shouldFetch() === true ) NewsStore.fetchFeeds();
-	const articles = NewsStore.getFeedsForDisplay();
-	if (!Object.keys(articles).length) {
-        return <FeedSkeletonErrorBuilder 
-            errorText="Activity Feed Unavailable"
-            errorDescription="You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
-        />
-    }
+	const articles = Hooks.useStateFromStores([NewsStore], () => NewsStore.getFeedsForDisplay());
     const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
     const orientation = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
-    const [timeout, setTime] = useState(true);
-    const handleSwitch = (cur) => {
-        if (cur.idling) {
-            NewsStore.setCurrentArticle(cur.index === 3 ? cur.index - 3 : cur.index + 1);
-        }
-        return;
-    };
+    const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
+    const [time, setTime] = useState<Date>(new Date());
+    const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(currentArticle.index - NewsStore.getCurrentArticle().index))
+
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            handleSwitch(currentArticle)
-        }, 8e3);
-
-        return () => clearInterval(interval);
-    }, [currentArticle]);
     console.log(currentArticle)
+        const inv = setInterval(() => {
+            const newTime = Math.round((new Date().getTime() - time.getTime()) / 1000)
+            if (newTime > 5)
+            {
+                if (Math.round(newTime) % 8 == 0)
+                {
+                    NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1, direction, isIdling);
+                }
+            }
+        }, 8000);
 
-    return (
-        <div className={FeedClasses.feedCarousel} onMouseOver={() => NewsStore.setIdling(false)} onMouseLeave={() => NewsStore.setIdling(true)}>{
+        return () => clearInterval(inv)
+    })
+
+    if (Object.keys(articles).length) return (
+        <div className={FeedClasses.feedCarousel} onMouseOver={() => {
+            NewsStore.setIdling(false)
+            setTime(new Date())
+        }} onMouseLeave={() => {
+            NewsStore.setIdling(true)
+            setTime(new Date())
+        }}>{
             orientation === "vertical" ? 
                 <>
                     <FeedCarouselBuilder currentArticle={currentArticle} />
@@ -51,6 +55,11 @@ export function NewsFeedBuilder() {
                 />
         }</div>
     )  
+
+    return <FeedSkeletonErrorBuilder 
+        errorText="Activity Feed Unavailable"
+        errorDescription="You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
+    />
 }
 
 /*function NewsFeedBuilder() {

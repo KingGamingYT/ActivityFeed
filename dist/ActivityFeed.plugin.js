@@ -485,8 +485,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	getCurrentArticle() {
 		return this.article;
 	}
-	setCurrentArticle(i) {
+	setCurrentArticle(i, direction, isIdling) {
 		this.article = this.articleSet[i];
+		if (direction) this.article.direction = direction;
+		if (isIdling) this.article.idling = isIdling;
 		this.emitChange();
 	}
 	getOrientation() {
@@ -666,13 +668,13 @@ const MainClasses = modules_7e65654a;
 
 // activity_feed/components/application_news/ApplicationNews.module.css
 const css$3 = `
-.feedCarousel_47fd09 {
+.feedCarousel_666d8b {
 		display: flex;
 		position: relative;
 		margin: 20px;
 }
 
-.carousel_47fd09 {
+.carousel_666d8b {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		flex: 1 1 75%;
@@ -683,7 +685,7 @@ const css$3 = `
 		transform: translateZ(0);
 }
 
-.article_47fd09 {
+.article_666d8b {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		bottom: 0;
@@ -700,9 +702,13 @@ const css$3 = `
 		justify-content: flex-end;
 }
 
-.articleSkeleton_47fd09 {}
+.articleStandard_666d8b {}
 
-.background_47fd09 {
+.articleSkeleton_666d8b {}
+
+.articleSimple_666d8b {}
+
+.background_666d8b {
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 7.5%;
@@ -711,28 +717,28 @@ const css$3 = `
 		background-position: top;
 }
 
-.backgroundImage_47fd09 {
+.backgroundImage_666d8b {
 		background-position: top;
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 0;
 }
 
-.background_47fd09, .backgroundImage_47fd09 {
+.background_666d8b, .backgroundImage_666d8b {
 		left: 0;
 		position: absolute;
 		right: 0;
 		top: 0;
 }
 
-.feedOverflowMenu_47fd09 {
+.feedOverflowMenu_666d8b {
 		position: absolute;
 		top: 0;
 		right: 0;
 		padding: 8px 12px;
 }
 
-.applicationArea_47fd09 {
+.applicationArea_666d8b {
 		color: var(--text-default);
 		display: flex;
 		flex-direction: column;
@@ -740,13 +746,13 @@ const css$3 = `
 		position: relative;
 }
 
-.detailsContainer_47fd09 {}
+.detailsContainer_666d8b {}
 
-.details_47fd09 {
+.details_666d8b {
 		position: relative;
 }
 
-.titleStandard_47fd09 {
+.titleStandard_666d8b {
 		margin-top: 8px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -755,13 +761,13 @@ const css$3 = `
 		line-height: 28px;
 }
 
-.title_47fd09 {
+.title_666d8b {
 		color: var(--text-strong);
 		display: block;
 		font-weight: 500;
 }
 
-.description_47fd09 {
+.description_666d8b {
 		color: var(--text-default);
 		display: -webkit-box;
 		font-size: 16px;
@@ -784,12 +790,12 @@ const css$3 = `
 				all: inherit;
 				display: contents
 		}
-		.sharedFilePreviewYouTubeVideo_47fd09 {
+		.sharedFilePreviewYouTubeVideo_666d8b {
 				display: none;
 		}
 }
 
-.timestamp_47fd09 {
+.timestamp_666d8b {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -797,7 +803,7 @@ const css$3 = `
 		text-transform: uppercase;
 }
 
-.gameIcon_47fd09 {
+.gameIcon_666d8b {
 		position: relative;
 		pointer-events: auto;
 		cursor: pointer;
@@ -807,18 +813,18 @@ const css$3 = `
 		border-radius: 3px;
 }
 
-.pagination_47fd09 {
+.pagination_666d8b {
 		-webkit-box-flex: 1;
 		flex: 1 1 25%;
 		min-width: 0;
 }
 
-.verticalPaginationItemContainer_47fd09 {
+.verticalPaginationItemContainer_666d8b {
 		margin: 0;
 		overflow: hidden;
 }
 
-.scrollerWrap_47fd09 {
+.scrollerWrap_666d8b {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
@@ -827,22 +833,22 @@ const css$3 = `
 		position: relative;
 }
 
-.scroller_47fd09 {
+.scroller_666d8b {
 		-webkit-box-flex: 1;
 		contain: layout;
 		flex: 1;
 		min-height: 1px;
 }
 		
-.paginationItem_47fd09, .paginationItem_47fd09:before {
+.paginationItem_666d8b, .paginationItem_666d8b:before {
 		transition: all .2s ease;
 }
 
-.paginationItem_47fd09:first-child {
+.paginationItem_666d8b:first-child {
 		margin-top: 0;
 }
 
-.paginationItem_47fd09 {
+.paginationItem_666d8b {
 		-webkit-box-align: center;
 		align-items: center;
 		background: var(--background-secondary-alt);
@@ -858,7 +864,7 @@ const css$3 = `
 		transform: translateZ(0);
 }
 
-.paginationItem_47fd09:before {
+.paginationItem_666d8b:before {
 		background: #fff;
 		border-radius: 20px;
 		content: "";
@@ -872,7 +878,7 @@ const css$3 = `
 		z-index: 1;
 }
 
-.paginationItem_47fd09:after {
+.paginationItem_666d8b:after {
 		background-blend-mode: color;
 		border-radius: 5px;
 		bottom: 0;
@@ -883,7 +889,7 @@ const css$3 = `
 		top: 0;
 }
 
-.splashArt_47fd09 {
+.splashArt_666d8b {
 		filter: grayscale(100%);
 		height: 100%;
 		opacity: .2;
@@ -899,28 +905,28 @@ const css$3 = `
 		top: 0;
 }
 
-.paginationSubtitle_47fd09, .paginationTitle_47fd09 {
+.paginationSubtitle_666d8b, .paginationTitle_666d8b {
 		font-weight: 600;
 }
 
-.paginationText_47fd09 {
+.paginationText_666d8b {
 		overflow: hidden;
 }
 
-.paginationContent_47fd09 {
+.paginationContent_666d8b {
 		overflow: hidden;
 		position: relative;
 		z-index: 1;
 }
 
-.paginationTitle_47fd09 {
+.paginationTitle_666d8b {
 		color: var(--text-strong);
 		font-size: 16px;
 		line-height: 1.25;
 		max-height: 40px;
 }
 
-.paginationSubtitle_47fd09 {
+.paginationSubtitle_666d8b {
 		color: var(--text-muted);
 		font-size: 12px;
 		margin-top: 4px;
@@ -929,20 +935,20 @@ const css$3 = `
 		white-space: nowrap;
 }
 
-.selectedPage_47fd09 {
+.selectedPage_666d8b {
 		background: var(--background-surface-higher);
 		cursor: default;
 }
 
-.selectedPage_47fd09:before {
+.selectedPage_666d8b:before {
 		transform: translateY(-50%) translateX(0);
 }
 
-.selectedPage_47fd09 .splashArt_47fd09 {
+.selectedPage_666d8b .splashArt_666d8b {
 		filter: grayscale(0);
 }
 
-.smallCarousel_47fd09 {
+.smallCarousel_666d8b {
 		background-color: var(--background-secondary-alt);
 		-webkit-box-flex: 1;
 		border-radius: 5px;
@@ -953,7 +959,7 @@ const css$3 = `
 		transform: translateZ(0);
 }
 
-.titleRowSimple_47fd09 {
+.titleRowSimple_666d8b {
 		-webkit-box-align: center;
 		-webkit-box-pack: justify;
 		align-items: center;
@@ -962,7 +968,7 @@ const css$3 = `
 		justify-content: space-between;
 }
 
-.paginationSmall_47fd09 {
+.paginationSmall_666d8b {
 		bottom: 0;
 		height: 64px;
 		left: 0;
@@ -974,17 +980,17 @@ const css$3 = `
 		display: flex;
 }
 
-.arrow_47fd09 {
+.arrow_666d8b {
 		color: var(--text-muted);
 		z-index: 2;
 }
 
-svg.arrow_47fd09 {
+svg.arrow_666d8b {
 		height: 26px;
 		width: 26px;
 }
 
-.arrowContainer_47fd09 {
+.arrowContainer_666d8b {
 		color: var(--white);
 		cursor: pointer;
 		font-size: 0;
@@ -996,28 +1002,28 @@ svg.arrow_47fd09 {
 		width: 50px;
 }
 
-.arrow_47fd09, .arrowContainer_47fd09 {
+.arrow_666d8b, .arrowContainer_666d8b {
 		box-sizing: border-box;
 		pointer-events: all;
 }
 
-.prevButtonContainer_47fd09 {
+.prevButtonContainer_666d8b {
 		left: 6px;
 }
 
-.nextButtonContainer_47fd09 {
+.nextButtonContainer_666d8b {
 		right: 6px;
 }
 
-.left_47fd09 {
+.left_666d8b {
 		transform: rotate(-90deg);
 }
 
-.right_47fd09 {
+.right_666d8b {
 		transform: rotate(90deg);
 }
 
-.horizontalPaginationItemContainer_47fd09 {
+.horizontalPaginationItemContainer_666d8b {
 		-webkit-box-align: center;
 		-webkit-box-flex: initial;
 		align-items: center;
@@ -1027,7 +1033,7 @@ svg.arrow_47fd09 {
 		overflow-y: hidden;
 }
 
-.dot_47fd09 {
+.dot_666d8b {
 		background-color: #fff;
 		border-radius: 2px;
 		cursor: pointer;
@@ -1038,55 +1044,57 @@ svg.arrow_47fd09 {
 		width: 8px;
 }
 
-.dotNormal_47fd09 {
+.dotNormal_666d8b {
 		opacity: 0.2;
 }
 
-.dotSelected_47fd09 {
+.dotSelected_666d8b {
 		opacity: 0.6;
 }`;
 _loadStyle("ApplicationNews.module.css", css$3);
 const modules_98d78101 = {
-	"feedCarousel": "feedCarousel_47fd09",
-	"carousel": "carousel_47fd09",
-	"article": "article_47fd09",
-	"articleSkeleton": "articleSkeleton_47fd09",
-	"background": "background_47fd09",
-	"backgroundImage": "backgroundImage_47fd09",
-	"feedOverflowMenu": "feedOverflowMenu_47fd09",
-	"applicationArea": "applicationArea_47fd09",
-	"detailsContainer": "detailsContainer_47fd09",
-	"details": "details_47fd09",
-	"titleStandard": "titleStandard_47fd09",
-	"title": "title_47fd09",
-	"description": "description_47fd09",
-	"sharedFilePreviewYouTubeVideo": "sharedFilePreviewYouTubeVideo_47fd09",
-	"timestamp": "timestamp_47fd09",
-	"gameIcon": "gameIcon_47fd09",
-	"pagination": "pagination_47fd09",
-	"verticalPaginationItemContainer": "verticalPaginationItemContainer_47fd09",
-	"scrollerWrap": "scrollerWrap_47fd09",
-	"scroller": "scroller_47fd09",
-	"paginationItem": "paginationItem_47fd09",
-	"splashArt": "splashArt_47fd09",
-	"paginationSubtitle": "paginationSubtitle_47fd09",
-	"paginationTitle": "paginationTitle_47fd09",
-	"paginationText": "paginationText_47fd09",
-	"paginationContent": "paginationContent_47fd09",
-	"selectedPage": "selectedPage_47fd09",
-	"smallCarousel": "smallCarousel_47fd09",
-	"titleRowSimple": "titleRowSimple_47fd09",
-	"paginationSmall": "paginationSmall_47fd09",
-	"arrow": "arrow_47fd09",
-	"arrowContainer": "arrowContainer_47fd09",
-	"prevButtonContainer": "prevButtonContainer_47fd09",
-	"nextButtonContainer": "nextButtonContainer_47fd09",
-	"left": "left_47fd09",
-	"right": "right_47fd09",
-	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer_47fd09",
-	"dot": "dot_47fd09",
-	"dotNormal": "dotNormal_47fd09",
-	"dotSelected": "dotSelected_47fd09"
+	"feedCarousel": "feedCarousel_666d8b",
+	"carousel": "carousel_666d8b",
+	"article": "article_666d8b",
+	"articleStandard": "articleStandard_666d8b",
+	"articleSkeleton": "articleSkeleton_666d8b",
+	"articleSimple": "articleSimple_666d8b",
+	"background": "background_666d8b",
+	"backgroundImage": "backgroundImage_666d8b",
+	"feedOverflowMenu": "feedOverflowMenu_666d8b",
+	"applicationArea": "applicationArea_666d8b",
+	"detailsContainer": "detailsContainer_666d8b",
+	"details": "details_666d8b",
+	"titleStandard": "titleStandard_666d8b",
+	"title": "title_666d8b",
+	"description": "description_666d8b",
+	"sharedFilePreviewYouTubeVideo": "sharedFilePreviewYouTubeVideo_666d8b",
+	"timestamp": "timestamp_666d8b",
+	"gameIcon": "gameIcon_666d8b",
+	"pagination": "pagination_666d8b",
+	"verticalPaginationItemContainer": "verticalPaginationItemContainer_666d8b",
+	"scrollerWrap": "scrollerWrap_666d8b",
+	"scroller": "scroller_666d8b",
+	"paginationItem": "paginationItem_666d8b",
+	"splashArt": "splashArt_666d8b",
+	"paginationSubtitle": "paginationSubtitle_666d8b",
+	"paginationTitle": "paginationTitle_666d8b",
+	"paginationText": "paginationText_666d8b",
+	"paginationContent": "paginationContent_666d8b",
+	"selectedPage": "selectedPage_666d8b",
+	"smallCarousel": "smallCarousel_666d8b",
+	"titleRowSimple": "titleRowSimple_666d8b",
+	"paginationSmall": "paginationSmall_666d8b",
+	"arrow": "arrow_666d8b",
+	"arrowContainer": "arrowContainer_666d8b",
+	"prevButtonContainer": "prevButtonContainer_666d8b",
+	"nextButtonContainer": "nextButtonContainer_666d8b",
+	"left": "left_666d8b",
+	"right": "right_666d8b",
+	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer_666d8b",
+	"dot": "dot_666d8b",
+	"dotNormal": "dotNormal_666d8b",
+	"dotSelected": "dotSelected_666d8b"
 };
 const FeedClasses = modules_98d78101;
 
@@ -1163,7 +1171,8 @@ function FeedCarouselBuilder({ currentArticle }) {
 		{
 			tabindex: currentArticle.index,
 			className: `${Common$1.AnchorClasses.anchor} ${Common$1.AnchorClasses.anchorUnderlineOnHover}`,
-			href: "noreferrer nopener",
+			href: currentArticle.article.news?.url || "#",
+			rel: "noreferrer nopener",
 			target: "_blank",
 			role: "button"
 		},
@@ -1190,26 +1199,32 @@ function FeedMiniPaginationBuilder({ articleSet, article }) {
 }
 
 // activity_feed/components/application_news/components/PaginationBuilder.tsx
+function Subpagination({ article, articleSet }) {
+	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
+	console.log(articleSet[article].index, NewsStore.getCurrentArticle().index, article.index - NewsStore.getCurrentArticle().index);
+	const direction = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(articleSet[article].index - NewsStore.getCurrentArticle().index));
+	return BdApi.React.createElement(
+		"div",
+		{
+			className: articleSet[article].index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem,
+			onClick: () => NewsStore.setCurrentArticle(article, direction, isIdling),
+			key: article
+		},
+		BdApi.React.createElement(
+			"div",
+			{
+				className: FeedClasses.splashArt,
+				style: {
+					backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
+				}
+			}
+		)
+	);
+}
 function FeedPaginationBuilder({ articleSet }) {
 	return BdApi.React.createElement("div", { className: FeedClasses.pagination }, BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}` }, Object.keys(articleSet).map((article) => {
 		if (!articleSet[article]) return;
-		return BdApi.React.createElement(
-			"div",
-			{
-				className: articleSet[article].index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem,
-				onClick: () => NewsStore.setCurrentArticle(article),
-				key: article
-			},
-			BdApi.React.createElement(
-				"div",
-				{
-					className: FeedClasses.splashArt,
-					style: {
-						backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
-					}
-				}
-			)
-		);
+		return BdApi.React.createElement(Subpagination, { article, articleSet });
 	}))));
 }
 
@@ -1239,39 +1254,44 @@ function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 // activity_feed/components/application_news/FeedBuilder.tsx
 function NewsFeedBuilder() {
 	if (NewsStore.shouldFetch() === true) NewsStore.fetchFeeds();
-	const articles = NewsStore.getFeedsForDisplay();
-	if (!Object.keys(articles).length) {
-		return BdApi.React.createElement(
-			FeedSkeletonErrorBuilder,
-			{
-				errorText: "Activity Feed Unavailable",
-				errorDescription: "You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
-			}
-		);
-	}
+	const articles = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getFeedsForDisplay());
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
 	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
-	react.useState(true);
-	const handleSwitch = (cur) => {
-		if (cur.idling) {
-			NewsStore.setCurrentArticle(cur.index === 3 ? cur.index - 3 : cur.index + 1);
-		}
-		return;
-	};
+	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
+	const [time, setTime] = react.useState(new Date());
+	const direction = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(currentArticle.index - NewsStore.getCurrentArticle().index));
 	react.useEffect(() => {
-		const interval = setInterval(() => {
-			handleSwitch(currentArticle);
+		console.log(currentArticle);
+		const inv = setInterval(() => {
+			const newTime = Math.round(((new Date()).getTime() - time.getTime()) / 1e3);
+			if (newTime > 5) {
+				if (Math.round(newTime) % 8 == 0) {
+					NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1, direction, isIdling);
+				}
+			}
 		}, 8e3);
-		return () => clearInterval(interval);
-	}, [currentArticle]);
-	console.log(currentArticle);
-	return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel, onMouseOver: () => NewsStore.setIdling(false), onMouseLeave: () => NewsStore.setIdling(true) }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, article: currentArticle })) : BdApi.React.createElement(
+		return () => clearInterval(inv);
+	});
+	if (Object.keys(articles).length) return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel, onMouseOver: () => {
+		NewsStore.setIdling(false);
+		setTime(new Date());
+	}, onMouseLeave: () => {
+		NewsStore.setIdling(true);
+		setTime(new Date());
+	} }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, article: currentArticle })) : BdApi.React.createElement(
 		FeedSkeletonErrorBuilder,
 		{
 			errorText: "Activity Feed Unavailable",
 			errorDescription: "You've reached an ultra rare error! Reload Discord to try again. Error: orientation-match-failed"
 		}
 	));
+	return BdApi.React.createElement(
+		FeedSkeletonErrorBuilder,
+		{
+			errorText: "Activity Feed Unavailable",
+			errorDescription: "You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
+		}
+	);
 }
 
 // activity_feed/components/common/components/SectionHeader.jsx

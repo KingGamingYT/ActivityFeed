@@ -1,7 +1,32 @@
+import { Hooks } from "betterdiscord";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
+function Subpagination({article, articleSet}) {
+    const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
+    console.log(articleSet[article].index, NewsStore.getCurrentArticle().index, article.index - NewsStore.getCurrentArticle().index)
+    const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(articleSet[article].index - NewsStore.getCurrentArticle().index))
+
+    return (
+        <div 
+            className={articleSet[article].index === NewsStore.getCurrentArticle().index ? 
+            `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}`
+            : FeedClasses.paginationItem}
+            onClick={() => NewsStore.setCurrentArticle(article, direction, isIdling)}
+            key={article}>
+            <div 
+                className={FeedClasses.splashArt}
+                style={{ 
+                    backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})`
+                    : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
+                }}
+            />
+        </div>
+    )
+}
+
 export function FeedPaginationBuilder({articleSet}) {
+
     return (
         <div className={FeedClasses.pagination}>
             <div className={FeedClasses.scrollerWrap}>
@@ -10,20 +35,7 @@ export function FeedPaginationBuilder({articleSet}) {
                         if (!articleSet[article]) return;
 
                         return (
-                            <div 
-                                className={articleSet[article].index === NewsStore.getCurrentArticle().index ? 
-                                `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}`
-                                : FeedClasses.paginationItem}
-                                onClick={() => NewsStore.setCurrentArticle(article)}
-                                key={article}>
-                                <div 
-                                    className={FeedClasses.splashArt}
-                                    style={{ 
-                                        backgroundImage: articleSet[article].article.news?.thumbnail ? `url(${articleSet[article].article.news?.thumbnail})`
-                                        : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${articleSet[article].article.id}/capsule_616x353.jpg)`
-                                    }}
-                                />
-                            </div>
+                           <Subpagination article={article} articleSet={articleSet} />
                         )
                     })
                 }</div>

@@ -1,5 +1,6 @@
 import { Webpack } from "betterdiscord";
 import MainClasses from "./ActivityFeed.module.css";
+import FeedClasses from "./components/application_news/ApplicationNews.module.css";
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css";
 
@@ -17,6 +18,7 @@ const styles = Object.assign({
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('bar', 'container', 'progress')),
     Object.getOwnPropertyDescriptors(Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1)),
     MainClasses,
+    FeedClasses,
     NowPlayingClasses,
     QuickLauncherClasses
 );

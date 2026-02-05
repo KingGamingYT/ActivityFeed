@@ -120,9 +120,6 @@
         all: inherit;
         display: contents
     }
-    .sharedFilePreviewYouTubeVideo {
-        display: none;
-    }
 }
 
 .timestamp {

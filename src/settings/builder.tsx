@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Components, Data } from "betterdiscord";
 import { Common } from "@modules/common";
-import { BlacklistBuilder } from "./followed_games/FollowBuilder";
+import { FollowedGameListBuilder } from "./followed_games/FollowBuilder";
 import settings from "./settings"; 
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -33,7 +33,7 @@ export function SettingsPanelBuilder() {
                 <div className={`${SettingsClasses.blackList} ${SettingsClasses.emptyState}`}>
                     <div className={MainClasses.emptyText}>Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.</div>
                 </div>
-                <BlacklistBuilder />
+                <FollowedGameListBuilder />
             </Components.SettingGroup>
             <Components.SettingGroup name="Advanced/Debug" collapsible={true} shown={false}>
                 <div className={SettingsClasses.toggleStack}>
@@ -58,7 +58,7 @@ export function SettingsPanelBuilder() {
                             </div>
                             <button
                                 className={`${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${MainClasses.button} ${SettingsClasses.unhideBlacklisted}`}
-                                onClick={() => NewsStore.displaySet = NewsStore.getRandomFeeds(NewsStore.dataSet)} // needs to be fixed    
+                                onClick={() => NewsStore.rerollFeeds()} // needs to be fixed    
                             >Reroll</button>
                         </div>
                         return;

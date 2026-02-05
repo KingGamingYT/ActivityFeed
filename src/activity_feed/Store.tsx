@@ -110,6 +110,12 @@ class GameNewsStore extends Utils.Store {
         return;
     }
 
+    rerollFeeds() {
+        this.displaySet = [];
+        this.getFeedsForDisplay();
+        this.emitChange();
+    }
+
     getTime() {
         return this.lastTimeFetched;
     }
@@ -154,6 +160,8 @@ class GameNewsStore extends Utils.Store {
         Data.save('ACTest', 'blacklist', this.blacklist);
         return this.blacklist;
     }
+
+    async #fetchDiscordFeeds() {}
 
     async #fetchMinecraftFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])

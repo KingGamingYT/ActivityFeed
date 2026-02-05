@@ -15,16 +15,16 @@ export function NewsFeedBuilder() {
 
     useEffect(() => {
         const inv = setInterval(() => {
-            const newTime = Math.round((new Date().getTime() - time.getTime()) / 1000)
+            const newTime = Math.floor((Math.floor(new Date().getTime()) - Math.floor(time.getTime())) / 1000)
             if (newTime > 0)
             {
                 console.log(newTime)
-                if (Math.round(newTime) % 8 == 0 && isIdling)
+                if (Math.floor(newTime) % 8 == 0 && isIdling)
                 {
                     NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
                 }
             }
-        }, 8000);
+        }, 8e3);
 
         return () => clearInterval(inv)
     })
@@ -45,7 +45,7 @@ export function NewsFeedBuilder() {
             : orientation === "horizontal" ?
                 <>
                     <FeedMiniCarouselBuilder currentArticle={currentArticle} />
-                    <FeedMiniPaginationBuilder articleSet={articles} article={currentArticle} />
+                    <FeedMiniPaginationBuilder articleSet={articles} currentArticle={currentArticle} />
                 </>
             :
                 <FeedSkeletonErrorBuilder 

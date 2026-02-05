@@ -1,6 +1,5 @@
 import { Common } from "@modules/common";
 import { FeedOverflowBuilder } from "./OverflowBuilder";
-import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function FeedCarouselBuilder({currentArticle}) {

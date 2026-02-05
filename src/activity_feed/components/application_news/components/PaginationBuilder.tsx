@@ -2,13 +2,17 @@ import { Hooks } from "betterdiscord";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-function Subpagination({article, articleSet}) {
+function Subpagination({article}) {
+    const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle())
     const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
-    const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(article.index - NewsStore.getCurrentArticle().index))
+    //const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(NewsStore.getCurrentArticle().index - article.index))
+    //if (direction == 1) console.log("hi! i'm going forwards!")
+    //if (direction == -1) console.log("hi! i'm going backwards!")
+    //console.log(NewsStore.getDirection(article.index - NewsStore.getCurrentArticle().index))
     return (
         <div 
             className={article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
-            onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false)}}
+            onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false); console.log(NewsStore.getDirection(article.index - currentArticle.index))}}
             key={article}>
             <div 
                 className={FeedClasses.splashArt}
@@ -34,9 +38,7 @@ export function FeedPaginationBuilder({articleSet}) {
                     articleSet.map(article => {
                         if (!article) return;
 
-                        return (
-                           <Subpagination article={article} articleSet={articleSet} />
-                        )
+                        return <Subpagination article={article} />
                     })
                 }</div>
             </div>

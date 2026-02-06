@@ -1,14 +1,14 @@
 import { Components } from "betterdiscord";
 import { useState, useMemo } from "react";
 import { Common, ModalSystem } from "@modules/common";
-import { GameStore } from "@modules/stores";
+import { ApplicationStore, GameStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "../ActivityFeedSettings.module.css";
 
 function FollowedGameItemBuilder({game, whitelist, blacklist, updateBlacklist, key}) {
-    const application = GameStore.getDetectableGame(game.applicationId);
+    const application = GameStore.getDetectableGame(game.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 
     return (
@@ -96,7 +96,7 @@ export function FollowedGameListBuilder() {
 
     const filtered = useMemo(() => {
         const _query = query.toLowerCase();
-        return whitelist?.filter(item => GameStore.getDetectableGame(item.applicationId).name.toLowerCase().includes(_query));
+        return whitelist?.filter(item => (GameStore.getDetectableGame(item.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(item.applicationId))).name.toLowerCase().includes(_query));
     }, [whitelist, query]);
     console.log(filtered, query)
 
@@ -104,7 +104,12 @@ export function FollowedGameListBuilder() {
         <>
             <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.target.value.toLowerCase())} placeholder="Search for Games" />
             {filtered?.length ? <div className={SettingsClasses.blacklist}>{
-                filtered.map(game => <FollowedGameItemBuilder game={game} whitelist={whitelist} blacklist={blacklist} updateBlacklist={updateBlacklist} key={game.applicationId} />)
+                filtered.map(game => 
+                    <>
+                        <FollowedGameItemBuilder game={game} whitelist={whitelist} blacklist={blacklist} updateBlacklist={updateBlacklist} key={game.applicationId} />
+                        <div className={MainClasses.sectionDivider} />
+                    </>
+                )
             }</div>
             :
             <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>

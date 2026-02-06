@@ -8,18 +8,6 @@
     margin-bottom: var(--space-12) !important;
 }
 
-.blacklist .sectionDivider, .settingsDivider {
-    display: flex;
-    width: 100%;
-    border-bottom: 2px solid;
-    margin: 4px 0 4px 0;
-    border-color: var(--background-mod-strong);
-}
-
-.blacklist .sectionDivider:last-child {
-    display: none;
-}
-
 .blacklistItem {
     display: flex;
 }

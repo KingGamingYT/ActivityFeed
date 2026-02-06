@@ -52,9 +52,7 @@ export function TabBaseBuilder() {
         <div className={MainClasses.activityFeed}>
             <Common.HeaderBar className={MainClasses.headerBar} aria-label="Activity">
                 <div className={MainClasses.iconWrapper}>
-                    <svg className={Common.UpperIconClasses.icon} style={{  width: 24, height: 24 }} viewBox="0 0 24 24" fill="none">
-                        <path d={ControllerIcon} fill="var(--channel-icon)" /*transform="transform(0.4)"*/ />
-                    </svg>
+                    <Common.Icons.GameControllerIcon />
                 </div>
                 <div className={MainClasses.titleWrapper}>
                     <div className={MainClasses.title}>Activity</div>

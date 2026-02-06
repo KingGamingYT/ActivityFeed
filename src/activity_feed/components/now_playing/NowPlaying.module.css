@@ -449,7 +449,9 @@
     mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow {}
+.userOverflow {
+    color: var(--text-default);
+}
 
 .emptyUser:not(:first-of-type), .player:not(:first-of-type) {
     margin-left: -4px;
@@ -562,5 +564,8 @@
     }
     .activity:last-child:not(:only-child) {
         margin-top: 12px;
+    }
+    .userOverflow {
+        color: var(--white);
     }
 }

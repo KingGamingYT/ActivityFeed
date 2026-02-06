@@ -84,6 +84,7 @@ const Filters = [
 	{ name: "GameProfileCheck", filter: betterdiscord.Webpack.Filters.byStrings("gameProfileModalChecks", "onOpened") },
 	{ name: "GradientComponent", filter: betterdiscord.Webpack.Filters.byStrings("darken"), searchExports: true },
 	{ name: "HeaderBar", filter: betterdiscord.Webpack.Filters.byKeys("Icon", "Divider") },
+	{ name: "Icons", filter: (x) => x.AppsIcon },
 	{ name: "intl", filter: (x) => x.t && x.t.formatToMarkdownString },
 	{ name: "JoinButton", filter: betterdiscord.Webpack.Filters.byStrings("user", "activity", "onAction", "onClose", "themeType", "embeddedActivity") },
 	{ name: "LinkButton", filter: betterdiscord.Webpack.Filters.byStrings("route", "iconClassName"), searchExports: true },
@@ -121,10 +122,9 @@ const layoutUtils = betterdiscord.Webpack.getMangled(
 		Button: (x) => String(x).includes(".BUTTON,")
 	}
 );
-const ControllerIcon = "M5.79335761,5 L18.2066424,5 C19.7805584,5 21.0868816,6.21634264 21.1990185,7.78625885 L21.8575059,17.0050826 C21.9307825,18.0309548 21.1585512,18.9219909 20.132679,18.9952675 C20.088523,18.9984215 20.0442685,19 20,19 C18.8245863,19 17.8000084,18.2000338 17.5149287,17.059715 L17,15 L7,15 L6.48507125,17.059715 C6.19999155,18.2000338 5.1754137,19 4,19 C2.97151413,19 2.13776159,18.1662475 2.13776159,17.1377616 C2.13776159,17.0934931 2.1393401,17.0492386 2.1424941,17.0050826 L2.80098151,7.78625885 C2.91311838,6.21634264 4.21944161,5 5.79335761,5 Z M14.5,10 C15.3284271,10 16,9.32842712 16,8.5 C16,7.67157288 15.3284271,7 14.5,7 C13.6715729,7 13,7.67157288 13,8.5 C13,9.32842712 13.6715729,10 14.5,10 Z M18.5,13 C19.3284271,13 20,12.3284271 20,11.5 C20,10.6715729 19.3284271,10 18.5,10 C17.6715729,10 17,10.6715729 17,11.5 C17,12.3284271 17.6715729,13 18.5,13 Z M6,9 L4,9 L4,11 L6,11 L6,13 L8,13 L8,11 L10,11 L10,9 L8,9 L8,7 L6,7 L6,9 Z";
 const useLocation = Object.values(betterdiscord.Webpack.getBySource(".location", "withRouter")).find((m) => m.length === 0 && String(m).includes(".location"));
 const NavigationUtils = betterdiscord.Webpack.getMangled("Transitioning to", {
-	transitionTo: betterdiscord.Webpack.Filters.byStrings('"transitionTo - Transitioning to "'),
+	transitionTo: betterdiscord.Webpack.Filters.byStrings("Transitioning to"),
 	replace: betterdiscord.Webpack.Filters.byStrings('"Replacing route with "'),
 	goBack: betterdiscord.Webpack.Filters.byStrings(".goBack()"),
 	goForward: betterdiscord.Webpack.Filters.byStrings(".goForward()"),
@@ -1596,27 +1596,27 @@ function useWindowSize() {
 
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css$1 = `
-.nowPlaying_8567a7 {}
+.nowPlaying_a747ba {}
 
-.nowPlayingContainer_8567a7 {
+.nowPlayingContainer_a747ba {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_8567a7 {
+.nowPlayingColumn_a747ba {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_8567a7 .itemCard_8567a7 {
+.nowPlayingContainer_a747ba .itemCard_a747ba {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_8567a7 {
+.card_a747ba {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -1624,21 +1624,21 @@ const css$1 = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_8567a7 {
+.cardHeader_a747ba {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_8567a7 {
+.header_a747ba {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_8567a7 {
+.nameTag_a747ba {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1647,35 +1647,35 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-.username_8567a7 {
+.username_a747ba {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_8567a7:hover {
+.username_a747ba:hover {
 		text-decoration: underline;
 }
 
-.card_8567a7:hover .headerIcon_8567a7 {
+.card_a747ba:hover .headerIcon_a747ba {
 		display: none;
 }
 
-.headerActions_8567a7 {
+.headerActions_a747ba {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_8567a7:hover .headerActions_8567a7 {
+.card_a747ba:hover .headerActions_a747ba {
 		display: flex;
 }
 
-.headerActions_8567a7 > div[aria-expanded="false"] {
+.headerActions_a747ba > div[aria-expanded="false"] {
 		display: none;
 }
 
-.overflowMenu_8567a7 {
+.overflowMenu_a747ba {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -1684,11 +1684,11 @@ const css$1 = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_8567a7:hover {
+.overflowMenu_a747ba:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_8567a7 {
+.headerIcon_a747ba {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -1696,7 +1696,7 @@ const css$1 = `
 		width: 30px;
 }
 
-.splashArt_8567a7 {
+.splashArt_a747ba {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -1712,72 +1712,72 @@ const css$1 = `
 		top: 0;
 }
 
-.server_8567a7 {
+.server_a747ba {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_8567a7 {
+.cardBody_a747ba {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_8567a7 {
+.section_a747ba {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_8567a7 {
+.game_a747ba {
 		padding: 20px 0;
 }
 
-.gameBody_8567a7 {
+.gameBody_a747ba {
 		flex-direction: column;
 }
 
-.activity_8567a7 {
+.activity_a747ba {
 		flex-direction: row;
 }
 
-.activity_8567a7:last-child:not(:only-child) {
+.activity_a747ba:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_8567a7 .serviceButtonWrapper_8567a7 {
+.activity_a747ba .serviceButtonWrapper_a747ba {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_8567a7 {
+.richActivity_a747ba {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_8567a7 {}
+.activityActivityFeed_a747ba {}
 
-.activityFeed_8567a7 {
+.activityFeed_a747ba {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_8567a7 {}
+.body_a747ba {}
 
-.bodyNormal_8567a7 {}
+.bodyNormal_a747ba {}
 
-:is(.gameInfoRich_8567a7, .gameNameWrapper_8567a7) {
+:is(.gameInfoRich_a747ba, .gameNameWrapper_a747ba) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_8567a7 {
+.gameInfoRich_a747ba {
 		align-items: center;
 }
 
-.gameInfo_8567a7 {
+.gameInfo_a747ba {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -1785,11 +1785,11 @@ const css$1 = `
 		flex: 1;
 }
 
-:is(.gameName_8567a7, .gameNameWrapper_8567a7, .streamInfo_8567a7) {
+:is(.gameName_a747ba, .gameNameWrapper_a747ba, .streamInfo_a747ba) {
 		overflow: hidden;
 }
 
-.gameName_8567a7 {
+.gameName_a747ba {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -1798,14 +1798,14 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.gameName_8567a7.clickable_8567a7:hover {
+.gameName_a747ba.clickable_a747ba:hover {
 		text-decoration: underline;
 }
 
-.playTime_8567a7:not(a) {
+.playTime_a747ba:not(a) {
 		color: var(--text-muted);
 }
-.playTime_8567a7 {
+.playTime_a747ba {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -1815,78 +1815,78 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.assets_8567a7 {
+.assets_a747ba {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_8567a7 {
+.assetsLargeImageActivityFeed_a747ba {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_8567a7 {
+.assetsSmallImageActivityFeed_a747ba {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_8567a7 .assetsLargeImage_8567a7 {
+.assets_a747ba .assetsLargeImage_a747ba {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_8567a7 .assetsLargeImageActivityFeedTwitch_8567a7 {
+.assets_a747ba .assetsLargeImageActivityFeedTwitch_a747ba {
 		border-radius: 5px;
 		height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
 		width: 100%;
 }
 
-.assets_8567a7:has(.assetsSmallImage_8567a7) .assetsLargeImage_8567a7 {
+.assets_a747ba:has(.assetsSmallImage_a747ba) .assetsLargeImage_a747ba {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_8567a7 .assetsSmallImage_8567a7, .richActivity_8567a7 .smallEmptyIcon_8567a7 {
+.richActivity_a747ba .assetsSmallImage_a747ba, .richActivity_a747ba .smallEmptyIcon_a747ba {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_8567a7 .smallEmptyIcon_8567a7 {
+.activity_a747ba .smallEmptyIcon_a747ba {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_8567a7 .largeEmptyIcon_8567a7 {
+.assets_a747ba .largeEmptyIcon_a747ba {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_8567a7 .largeEmptyIcon_8567a7 path {
+.assets_a747ba .largeEmptyIcon_a747ba path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_8567a7 svg.assetsSmallImage_8567a7 {
+.richActivity_a747ba svg.assetsSmallImage_a747ba {
 		border-radius: unset !important;
 }   
 
-.richActivity_8567a7 .smallEmptyIcon_8567a7 path {
+.richActivity_a747ba .smallEmptyIcon_a747ba path {
 		transform: scale(1.3) !important;
 }
 
-.assets_8567a7 .twitchImageContainer_8567a7 {
+.assets_a747ba .twitchImageContainer_a747ba {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_8567a7 .twitchBackgroundImage_8567a7 {
+.assets_a747ba .twitchBackgroundImage_a747ba {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_8567a7 .twitchImageOverlay_8567a7 {
+.assets_a747ba .twitchImageOverlay_a747ba {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -1894,14 +1894,14 @@ const css$1 = `
 		right: 0;
 }
 
-.assets_8567a7 .streamName_8567a7 {
+.assets_a747ba .streamName_a747ba {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_8567a7 .streamGame_8567a7 {
+.assets_a747ba .streamGame_a747ba {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -1909,39 +1909,39 @@ const css$1 = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_8567a7 {
+.contentImagesActivityFeed_a747ba {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_8567a7, .contentImagesActivityFeed_8567a7) {
+:is(.gameInfo_a747ba, .contentImagesActivityFeed_a747ba) {
 		align-self: center;
 		display: grid;
 }
 
-.content_8567a7 {
+.content_a747ba {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_8567a7 {
+.details_a747ba {
 		font-weight: 600;
 }
 
-.ellipsis_8567a7 {
+.ellipsis_a747ba {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_8567a7 {
+.textRow_a747ba {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.voiceSection_8567a7 {
+.voiceSection_a747ba {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -1949,7 +1949,7 @@ const css$1 = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_8567a7 {
+.voiceSectionAssets_a747ba {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -1957,7 +1957,7 @@ const css$1 = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_8567a7 {
+.voiceSectionIconWrapper_a747ba {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -1969,69 +1969,69 @@ const css$1 = `
 		width: 20px;
 }
 
-.voiceSectionIcon_8567a7 {
+.voiceSectionIcon_a747ba {
 		color: var(--header-secondary);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_8567a7 {
+.voiceSectionGuildImage_a747ba {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_8567a7 .details_8567a7 {
+.voiceSection_a747ba .details_a747ba {
 		flex: 1;
 }
 
-.voiceSectionDetails_8567a7 {
+.voiceSectionDetails_a747ba {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_8567a7:hover :is(.voiceSectionText_8567a7, .voiceSectionSubtext_8567a7) {
+.voiceSectionDetails_a747ba:hover :is(.voiceSectionText_a747ba, .voiceSectionSubtext_a747ba) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_8567a7 {
+.voiceSectionText_a747ba {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_8567a7 {
+.voiceSectionSubtext_a747ba {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_8567a7 {
+.userList_a747ba {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_8567a7 button {
+.voiceSection_a747ba button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.actionsActivity_8567a7 .buttonContainer_8567a7 {
+.actionsActivity_a747ba .buttonContainer_a747ba {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_8567a7 {
+.partyStatusWrapper_a747ba {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_8567a7 button {
+.partyStatusWrapper_a747ba button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -2039,42 +2039,44 @@ const css$1 = `
 		justify-self: flex-end;
 }
 
-.partyList_8567a7 {
+.partyList_a747ba {
 		display: flex;
 }
 
-.player_8567a7:first-of-type:not(:only-of-type) {
+.player_a747ba:first-of-type:not(:only-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow_8567a7 {}
+.userOverflow_a747ba {
+		color: var(--text-default);
+}
 
-.emptyUser_8567a7:not(:first-of-type), .player_8567a7:not(:first-of-type) {
+.emptyUser_a747ba:not(:first-of-type), .player_a747ba:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_8567a7:not(:last-of-type), .player_8567a7:not(:last-of-type) {
+.emptyUser_a747ba:not(:last-of-type), .player_a747ba:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_8567a7, .player_8567a7 {
+.emptyUser_a747ba, .player_a747ba {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_8567a7 svg {
+.emptyUser_a747ba svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_8567a7 {
+.partyPlayerCount_a747ba {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 1.3333333333333333;
 }
 
-.cardV2_8567a7 {
+.cardV2_a747ba {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -2084,16 +2086,16 @@ const css$1 = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_8567a7 {
+		.cardHeader_a747ba {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_8567a7 {
+		.nameTag_a747ba {
 				color: var(--white);
 		}
-		.splashArt_8567a7, .server_8567a7 {
+		.splashArt_a747ba, .server_a747ba {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -2110,130 +2112,133 @@ const css$1 = `
 				z-index: -1;
 		}
 		&:hover {
-				.headerIcon_8567a7 {
+				.headerIcon_a747ba {
 						display: none;
 				}
-				.headerActions_8567a7 {
+				.headerActions_a747ba {
 						display: flex;
 				}
 		}
-		.cardBody_8567a7 {
+		.cardBody_a747ba {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_8567a7 {
+		.section_a747ba {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_8567a7 {
+		.game_a747ba {
 				padding: 0;
 		}
-		.voiceSectionText_8567a7 {
+		.voiceSectionText_a747ba {
 				color: var(--white);
 		}
-		.headerIcon_8567a7, .gameIcon_8567a7, .assetsLargeImage_8567a7.assetsLargeImage_8567a7 {
+		.headerIcon_a747ba, .gameIcon_a747ba, .assetsLargeImage_a747ba.assetsLargeImage_a747ba {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_8567a7 {
+		.gameInfo_a747ba {
 				color: var(--white);
 		}
-		.playTime_8567a7:not(a), .voiceSectionSubtext_8567a7 {
+		.playTime_a747ba:not(a), .voiceSectionSubtext_a747ba {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_8567a7 {
+		.serviceButtonWrapper_a747ba {
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_8567a7 {
+		.contentImagesActivityFeed_a747ba {
 				color: var(--white);
 		}
-		.textRow_8567a7 {
+		.textRow_a747ba {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_8567a7 {
+		.state_a747ba {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_8567a7:last-child:not(:only-child) {
+		.activity_a747ba:last-child:not(:only-child) {
 				margin-top: 12px;
+		}
+		.userOverflow_a747ba {
+				color: var(--white);
 		}
 }`;
 _loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
-	"nowPlaying": "nowPlaying_8567a7",
-	"nowPlayingContainer": "nowPlayingContainer_8567a7",
-	"nowPlayingColumn": "nowPlayingColumn_8567a7",
-	"itemCard": "itemCard_8567a7",
-	"card": "card_8567a7",
-	"cardHeader": "cardHeader_8567a7",
-	"header": "header_8567a7",
-	"nameTag": "nameTag_8567a7",
-	"username": "username_8567a7",
-	"headerIcon": "headerIcon_8567a7",
-	"headerActions": "headerActions_8567a7",
-	"overflowMenu": "overflowMenu_8567a7",
-	"splashArt": "splashArt_8567a7",
-	"server": "server_8567a7",
-	"cardBody": "cardBody_8567a7",
-	"section": "section_8567a7",
-	"game": "game_8567a7",
-	"gameBody": "gameBody_8567a7",
-	"activity": "activity_8567a7",
-	"serviceButtonWrapper": "serviceButtonWrapper_8567a7",
-	"richActivity": "richActivity_8567a7",
-	"activityActivityFeed": "activityActivityFeed_8567a7",
-	"activityFeed": "activityFeed_8567a7",
-	"body": "body_8567a7",
-	"bodyNormal": "bodyNormal_8567a7",
-	"gameInfoRich": "gameInfoRich_8567a7",
-	"gameNameWrapper": "gameNameWrapper_8567a7",
-	"gameInfo": "gameInfo_8567a7",
-	"gameName": "gameName_8567a7",
-	"streamInfo": "streamInfo_8567a7",
-	"clickable": "clickable_8567a7",
-	"playTime": "playTime_8567a7",
-	"assets": "assets_8567a7",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_8567a7",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_8567a7",
-	"assetsLargeImage": "assetsLargeImage_8567a7",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_8567a7",
-	"assetsSmallImage": "assetsSmallImage_8567a7",
-	"smallEmptyIcon": "smallEmptyIcon_8567a7",
-	"largeEmptyIcon": "largeEmptyIcon_8567a7",
-	"twitchImageContainer": "twitchImageContainer_8567a7",
-	"twitchBackgroundImage": "twitchBackgroundImage_8567a7",
-	"twitchImageOverlay": "twitchImageOverlay_8567a7",
-	"streamName": "streamName_8567a7",
-	"streamGame": "streamGame_8567a7",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_8567a7",
-	"content": "content_8567a7",
-	"details": "details_8567a7",
-	"ellipsis": "ellipsis_8567a7",
-	"textRow": "textRow_8567a7",
-	"voiceSection": "voiceSection_8567a7",
-	"voiceSectionAssets": "voiceSectionAssets_8567a7",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_8567a7",
-	"voiceSectionIcon": "voiceSectionIcon_8567a7",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_8567a7",
-	"voiceSectionDetails": "voiceSectionDetails_8567a7",
-	"voiceSectionText": "voiceSectionText_8567a7",
-	"voiceSectionSubtext": "voiceSectionSubtext_8567a7",
-	"userList": "userList_8567a7",
-	"actionsActivity": "actionsActivity_8567a7",
-	"buttonContainer": "buttonContainer_8567a7",
-	"partyStatusWrapper": "partyStatusWrapper_8567a7",
-	"partyList": "partyList_8567a7",
-	"player": "player_8567a7",
-	"userOverflow": "userOverflow_8567a7",
-	"emptyUser": "emptyUser_8567a7",
-	"partyPlayerCount": "partyPlayerCount_8567a7",
-	"cardV2": "cardV2_8567a7",
-	"gameIcon": "gameIcon_8567a7",
-	"state": "state_8567a7"
+	"nowPlaying": "nowPlaying_a747ba",
+	"nowPlayingContainer": "nowPlayingContainer_a747ba",
+	"nowPlayingColumn": "nowPlayingColumn_a747ba",
+	"itemCard": "itemCard_a747ba",
+	"card": "card_a747ba",
+	"cardHeader": "cardHeader_a747ba",
+	"header": "header_a747ba",
+	"nameTag": "nameTag_a747ba",
+	"username": "username_a747ba",
+	"headerIcon": "headerIcon_a747ba",
+	"headerActions": "headerActions_a747ba",
+	"overflowMenu": "overflowMenu_a747ba",
+	"splashArt": "splashArt_a747ba",
+	"server": "server_a747ba",
+	"cardBody": "cardBody_a747ba",
+	"section": "section_a747ba",
+	"game": "game_a747ba",
+	"gameBody": "gameBody_a747ba",
+	"activity": "activity_a747ba",
+	"serviceButtonWrapper": "serviceButtonWrapper_a747ba",
+	"richActivity": "richActivity_a747ba",
+	"activityActivityFeed": "activityActivityFeed_a747ba",
+	"activityFeed": "activityFeed_a747ba",
+	"body": "body_a747ba",
+	"bodyNormal": "bodyNormal_a747ba",
+	"gameInfoRich": "gameInfoRich_a747ba",
+	"gameNameWrapper": "gameNameWrapper_a747ba",
+	"gameInfo": "gameInfo_a747ba",
+	"gameName": "gameName_a747ba",
+	"streamInfo": "streamInfo_a747ba",
+	"clickable": "clickable_a747ba",
+	"playTime": "playTime_a747ba",
+	"assets": "assets_a747ba",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_a747ba",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_a747ba",
+	"assetsLargeImage": "assetsLargeImage_a747ba",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_a747ba",
+	"assetsSmallImage": "assetsSmallImage_a747ba",
+	"smallEmptyIcon": "smallEmptyIcon_a747ba",
+	"largeEmptyIcon": "largeEmptyIcon_a747ba",
+	"twitchImageContainer": "twitchImageContainer_a747ba",
+	"twitchBackgroundImage": "twitchBackgroundImage_a747ba",
+	"twitchImageOverlay": "twitchImageOverlay_a747ba",
+	"streamName": "streamName_a747ba",
+	"streamGame": "streamGame_a747ba",
+	"contentImagesActivityFeed": "contentImagesActivityFeed_a747ba",
+	"content": "content_a747ba",
+	"details": "details_a747ba",
+	"ellipsis": "ellipsis_a747ba",
+	"textRow": "textRow_a747ba",
+	"voiceSection": "voiceSection_a747ba",
+	"voiceSectionAssets": "voiceSectionAssets_a747ba",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper_a747ba",
+	"voiceSectionIcon": "voiceSectionIcon_a747ba",
+	"voiceSectionGuildImage": "voiceSectionGuildImage_a747ba",
+	"voiceSectionDetails": "voiceSectionDetails_a747ba",
+	"voiceSectionText": "voiceSectionText_a747ba",
+	"voiceSectionSubtext": "voiceSectionSubtext_a747ba",
+	"userList": "userList_a747ba",
+	"actionsActivity": "actionsActivity_a747ba",
+	"buttonContainer": "buttonContainer_a747ba",
+	"partyStatusWrapper": "partyStatusWrapper_a747ba",
+	"partyList": "partyList_a747ba",
+	"player": "player_a747ba",
+	"userOverflow": "userOverflow_a747ba",
+	"emptyUser": "emptyUser_a747ba",
+	"partyPlayerCount": "partyPlayerCount_a747ba",
+	"cardV2": "cardV2_a747ba",
+	"gameIcon": "gameIcon_a747ba",
+	"state": "state_a747ba"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -2674,44 +2679,32 @@ function Scroller({ children, padding }) {
 function TabBaseBuilder() {
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement("svg", { className: Common$1.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common$1.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/ActivityFeedSettings.module.css
 const css = `
-.blacklist_4cc1c3 {
+.blacklist_000d1f {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 }
 
-.settingsDivider_4cc1c3 {
+.settingsDivider_000d1f {
 		margin-bottom: var(--space-12) !important;
 }
 
-.blacklist_4cc1c3 .sectionDivider_4cc1c3, .settingsDivider_4cc1c3 {
-		display: flex;
-		width: 100%;
-		border-bottom: 2px solid;
-		margin: 4px 0 4px 0;
-		border-color: var(--background-mod-strong);
-}
-
-.blacklist_4cc1c3 .sectionDivider_4cc1c3:last-child {
-		display: none;
-}
-
-.blacklistItem_4cc1c3 {
+.blacklistItem_000d1f {
 		display: flex;
 }
 
-.blacklistItem_4cc1c3 .blacklistItemIcon_4cc1c3 {
+.blacklistItem_000d1f .blacklistItemIcon_000d1f {
 		border-radius: 8px;
 		height: 32px;
 		width: 32px;
 }
 
-.blacklistItem_4cc1c3 .blacklistItemName_4cc1c3 {
+.blacklistItem_000d1f .blacklistItemName_000d1f {
 		margin-left: 20px;
 		margin-bottom: 0;
 		min-width: 0;
@@ -2720,14 +2713,14 @@ const css = `
 		flex: 1;
 }
 
-.blacklistItem_4cc1c3 button {
+.blacklistItem_000d1f button {
 		flex: 0 1 auto;
 		align-self: center;
 		width: auto;
 		margin-left: 20px;
 }
 
-.search_4cc1c3 {
+.search_000d1f {
 		padding: 12px;
 		margin: 12px 0;
 		input::placeholder {
@@ -2749,30 +2742,29 @@ const css = `
 		}
 }
 
-.toggleStack_4cc1c3 {
+.toggleStack_000d1f {
 		padding: var(--space-16) 0 var(--space-16) 0;
 }
 
-.buttonItem_4cc1c3 {
+.buttonItem_000d1f {
 		display: flex;
 }`;
 _loadStyle("ActivityFeedSettings.module.css", css);
 const modules_a52d5642 = {
-	"blacklist": "blacklist_4cc1c3",
-	"settingsDivider": "settingsDivider_4cc1c3",
-	"sectionDivider": "sectionDivider_4cc1c3",
-	"blacklistItem": "blacklistItem_4cc1c3",
-	"blacklistItemIcon": "blacklistItemIcon_4cc1c3",
-	"blacklistItemName": "blacklistItemName_4cc1c3",
-	"search": "search_4cc1c3",
-	"toggleStack": "toggleStack_4cc1c3",
-	"buttonItem": "buttonItem_4cc1c3"
+	"blacklist": "blacklist_000d1f",
+	"settingsDivider": "settingsDivider_000d1f",
+	"blacklistItem": "blacklistItem_000d1f",
+	"blacklistItemIcon": "blacklistItemIcon_000d1f",
+	"blacklistItemName": "blacklistItemName_000d1f",
+	"search": "search_000d1f",
+	"toggleStack": "toggleStack_000d1f",
+	"buttonItem": "buttonItem_000d1f"
 };
 const SettingsClasses = modules_a52d5642;
 
 // settings/followed_games/FollowBuilder.tsx
 function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, key }) {
-	const application = GameStore.getDetectableGame(game.applicationId);
+	const application = GameStore.getDetectableGame(game.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(
 		"img",
@@ -2837,10 +2829,12 @@ function FollowedGameListBuilder() {
 	const [query, setQuery] = react.useState("");
 	const filtered = react.useMemo(() => {
 		const _query = query.toLowerCase();
-		return whitelist?.filter((item) => GameStore.getDetectableGame(item.applicationId).name.toLowerCase().includes(_query));
+		return whitelist?.filter((item) => (GameStore.getDetectableGame(item.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(item.applicationId))).name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
 	console.log(filtered, query);
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map((game) => BdApi.React.createElement(FollowedGameItemBuilder, { game, whitelist, blacklist, updateBlacklist, key: game.applicationId }))) : BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "No results.")));
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map(
+		(game) => BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FollowedGameItemBuilder, { game, whitelist, blacklist, updateBlacklist, key: game.applicationId }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }))
+	)) : BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "No results.")));
 }
 
 // settings/builder.tsx
@@ -2907,9 +2901,10 @@ const styles = Object.assign(
 	MainClasses,
 	FeedClasses,
 	NowPlayingClasses,
-	QuickLauncherClasses
+	QuickLauncherClasses,
+	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n`);
+const extraCSS = webpackify(`\n  	.description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
@@ -2931,11 +2926,7 @@ function NavigatorButton() {
 			route: "/activity-feed",
 			text: "Activity",
 			icon: () => {
-				return react.createElement(
-					"svg",
-					{ className: Common$1.LinkButtonClasses.linkButtonIcon, width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" },
-					react.createElement("path", { d: ControllerIcon, fill: "currentColor", transform: "scale(0.90)" })
-				);
+				return react.createElement(Common$1.Icons.GameControllerIcon, { color: "currentColor", className: Common$1.LinkButtonClasses.linkButtonIcon });
 			}
 		}
 	);
@@ -2991,7 +2982,7 @@ class ActivityFeed {
 	GameNewsStore = NewsStore;
 	start() {
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist");
-		const Route = betterdiscord.Webpack.getByStrings('["impressionName","impressionProperties","disableTrack"]');
+		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
 		if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
 			NavigationUtils.transitionTo("/channels/@me");
 		}

@@ -21,10 +21,7 @@ function NavigatorButton() {
             selected: useSelectedState(), 
             route: "/activity-feed", 
             text: "Activity", 
-            icon: () => { return createElement('svg', { className: Common.LinkButtonClasses.linkButtonIcon, width: 20, height: 20, viewBox: "0 0 20 20", fill: "none"},
-                    createElement('path', {d: ControllerIcon, fill: "currentColor", transform: "scale(0.90)" })
-                )
-            }
+            icon: () => { return createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon }) }
         }
     )
 }
@@ -81,7 +78,7 @@ export default class ActivityFeed {
     start() {
         //Patcher.after("ActivityFeed", FluxDispatcher, "dispatch", (that, props, res) => console.log(props))
         NewsStore.blacklist = Data.load('blacklist');
-        const Route = Webpack.getByStrings('["impressionName","impressionProperties","disableTrack"]');
+        const Route = Webpack.getByStrings('disableTrack', 'impressionName');
         if (performance.getEntriesByType('navigation')[0]?.type === 'reload') {
             NavigationUtils.transitionTo('/channels/@me')
         }

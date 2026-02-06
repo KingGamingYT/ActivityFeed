@@ -3,6 +3,7 @@ import MainClasses from "./ActivityFeed.module.css";
 import FeedClasses from "./components/application_news/ApplicationNews.module.css";
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css";
+import SettingsClasses from "../settings/ActivityFeedSettings.module.css";
 
 const styles = Object.assign({
         wrapper: Webpack.getByKeys('wrapper', 'svg', 'mask').wrapper,
@@ -20,7 +21,8 @@ const styles = Object.assign({
     MainClasses,
     FeedClasses,
     NowPlayingClasses,
-    QuickLauncherClasses
+    QuickLauncherClasses,
+    SettingsClasses,
 );
 
 export const extraCSS = webpackify(`
@@ -190,6 +192,18 @@ export const extraCSS = webpackify(`
         padding: 0;
         border-bottom: unset; 
         line-height: 1.60;
+    }
+
+    .blacklist .sectionDivider, .settingsDivider {
+        display: flex;
+        width: 100%;
+        border-bottom: 2px solid;
+        margin: 4px 0 4px 0;
+        border-color: var(--background-mod-strong);
+    }
+
+    .blacklist .sectionDivider:last-child {
+        display: none;
     }
 `);
 

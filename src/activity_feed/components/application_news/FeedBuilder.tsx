@@ -16,7 +16,7 @@ export function NewsFeedBuilder() {
     useEffect(() => {
         const inv = setInterval(() => {
             const newTime = Math.floor((Math.floor(new Date().getTime()) - Math.floor(time.getTime())) / 1000)
-            if (newTime > 0)
+            if (newTime > 0 && articles)
             {
                 console.log(newTime)
                 if (Math.floor(newTime) % 8 == 0 && isIdling)

@@ -6,7 +6,7 @@ import settings from "./settings";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import SettingsClasses from "@./settings/ActivityFeedSettings.module.css";
+import SettingsClasses from "../settings/ActivityFeedSettings.module.css";
 
 export function SettingsPanelBuilder() {
     return (
@@ -30,7 +30,7 @@ export function SettingsPanelBuilder() {
             </div>
             <div className={`${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}`} />
             <Components.SettingGroup name="Games You Follow" collapsible={false} shown={true}>
-                <div className={`${SettingsClasses.blackList} ${SettingsClasses.emptyState}`}>
+                <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
                     <div className={MainClasses.emptyText}>Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.</div>
                 </div>
                 <FollowedGameListBuilder />

@@ -123,7 +123,7 @@ const layoutUtils = betterdiscord.Webpack.getMangled(
 );
 const ControllerIcon = "M5.79335761,5 L18.2066424,5 C19.7805584,5 21.0868816,6.21634264 21.1990185,7.78625885 L21.8575059,17.0050826 C21.9307825,18.0309548 21.1585512,18.9219909 20.132679,18.9952675 C20.088523,18.9984215 20.0442685,19 20,19 C18.8245863,19 17.8000084,18.2000338 17.5149287,17.059715 L17,15 L7,15 L6.48507125,17.059715 C6.19999155,18.2000338 5.1754137,19 4,19 C2.97151413,19 2.13776159,18.1662475 2.13776159,17.1377616 C2.13776159,17.0934931 2.1393401,17.0492386 2.1424941,17.0050826 L2.80098151,7.78625885 C2.91311838,6.21634264 4.21944161,5 5.79335761,5 Z M14.5,10 C15.3284271,10 16,9.32842712 16,8.5 C16,7.67157288 15.3284271,7 14.5,7 C13.6715729,7 13,7.67157288 13,8.5 C13,9.32842712 13.6715729,10 14.5,10 Z M18.5,13 C19.3284271,13 20,12.3284271 20,11.5 C20,10.6715729 19.3284271,10 18.5,10 C17.6715729,10 17,10.6715729 17,11.5 C17,12.3284271 17.6715729,13 18.5,13 Z M6,9 L4,9 L4,11 L6,11 L6,13 L8,13 L8,11 L10,11 L10,9 L8,9 L8,7 L6,7 L6,9 Z";
 const useLocation = Object.values(betterdiscord.Webpack.getBySource(".location", "withRouter")).find((m) => m.length === 0 && String(m).includes(".location"));
-const NavigationUtils = betterdiscord.Webpack.getMangled("transitionTo - Transitioning to", {
+const NavigationUtils = betterdiscord.Webpack.getMangled("Transitioning to", {
 	transitionTo: betterdiscord.Webpack.Filters.byStrings('"transitionTo - Transitioning to "'),
 	replace: betterdiscord.Webpack.Filters.byStrings('"Replacing route with "'),
 	goBack: betterdiscord.Webpack.Filters.byStrings(".goBack()"),
@@ -159,6 +159,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	dataSet = {};
 	displaySet = [];
 	blacklist = [];
+	whitelist = [];
 	state = [];
 	lastTimeFetched;
 	idling;
@@ -169,6 +170,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.displaySet = [];
 		this.article = {};
 		this.blacklist = [];
+		this.whitelist = [];
 		this.lastTimeFetched;
 		this.idling = true;
 		window.addEventListener("resize", this.listener);
@@ -252,6 +254,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	setFeeds() {
 		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet"));
 		this.blacklist = betterdiscord.Data.load("blacklist") || [];
+		this.whitelist = betterdiscord.Data.load("whitelist") || this.initializeWhitelist();
 		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
 		this.emitChange();
 		return;
@@ -264,12 +267,23 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	getTime() {
 		return this.lastTimeFetched;
 	}
+	initializeWhitelist() {
+		let g = this.getFeeds();
+		let w = [];
+		for (let k in g) {
+			w.push({ applicationId: g[k].application.id, gameId: g[k].id });
+		}
+		return w;
+	}
+	getWhitelist() {
+		return this.whitelist;
+	}
 	getBlacklist() {
 		return this.blacklist;
 	}
 	getBlacklistedGame(gameId) {
 		let b = this.blacklist;
-		return b?.find((e) => e.game_id === gameId);
+		return b?.find((e) => e.gameId === gameId);
 	}
 	clearBlacklist() {
 		let b = this.blacklist;
@@ -281,10 +295,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		let b = this.blacklist;
 		console.log(b);
 		if (!b.find((e) => e.game_id === gameId)) {
-			b.push({ application_id: applicationId, game_id: gameId });
+			b.push({ applicationId, gameId });
 			console.log(this.blacklist);
 			this.emitChange();
-			betterdiscord.Data.save("ACTest", "blacklist", this.blacklist);
+			betterdiscord.Data.save("blacklist", this.blacklist);
 		}
 		return;
 	}
@@ -293,7 +307,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		const g = b.find((e) => e.game_id === gameId);
 		b.splice(b.indexOf(g), 1);
 		this.emitChange();
-		betterdiscord.Data.save("ACTest", "blacklist", this.blacklist);
+		betterdiscord.Data.save("blacklist", this.blacklist);
 		return this.blacklist;
 	}
 	async #fetchDiscordFeeds() {
@@ -1294,7 +1308,7 @@ function NewsFeedBuilder() {
 	react.useEffect(() => {
 		const inv = setInterval(() => {
 			const newTime = Math.floor((Math.floor((new Date()).getTime()) - Math.floor(time.getTime())) / 1e3);
-			if (newTime > 0) {
+			if (newTime > 0 && articles) {
 				console.log(newTime);
 				if (Math.floor(newTime) % 8 == 0 && isIdling) {
 					NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
@@ -2663,11 +2677,6 @@ function TabBaseBuilder() {
 	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement("svg", { className: Common$1.UpperIconClasses.icon, style: { width: 24, height: 24 }, viewBox: "0 0 24 24", fill: "none" }, BdApi.React.createElement("path", { d: ControllerIcon, fill: "var(--channel-icon)" }))), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
-// settings/followed_games/FollowBuilder.tsx
-function FollowedGameListBuilder({}) {
-	return;
-}
-
 // settings/ActivityFeedSettings.module.css
 const css = `
 .blacklist_4cc1c3 {
@@ -2761,6 +2770,79 @@ const modules_a52d5642 = {
 };
 const SettingsClasses = modules_a52d5642;
 
+// settings/followed_games/FollowBuilder.tsx
+function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, key }) {
+	const application = GameStore.getDetectableGame(game.applicationId);
+	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
+	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(
+		"img",
+		{
+			className: SettingsClasses.blacklistItemIcon,
+			src: `https://cdn.discordapp.com/app-icons/${application?.id}/${application.icon}.webp?size=32&keep_aspect_ratio=false`
+		}
+	), BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, application.name || "Unknown Game"), isUnfollowed ? BdApi.React.createElement(
+		"button",
+		{
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			onClick: () => ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common$1.ModalRoot.Modal,
+					{
+						...props,
+						title: "Are you sure?",
+						actions: [
+							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
+							{ text: "Yes", fullWidth: 1, onClick: () => {
+								NewsStore.whitelistGame(game.gameId);
+								updateBlacklist(blacklist.filter((item) => item.gameId !== game.gameId));
+								console.log(blacklist);
+								props.onClose();
+							} }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Do you want to follow this game? Its announcements will appear in your Activity Feed."), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, "This action will require you to restart Discord in order to see changes."))
+				)
+			)
+		},
+		"Follow"
+	) : BdApi.React.createElement(
+		"button",
+		{
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			onClick: () => ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common$1.ModalRoot.Modal,
+					{
+						...props,
+						title: "Are you sure?",
+						actions: [
+							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
+							{ text: "Yes", fullWidth: 1, onClick: () => {
+								NewsStore.blacklistGame(application.id, game.gameId);
+								updateBlacklist(blacklist.filter((item) => item.gameId !== game.gameId));
+								props.onClose();
+							} }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Do you want to unfollow this game? Its announcements will be hidden from your Activity Feed."), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, "This action will require you to restart Discord in order to see changes."))
+				)
+			)
+		},
+		"Unfollow"
+	));
+}
+function FollowedGameListBuilder() {
+	const whitelist = NewsStore.getWhitelist();
+	const [blacklist, updateBlacklist] = react.useState(NewsStore.getBlacklist());
+	const [query, setQuery] = react.useState("");
+	const filtered = react.useMemo(() => {
+		const _query = query.toLowerCase();
+		return whitelist?.filter((item) => GameStore.getDetectableGame(item.applicationId).name.toLowerCase().includes(_query));
+	}, [whitelist, query]);
+	console.log(filtered, query);
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map((game) => BdApi.React.createElement(FollowedGameItemBuilder, { game, whitelist, blacklist, updateBlacklist, key: game.applicationId }))) : BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "No results.")));
+}
+
 // settings/builder.tsx
 function SettingsPanelBuilder() {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
@@ -2779,7 +2861,7 @@ function SettingsPanelBuilder() {
 				}
 			}
 		);
-	})), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blackList} ${SettingsClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
+	})), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
 		const { name, note, initial, type, changed } = settings.debug[key];
 		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		if (type === "switch") return BdApi.React.createElement(

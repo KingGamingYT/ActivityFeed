@@ -10,6 +10,7 @@ class GameNewsStore extends Utils.Store {
     dataSet = {};
     displaySet = [];
     blacklist = [];
+    whitelist = [];
     state = [];
     lastTimeFetched;
     idling;
@@ -20,6 +21,7 @@ class GameNewsStore extends Utils.Store {
         this.displaySet = [];
         this.article = {}
         this.blacklist = [];
+        this.whitelist = [];
         this.lastTimeFetched;
         this.idling = true;
 
@@ -105,6 +107,7 @@ class GameNewsStore extends Utils.Store {
     setFeeds() {
         this.dataSet = Object.assign(this.dataSet, Data.load('dataSet'));
         this.blacklist = Data.load('blacklist') || [];
+        this.whitelist = Data.load('whitelist') || this.initializeWhitelist();
         this.lastTimeFetched = Data.load('lastTimeFetched');
         this.emitChange();
         return;
@@ -120,6 +123,19 @@ class GameNewsStore extends Utils.Store {
         return this.lastTimeFetched;
     }
 
+    initializeWhitelist() {
+        let g = this.getFeeds();
+        let w = [];
+        for (let k in g) {
+            w.push({applicationId: g[k].application.id, gameId: g[k].id})
+        }
+        return w;
+    }
+
+    getWhitelist() {
+        return this.whitelist;
+    }
+
     getBlacklist() {
         return this.blacklist;
     }
@@ -127,7 +143,7 @@ class GameNewsStore extends Utils.Store {
     getBlacklistedGame(gameId) {
         let b = this.blacklist;
 
-        return b?.find(e => e.game_id === gameId);
+        return b?.find(e => e.gameId === gameId);
     }
 
     clearBlacklist() {
@@ -143,10 +159,10 @@ class GameNewsStore extends Utils.Store {
         console.log(b)
 
         if (!b.find(e => e.game_id === gameId)) {
-            b.push({application_id: applicationId, game_id: gameId});
+            b.push({applicationId: applicationId, gameId: gameId});
             console.log(this.blacklist)
             this.emitChange();
-            Data.save('ACTest', 'blacklist', this.blacklist);
+            Data.save('blacklist', this.blacklist);
         }
         return;
     }
@@ -157,7 +173,7 @@ class GameNewsStore extends Utils.Store {
 
         b.splice(b.indexOf(g), 1);
         this.emitChange();
-        Data.save('ACTest', 'blacklist', this.blacklist);
+        Data.save('blacklist', this.blacklist);
         return this.blacklist;
     }
 

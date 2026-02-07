@@ -96,6 +96,7 @@ const Filters = [
 	{ name: "OpenDM", filter: (x) => x.openPrivateChannel },
 	{ name: "OpenVoiceChannel", filter: (x) => x.selectVoiceChannel, searchExports: true },
 	{ name: "OpenSpotifyAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
+	{ name: "OpenStream", filter: betterdiscord.Webpack.Filters.byStrings("guildId", "getWindowOpen", "CHANNEL_CALL_POPOUT"), searchExports: true },
 	{ name: "Popout", filter: betterdiscord.Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
 	{ name: "PopoutContainer", filter: betterdiscord.Webpack.Filters.byStrings("type", "position", "data-popout-animating"), searchExports: true },
 	{ name: "PositionClasses", filter: betterdiscord.Webpack.Filters.byKeys("noWrap") },
@@ -1598,27 +1599,27 @@ function useWindowSize() {
 
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css$1 = `
-.nowPlaying_e2a63a {}
+.nowPlaying_14ac5d {}
 
-.nowPlayingContainer_e2a63a {
+.nowPlayingContainer_14ac5d {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_e2a63a {
+.nowPlayingColumn_14ac5d {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_e2a63a .itemCard_e2a63a {
+.nowPlayingContainer_14ac5d .itemCard_14ac5d {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_e2a63a {
+.card_14ac5d {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -1626,21 +1627,21 @@ const css$1 = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_e2a63a {
+.cardHeader_14ac5d {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_e2a63a {
+.header_14ac5d {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_e2a63a {
+.nameTag_14ac5d {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1649,35 +1650,35 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-.username_e2a63a {
+.username_14ac5d {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_e2a63a:hover {
+.username_14ac5d:hover {
 		text-decoration: underline;
 }
 
-.card_e2a63a:hover .headerIcon_e2a63a {
+.card_14ac5d:hover .headerIcon_14ac5d {
 		display: none;
 }
 
-.headerActions_e2a63a {
+.headerActions_14ac5d {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_e2a63a:hover .headerActions_e2a63a {
+.card_14ac5d:hover .headerActions_14ac5d {
 		display: flex;
 }
 
-.headerActions_e2a63a > div[aria-expanded="false"] {
+.headerActions_14ac5d > div[aria-expanded="false"] {
 		display: none;
 }
 
-.overflowMenu_e2a63a {
+.overflowMenu_14ac5d {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -1686,11 +1687,11 @@ const css$1 = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_e2a63a:hover {
+.overflowMenu_14ac5d:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_e2a63a {
+.headerIcon_14ac5d {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -1698,7 +1699,7 @@ const css$1 = `
 		width: 30px;
 }
 
-.splashArt_e2a63a {
+.splashArt_14ac5d {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -1714,72 +1715,72 @@ const css$1 = `
 		top: 0;
 }
 
-.server_e2a63a {
+.server_14ac5d {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_e2a63a {
+.cardBody_14ac5d {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_e2a63a {
+.section_14ac5d {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_e2a63a {
+.game_14ac5d {
 		padding: 20px 0;
 }
 
-.gameBody_e2a63a {
+.gameBody_14ac5d {
 		flex-direction: column;
 }
 
-.activity_e2a63a {
+.activity_14ac5d {
 		flex-direction: row;
 }
 
-.activity_e2a63a:last-child:not(:only-child) {
+.activity_14ac5d:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_e2a63a .serviceButtonWrapper_e2a63a {
+.activity_14ac5d .serviceButtonWrapper_14ac5d {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_e2a63a {
+.richActivity_14ac5d {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_e2a63a {}
+.activityActivityFeed_14ac5d {}
 
-.activityFeed_e2a63a {
+.activityFeed_14ac5d {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_e2a63a {}
+.body_14ac5d {}
 
-.bodyNormal_e2a63a {}
+.bodyNormal_14ac5d {}
 
-:is(.gameInfoRich_e2a63a, .gameNameWrapper_e2a63a) {
+:is(.gameInfoRich_14ac5d, .gameNameWrapper_14ac5d) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_e2a63a {
+.gameInfoRich_14ac5d {
 		align-items: center;
 }
 
-.gameInfo_e2a63a {
+.gameInfo_14ac5d {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -1787,11 +1788,11 @@ const css$1 = `
 		flex: 1;
 }
 
-:is(.gameName_e2a63a, .gameNameWrapper_e2a63a, .streamInfo_e2a63a) {
+:is(.gameName_14ac5d, .gameNameWrapper_14ac5d, .streamInfo_14ac5d) {
 		overflow: hidden;
 }
 
-.gameName_e2a63a {
+.gameName_14ac5d {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -1800,14 +1801,14 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.gameName_e2a63a.clickable_e2a63a:hover {
+.gameName_14ac5d.clickable_14ac5d:hover {
 		text-decoration: underline;
 }
 
-.playTime_e2a63a:not(a) {
+.playTime_14ac5d:not(a) {
 		color: var(--text-muted);
 }
-.playTime_e2a63a {
+.playTime_14ac5d {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -1817,78 +1818,78 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.assets_e2a63a {
+.assets_14ac5d {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_e2a63a {
+.assetsLargeImageActivityFeed_14ac5d {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_e2a63a {
+.assetsSmallImageActivityFeed_14ac5d {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_e2a63a .assetsLargeImage_e2a63a {
+.assets_14ac5d .assetsLargeImage_14ac5d {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_e2a63a .assetsLargeImageActivityFeedTwitch_e2a63a {
+.assets_14ac5d .assetsLargeImageActivityFeedTwitch_14ac5d {
 		border-radius: 5px;
 		height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
 		width: 100%;
 }
 
-.assets_e2a63a:has(.assetsSmallImage_e2a63a) .assetsLargeImage_e2a63a {
+.assets_14ac5d:has(.assetsSmallImage_14ac5d) .assetsLargeImage_14ac5d {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_e2a63a .assetsSmallImage_e2a63a, .richActivity_e2a63a .smallEmptyIcon_e2a63a {
+.richActivity_14ac5d .assetsSmallImage_14ac5d, .richActivity_14ac5d .smallEmptyIcon_14ac5d {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_e2a63a .smallEmptyIcon_e2a63a {
+.activity_14ac5d .smallEmptyIcon_14ac5d {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_e2a63a .largeEmptyIcon_e2a63a {
+.assets_14ac5d .largeEmptyIcon_14ac5d {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_e2a63a .largeEmptyIcon_e2a63a path {
+.assets_14ac5d .largeEmptyIcon_14ac5d path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_e2a63a svg.assetsSmallImage_e2a63a {
+.richActivity_14ac5d svg.assetsSmallImage_14ac5d {
 		border-radius: unset !important;
 }   
 
-.richActivity_e2a63a .smallEmptyIcon_e2a63a path {
+.richActivity_14ac5d .smallEmptyIcon_14ac5d path {
 		transform: scale(1.3) !important;
 }
 
-.assets_e2a63a .twitchImageContainer_e2a63a {
+.assets_14ac5d .twitchImageContainer_14ac5d {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_e2a63a .twitchBackgroundImage_e2a63a {
+.assets_14ac5d .twitchBackgroundImage_14ac5d {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_e2a63a .twitchImageOverlay_e2a63a {
+.assets_14ac5d .twitchImageOverlay_14ac5d {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -1896,14 +1897,14 @@ const css$1 = `
 		right: 0;
 }
 
-.assets_e2a63a .streamName_e2a63a {
+.assets_14ac5d .streamName_14ac5d {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_e2a63a .streamGame_e2a63a {
+.assets_14ac5d .streamGame_14ac5d {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -1911,39 +1912,39 @@ const css$1 = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_e2a63a {
+.contentImagesActivityFeed_14ac5d {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_e2a63a, .contentImagesActivityFeed_e2a63a) {
+:is(.gameInfo_14ac5d, .contentImagesActivityFeed_14ac5d) {
 		align-self: center;
 		display: grid;
 }
 
-.content_e2a63a {
+.content_14ac5d {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_e2a63a {
+.details_14ac5d {
 		font-weight: 600;
 }
 
-.ellipsis_e2a63a {
+.ellipsis_14ac5d {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_e2a63a {
+.textRow_14ac5d {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.voiceSection_e2a63a {
+.voiceSection_14ac5d {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -1951,7 +1952,7 @@ const css$1 = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_e2a63a {
+.voiceSectionAssets_14ac5d {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -1959,7 +1960,7 @@ const css$1 = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_e2a63a {
+.voiceSectionIconWrapper_14ac5d {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -1971,63 +1972,63 @@ const css$1 = `
 		width: 20px;
 }
 
-.voiceSectionIcon_e2a63a {
+.voiceSectionIcon_14ac5d {
 		color: var(--header-secondary);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_e2a63a {
+.voiceSectionGuildImage_14ac5d {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_e2a63a .details_e2a63a {
+.voiceSection_14ac5d .details_14ac5d {
 		flex: 1;
 }
 
-.voiceSectionDetails_e2a63a {
+.voiceSectionDetails_14ac5d {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_e2a63a:hover :is(.voiceSectionText_e2a63a, .voiceSectionSubtext_e2a63a) {
+.voiceSectionDetails_14ac5d:hover :is(.voiceSectionText_14ac5d, .voiceSectionSubtext_14ac5d) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_e2a63a {
+.voiceSectionText_14ac5d {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_e2a63a {
+.voiceSectionSubtext_14ac5d {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_e2a63a {
+.userList_14ac5d {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_e2a63a button {
+.voiceSection_14ac5d button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.streamSection_e2a63a {
+.streamSection_14ac5d {
 		position: relative;
 }
 
-.applicationStreamingSection_e2a63a {
+.applicationStreamingSection_14ac5d {
 		display: grid;
 		grid-template-columns: 32px minmax(20px, auto) max-content;
 		-webkit-box-align: center;
@@ -2035,36 +2036,40 @@ const css$1 = `
 		gap: 12px 12px;
 }
 
-.applicationStreamingAvatar_e2a63a {
+.applicationStreamingAvatar_14ac5d {
 		cursor: pointer;
 }
 
-.applicationStreamingDetails_e2a63a {
+.applicationStreamingDetails_14ac5d {
 		margin-left: 16px;
 		min-width: 0;
 }
 
-.applicationStreamingPreviewWrapper_e2a63a {
+.applicationStreamingPreviewWrapper_14ac5d {
 		margin-top: 12px;
 		cursor: pointer;
 		border-radius: 4px;
 		position: relative;
 }
 
-.applicationStreamingPreviewSize_e2a63a {
+.applicationStreamingPreviewSize_14ac5d {
 		height: 100%;
 		width: 100%;
 }
 
-.applicationStreamingPreview_e2a63a {
+.applicationStreamingPreview_14ac5d {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
 }
 
-.applicationStreamingHoverWrapper_e2a63a {
+.applicationStreamingHoverWrapper_14ac5d {
 		opacity: 0;
 		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		display: flex;
 		-webkit-box-align: center;
 		align-items: center;
@@ -2074,7 +2079,11 @@ const css$1 = `
 		transition: opacity 0.2s ease-in-out 0s;
 }
 
-.applicationStreamingHoverText_e2a63a {
+.applicationStreamingHoverWrapper_14ac5d:hover {
+		opacity: 1;
+}
+
+.applicationStreamingHoverText_14ac5d {
 		color: var(--white);
 		font-size: 16px;
 		font-weight: 600;
@@ -2084,7 +2093,33 @@ const css$1 = `
 		border-radius: 20px;
 }
 
-.inner_e2a63a {
+.emptyPreviewContainer_14ac5d {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+}
+
+.emptyPreviewImage_14ac5d {
+		width: 80%;
+		height: 60%;
+		margin-bottom: 10px;
+		background-position: 50% center;
+		background-repeat: no-repeat;
+}
+
+.emptyPreviewText_14ac5d {
+		color: var(--text-default);
+}
+
+.inner_14ac5d {
 		position: absolute;
 		top: 0px;
 		right: 0px;
@@ -2092,17 +2127,17 @@ const css$1 = `
 		left: 0px;
 }
 
-.actionsActivity_e2a63a .buttonContainer_e2a63a {
+.actionsActivity_14ac5d .buttonContainer_14ac5d {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_e2a63a {
+.partyStatusWrapper_14ac5d {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_e2a63a button {
+.partyStatusWrapper_14ac5d button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -2110,40 +2145,40 @@ const css$1 = `
 		justify-self: flex-end;
 }
 
-.partyList_e2a63a {
+.partyList_14ac5d {
 		display: flex;
 }
 
-.player_e2a63a:first-of-type:not(:only-of-type) {
+.player_14ac5d:first-of-type:not(:only-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow_e2a63a {
+.userOverflow_14ac5d {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		align-content: center;
 		margin-right: 8px;
 }
 
-.emptyUser_e2a63a:not(:first-of-type), .player_e2a63a:not(:first-of-type) {
+.emptyUser_14ac5d:not(:first-of-type), .player_14ac5d:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_e2a63a:not(:last-of-type), .player_e2a63a:not(:last-of-type) {
+.emptyUser_14ac5d:not(:last-of-type), .player_14ac5d:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_e2a63a, .player_e2a63a {
+.emptyUser_14ac5d, .player_14ac5d {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_e2a63a svg {
+.emptyUser_14ac5d svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_e2a63a {
+.partyPlayerCount_14ac5d {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
@@ -2151,7 +2186,7 @@ const css$1 = `
 		margin-top: 1px;
 }
 
-.cardV2_e2a63a {
+.cardV2_14ac5d {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -2161,16 +2196,16 @@ const css$1 = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_e2a63a {
+		.cardHeader_14ac5d {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_e2a63a {
+		.nameTag_14ac5d {
 				color: var(--white);
 		}
-		.splashArt_e2a63a, .server_e2a63a {
+		.splashArt_14ac5d, .server_14ac5d {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -2187,58 +2222,58 @@ const css$1 = `
 				z-index: -1;
 		}
 		&:hover {
-				.headerIcon_e2a63a {
+				.headerIcon_14ac5d {
 						display: none;
 				}
-				.headerActions_e2a63a {
+				.headerActions_14ac5d {
 						display: flex;
 				}
 		}
-		.cardBody_e2a63a {
+		.cardBody_14ac5d {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_e2a63a {
+		.section_14ac5d {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_e2a63a {
+		.game_14ac5d {
 				padding: 0;
 		}
-		.voiceSectionText_e2a63a {
+		.voiceSectionText_14ac5d {
 				color: var(--white);
 		}
-		.headerIcon_e2a63a, .gameIcon_e2a63a, .assetsLargeImage_e2a63a.assetsLargeImage_e2a63a {
+		.headerIcon_14ac5d, .gameIcon_14ac5d, .assetsLargeImage_14ac5d.assetsLargeImage_14ac5d {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_e2a63a {
+		.gameInfo_14ac5d {
 				color: var(--white);
 		}
-		.playTime_e2a63a:not(a), .voiceSectionSubtext_e2a63a {
+		.playTime_14ac5d:not(a), .voiceSectionSubtext_14ac5d {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_e2a63a {
+		.serviceButtonWrapper_14ac5d {
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_e2a63a {
+		.contentImagesActivityFeed_14ac5d {
 				color: var(--white);
 		}
-		.textRow_e2a63a {
+		.textRow_14ac5d {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_e2a63a {
+		.state_14ac5d {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_e2a63a:last-child:not(:only-child) {
+		.activity_14ac5d:last-child:not(:only-child) {
 				margin-top: 12px;
 		}
-		.applicationStreamingPreviewWrapper_e2a63a {
+		.applicationStreamingPreviewWrapper_14ac5d {
 				background-color: var(--opacity-white-12);
 				img {
 						border-radius: var(--radius-sm);
@@ -2247,86 +2282,89 @@ const css$1 = `
 }`;
 _loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
-	"nowPlaying": "nowPlaying_e2a63a",
-	"nowPlayingContainer": "nowPlayingContainer_e2a63a",
-	"nowPlayingColumn": "nowPlayingColumn_e2a63a",
-	"itemCard": "itemCard_e2a63a",
-	"card": "card_e2a63a",
-	"cardHeader": "cardHeader_e2a63a",
-	"header": "header_e2a63a",
-	"nameTag": "nameTag_e2a63a",
-	"username": "username_e2a63a",
-	"headerIcon": "headerIcon_e2a63a",
-	"headerActions": "headerActions_e2a63a",
-	"overflowMenu": "overflowMenu_e2a63a",
-	"splashArt": "splashArt_e2a63a",
-	"server": "server_e2a63a",
-	"cardBody": "cardBody_e2a63a",
-	"section": "section_e2a63a",
-	"game": "game_e2a63a",
-	"gameBody": "gameBody_e2a63a",
-	"activity": "activity_e2a63a",
-	"serviceButtonWrapper": "serviceButtonWrapper_e2a63a",
-	"richActivity": "richActivity_e2a63a",
-	"activityActivityFeed": "activityActivityFeed_e2a63a",
-	"activityFeed": "activityFeed_e2a63a",
-	"body": "body_e2a63a",
-	"bodyNormal": "bodyNormal_e2a63a",
-	"gameInfoRich": "gameInfoRich_e2a63a",
-	"gameNameWrapper": "gameNameWrapper_e2a63a",
-	"gameInfo": "gameInfo_e2a63a",
-	"gameName": "gameName_e2a63a",
-	"streamInfo": "streamInfo_e2a63a",
-	"clickable": "clickable_e2a63a",
-	"playTime": "playTime_e2a63a",
-	"assets": "assets_e2a63a",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_e2a63a",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_e2a63a",
-	"assetsLargeImage": "assetsLargeImage_e2a63a",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_e2a63a",
-	"assetsSmallImage": "assetsSmallImage_e2a63a",
-	"smallEmptyIcon": "smallEmptyIcon_e2a63a",
-	"largeEmptyIcon": "largeEmptyIcon_e2a63a",
-	"twitchImageContainer": "twitchImageContainer_e2a63a",
-	"twitchBackgroundImage": "twitchBackgroundImage_e2a63a",
-	"twitchImageOverlay": "twitchImageOverlay_e2a63a",
-	"streamName": "streamName_e2a63a",
-	"streamGame": "streamGame_e2a63a",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_e2a63a",
-	"content": "content_e2a63a",
-	"details": "details_e2a63a",
-	"ellipsis": "ellipsis_e2a63a",
-	"textRow": "textRow_e2a63a",
-	"voiceSection": "voiceSection_e2a63a",
-	"voiceSectionAssets": "voiceSectionAssets_e2a63a",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_e2a63a",
-	"voiceSectionIcon": "voiceSectionIcon_e2a63a",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_e2a63a",
-	"voiceSectionDetails": "voiceSectionDetails_e2a63a",
-	"voiceSectionText": "voiceSectionText_e2a63a",
-	"voiceSectionSubtext": "voiceSectionSubtext_e2a63a",
-	"userList": "userList_e2a63a",
-	"streamSection": "streamSection_e2a63a",
-	"applicationStreamingSection": "applicationStreamingSection_e2a63a",
-	"applicationStreamingAvatar": "applicationStreamingAvatar_e2a63a",
-	"applicationStreamingDetails": "applicationStreamingDetails_e2a63a",
-	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_e2a63a",
-	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_e2a63a",
-	"applicationStreamingPreview": "applicationStreamingPreview_e2a63a",
-	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_e2a63a",
-	"applicationStreamingHoverText": "applicationStreamingHoverText_e2a63a",
-	"inner": "inner_e2a63a",
-	"actionsActivity": "actionsActivity_e2a63a",
-	"buttonContainer": "buttonContainer_e2a63a",
-	"partyStatusWrapper": "partyStatusWrapper_e2a63a",
-	"partyList": "partyList_e2a63a",
-	"player": "player_e2a63a",
-	"userOverflow": "userOverflow_e2a63a",
-	"emptyUser": "emptyUser_e2a63a",
-	"partyPlayerCount": "partyPlayerCount_e2a63a",
-	"cardV2": "cardV2_e2a63a",
-	"gameIcon": "gameIcon_e2a63a",
-	"state": "state_e2a63a"
+	"nowPlaying": "nowPlaying_14ac5d",
+	"nowPlayingContainer": "nowPlayingContainer_14ac5d",
+	"nowPlayingColumn": "nowPlayingColumn_14ac5d",
+	"itemCard": "itemCard_14ac5d",
+	"card": "card_14ac5d",
+	"cardHeader": "cardHeader_14ac5d",
+	"header": "header_14ac5d",
+	"nameTag": "nameTag_14ac5d",
+	"username": "username_14ac5d",
+	"headerIcon": "headerIcon_14ac5d",
+	"headerActions": "headerActions_14ac5d",
+	"overflowMenu": "overflowMenu_14ac5d",
+	"splashArt": "splashArt_14ac5d",
+	"server": "server_14ac5d",
+	"cardBody": "cardBody_14ac5d",
+	"section": "section_14ac5d",
+	"game": "game_14ac5d",
+	"gameBody": "gameBody_14ac5d",
+	"activity": "activity_14ac5d",
+	"serviceButtonWrapper": "serviceButtonWrapper_14ac5d",
+	"richActivity": "richActivity_14ac5d",
+	"activityActivityFeed": "activityActivityFeed_14ac5d",
+	"activityFeed": "activityFeed_14ac5d",
+	"body": "body_14ac5d",
+	"bodyNormal": "bodyNormal_14ac5d",
+	"gameInfoRich": "gameInfoRich_14ac5d",
+	"gameNameWrapper": "gameNameWrapper_14ac5d",
+	"gameInfo": "gameInfo_14ac5d",
+	"gameName": "gameName_14ac5d",
+	"streamInfo": "streamInfo_14ac5d",
+	"clickable": "clickable_14ac5d",
+	"playTime": "playTime_14ac5d",
+	"assets": "assets_14ac5d",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_14ac5d",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_14ac5d",
+	"assetsLargeImage": "assetsLargeImage_14ac5d",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_14ac5d",
+	"assetsSmallImage": "assetsSmallImage_14ac5d",
+	"smallEmptyIcon": "smallEmptyIcon_14ac5d",
+	"largeEmptyIcon": "largeEmptyIcon_14ac5d",
+	"twitchImageContainer": "twitchImageContainer_14ac5d",
+	"twitchBackgroundImage": "twitchBackgroundImage_14ac5d",
+	"twitchImageOverlay": "twitchImageOverlay_14ac5d",
+	"streamName": "streamName_14ac5d",
+	"streamGame": "streamGame_14ac5d",
+	"contentImagesActivityFeed": "contentImagesActivityFeed_14ac5d",
+	"content": "content_14ac5d",
+	"details": "details_14ac5d",
+	"ellipsis": "ellipsis_14ac5d",
+	"textRow": "textRow_14ac5d",
+	"voiceSection": "voiceSection_14ac5d",
+	"voiceSectionAssets": "voiceSectionAssets_14ac5d",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper_14ac5d",
+	"voiceSectionIcon": "voiceSectionIcon_14ac5d",
+	"voiceSectionGuildImage": "voiceSectionGuildImage_14ac5d",
+	"voiceSectionDetails": "voiceSectionDetails_14ac5d",
+	"voiceSectionText": "voiceSectionText_14ac5d",
+	"voiceSectionSubtext": "voiceSectionSubtext_14ac5d",
+	"userList": "userList_14ac5d",
+	"streamSection": "streamSection_14ac5d",
+	"applicationStreamingSection": "applicationStreamingSection_14ac5d",
+	"applicationStreamingAvatar": "applicationStreamingAvatar_14ac5d",
+	"applicationStreamingDetails": "applicationStreamingDetails_14ac5d",
+	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_14ac5d",
+	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_14ac5d",
+	"applicationStreamingPreview": "applicationStreamingPreview_14ac5d",
+	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_14ac5d",
+	"applicationStreamingHoverText": "applicationStreamingHoverText_14ac5d",
+	"emptyPreviewContainer": "emptyPreviewContainer_14ac5d",
+	"emptyPreviewImage": "emptyPreviewImage_14ac5d",
+	"emptyPreviewText": "emptyPreviewText_14ac5d",
+	"inner": "inner_14ac5d",
+	"actionsActivity": "actionsActivity_14ac5d",
+	"buttonContainer": "buttonContainer_14ac5d",
+	"partyStatusWrapper": "partyStatusWrapper_14ac5d",
+	"partyList": "partyList_14ac5d",
+	"player": "player_14ac5d",
+	"userOverflow": "userOverflow_14ac5d",
+	"emptyUser": "emptyUser_14ac5d",
+	"partyPlayerCount": "partyPlayerCount_14ac5d",
+	"cardV2": "cardV2_14ac5d",
+	"gameIcon": "gameIcon_14ac5d",
+	"state": "state_14ac5d"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -2633,7 +2671,17 @@ function TwitchCard({ user, activities }) {
 // activity_feed/components/now_playing/activities/components/CardStream.tsx
 function StreamCard({ stream, streamUser, streamActivity }) {
 	const preview = useStateFromStores([ApplicationStreamPreviewStore], () => ApplicationStreamPreviewStore.getPreviewURLForStreamKey(`${stream.streamType}:${stream.guildId}:${stream.channelId}:${stream.ownerId}`));
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common$1.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}` }, BdApi.React.createElement("div", { style: { display: "flex", alignItems: "flex-end" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, streamUser.globalName), BdApi.React.createElement(Common$1.LiveBadge, { style: { marginLeft: "5px" } })), BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, Common$1.intl.intl.format(Common$1.intl.t["0wJXSh"], { name: BdApi.React.createElement("strong", null, streamActivity.name) })))), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: preview })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper })))));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common$1.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}` }, BdApi.React.createElement("div", { style: { display: "flex", alignItems: "flex-end" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, streamUser.globalName || streamUser.username), BdApi.React.createElement(Common$1.LiveBadge, { style: { marginLeft: "5px" } })), BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, Common$1.intl.intl.format(Common$1.intl.t["0wJXSh"], { name: BdApi.React.createElement("strong", null, streamActivity.name) })))), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, preview ? BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: preview })) : BdApi.React.createElement(
+		"div",
+		{
+			className: `${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap}${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
+			style: { flex: "1 1 auto" }
+		},
+		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewImage, style: { backgroundImage: "url(https://static.discord.com/assets/b93ef52d62a513a4f2127a6ca0c3208c.svg)" } }),
+		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["uQZTBV"]))
+	), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
+		return Common$1.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common$1.OpenStream(stream);
+	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"])))))));
 }
 
 // activity_feed/components/now_playing/activities/methods/getVoiceParticipants.js
@@ -2664,7 +2712,7 @@ function VoiceCard({ activities, voice, streams }) {
 			server,
 			type: "VOICE"
 		}
-	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), stream && BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider }), BdApi.React.createElement(StreamCard, { stream, streamUser, streamActivity: streams[0]?.activity })), activities.length ? BdApi.React.createElement("div", { className: MainClasses.sectionDivider }) : null);
+	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), stream && streams[0]?.activity && BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider }), BdApi.React.createElement(StreamCard, { stream, streamUser, streamActivity: streams[0]?.activity })), activities.length ? BdApi.React.createElement("div", { className: MainClasses.sectionDivider }) : null);
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
@@ -2688,7 +2736,7 @@ function DiscordTag({ user, voice }) {
 	let outputtedUsername;
 	switch (true) {
 		case (!!voice && voice[0]?.members.length > 2):
-			outputtedUsername = `${user.globalName}, ${Common$1.intl.intl.formatToPlainString(Common$1.intl.t["zRRd8G"], { count: voice[0]?.members.length - 2, name: voice[0]?.members[voice[0]?.members.length - 1].globalName || voice[0]?.members[voice[0]?.members.length - 1].username })}`;
+			outputtedUsername = `${user.globalName || user.username}, ${Common$1.intl.intl.formatToPlainString(Common$1.intl.t["zRRd8G"], { count: voice[0]?.members.length - 2, name: voice[0]?.members[voice[0]?.members.length - 1].globalName || voice[0]?.members[voice[0]?.members.length - 1].username })}`;
 			break;
 		case (!!voice && voice[0]?.members.length > 1):
 			outputtedUsername = Common$1.intl.intl.formatToPlainString(Common$1.intl.t["4SM/RX"], { user1: user.globalName || voice[0]?.members[1].username, user2: voice[0]?.members[1].globalName || voice[0]?.members[1].username });

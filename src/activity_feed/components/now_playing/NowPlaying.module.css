@@ -465,6 +465,10 @@
 .applicationStreamingHoverWrapper {
     opacity: 0;
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     -webkit-box-align: center;
     align-items: center;
@@ -472,6 +476,10 @@
     justify-content: center;
     cursor: pointer;
     transition: opacity 0.2s ease-in-out 0s;
+}
+
+.applicationStreamingHoverWrapper:hover {
+    opacity: 1;
 }
 
 .applicationStreamingHoverText {
@@ -482,6 +490,32 @@
     background: rgba(0, 0, 0, 0.6);
     padding: 8px 20px;
     border-radius: 20px;
+}
+
+.emptyPreviewContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.emptyPreviewImage {
+    width: 80%;
+    height: 60%;
+    margin-bottom: 10px;
+    background-position: 50% center;
+    background-repeat: no-repeat;
+}
+
+.emptyPreviewText {
+    color: var(--text-default);
 }
 
 .inner {

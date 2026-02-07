@@ -33,7 +33,7 @@ export function VoiceCard({activities, voice, streams}) {
                 />
                 <VoiceCardTrailing members={members} server={server} channel={channel} />
             </div>
-            {stream &&
+            {stream && streams[0]?.activity &&
                 <>
                     <div className={MainClasses.sectionDivider} />
                     <StreamCard stream={stream} streamUser={streamUser} streamActivity={streams[0]?.activity} />

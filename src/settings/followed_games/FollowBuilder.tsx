@@ -96,7 +96,7 @@ export function FollowedGameListBuilder() {
 
     const filtered = useMemo(() => {
         const _query = query.toLowerCase();
-        return whitelist?.filter(item => (GameStore.getDetectableGame(item.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(item.applicationId))).name.toLowerCase().includes(_query));
+        return whitelist?.filter(item => (GameStore.getDetectableGame(item?.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(item?.applicationId)))?.name.toLowerCase().includes(_query));
     }, [whitelist, query]);
     console.log(filtered, query)
 

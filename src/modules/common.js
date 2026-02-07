@@ -26,6 +26,7 @@ const Filters = [
     { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('user', 'activity', 'onAction', 'onClose', 'themeType', 'embeddedActivity') },
     { name: "LinkButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('route', 'iconClassName'), searchExports: true },
     { name: "LinkButtonClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('linkButtonIcon') },
+    { name: "LiveBadge", filter: /* @__PURE__ */ Webpack.Filters.byStrings('shape', '.ROUND') },
     { name: "MediaProgressBar", filter: /* @__PURE__ */ Webpack.Filters.byStrings('start', 'end', 'duration', 'percentage'), searchExports: true },
     { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
     { name: "ModalRoot", filter: x => x.Modal },

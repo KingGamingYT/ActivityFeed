@@ -118,7 +118,7 @@
     }
     p, b, i {
         all: inherit;
-        display: contents
+        display: contents;
     }
 }
 

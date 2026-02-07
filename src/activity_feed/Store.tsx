@@ -230,7 +230,7 @@ class GameNewsStore extends Utils.Store {
                     case "Fortnite": feeds = await this.#fetchFortniteFeeds(gameData[gameId]); break;
                     default: feeds = await this.#fetchSteamFeeds(gameId, gameData[gameId]);
                 }
-                if (this.filterFeeds(feeds, gameId)) {
+                if (this.filterFeeds(feeds)) {
                     this.dataSet[gameId] = {
                         id: gameId,
                         application: feeds.application,
@@ -287,9 +287,9 @@ class GameNewsStore extends Utils.Store {
         return b;
     }
 
-    filterFeeds(f, g) {
+    filterFeeds(f) {
         const oW = new Date(Date.now() - 12096e5);
-        return new Date(f.timestamp) > oW && !this.getBlacklistedGame(g);
+        return new Date(f.timestamp);
     }
 
     getByGameId(id) {
@@ -320,12 +320,13 @@ class GameNewsStore extends Utils.Store {
     getRandomFeeds(feeds) {
         let t = [];
         let keys = Object.keys(feeds);
+        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id))
 
-        if (keys.length < 5) return; 
+        if (_keys.length < 5) return; 
         for (let g = 0; g < 4; g++) {
-            let rand = keys.length * Math.random() << 0;
-            t.push(feeds[keys[rand]]);
-            keys.splice(rand, 1)
+            let rand = _keys.length * Math.random() << 0;
+            t.push(feeds[_keys[rand]]);
+            _keys.splice(rand, 1)
         }
         return t;
     }

@@ -1,5 +1,6 @@
 import { Common } from '@modules/common';
 import { ChannelStore } from '@modules/stores';
+import { StreamCard } from "./CardStream";
 import { FlexInfo } from './common/FlexInfo';
 import { VoiceGuildAsset } from "./common/ActivityAssets";
 import { VoiceCardTrailing } from "./common/CardTrailing";
@@ -32,6 +33,13 @@ export function VoiceCard({activities, voice, streams}) {
                 />
                 <VoiceCardTrailing members={members} server={server} channel={channel} />
             </div>
+            {stream &&
+                <>
+                    <div className={MainClasses.sectionDivider} />
+                    <StreamCard stream={stream} streamUser={streamUser} streamActivity={streams[0]?.activity} />
+                </>
+
+            }
             {activities.length ? <div className={MainClasses.sectionDivider} /> : null}
         </>
     )

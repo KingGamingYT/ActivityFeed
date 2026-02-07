@@ -1,6 +1,7 @@
 import { Webpack } from "betterdiscord";
 
 export const ApplicationStore = /* @__PURE__ */ Webpack.getStore("ApplicationStore");
+export const ApplicationStreamPreviewStore = /* @__PURE__ */ Webpack.getStore("ApplicationStreamPreviewStore");
 export const ChannelStore = /* @__PURE__ */ Webpack.getStore("ChannelStore");
 export const DetectableGameSupplementalStore = /* @__PURE__ */ Webpack.getStore("DetectableGameSupplementalStore");
 export const FluxStore = /* @__PURE__ */ Webpack.getModule(x => typeof x.ZP?.Store === 'function', {searchExports: false, searchDefault: false});

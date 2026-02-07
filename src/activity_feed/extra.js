@@ -107,6 +107,14 @@ export const extraCSS = webpackify(`
         width: 100%;
     }
 
+    .theme-dark .applicationStreamingPreviewWrapper {
+        background-color: var(--background-mod-strong);
+    }
+
+    .theme-light .applicationStreamingPreviewWrapper {
+        background-color: var(--interactive-background-default);
+    }
+
     .cardV2 {
         .headerActions .button.lookFilled, .cardBody button {
             color: var(--white);

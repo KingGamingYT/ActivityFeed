@@ -27,7 +27,7 @@ export function VoiceCard({activities, voice, streams}) {
                     className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} 
                     onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)} 
                     channel={channel} 
-                    stream={streamUser} 
+                    streamUser={streamUser} 
                     server={server} 
                     type="VOICE" 
                 />

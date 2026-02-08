@@ -1,6 +1,6 @@
 import { Hooks } from "betterdiscord";
 import { useState, useEffect } from "react";
-import { FeedCarouselBuilder, FeedMiniCarouselBuilder, FeedMiniPaginationBuilder, FeedOverflowBuilder, FeedPaginationBuilder, FeedSkeletonErrorBuilder } from "./components";
+import { FeedCarouselBuilder, FeedMiniCarouselBuilder, FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
@@ -11,6 +11,7 @@ export function NewsFeedBuilder() {
     const orientation = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
     const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
     const [time, setTime] = useState<Date>(new Date());
+    const [waitTime, setWaitTime] = useState(true);
 
 
     useEffect(() => {
@@ -53,7 +54,12 @@ export function NewsFeedBuilder() {
                     errorDescription="You've reached an ultra rare error! Reload Discord to try again. Error: orientation-match-failed"
                 />
         }</div>
-    )  
+    )
+    
+    setTimeout(() => setWaitTime(false), 10000);
+    if ( waitTime ) {
+        return <FeedSkeletonBuilder />
+    }
 
     return <FeedSkeletonErrorBuilder 
         errorText="Activity Feed Unavailable"

@@ -22,7 +22,7 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
     )
 }*/
 
-function ActivityType({ type, activity, game, channel, server, stream }) {
+function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     switch (type) {
         case "REGULAR": return (
@@ -54,15 +54,24 @@ function ActivityType({ type, activity, game, channel, server, stream }) {
         )
         case "VOICE": return (
             <>
-                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || stream?.globalName}</div>
+                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || streamUser?.globalName}</div>
                 {server && <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{channel?.name}</div>}
+            </>
+        )
+        case "STREAM": return (
+            <>
+                <div style={{ display: "flex", alignItems: "flex-end" }}>
+                    <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{streamUser.globalName || streamUser.username}</div>
+                    <Common.LiveBadge style={{ marginLeft: "5px" }} />
+                </div>
+                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{Common.intl.intl.format(Common.intl.t['0wJXSh'],  {name: <strong>{stream.name}</strong>})}</div>
             </>
         )
     }
 }
 
 export function FlexInfo(props) {
-    const { className, style, onClick, activity, game, channel, stream, server, type } = props
+    const { className, style, onClick, activity, game, channel, stream, streamUser, server, type } = props
 
     return (
         <div className={className} style={style} onClick={onClick}>
@@ -71,6 +80,7 @@ export function FlexInfo(props) {
                 game={game} 
                 channel={channel} 
                 stream={stream} 
+                streamUser={streamUser}
                 server={server} 
                 type={type} 
             />

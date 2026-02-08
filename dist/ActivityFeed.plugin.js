@@ -1277,6 +1277,17 @@ function FeedPaginationBuilder({ articleSet }) {
 	}))));
 }
 
+// activity_feed/components/application_news/components/SkeletonBuilder.tsx
+function FeedSkeletonBuilder() {
+	const type = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
+	if (type === "vertical") {
+		return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel }, BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.article}` })), BdApi.React.createElement("div", { className: FeedClasses.pagination }, BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}` }, BdApi.React.createElement("div", { className: `${FeedClasses.paginationSkeleton} ${FeedClasses.paginationItem}` }), BdApi.React.createElement("div", { className: `${FeedClasses.paginationSkeleton} ${FeedClasses.paginationItem}` }), BdApi.React.createElement("div", { className: `${FeedClasses.paginationSkeleton} ${FeedClasses.paginationItem}` }), BdApi.React.createElement("div", { className: `${FeedClasses.paginationSkeleton} ${FeedClasses.paginationItem}` })))));
+	} else if (type === "horizontal") {
+		return BdApi.React.createElement("div", { className: FeedClasses.feedCarousel }, BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}` })));
+	} else console.log(`Failed to get correct orientation! Here is the current value: ${type}`);
+	return;
+}
+
 // activity_feed/components/application_news/components/SkeletonErrorBuilder.tsx
 function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 	const type = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
@@ -1308,6 +1319,7 @@ function NewsFeedBuilder() {
 	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
 	const [time, setTime] = react.useState(new Date());
+	const [waitTime, setWaitTime] = react.useState(true);
 	react.useEffect(() => {
 		const inv = setInterval(() => {
 			const newTime = Math.floor((Math.floor((new Date()).getTime()) - Math.floor(time.getTime())) / 1e3);
@@ -1333,6 +1345,10 @@ function NewsFeedBuilder() {
 			errorDescription: "You've reached an ultra rare error! Reload Discord to try again. Error: orientation-match-failed"
 		}
 	));
+	setTimeout(() => setWaitTime(false), 1e4);
+	if (waitTime) {
+		return BdApi.React.createElement(FeedSkeletonBuilder, null);
+	}
 	return BdApi.React.createElement(
 		FeedSkeletonErrorBuilder,
 		{
@@ -2369,7 +2385,7 @@ const modules_7260a078 = {
 const NowPlayingClasses = modules_7260a078;
 
 // activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
-function ActivityType({ type, activity, game, channel, server, stream }) {
+function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
 	useStateFromStores([GuildStore], () => GuildStore.getGuild(channel?.guild_id));
 	switch (type) {
 		case "REGULAR":
@@ -2379,11 +2395,13 @@ function ActivityType({ type, activity, game, channel, server, stream }) {
 		case "TWITCH":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, activity.state && BdApi.React.createElement("div", { className: "state textRow ellipsis" }, `${Common$1.intl.intl.formatToPlainString(Common$1.intl.t[`BMTj28`])} ${activity.state}`));
 		case "VOICE":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, server?.name || channel?.name || stream?.globalName), server && BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, channel?.name));
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, server?.name || channel?.name || streamUser?.globalName), server && BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, channel?.name));
+		case "STREAM":
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { style: { display: "flex", alignItems: "flex-end" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, streamUser.globalName || streamUser.username), BdApi.React.createElement(Common$1.LiveBadge, { style: { marginLeft: "5px" } })), BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, Common$1.intl.intl.format(Common$1.intl.t["0wJXSh"], { name: BdApi.React.createElement("strong", null, stream.name) })));
 	}
 }
 function FlexInfo(props) {
-	const { className, style, onClick, activity, game, channel, stream, server, type } = props;
+	const { className, style, onClick, activity, game, channel, stream, streamUser, server, type } = props;
 	return BdApi.React.createElement("div", { className, style, onClick }, BdApi.React.createElement(
 		ActivityType,
 		{
@@ -2391,6 +2409,7 @@ function FlexInfo(props) {
 			game,
 			channel,
 			stream,
+			streamUser,
 			server,
 			type
 		}
@@ -2669,9 +2688,8 @@ function TwitchCard({ user, activities }) {
 }
 
 // activity_feed/components/now_playing/activities/components/CardStream.tsx
-function StreamCard({ stream, streamUser, streamActivity }) {
-	const preview = useStateFromStores([ApplicationStreamPreviewStore], () => ApplicationStreamPreviewStore.getPreviewURLForStreamKey(`${stream.streamType}:${stream.guildId}:${stream.channelId}:${stream.ownerId}`));
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common$1.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}` }, BdApi.React.createElement("div", { style: { display: "flex", alignItems: "flex-end" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, streamUser.globalName || streamUser.username), BdApi.React.createElement(Common$1.LiveBadge, { style: { marginLeft: "5px" } })), BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, Common$1.intl.intl.format(Common$1.intl.t["0wJXSh"], { name: BdApi.React.createElement("strong", null, streamActivity.name) })))), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, preview ? BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: preview })) : BdApi.React.createElement(
+function StreamFallback() {
+	return BdApi.React.createElement(
 		"div",
 		{
 			className: `${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap}${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
@@ -2679,9 +2697,16 @@ function StreamCard({ stream, streamUser, streamActivity }) {
 		},
 		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewImage, style: { backgroundImage: "url(https://static.discord.com/assets/b93ef52d62a513a4f2127a6ca0c3208c.svg)" } }),
 		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["uQZTBV"]))
-	), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
+	);
+}
+function StreamPreview({ stream }) {
+	const preview = useStateFromStores([ApplicationStreamPreviewStore], () => ApplicationStreamPreviewStore.getPreviewURL(stream.guildId, stream.channelId, stream.ownerId));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, !preview ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: preview })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
 		return Common$1.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common$1.OpenStream(stream);
-	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"])))))));
+	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"]))));
+}
+function StreamCard({ stream, streamUser, streamActivity }) {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common$1.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
 }
 
 // activity_feed/components/now_playing/activities/methods/getVoiceParticipants.js
@@ -2708,7 +2733,7 @@ function VoiceCard({ activities, voice, streams }) {
 			className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`,
 			onClick: () => Common$1.OpenVoiceChannel.selectVoiceChannel(channel.id),
 			channel,
-			stream: streamUser,
+			streamUser,
 			server,
 			type: "VOICE"
 		}

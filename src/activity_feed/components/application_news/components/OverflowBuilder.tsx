@@ -6,13 +6,14 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 import Tooltip from "@activity_feed/TooltipBuilder";
 
-function FeedPopout({applicationId, gameId, close}) {
+function FeedPopout({applicationId, gameId, articleUrl, close}) {
     const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
     const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 
     return (
         <ContextMenu.Menu navId="feed=overflow" onClose={close}>
             <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(applicationId)} />
+            <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
             <ContextMenu.Item 
                 id="unfollow-game" 
                 label="Unfollow Game" 
@@ -34,7 +35,7 @@ function FeedPopout({applicationId, gameId, close}) {
     )
 }
 
-export function FeedOverflowBuilder({applicationId, gameId, position}) {
+export function FeedOverflowBuilder({applicationId, gameId, articleUrl, position}) {
     const [showPopout, setShowPopout] = useState(false);
     const refDOM = useRef(null);
 
@@ -44,7 +45,7 @@ export function FeedOverflowBuilder({applicationId, gameId, position}) {
             clickTrap={true}
             onRequestClose={() => setShowPopout(false)}
             renderPopout={() => <Common.PopoutContainer position={position}>
-                <FeedPopout applicationId={applicationId} gameId={gameId} close={() => setShowPopout(false) } />
+                <FeedPopout applicationId={applicationId} gameId={gameId} articleUrl={articleUrl} close={() => setShowPopout(false) } />
             </Common.PopoutContainer>}
             position={position}
             shouldShow={showPopout}

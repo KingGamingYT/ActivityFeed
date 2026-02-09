@@ -4,13 +4,14 @@ import { NowPlayingViewStore, useStateFromStores } from "@./modules/stores";
 import { chunkArray } from "../common/methods/common";
 import { SectionHeader } from "../common/components/SectionHeader";
 import { NowPlayingCardBuilder } from "./CardBuilder";
+import settings from "@./settings/settings";
 import MainClasses from "@./activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "./NowPlaying.module.css";
 
 function NowPlayingColumnBuilder({nowPlayingCards}) {
     return (
         nowPlayingCards.map(card => ([
-            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards')} />,
+            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards') || settings.default.v2Cards} />,
             Data.load('cardTypeDebug') && <NowPlayingCardBuilder card={card} v2Enabled={false} />
         ]))
     )

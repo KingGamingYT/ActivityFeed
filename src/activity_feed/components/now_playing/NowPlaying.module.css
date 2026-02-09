@@ -372,7 +372,7 @@
 }
 
 .voiceSectionIcon {
-    color: var(--header-secondary);
+    color: var(--text-default);
     height: 12px;
     width: 12px;
 }
@@ -620,6 +620,9 @@
         pointer-events: none;
         z-index: -1;
     }
+    .headerActions[aria-expanded=true] {
+        display: flex;
+    }
     &:hover {
         .headerIcon {
             display: none;
@@ -655,6 +658,7 @@
         color: var(--app-message-embed-secondary-text) !important;
     }
     .serviceButtonWrapper {
+        margin-left: 20px;
         gap: 8px !important;
     }
     .contentImagesActivityFeed {

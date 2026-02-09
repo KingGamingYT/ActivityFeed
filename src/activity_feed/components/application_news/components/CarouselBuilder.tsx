@@ -6,7 +6,7 @@ export function FeedCarouselBuilder({currentArticle}) {
 
     return (
         <span className={FeedClasses.carousel}>
-            <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} position="right" />
+            <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
             <a
                 tabindex={currentArticle.index}
                 className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}
@@ -31,6 +31,7 @@ export function FeedCarouselBuilder({currentArticle}) {
                                 className={FeedClasses.gameIcon}
                                 src={currentArticle.news?.application_id && currentArticle.application?.icon
                                     ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false`
+                                    /*: isNaN(currentArticle.news?.application_id) ? sasa */
                                     : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
                                 }
                             />

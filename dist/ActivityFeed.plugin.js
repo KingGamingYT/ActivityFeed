@@ -34,34 +34,6 @@
 const betterdiscord = new BdApi("ActivityFeed");
 const react = BdApi.React;
 
-// settings/settings.js
-const settings = {
-	main: {
-		v2Cards: {
-			name: "Activity Cards V2",
-			note: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
-			initial: true
-		}
-	},
-	debug: {
-		cardTypeDebug: {
-			name: "Show both card types at once",
-			note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",
-			initial: false,
-			type: "switch"
-		},
-		forceRefreshFeed: {
-			name: "Force refresh the news article feed",
-			note: "Re-roll currently displayed articles. Will not fetch new ones.",
-			type: "button"
-		}
-	},
-	default: {
-		v2Cards: true,
-		cardTypeDebug: false
-	}
-};
-
 // modules/common.js
 const Filters = [
 	{ name: "ActivityButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "USER_PROFILE_ACTIVITY_BUTTONS") },
@@ -104,6 +76,7 @@ const Filters = [
 	{ name: "SpotifyButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "PRESS_PLAY_ON_SPOTIFY_BUTTON") },
 	{ name: "Tooltip", filter: betterdiscord.Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
 	{ name: "UpperIconClasses", filter: betterdiscord.Webpack.Filters.byKeys("icon", "upperContainer") },
+	{ name: "UseStreamPreviewURL", filter: betterdiscord.Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
 	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId") }
 ];
 const bulkData = betterdiscord.Webpack.getBulk(...Filters);
@@ -139,9 +112,66 @@ const ModalSystem = betterdiscord.Webpack.getMangled(".modalKey?", {
 	closeAllModals: betterdiscord.Webpack.Filters.byStrings(".getState();for")
 });
 
+// settings/settings.js
+const settings = {
+	main: {
+		v2Cards: {
+			name: "Activity Cards V2",
+			note: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
+			initial: true
+		}
+	},
+	debug: {
+		cardTypeDebug: {
+			name: "Show both card types at once",
+			note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",
+			initial: false,
+			type: "switch"
+		},
+		forceRefreshFeed: {
+			name: "Force refresh the news article feed",
+			note: "Re-roll currently displayed articles. Will not fetch new ones.",
+			type: "button"
+		}
+	},
+	default: {
+		v2Cards: true,
+		cardTypeDebug: false
+	},
+	external: {
+		discord: {
+			name: "Discord",
+			note: "News from Discord's blog.",
+			icon: Common$1.Icons.ClydeIcon,
+			color: "var(--blurple)",
+			enabled: true
+		},
+		nintendo: {
+			name: "Nintendo",
+			note: "Nintendo news sourced from nintendoeverything.com.",
+			icon: Common$1.Icons.NintendoSwitchNeutralIcon,
+			color: "rgba(230, 0, 18, 1)",
+			enabled: false
+		},
+		xbox: {
+			name: "Xbox",
+			note: "News from Xbox's blog.",
+			icon: Common$1.Icons.XboxNeutralIcon,
+			color: "var(--xbox)",
+			enabled: false
+		},
+		playstation: {
+			name: "PlayStation",
+			note: "News from PlayStation's blog.",
+			icon: Common$1.Icons.PlaystationNeutralIcon,
+			color: "var(--playstation)",
+			enabled: false
+		}
+	}
+};
+
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
-const ApplicationStreamPreviewStore = betterdiscord.Webpack.getStore("ApplicationStreamPreviewStore");
 const ChannelStore$1 = betterdiscord.Webpack.getStore("ChannelStore");
 const DetectableGameSupplementalStore = betterdiscord.Webpack.getStore("DetectableGameSupplementalStore");
 const GameStore = betterdiscord.Webpack.getStore("GameStore");
@@ -255,7 +285,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.dataSet;
 	}
 	setFeeds() {
-		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet"));
+		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet") || {});
 		this.blacklist = betterdiscord.Data.load("blacklist") || [];
 		this.whitelist = betterdiscord.Data.load("whitelist") || this.initializeWhitelist();
 		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
@@ -314,6 +344,13 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.blacklist;
 	}
 	async #fetchDiscordFeeds() {
+		const rssFeed = await Promise.all([BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then((r) => r.ok ? r.json() : null)]);
+		this.getRSSItem(rssFeed);
+		return {
+			application: {
+				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0]
+			}
+		};
 	}
 	async #fetchMinecraftFeeds(application) {
 		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null)]);
@@ -1094,10 +1131,10 @@ const Tooltip = ({ note, position, children }) => {
 };
 
 // activity_feed/components/application_news/components/OverflowBuilder.tsx
-function FeedPopout({ applicationId, gameId, close }) {
+function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
 	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
-	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common$1.Clipboard(applicationId) }), BdApi.React.createElement(
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common$1.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common$1.Clipboard(articleUrl) }), BdApi.React.createElement(
 		betterdiscord.ContextMenu.Item,
 		{
 			id: "unfollow-game",
@@ -1122,7 +1159,7 @@ function FeedPopout({ applicationId, gameId, close }) {
 		}
 	));
 }
-function FeedOverflowBuilder({ applicationId, gameId, position }) {
+function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
 	return BdApi.React.createElement(
@@ -1131,7 +1168,7 @@ function FeedOverflowBuilder({ applicationId, gameId, position }) {
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common$1.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { applicationId, gameId, close: () => setShowPopout(false) })),
+			renderPopout: () => BdApi.React.createElement(Common$1.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { applicationId, gameId, articleUrl, close: () => setShowPopout(false) })),
 			position,
 			shouldShow: showPopout
 		},
@@ -1150,7 +1187,7 @@ function FeedOverflowBuilder({ applicationId, gameId, position }) {
 
 // activity_feed/components/application_news/components/CarouselBuilder.tsx
 function FeedCarouselBuilder({ currentArticle }) {
-	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, position: "right" }), BdApi.React.createElement(
+	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
 			tabindex: currentArticle.index,
@@ -1180,7 +1217,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 
 // activity_feed/components/application_news/components/MiniCarouselBuilder.tsx
 function FeedMiniCarouselBuilder({ currentArticle }) {
-	return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, position: "right" }), BdApi.React.createElement(
+	return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
 			tabindex: currentArticle.index,
@@ -1615,27 +1652,27 @@ function useWindowSize() {
 
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css$1 = `
-.nowPlaying_14ac5d {}
+.nowPlaying_2e6b8c {}
 
-.nowPlayingContainer_14ac5d {
+.nowPlayingContainer_2e6b8c {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_14ac5d {
+.nowPlayingColumn_2e6b8c {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_14ac5d .itemCard_14ac5d {
+.nowPlayingContainer_2e6b8c .itemCard_2e6b8c {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_14ac5d {
+.card_2e6b8c {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -1643,21 +1680,21 @@ const css$1 = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_14ac5d {
+.cardHeader_2e6b8c {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_14ac5d {
+.header_2e6b8c {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_14ac5d {
+.nameTag_2e6b8c {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1666,35 +1703,35 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-.username_14ac5d {
+.username_2e6b8c {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_14ac5d:hover {
+.username_2e6b8c:hover {
 		text-decoration: underline;
 }
 
-.card_14ac5d:hover .headerIcon_14ac5d {
+.card_2e6b8c:hover .headerIcon_2e6b8c {
 		display: none;
 }
 
-.headerActions_14ac5d {
+.headerActions_2e6b8c {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_14ac5d:hover .headerActions_14ac5d {
+.card_2e6b8c:hover .headerActions_2e6b8c {
 		display: flex;
 }
 
-.headerActions_14ac5d > div[aria-expanded="false"] {
+.headerActions_2e6b8c > div[aria-expanded="false"] {
 		display: none;
 }
 
-.overflowMenu_14ac5d {
+.overflowMenu_2e6b8c {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -1703,11 +1740,11 @@ const css$1 = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_14ac5d:hover {
+.overflowMenu_2e6b8c:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_14ac5d {
+.headerIcon_2e6b8c {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -1715,7 +1752,7 @@ const css$1 = `
 		width: 30px;
 }
 
-.splashArt_14ac5d {
+.splashArt_2e6b8c {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -1731,72 +1768,72 @@ const css$1 = `
 		top: 0;
 }
 
-.server_14ac5d {
+.server_2e6b8c {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_14ac5d {
+.cardBody_2e6b8c {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_14ac5d {
+.section_2e6b8c {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_14ac5d {
+.game_2e6b8c {
 		padding: 20px 0;
 }
 
-.gameBody_14ac5d {
+.gameBody_2e6b8c {
 		flex-direction: column;
 }
 
-.activity_14ac5d {
+.activity_2e6b8c {
 		flex-direction: row;
 }
 
-.activity_14ac5d:last-child:not(:only-child) {
+.activity_2e6b8c:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_14ac5d .serviceButtonWrapper_14ac5d {
+.activity_2e6b8c .serviceButtonWrapper_2e6b8c {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_14ac5d {
+.richActivity_2e6b8c {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_14ac5d {}
+.activityActivityFeed_2e6b8c {}
 
-.activityFeed_14ac5d {
+.activityFeed_2e6b8c {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_14ac5d {}
+.body_2e6b8c {}
 
-.bodyNormal_14ac5d {}
+.bodyNormal_2e6b8c {}
 
-:is(.gameInfoRich_14ac5d, .gameNameWrapper_14ac5d) {
+:is(.gameInfoRich_2e6b8c, .gameNameWrapper_2e6b8c) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_14ac5d {
+.gameInfoRich_2e6b8c {
 		align-items: center;
 }
 
-.gameInfo_14ac5d {
+.gameInfo_2e6b8c {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -1804,11 +1841,11 @@ const css$1 = `
 		flex: 1;
 }
 
-:is(.gameName_14ac5d, .gameNameWrapper_14ac5d, .streamInfo_14ac5d) {
+:is(.gameName_2e6b8c, .gameNameWrapper_2e6b8c, .streamInfo_2e6b8c) {
 		overflow: hidden;
 }
 
-.gameName_14ac5d {
+.gameName_2e6b8c {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -1817,14 +1854,14 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.gameName_14ac5d.clickable_14ac5d:hover {
+.gameName_2e6b8c.clickable_2e6b8c:hover {
 		text-decoration: underline;
 }
 
-.playTime_14ac5d:not(a) {
+.playTime_2e6b8c:not(a) {
 		color: var(--text-muted);
 }
-.playTime_14ac5d {
+.playTime_2e6b8c {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -1834,78 +1871,78 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.assets_14ac5d {
+.assets_2e6b8c {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_14ac5d {
+.assetsLargeImageActivityFeed_2e6b8c {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_14ac5d {
+.assetsSmallImageActivityFeed_2e6b8c {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_14ac5d .assetsLargeImage_14ac5d {
+.assets_2e6b8c .assetsLargeImage_2e6b8c {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_14ac5d .assetsLargeImageActivityFeedTwitch_14ac5d {
+.assets_2e6b8c .assetsLargeImageActivityFeedTwitch_2e6b8c {
 		border-radius: 5px;
 		height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
 		width: 100%;
 }
 
-.assets_14ac5d:has(.assetsSmallImage_14ac5d) .assetsLargeImage_14ac5d {
+.assets_2e6b8c:has(.assetsSmallImage_2e6b8c) .assetsLargeImage_2e6b8c {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_14ac5d .assetsSmallImage_14ac5d, .richActivity_14ac5d .smallEmptyIcon_14ac5d {
+.richActivity_2e6b8c .assetsSmallImage_2e6b8c, .richActivity_2e6b8c .smallEmptyIcon_2e6b8c {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_14ac5d .smallEmptyIcon_14ac5d {
+.activity_2e6b8c .smallEmptyIcon_2e6b8c {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_14ac5d .largeEmptyIcon_14ac5d {
+.assets_2e6b8c .largeEmptyIcon_2e6b8c {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_14ac5d .largeEmptyIcon_14ac5d path {
+.assets_2e6b8c .largeEmptyIcon_2e6b8c path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_14ac5d svg.assetsSmallImage_14ac5d {
+.richActivity_2e6b8c svg.assetsSmallImage_2e6b8c {
 		border-radius: unset !important;
 }   
 
-.richActivity_14ac5d .smallEmptyIcon_14ac5d path {
+.richActivity_2e6b8c .smallEmptyIcon_2e6b8c path {
 		transform: scale(1.3) !important;
 }
 
-.assets_14ac5d .twitchImageContainer_14ac5d {
+.assets_2e6b8c .twitchImageContainer_2e6b8c {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_14ac5d .twitchBackgroundImage_14ac5d {
+.assets_2e6b8c .twitchBackgroundImage_2e6b8c {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_14ac5d .twitchImageOverlay_14ac5d {
+.assets_2e6b8c .twitchImageOverlay_2e6b8c {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -1913,14 +1950,14 @@ const css$1 = `
 		right: 0;
 }
 
-.assets_14ac5d .streamName_14ac5d {
+.assets_2e6b8c .streamName_2e6b8c {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_14ac5d .streamGame_14ac5d {
+.assets_2e6b8c .streamGame_2e6b8c {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -1928,39 +1965,39 @@ const css$1 = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_14ac5d {
+.contentImagesActivityFeed_2e6b8c {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_14ac5d, .contentImagesActivityFeed_14ac5d) {
+:is(.gameInfo_2e6b8c, .contentImagesActivityFeed_2e6b8c) {
 		align-self: center;
 		display: grid;
 }
 
-.content_14ac5d {
+.content_2e6b8c {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_14ac5d {
+.details_2e6b8c {
 		font-weight: 600;
 }
 
-.ellipsis_14ac5d {
+.ellipsis_2e6b8c {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_14ac5d {
+.textRow_2e6b8c {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.voiceSection_14ac5d {
+.voiceSection_2e6b8c {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -1968,7 +2005,7 @@ const css$1 = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_14ac5d {
+.voiceSectionAssets_2e6b8c {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -1976,7 +2013,7 @@ const css$1 = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_14ac5d {
+.voiceSectionIconWrapper_2e6b8c {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -1988,63 +2025,63 @@ const css$1 = `
 		width: 20px;
 }
 
-.voiceSectionIcon_14ac5d {
-		color: var(--header-secondary);
+.voiceSectionIcon_2e6b8c {
+		color: var(--text-default);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_14ac5d {
+.voiceSectionGuildImage_2e6b8c {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_14ac5d .details_14ac5d {
+.voiceSection_2e6b8c .details_2e6b8c {
 		flex: 1;
 }
 
-.voiceSectionDetails_14ac5d {
+.voiceSectionDetails_2e6b8c {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_14ac5d:hover :is(.voiceSectionText_14ac5d, .voiceSectionSubtext_14ac5d) {
+.voiceSectionDetails_2e6b8c:hover :is(.voiceSectionText_2e6b8c, .voiceSectionSubtext_2e6b8c) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_14ac5d {
+.voiceSectionText_2e6b8c {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_14ac5d {
+.voiceSectionSubtext_2e6b8c {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_14ac5d {
+.userList_2e6b8c {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_14ac5d button {
+.voiceSection_2e6b8c button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.streamSection_14ac5d {
+.streamSection_2e6b8c {
 		position: relative;
 }
 
-.applicationStreamingSection_14ac5d {
+.applicationStreamingSection_2e6b8c {
 		display: grid;
 		grid-template-columns: 32px minmax(20px, auto) max-content;
 		-webkit-box-align: center;
@@ -2052,34 +2089,34 @@ const css$1 = `
 		gap: 12px 12px;
 }
 
-.applicationStreamingAvatar_14ac5d {
+.applicationStreamingAvatar_2e6b8c {
 		cursor: pointer;
 }
 
-.applicationStreamingDetails_14ac5d {
+.applicationStreamingDetails_2e6b8c {
 		margin-left: 16px;
 		min-width: 0;
 }
 
-.applicationStreamingPreviewWrapper_14ac5d {
+.applicationStreamingPreviewWrapper_2e6b8c {
 		margin-top: 12px;
 		cursor: pointer;
 		border-radius: 4px;
 		position: relative;
 }
 
-.applicationStreamingPreviewSize_14ac5d {
+.applicationStreamingPreviewSize_2e6b8c {
 		height: 100%;
 		width: 100%;
 }
 
-.applicationStreamingPreview_14ac5d {
+.applicationStreamingPreview_2e6b8c {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
 }
 
-.applicationStreamingHoverWrapper_14ac5d {
+.applicationStreamingHoverWrapper_2e6b8c {
 		opacity: 0;
 		position: absolute;
 		top: 0;
@@ -2095,11 +2132,11 @@ const css$1 = `
 		transition: opacity 0.2s ease-in-out 0s;
 }
 
-.applicationStreamingHoverWrapper_14ac5d:hover {
+.applicationStreamingHoverWrapper_2e6b8c:hover {
 		opacity: 1;
 }
 
-.applicationStreamingHoverText_14ac5d {
+.applicationStreamingHoverText_2e6b8c {
 		color: var(--white);
 		font-size: 16px;
 		font-weight: 600;
@@ -2109,7 +2146,7 @@ const css$1 = `
 		border-radius: 20px;
 }
 
-.emptyPreviewContainer_14ac5d {
+.emptyPreviewContainer_2e6b8c {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -2123,7 +2160,7 @@ const css$1 = `
 		justify-content: center;
 }
 
-.emptyPreviewImage_14ac5d {
+.emptyPreviewImage_2e6b8c {
 		width: 80%;
 		height: 60%;
 		margin-bottom: 10px;
@@ -2131,11 +2168,11 @@ const css$1 = `
 		background-repeat: no-repeat;
 }
 
-.emptyPreviewText_14ac5d {
+.emptyPreviewText_2e6b8c {
 		color: var(--text-default);
 }
 
-.inner_14ac5d {
+.inner_2e6b8c {
 		position: absolute;
 		top: 0px;
 		right: 0px;
@@ -2143,17 +2180,17 @@ const css$1 = `
 		left: 0px;
 }
 
-.actionsActivity_14ac5d .buttonContainer_14ac5d {
+.actionsActivity_2e6b8c .buttonContainer_2e6b8c {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_14ac5d {
+.partyStatusWrapper_2e6b8c {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_14ac5d button {
+.partyStatusWrapper_2e6b8c button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -2161,40 +2198,40 @@ const css$1 = `
 		justify-self: flex-end;
 }
 
-.partyList_14ac5d {
+.partyList_2e6b8c {
 		display: flex;
 }
 
-.player_14ac5d:first-of-type:not(:only-of-type) {
+.player_2e6b8c:first-of-type:not(:only-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow_14ac5d {
+.userOverflow_2e6b8c {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		align-content: center;
 		margin-right: 8px;
 }
 
-.emptyUser_14ac5d:not(:first-of-type), .player_14ac5d:not(:first-of-type) {
+.emptyUser_2e6b8c:not(:first-of-type), .player_2e6b8c:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_14ac5d:not(:last-of-type), .player_14ac5d:not(:last-of-type) {
+.emptyUser_2e6b8c:not(:last-of-type), .player_2e6b8c:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_14ac5d, .player_14ac5d {
+.emptyUser_2e6b8c, .player_2e6b8c {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_14ac5d svg {
+.emptyUser_2e6b8c svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_14ac5d {
+.partyPlayerCount_2e6b8c {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
@@ -2202,7 +2239,7 @@ const css$1 = `
 		margin-top: 1px;
 }
 
-.cardV2_14ac5d {
+.cardV2_2e6b8c {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -2212,16 +2249,16 @@ const css$1 = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_14ac5d {
+		.cardHeader_2e6b8c {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_14ac5d {
+		.nameTag_2e6b8c {
 				color: var(--white);
 		}
-		.splashArt_14ac5d, .server_14ac5d {
+		.splashArt_2e6b8c, .server_2e6b8c {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -2237,59 +2274,63 @@ const css$1 = `
 				pointer-events: none;
 				z-index: -1;
 		}
+		.headerActions_2e6b8c[aria-expanded=true] {
+				display: flex;
+		}
 		&:hover {
-				.headerIcon_14ac5d {
+				.headerIcon_2e6b8c {
 						display: none;
 				}
-				.headerActions_14ac5d {
+				.headerActions_2e6b8c {
 						display: flex;
 				}
 		}
-		.cardBody_14ac5d {
+		.cardBody_2e6b8c {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_14ac5d {
+		.section_2e6b8c {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_14ac5d {
+		.game_2e6b8c {
 				padding: 0;
 		}
-		.voiceSectionText_14ac5d {
+		.voiceSectionText_2e6b8c {
 				color: var(--white);
 		}
-		.headerIcon_14ac5d, .gameIcon_14ac5d, .assetsLargeImage_14ac5d.assetsLargeImage_14ac5d {
+		.headerIcon_2e6b8c, .gameIcon_2e6b8c, .assetsLargeImage_2e6b8c.assetsLargeImage_2e6b8c {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_14ac5d {
+		.gameInfo_2e6b8c {
 				color: var(--white);
 		}
-		.playTime_14ac5d:not(a), .voiceSectionSubtext_14ac5d {
+		.playTime_2e6b8c:not(a), .voiceSectionSubtext_2e6b8c {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_14ac5d {
+		.serviceButtonWrapper_2e6b8c {
+				margin-left: 20px;
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_14ac5d {
+		.contentImagesActivityFeed_2e6b8c {
 				color: var(--white);
 		}
-		.textRow_14ac5d {
+		.textRow_2e6b8c {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_14ac5d {
+		.state_2e6b8c {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_14ac5d:last-child:not(:only-child) {
+		.activity_2e6b8c:last-child:not(:only-child) {
 				margin-top: 12px;
 		}
-		.applicationStreamingPreviewWrapper_14ac5d {
+		.applicationStreamingPreviewWrapper_2e6b8c {
 				background-color: var(--opacity-white-12);
 				img {
 						border-radius: var(--radius-sm);
@@ -2298,89 +2339,89 @@ const css$1 = `
 }`;
 _loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
-	"nowPlaying": "nowPlaying_14ac5d",
-	"nowPlayingContainer": "nowPlayingContainer_14ac5d",
-	"nowPlayingColumn": "nowPlayingColumn_14ac5d",
-	"itemCard": "itemCard_14ac5d",
-	"card": "card_14ac5d",
-	"cardHeader": "cardHeader_14ac5d",
-	"header": "header_14ac5d",
-	"nameTag": "nameTag_14ac5d",
-	"username": "username_14ac5d",
-	"headerIcon": "headerIcon_14ac5d",
-	"headerActions": "headerActions_14ac5d",
-	"overflowMenu": "overflowMenu_14ac5d",
-	"splashArt": "splashArt_14ac5d",
-	"server": "server_14ac5d",
-	"cardBody": "cardBody_14ac5d",
-	"section": "section_14ac5d",
-	"game": "game_14ac5d",
-	"gameBody": "gameBody_14ac5d",
-	"activity": "activity_14ac5d",
-	"serviceButtonWrapper": "serviceButtonWrapper_14ac5d",
-	"richActivity": "richActivity_14ac5d",
-	"activityActivityFeed": "activityActivityFeed_14ac5d",
-	"activityFeed": "activityFeed_14ac5d",
-	"body": "body_14ac5d",
-	"bodyNormal": "bodyNormal_14ac5d",
-	"gameInfoRich": "gameInfoRich_14ac5d",
-	"gameNameWrapper": "gameNameWrapper_14ac5d",
-	"gameInfo": "gameInfo_14ac5d",
-	"gameName": "gameName_14ac5d",
-	"streamInfo": "streamInfo_14ac5d",
-	"clickable": "clickable_14ac5d",
-	"playTime": "playTime_14ac5d",
-	"assets": "assets_14ac5d",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_14ac5d",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_14ac5d",
-	"assetsLargeImage": "assetsLargeImage_14ac5d",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_14ac5d",
-	"assetsSmallImage": "assetsSmallImage_14ac5d",
-	"smallEmptyIcon": "smallEmptyIcon_14ac5d",
-	"largeEmptyIcon": "largeEmptyIcon_14ac5d",
-	"twitchImageContainer": "twitchImageContainer_14ac5d",
-	"twitchBackgroundImage": "twitchBackgroundImage_14ac5d",
-	"twitchImageOverlay": "twitchImageOverlay_14ac5d",
-	"streamName": "streamName_14ac5d",
-	"streamGame": "streamGame_14ac5d",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_14ac5d",
-	"content": "content_14ac5d",
-	"details": "details_14ac5d",
-	"ellipsis": "ellipsis_14ac5d",
-	"textRow": "textRow_14ac5d",
-	"voiceSection": "voiceSection_14ac5d",
-	"voiceSectionAssets": "voiceSectionAssets_14ac5d",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_14ac5d",
-	"voiceSectionIcon": "voiceSectionIcon_14ac5d",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_14ac5d",
-	"voiceSectionDetails": "voiceSectionDetails_14ac5d",
-	"voiceSectionText": "voiceSectionText_14ac5d",
-	"voiceSectionSubtext": "voiceSectionSubtext_14ac5d",
-	"userList": "userList_14ac5d",
-	"streamSection": "streamSection_14ac5d",
-	"applicationStreamingSection": "applicationStreamingSection_14ac5d",
-	"applicationStreamingAvatar": "applicationStreamingAvatar_14ac5d",
-	"applicationStreamingDetails": "applicationStreamingDetails_14ac5d",
-	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_14ac5d",
-	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_14ac5d",
-	"applicationStreamingPreview": "applicationStreamingPreview_14ac5d",
-	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_14ac5d",
-	"applicationStreamingHoverText": "applicationStreamingHoverText_14ac5d",
-	"emptyPreviewContainer": "emptyPreviewContainer_14ac5d",
-	"emptyPreviewImage": "emptyPreviewImage_14ac5d",
-	"emptyPreviewText": "emptyPreviewText_14ac5d",
-	"inner": "inner_14ac5d",
-	"actionsActivity": "actionsActivity_14ac5d",
-	"buttonContainer": "buttonContainer_14ac5d",
-	"partyStatusWrapper": "partyStatusWrapper_14ac5d",
-	"partyList": "partyList_14ac5d",
-	"player": "player_14ac5d",
-	"userOverflow": "userOverflow_14ac5d",
-	"emptyUser": "emptyUser_14ac5d",
-	"partyPlayerCount": "partyPlayerCount_14ac5d",
-	"cardV2": "cardV2_14ac5d",
-	"gameIcon": "gameIcon_14ac5d",
-	"state": "state_14ac5d"
+	"nowPlaying": "nowPlaying_2e6b8c",
+	"nowPlayingContainer": "nowPlayingContainer_2e6b8c",
+	"nowPlayingColumn": "nowPlayingColumn_2e6b8c",
+	"itemCard": "itemCard_2e6b8c",
+	"card": "card_2e6b8c",
+	"cardHeader": "cardHeader_2e6b8c",
+	"header": "header_2e6b8c",
+	"nameTag": "nameTag_2e6b8c",
+	"username": "username_2e6b8c",
+	"headerIcon": "headerIcon_2e6b8c",
+	"headerActions": "headerActions_2e6b8c",
+	"overflowMenu": "overflowMenu_2e6b8c",
+	"splashArt": "splashArt_2e6b8c",
+	"server": "server_2e6b8c",
+	"cardBody": "cardBody_2e6b8c",
+	"section": "section_2e6b8c",
+	"game": "game_2e6b8c",
+	"gameBody": "gameBody_2e6b8c",
+	"activity": "activity_2e6b8c",
+	"serviceButtonWrapper": "serviceButtonWrapper_2e6b8c",
+	"richActivity": "richActivity_2e6b8c",
+	"activityActivityFeed": "activityActivityFeed_2e6b8c",
+	"activityFeed": "activityFeed_2e6b8c",
+	"body": "body_2e6b8c",
+	"bodyNormal": "bodyNormal_2e6b8c",
+	"gameInfoRich": "gameInfoRich_2e6b8c",
+	"gameNameWrapper": "gameNameWrapper_2e6b8c",
+	"gameInfo": "gameInfo_2e6b8c",
+	"gameName": "gameName_2e6b8c",
+	"streamInfo": "streamInfo_2e6b8c",
+	"clickable": "clickable_2e6b8c",
+	"playTime": "playTime_2e6b8c",
+	"assets": "assets_2e6b8c",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_2e6b8c",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_2e6b8c",
+	"assetsLargeImage": "assetsLargeImage_2e6b8c",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_2e6b8c",
+	"assetsSmallImage": "assetsSmallImage_2e6b8c",
+	"smallEmptyIcon": "smallEmptyIcon_2e6b8c",
+	"largeEmptyIcon": "largeEmptyIcon_2e6b8c",
+	"twitchImageContainer": "twitchImageContainer_2e6b8c",
+	"twitchBackgroundImage": "twitchBackgroundImage_2e6b8c",
+	"twitchImageOverlay": "twitchImageOverlay_2e6b8c",
+	"streamName": "streamName_2e6b8c",
+	"streamGame": "streamGame_2e6b8c",
+	"contentImagesActivityFeed": "contentImagesActivityFeed_2e6b8c",
+	"content": "content_2e6b8c",
+	"details": "details_2e6b8c",
+	"ellipsis": "ellipsis_2e6b8c",
+	"textRow": "textRow_2e6b8c",
+	"voiceSection": "voiceSection_2e6b8c",
+	"voiceSectionAssets": "voiceSectionAssets_2e6b8c",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper_2e6b8c",
+	"voiceSectionIcon": "voiceSectionIcon_2e6b8c",
+	"voiceSectionGuildImage": "voiceSectionGuildImage_2e6b8c",
+	"voiceSectionDetails": "voiceSectionDetails_2e6b8c",
+	"voiceSectionText": "voiceSectionText_2e6b8c",
+	"voiceSectionSubtext": "voiceSectionSubtext_2e6b8c",
+	"userList": "userList_2e6b8c",
+	"streamSection": "streamSection_2e6b8c",
+	"applicationStreamingSection": "applicationStreamingSection_2e6b8c",
+	"applicationStreamingAvatar": "applicationStreamingAvatar_2e6b8c",
+	"applicationStreamingDetails": "applicationStreamingDetails_2e6b8c",
+	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_2e6b8c",
+	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_2e6b8c",
+	"applicationStreamingPreview": "applicationStreamingPreview_2e6b8c",
+	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_2e6b8c",
+	"applicationStreamingHoverText": "applicationStreamingHoverText_2e6b8c",
+	"emptyPreviewContainer": "emptyPreviewContainer_2e6b8c",
+	"emptyPreviewImage": "emptyPreviewImage_2e6b8c",
+	"emptyPreviewText": "emptyPreviewText_2e6b8c",
+	"inner": "inner_2e6b8c",
+	"actionsActivity": "actionsActivity_2e6b8c",
+	"buttonContainer": "buttonContainer_2e6b8c",
+	"partyStatusWrapper": "partyStatusWrapper_2e6b8c",
+	"partyList": "partyList_2e6b8c",
+	"player": "player_2e6b8c",
+	"userOverflow": "userOverflow_2e6b8c",
+	"emptyUser": "emptyUser_2e6b8c",
+	"partyPlayerCount": "partyPlayerCount_2e6b8c",
+	"cardV2": "cardV2_2e6b8c",
+	"gameIcon": "gameIcon_2e6b8c",
+	"state": "state_2e6b8c"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -2520,18 +2561,20 @@ function XboxImageAsset({ url }) {
 	);
 }
 function FallbackAsset(props) {
-	return BdApi.React.createElement("svg", { ...props }, BdApi.React.createElement(
+	const { className, style, transform } = props;
+	return BdApi.React.createElement("svg", { className, style }, BdApi.React.createElement(
 		"path",
 		{
-			style: { transform: "scale(1.65)" },
+			style: { transform },
 			fill: "white",
+			fillRule: "evenodd",
 			d: "M5 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5Zm6.81 7c-.54 0-1 .26-1.23.61A1 1 0 0 1 8.92 8.5 3.49 3.49 0 0 1 11.82 7c1.81 0 3.43 1.38 3.43 3.25 0 1.45-.98 2.61-2.27 3.06a1 1 0 0 1-1.96.37l-.19-1a1 1 0 0 1 .98-1.18c.87 0 1.44-.63 1.44-1.25S12.68 9 11.81 9ZM13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm7-10.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM18.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM7 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM5.5 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
 		}
 	));
 }
 function SpotifyAsset({ activity, user }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.smallEmptyIcon, style: { width: "40px", height: "40px" } }) : BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.smallEmptyIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"svg",
 		{
 			className: NowPlayingClasses.gameIcon,
@@ -2554,7 +2597,7 @@ function SpotifyAsset({ activity, user }) {
 function GameIconAsset({ url, id, name }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
 	const useGameProfile = Common$1.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
-	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.gameIcon, style: { width: "40px", height: "40px" } }) : BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.gameIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"img",
 		{
 			className: NowPlayingClasses.gameIcon,
@@ -2568,7 +2611,7 @@ function GameIconAsset({ url, id, name }) {
 }
 function RichImageAsset({ url, tooltipText, onClick, type }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	return BdApi.React.createElement(Tooltip, { note: tooltipText }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}` }) : BdApi.React.createElement(
+	return BdApi.React.createElement(Tooltip, { note: tooltipText }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`, transform: type === "Large" ? "scale(3.65)" : "scale(1.30)" }) : BdApi.React.createElement(
 		"img",
 		{
 			className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`,
@@ -2581,7 +2624,7 @@ function RichImageAsset({ url, tooltipText, onClick, type }) {
 	));
 }
 function TwitchImageAsset({ url, imageId, altText }) {
-	return BdApi.React.createElement(BdApi.React.Fragment, null, !imageId ? BdApi.React.createElement(FallbackAsset, { className: "assetsLargeImage" }) : BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, !imageId ? BdApi.React.createElement(FallbackAsset, { className: "assetsLargeImage", transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"img",
 		{
 			className: "assetsLargeImageTwitch assetsLargeImage",
@@ -2700,8 +2743,8 @@ function StreamFallback() {
 	);
 }
 function StreamPreview({ stream }) {
-	const preview = useStateFromStores([ApplicationStreamPreviewStore], () => ApplicationStreamPreviewStore.getPreviewURL(stream.guildId, stream.channelId, stream.ownerId));
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, !preview ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: preview })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
+	const { previewUrl, isLoading } = Common$1.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, isLoading ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
 		return Common$1.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common$1.OpenStream(stream);
 	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"]))));
 }
@@ -2774,7 +2817,7 @@ function DiscordTag({ user, voice }) {
 function HeaderActions({ card, user }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${Common$1.PositionClasses.alignCenter}`, style: { flex: "0" } }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common$1.ButtonVoidClasses.sizeSmall} ${Common$1.ButtonVoidClasses.lookFilled}`, onClick: () => Common$1.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${Common$1.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common$1.ButtonVoidClasses.sizeSmall} ${Common$1.ButtonVoidClasses.lookFilled}`, onClick: () => Common$1.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
 		Common$1.Popout,
 		{
 			targetElementRef: refDOM,
@@ -2828,7 +2871,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 // activity_feed/components/now_playing/BaseBuilder.tsx
 function NowPlayingColumnBuilder({ nowPlayingCards }) {
 	return nowPlayingCards.map((card) => [
-		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") }),
+		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") || settings.default.v2Cards }),
 		betterdiscord.Data.load("cardTypeDebug") && BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: false })
 	]);
 }
@@ -2851,27 +2894,27 @@ function TabBaseBuilder() {
 
 // settings/ActivityFeedSettings.module.css
 const css = `
-.blacklist_000d1f {
+.blacklist_8ebe67 {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 }
 
-.settingsDivider_000d1f {
+.settingsDivider_8ebe67 {
 		margin-bottom: var(--space-12) !important;
 }
 
-.blacklistItem_000d1f {
+.blacklistItem_8ebe67 {
 		display: flex;
 }
 
-.blacklistItem_000d1f .blacklistItemIcon_000d1f {
+.blacklistItem_8ebe67 .blacklistItemIcon_8ebe67 {
 		border-radius: 8px;
 		height: 32px;
 		width: 32px;
 }
 
-.blacklistItem_000d1f .blacklistItemName_000d1f {
+.blacklistItem_8ebe67 .blacklistItemName_8ebe67, .blacklistItem_8ebe67 .blacklistItemTextContainer_8ebe67 {
 		margin-left: 20px;
 		margin-bottom: 0;
 		min-width: 0;
@@ -2880,14 +2923,20 @@ const css = `
 		flex: 1;
 }
 
-.blacklistItem_000d1f button {
+.blacklistItem_8ebe67 .blacklistItemTextContainer_8ebe67 > .blacklistItemName_8ebe67 {
+		margin-left: 0;
+}
+
+.blacklistItem_8ebe67 .blacklistItemDescription_8ebe67 {}
+
+.blacklistItem_8ebe67 button {
 		flex: 0 1 auto;
 		align-self: center;
 		width: auto;
 		margin-left: 20px;
 }
 
-.search_000d1f {
+.search_8ebe67 {
 		padding: 12px;
 		margin: 12px 0;
 		input::placeholder {
@@ -2909,27 +2958,89 @@ const css = `
 		}
 }
 
-.toggleStack_000d1f {
+.toggleStack_8ebe67 {
 		padding: var(--space-16) 0 var(--space-16) 0;
 }
 
-.buttonItem_000d1f {
+.buttonItem_8ebe67 {
 		display: flex;
 }`;
 _loadStyle("ActivityFeedSettings.module.css", css);
 const modules_a52d5642 = {
-	"blacklist": "blacklist_000d1f",
-	"settingsDivider": "settingsDivider_000d1f",
-	"blacklistItem": "blacklistItem_000d1f",
-	"blacklistItemIcon": "blacklistItemIcon_000d1f",
-	"blacklistItemName": "blacklistItemName_000d1f",
-	"search": "search_000d1f",
-	"toggleStack": "toggleStack_000d1f",
-	"buttonItem": "buttonItem_000d1f"
+	"blacklist": "blacklist_8ebe67",
+	"settingsDivider": "settingsDivider_8ebe67",
+	"blacklistItem": "blacklistItem_8ebe67",
+	"blacklistItemIcon": "blacklistItemIcon_8ebe67",
+	"blacklistItemName": "blacklistItemName_8ebe67",
+	"blacklistItemTextContainer": "blacklistItemTextContainer_8ebe67",
+	"blacklistItemDescription": "blacklistItemDescription_8ebe67",
+	"search": "search_8ebe67",
+	"toggleStack": "toggleStack_8ebe67",
+	"buttonItem": "buttonItem_8ebe67"
 };
 const SettingsClasses = modules_a52d5642;
 
-// settings/followed_games/FollowBuilder.tsx
+// settings/followed_games/ExternalSources.tsx
+function ExternalItemBuilder({ service }) {
+	const item = settings.external[service];
+	const [state, setState] = react.useState(betterdiscord.Data.load(service) || item.enabled);
+	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
+		"button",
+		{
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			onClick: () => ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common$1.ModalRoot.Modal,
+					{
+						...props,
+						title: "Are you sure?",
+						actions: [
+							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
+							{ text: "Yes", fullWidth: 1, onClick: () => {
+								betterdiscord.Data.save(service, true);
+								setState(true);
+								props.onClose();
+							} }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Do you want to follow this source? Its announcements will appear in your Activity Feed."), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, "This action will require you to restart Discord in order to see changes."))
+				)
+			)
+		},
+		"Follow"
+	) : BdApi.React.createElement(
+		"button",
+		{
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			onClick: () => ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common$1.ModalRoot.Modal,
+					{
+						...props,
+						title: "Are you sure?",
+						actions: [
+							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
+							{ text: "Yes", fullWidth: 1, onClick: () => {
+								betterdiscord.Data.save(service, false);
+								setState(false);
+								props.onClose();
+							} }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Do you want to unfollow this source? Its announcements will be hidden from your Activity Feed."), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, "This action will require you to restart Discord in order to see changes."))
+				)
+			)
+		},
+		"Unfollow"
+	));
+}
+function ExternalSourcesListBuilder() {
+	return BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, Object.keys(settings.external).map((key) => {
+		return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(ExternalItemBuilder, { service: key }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
+	}));
+}
+
+// settings/followed_games/FollowedGames.tsx
 function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, key }) {
 	const application = GameStore.getDetectableGame(game.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
@@ -3022,7 +3133,7 @@ function SettingsPanelBuilder() {
 				}
 			}
 		);
-	})), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
+	})), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "External News", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "News from external sources outside of your game library.")), BdApi.React.createElement(ExternalSourcesListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
 		const { name, note, initial, type, changed } = settings.debug[key];
 		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		if (type === "switch") return BdApi.React.createElement(
@@ -3071,7 +3182,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.theme-dark .applicationStreamingPreviewWrapper {\n  			background-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .applicationStreamingPreviewWrapper {\n  			background-color: var(--interactive-background-default);\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState, .blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n`);
+const extraCSS = webpackify(`\n  	.description .sharedFilePreviewYouTubeVideo {\n  			display: none;\n  	}\n\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.theme-dark .applicationStreamingPreviewWrapper {\n  			background-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .applicationStreamingPreviewWrapper {\n  			background-color: var(--interactive-background-default);\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");

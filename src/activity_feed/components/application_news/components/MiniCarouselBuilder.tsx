@@ -5,7 +5,7 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 export function FeedMiniCarouselBuilder({currentArticle}) {
     return (
         <span className={FeedClasses.smallCarousel}>
-            <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} position="right" />
+            <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
             <a
                 tabindex={currentArticle.index}
                 className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}

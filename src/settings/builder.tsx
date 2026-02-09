@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Components, Data } from "betterdiscord";
 import { Common } from "@modules/common";
-import { FollowedGameListBuilder } from "./followed_games/FollowBuilder";
+import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./followed_games";
 import settings from "./settings"; 
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -34,6 +34,12 @@ export function SettingsPanelBuilder() {
                     <div className={MainClasses.emptyText}>Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.</div>
                 </div>
                 <FollowedGameListBuilder />
+            </Components.SettingGroup>
+            <Components.SettingGroup name="External News" collapsible={false} shown={true}>
+                <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
+                    <div className={MainClasses.emptyText}>News from external sources outside of your game library.</div>
+                </div>
+                <ExternalSourcesListBuilder />
             </Components.SettingGroup>
             <Components.SettingGroup name="Advanced/Debug" collapsible={true} shown={false}>
                 <div className={SettingsClasses.toggleStack}>

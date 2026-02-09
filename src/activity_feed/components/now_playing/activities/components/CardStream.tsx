@@ -1,6 +1,4 @@
-import { useRef, useEffect } from "react"; 
 import { Common } from "@modules/common";
-import { ApplicationStreamPreviewStore, useStateFromStores } from "@modules/stores";
 import { FlexInfo } from './common/FlexInfo';
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
@@ -15,15 +13,15 @@ function StreamFallback() {
 }
 
 function StreamPreview({stream}) {
-    const preview = useStateFromStores([ ApplicationStreamPreviewStore ], () => ApplicationStreamPreviewStore.getPreviewURL(stream.guildId, stream.channelId, stream.ownerId));
-
+    const {previewUrl, isLoading} = Common.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
+    
     return (
         <div className={NowPlayingClasses.applicationStreamingPreviewSize} role="button">
-            {!preview ? 
+            {isLoading ? 
                 <StreamFallback />
             :
                 <div className={NowPlayingClasses.applicationStreamingPreviewSize} style={{ position: "relative" }}>
-                    <img className={NowPlayingClasses.applicationStreamingPreview} src={preview} />
+                    <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} />
                 </div>
             }
             <div className={NowPlayingClasses.applicationStreamingHoverWrapper} onClick={() => {return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }}>

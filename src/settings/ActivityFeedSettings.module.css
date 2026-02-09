@@ -18,7 +18,7 @@
     width: 32px;
 }
 
-.blacklistItem .blacklistItemName {
+.blacklistItem .blacklistItemName, .blacklistItem .blacklistItemTextContainer {
     margin-left: 20px;
     margin-bottom: 0;
     min-width: 0;
@@ -26,6 +26,12 @@
     align-content: center;
     flex: 1;
 }
+
+.blacklistItem .blacklistItemTextContainer > .blacklistItemName {
+    margin-left: 0;
+}
+
+.blacklistItem .blacklistItemDescription {}
 
 .blacklistItem button {
     flex: 0 1 auto;

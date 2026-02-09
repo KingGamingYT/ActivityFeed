@@ -105,7 +105,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     setFeeds() {
-        this.dataSet = Object.assign(this.dataSet, Data.load('dataSet'));
+        this.dataSet = Object.assign(this.dataSet, Data.load('dataSet') || {});
         this.blacklist = Data.load('blacklist') || [];
         this.whitelist = Data.load('whitelist') || this.initializeWhitelist();
         this.lastTimeFetched = Data.load('lastTimeFetched');
@@ -177,7 +177,15 @@ class GameNewsStore extends Utils.Store {
         return this.blacklist;
     }
 
-    async #fetchDiscordFeeds() {}
+    async #fetchDiscordFeeds() {
+        const rssFeed = await Promise.all([ BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then(r => r.ok ? r.json() : null) ]);
+        const article = this.getRSSItem(rssFeed);
+        return {
+            application: {
+                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0]
+            }
+        }
+    }
 
     async #fetchMinecraftFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])

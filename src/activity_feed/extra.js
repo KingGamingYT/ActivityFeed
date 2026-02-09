@@ -187,12 +187,19 @@ export const extraCSS = webpackify(`
         background: var(--primary-300);
     }
 
-    .quickLauncher .emptyState, .blacklist.emptyState {
+    .quickLauncher .emptyState {
         border-bottom: 1px solid;
         font-size: 14px;
         padding: 20px 0;
         justify-content: flex-start;
         align-items: center;
+    }
+
+    .blacklist.emptyState {
+        border-bottom: 1px solid;
+        font-size: 14px;
+        padding: 20px 0;
+        justify-content: flex-start;
     }
 
     .blackList .emptyState {

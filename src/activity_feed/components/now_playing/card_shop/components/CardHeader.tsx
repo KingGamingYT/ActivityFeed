@@ -31,7 +31,7 @@ function HeaderActions({card, user}) {
     const refDOM = useRef(null);
 
     return (
-        <div className={`${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "0" }}>
+        <div className={`${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "0" }} aria-expanded={showPopout}>
             <button type="button" className={`${MainClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`} onClick={() => Common.OpenDM.openPrivateChannel({recipientIds: user.id})}>Message</button>
             <Common.Popout
                 targetElementRef={refDOM}

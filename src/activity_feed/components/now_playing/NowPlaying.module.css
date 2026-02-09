@@ -60,7 +60,7 @@
     text-decoration: underline;
 }
 
-.card:hover .headerIcon {
+.card:hover .headerIcon, .header:has(.headerActions[aria-expanded="true"]) .headerIcon {
     display: none;
 }
 
@@ -69,12 +69,8 @@
     margin-left: 8px;
 }
 
-.card:hover .headerActions {
+.card:hover .headerActions, .headerActions[aria-expanded="true"] {
     display: flex;
-}
-
-.headerActions > div[aria-expanded="false"] {
-    display: none;
 }
 
 .overflowMenu {
@@ -619,9 +615,6 @@
         height: 120px;
         pointer-events: none;
         z-index: -1;
-    }
-    .headerActions[aria-expanded=true] {
-        display: flex;
     }
     &:hover {
         .headerIcon {

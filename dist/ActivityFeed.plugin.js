@@ -143,7 +143,7 @@ const settings = {
 			name: "Discord",
 			note: "News from Discord's blog.",
 			icon: Common$1.Icons.ClydeIcon,
-			color: "var(--blurple)",
+			color: "var(--background-brand)",
 			enabled: true
 		},
 		nintendo: {
@@ -285,7 +285,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.dataSet;
 	}
 	setFeeds() {
-		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet") || {});
+		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet") ? betterdiscord.Data.load("dataSet") : {});
 		this.blacklist = betterdiscord.Data.load("blacklist") || [];
 		this.whitelist = betterdiscord.Data.load("whitelist") || this.initializeWhitelist();
 		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
@@ -302,9 +302,14 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	initializeWhitelist() {
 		let g = this.getFeeds();
+		let k = Object.keys(g).filter((k2) => !isNaN(g[k2].news?.application_id));
+		let f = {};
+		for (let i in k) {
+			f[k[i]] = g[k[i]];
+		}
 		let w = [];
-		for (let k in g) {
-			w.push({ applicationId: g[k].application.id, gameId: g[k].id });
+		for (let k2 in f) {
+			w.push({ applicationId: f[k2].application.id, gameId: f[k2].id });
 		}
 		return w;
 	}
@@ -344,13 +349,40 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.blacklist;
 	}
 	async #fetchDiscordFeeds() {
-		const rssFeed = await Promise.all([BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then((r) => r.ok ? r.json() : null)]);
-		this.getRSSItem(rssFeed);
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then((r) => r.ok ? r.json() : null)]);
+		const article = this.getRSSItem(rssFeed);
 		return {
 			application: {
-				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0]
-			}
+				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+				id: "Discord"
+			},
+			appId: "Discord",
+			description: article?.description?.[0],
+			thumbnail: article?.["media:thumbnail"]?.[0].$.url,
+			timestamp: article?.pubDate?.[0],
+			title: article?.title?.[0],
+			url: article?.link?.[0]
 		};
+	}
+	async #fetchNintendoFeeds() {
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://nintendoeverything.com/feed/`).then((r) => r.ok ? r.json() : null)]);
+		const article = this.getRSSItem(rssFeed);
+		return {
+			application: {
+				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+				id: "Nintendo"
+			},
+			appId: "Nintendo",
+			description: article?.description?.[0],
+			thumbnail: article?.["media:content"]?.[0].$.url,
+			timestamp: article?.pubDate?.[0],
+			title: article?.title?.[0],
+			url: article?.link?.[0]
+		};
+	}
+	async #fetchXboxFeeds() {
+	}
+	async #fetchPlaystationFeeds() {
 	}
 	async #fetchMinecraftFeeds(application) {
 		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null)]);
@@ -402,6 +434,12 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 					case "Fortnite":
 						feeds = await this.#fetchFortniteFeeds(gameData[gameId2]);
 						break;
+					case "discord":
+						feeds = await this.#fetchDiscordFeeds();
+						break;
+					case "nintendo":
+						feeds = await this.#fetchNintendoFeeds();
+						break;
 					default:
 						feeds = await this.#fetchSteamFeeds(gameId2, gameData[gameId2]);
 				}
@@ -441,6 +479,11 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		for (let i = 0; i < feedIds.length; i++) {
 			gameData[feedIds[i]] = applicationList[i];
 		}
+		for (let i in betterdiscord.Data.load("external")) {
+			if ((betterdiscord.Data.load("external")[i] || settings.external[i].enabled) === true) {
+				gameData[i] = "External Source";
+			}
+		}
 		return gameData;
 	}
 	shouldFetch() {
@@ -456,7 +499,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return b;
 	}
 	filterFeeds(f) {
-		return new Date(f.timestamp);
+		const oW = new Date(Date.now() - 12096e5);
+		return new Date(f.timestamp) > oW;
 	}
 	getByGameId(id) {
 		let d = this.dataSet;
@@ -485,9 +529,9 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	getRandomFeeds(feeds) {
 		let t = [];
 		let keys = Object.keys(feeds);
-		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id));
-		if (_keys.length < 5) return;
+		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key].news));
 		for (let g = 0; g < 4; g++) {
+			if (g == _keys[_keys.length - 1]) break;
 			let rand = _keys.length * Math.random() << 0;
 			t.push(feeds[_keys[rand]]);
 			_keys.splice(rand, 1);
@@ -513,7 +557,11 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.article;
 	}
 	setCurrentArticle(i) {
-		this.article = this.displaySet[i];
+		try {
+			this.article = this.displaySet[i];
+		} catch {
+			this.article = this.displaySet[0];
+		}
 		this.emitChange();
 	}
 	getOrientation() {
@@ -1134,6 +1182,9 @@ const Tooltip = ({ note, position, children }) => {
 function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
 	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
+	if (isNaN(applicationId)) {
+		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common$1.Clipboard(articleUrl) }));
+	}
 	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common$1.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common$1.Clipboard(articleUrl) }), BdApi.React.createElement(
 		betterdiscord.ContextMenu.Item,
 		{
@@ -1187,6 +1238,7 @@ function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
 
 // activity_feed/components/application_news/components/CarouselBuilder.tsx
 function FeedCarouselBuilder({ currentArticle }) {
+	const External = settings.external[currentArticle.id];
 	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
@@ -1205,7 +1257,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
 				}
 			}
-		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, BdApi.React.createElement(
+		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, isNaN(currentArticle.news?.application_id) ? BdApi.React.createElement(External.icon, { className: FeedClasses.gameIcon, color: "WHITE", style: { backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" } }) : BdApi.React.createElement(
 			"img",
 			{
 				className: FeedClasses.gameIcon,
@@ -1217,6 +1269,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 
 // activity_feed/components/application_news/components/MiniCarouselBuilder.tsx
 function FeedMiniCarouselBuilder({ currentArticle }) {
+	const External = settings.external[currentArticle.id];
 	return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
@@ -1235,7 +1288,7 @@ function FeedMiniCarouselBuilder({ currentArticle }) {
 					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
 				}
 			}
-		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1, marginBottom: "40px" } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, BdApi.React.createElement(
+		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1, marginBottom: "40px" } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, isNaN(currentArticle.news?.application_id) ? BdApi.React.createElement(External.icon, { className: FeedClasses.gameIcon, color: "WHITE", style: { backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" } }) : BdApi.React.createElement(
 			"img",
 			{
 				className: FeedClasses.gameIcon,
@@ -2990,7 +3043,7 @@ function ExternalItemBuilder({ service }) {
 						actions: [
 							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
 							{ text: "Yes", fullWidth: 1, onClick: () => {
-								betterdiscord.Data.save(service, true);
+								betterdiscord.Data.save("external", { [service]: true });
 								setState(true);
 								props.onClose();
 							} }
@@ -3014,7 +3067,7 @@ function ExternalItemBuilder({ service }) {
 						actions: [
 							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
 							{ text: "Yes", fullWidth: 1, onClick: () => {
-								betterdiscord.Data.save(service, false);
+								betterdiscord.Data.save("external", { [service]: false });
 								setState(false);
 								props.onClose();
 							} }

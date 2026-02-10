@@ -30,7 +30,7 @@ export default {
             name: "Discord",
             note: "News from Discord's blog.",
             icon: Common.Icons.ClydeIcon,
-            color: "var(--blurple)",
+            color: "var(--background-brand)",
             enabled: true
         },
         nintendo: {

@@ -10,6 +10,14 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
     const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
     const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 
+    if (isNaN(applicationId)) {
+        return (
+            <ContextMenu.Menu navId="feed=overflow" onClose={close}>
+                <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
+            </ContextMenu.Menu>
+        )
+    }
+
     return (
         <ContextMenu.Menu navId="feed=overflow" onClose={close}>
             <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(applicationId)} />

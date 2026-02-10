@@ -26,7 +26,7 @@ function ExternalItemBuilder({service}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save(service, true); setState(true); props.onClose(); }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save("external", {[service]: true}); setState(true); props.onClose(); }}
                             ]}
                         >
                             <>
@@ -45,7 +45,7 @@ function ExternalItemBuilder({service}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save(service, false); setState(false); props.onClose(); }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save("external", {[service]: false}); setState(false); props.onClose(); }}
                             ]}
                         >
                             <>

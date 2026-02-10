@@ -1,7 +1,7 @@
 import { Data, Utils, Net } from "betterdiscord";
-import { useState, useEffect } from "react";
 import { Common } from "@./modules/common";
 import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
+import settings from "@./settings/settings";
 
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
@@ -105,7 +105,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     setFeeds() {
-        this.dataSet = Object.assign(this.dataSet, Data.load('dataSet') || {});
+        this.dataSet = Object.assign(this.dataSet, Data.load('dataSet') ? Data.load('dataSet') : {});
         this.blacklist = Data.load('blacklist') || [];
         this.whitelist = Data.load('whitelist') || this.initializeWhitelist();
         this.lastTimeFetched = Data.load('lastTimeFetched');
@@ -125,9 +125,14 @@ class GameNewsStore extends Utils.Store {
 
     initializeWhitelist() {
         let g = this.getFeeds();
+        let k = Object.keys(g).filter(k => !isNaN(g[k].news?.application_id));
+        let f = {};
+        for (let i in k) {
+            f[k[i]] = g[k[i]]; 
+        }
         let w = [];
-        for (let k in g) {
-            w.push({applicationId: g[k].application.id, gameId: g[k].id})
+        for (let k in f) {
+            w.push({applicationId: f[k].application.id, gameId: f[k].id})
         }
         return w;
     }
@@ -178,14 +183,42 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchDiscordFeeds() {
-        const rssFeed = await Promise.all([ BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then(r => r.ok ? r.json() : null) ]);
+        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then(r => r.ok ? r.json() : null) ]);
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
-                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0]
-            }
+                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+                id: "Discord"
+            },
+            appId: "Discord",
+            description: article?.description?.[0],
+            thumbnail: article?.["media:thumbnail"]?.[0].$.url, 
+            timestamp: article?.pubDate?.[0], 
+            title: article?.title?.[0], 
+            url: article?.link?.[0]
         }
     }
+
+    async #fetchNintendoFeeds() {
+        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://nintendoeverything.com/feed/`).then(r => r.ok ? r.json() : null) ])
+        const article = this.getRSSItem(rssFeed);
+        return {
+            application: {
+                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+                id: "Nintendo"
+            },
+            appId: "Nintendo",
+            description: article?.description?.[0],
+            thumbnail: article?.["media:content"]?.[0].$.url, 
+            timestamp: article?.pubDate?.[0], 
+            title: article?.title?.[0], 
+            url: article?.link?.[0]
+        }
+    }
+
+    async #fetchXboxFeeds() {}
+
+    async #fetchPlaystationFeeds() {}
 
     async #fetchMinecraftFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])
@@ -236,6 +269,8 @@ class GameNewsStore extends Utils.Store {
                 switch (gameId) {
                     case "Minecraft": feeds = await this.#fetchMinecraftFeeds(gameData[gameId]); break;
                     case "Fortnite": feeds = await this.#fetchFortniteFeeds(gameData[gameId]); break;
+                    case "discord": feeds = await this.#fetchDiscordFeeds(); break;
+                    case "nintendo": feeds = await this.#fetchNintendoFeeds(); break;
                     default: feeds = await this.#fetchSteamFeeds(gameId, gameData[gameId]);
                 }
                 if (this.filterFeeds(feeds)) {
@@ -278,6 +313,12 @@ class GameNewsStore extends Utils.Store {
             gameData[feedIds[i]] = applicationList[i];
         }
 
+        for (let i in Data.load("external")) {
+            if ((Data.load("external")[i] || settings.external[i].enabled) === true) {
+                gameData[i] = "External Source";
+            }
+        }
+
         return gameData;
     }
 
@@ -297,7 +338,7 @@ class GameNewsStore extends Utils.Store {
 
     filterFeeds(f) {
         const oW = new Date(Date.now() - 12096e5);
-        return new Date(f.timestamp);
+        return new Date(f.timestamp) > oW;
     }
 
     getByGameId(id) {
@@ -328,10 +369,11 @@ class GameNewsStore extends Utils.Store {
     getRandomFeeds(feeds) {
         let t = [];
         let keys = Object.keys(feeds);
-        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id))
+        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key].news))
 
-        if (_keys.length < 5) return; 
-        for (let g = 0; g < 4; g++) {
+        //if (_keys.length < 5) return; 
+        for (let g = 0; g < 4 ; g++) {
+            if (g == _keys[_keys.length - 1]) break;
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);
             _keys.splice(rand, 1)
@@ -362,7 +404,12 @@ class GameNewsStore extends Utils.Store {
     }
 
     setCurrentArticle(i) {
-        this.article = this.displaySet[i];
+        try {
+            this.article = this.displaySet[i];
+        }
+        catch {
+            this.article = this.displaySet[0];
+        }
         this.emitChange();
     }
 

@@ -313,8 +313,8 @@ class GameNewsStore extends Utils.Store {
             gameData[feedIds[i]] = applicationList[i];
         }
 
-        for (let i in Data.load("external")) {
-            if ((Data.load("external")[i] || settings.external[i].enabled) === true) {
+        for (let i in (Data.load("external") || settings.external)) {
+            if (((Data.load("external") && (Data.load("external")[i])) || settings.external[i].enabled) === true) {
                 gameData[i] = "External Source";
             }
         }
@@ -371,9 +371,10 @@ class GameNewsStore extends Utils.Store {
         let keys = Object.keys(feeds);
         let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key].news))
 
-        //if (_keys.length < 5) return; 
+        if (!_keys.length) return; 
         for (let g = 0; g < 4 ; g++) {
-            if (g == _keys[_keys.length - 1]) break;
+            if (g > _keys.length) break;
+            console.log(g)
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);
             _keys.splice(rand, 1)
@@ -404,10 +405,10 @@ class GameNewsStore extends Utils.Store {
     }
 
     setCurrentArticle(i) {
-        try {
-            this.article = this.displaySet[i];
+        if (this.displaySet[i]) {
+            this.article = this.displaySet[i]
         }
-        catch {
+        else {
             this.article = this.displaySet[0];
         }
         this.emitChange();

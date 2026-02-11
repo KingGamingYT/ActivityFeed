@@ -73,6 +73,7 @@ const Filters = [
 	{ name: "PopoutContainer", filter: betterdiscord.Webpack.Filters.byStrings("type", "position", "data-popout-animating"), searchExports: true },
 	{ name: "PositionClasses", filter: betterdiscord.Webpack.Filters.byKeys("noWrap") },
 	{ name: "RootSectionModule", filter: (x) => x?.key === "$Root", searchExports: true },
+	{ name: "Spinner", filter: betterdiscord.Webpack.Filters.byStrings('="wanderingCubes'), searchExports: true },
 	{ name: "SpotifyButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "PRESS_PLAY_ON_SPOTIFY_BUTTON") },
 	{ name: "Tooltip", filter: betterdiscord.Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
 	{ name: "UpperIconClasses", filter: betterdiscord.Webpack.Filters.byKeys("icon", "upperContainer") },
@@ -285,7 +286,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return this.dataSet;
 	}
 	setFeeds() {
-		this.dataSet = Object.assign(this.dataSet, betterdiscord.Data.load("dataSet") ? betterdiscord.Data.load("dataSet") : {});
+		this.dataSet = betterdiscord.Data.load("dataSet") ? Object.assign(this.dataSet, betterdiscord.Data.load("dataSet")) : {};
 		this.blacklist = betterdiscord.Data.load("blacklist") || [];
 		this.whitelist = betterdiscord.Data.load("whitelist") || this.initializeWhitelist();
 		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
@@ -533,7 +534,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		if (!_keys.length) return;
 		for (let g = 0; g < 4; g++) {
 			if (g > _keys.length) break;
-			console.log(g);
 			let rand = _keys.length * Math.random() << 0;
 			t.push(feeds[_keys[rand]]);
 			_keys.splice(rand, 1);
@@ -2786,13 +2786,24 @@ function StreamFallback() {
 			className: `${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap}${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
 			style: { flex: "1 1 auto" }
 		},
+		BdApi.React.createElement(Common$1.Spinner, null)
+	);
+}
+function StreamPlaceholder() {
+	return BdApi.React.createElement(
+		"div",
+		{
+			className: `${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap}${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
+			style: { flex: "1 1 auto" }
+		},
 		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewImage, style: { backgroundImage: "url(https://static.discord.com/assets/b93ef52d62a513a4f2127a6ca0c3208c.svg)" } }),
 		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["uQZTBV"]))
 	);
 }
 function StreamPreview({ stream }) {
 	const { previewUrl, isLoading } = Common$1.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, isLoading ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
+	const [shouldFallback, setShouldFallback] = react.useState(false);
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, shouldFallback ? BdApi.React.createElement(StreamFallback, null) : isLoading ? BdApi.React.createElement(StreamPlaceholder, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl, onError: () => setShouldFallback(true) })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
 		return Common$1.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common$1.OpenStream(stream);
 	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"]))));
 }

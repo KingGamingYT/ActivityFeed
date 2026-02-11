@@ -1,8 +1,18 @@
+import { useState } from "react";
 import { Common } from "@modules/common";
 import { FlexInfo } from './common/FlexInfo';
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 function StreamFallback() {
+    return (
+        <div className={`${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap}${Common.PositionClasses.alignCenter} ${Common.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`} 
+            style={{ flex: "1 1 auto"}}>
+            <Common.Spinner />
+        </div>
+    )
+}
+
+function StreamPlaceholder() {
     return (
         <div className={`${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap}${Common.PositionClasses.alignCenter} ${Common.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`} 
             style={{ flex: "1 1 auto"}}>
@@ -14,14 +24,18 @@ function StreamFallback() {
 
 function StreamPreview({stream}) {
     const {previewUrl, isLoading} = Common.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
+    const [shouldFallback, setShouldFallback] = useState(false);
     
     return (
         <div className={NowPlayingClasses.applicationStreamingPreviewSize} role="button">
-            {isLoading ? 
+            {shouldFallback ? 
                 <StreamFallback />
+            :    
+            isLoading ? 
+                <StreamPlaceholder />
             :
                 <div className={NowPlayingClasses.applicationStreamingPreviewSize} style={{ position: "relative" }}>
-                    <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} />
+                    <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} onError={() => setShouldFallback(true)} />
                 </div>
             }
             <div className={NowPlayingClasses.applicationStreamingHoverWrapper} onClick={() => {return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }}>

@@ -38,6 +38,7 @@ const Filters = [
     { name: "PopoutContainer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('type', 'position', 'data-popout-animating'), searchExports: true },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
     { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
+    { name: "Spinner", filter: /* @__PURE__ */ Webpack.Filters.byStrings('="wanderingCubes'), searchExports:true },
     { name: "SpotifyButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'PRESS_PLAY_ON_SPOTIFY_BUTTON') },
     { name: "Tooltip", filter: /* @__PURE__ */ Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
     { name: "UpperIconClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('icon', 'upperContainer') },

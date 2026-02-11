@@ -105,7 +105,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     setFeeds() {
-        this.dataSet = Object.assign(this.dataSet, Data.load('dataSet') ? Data.load('dataSet') : {});
+        this.dataSet = Data.load('dataSet') ? Object.assign(this.dataSet, Data.load('dataSet')) : {};
         this.blacklist = Data.load('blacklist') || [];
         this.whitelist = Data.load('whitelist') || this.initializeWhitelist();
         this.lastTimeFetched = Data.load('lastTimeFetched');
@@ -374,7 +374,6 @@ class GameNewsStore extends Utils.Store {
         if (!_keys.length) return; 
         for (let g = 0; g < 4 ; g++) {
             if (g > _keys.length) break;
-            console.log(g)
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);
             _keys.splice(rand, 1)

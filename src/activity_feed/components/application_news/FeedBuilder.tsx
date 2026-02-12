@@ -5,7 +5,6 @@ import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function NewsFeedBuilder() {
-	if ( NewsStore.shouldFetch() === true ) NewsStore.fetchFeeds();
 	const articles = Hooks.useStateFromStores([NewsStore], () => NewsStore.getFeedsForDisplay());
     const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
     const orientation = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());

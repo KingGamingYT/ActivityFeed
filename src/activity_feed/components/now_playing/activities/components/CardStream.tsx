@@ -24,18 +24,17 @@ function StreamPlaceholder() {
 
 function StreamPreview({stream}) {
     const {previewUrl, isLoading} = Common.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
-    const [shouldFallback, setShouldFallback] = useState(false);
     
     return (
         <div className={NowPlayingClasses.applicationStreamingPreviewSize} role="button">
-            {shouldFallback ? 
-                <StreamFallback />
-            :    
-            isLoading ? 
+            {isLoading ? 
                 <StreamPlaceholder />
             :
+            !previewUrl ? 
+                <StreamFallback />
+            :    
                 <div className={NowPlayingClasses.applicationStreamingPreviewSize} style={{ position: "relative" }}>
-                    <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} onError={() => setShouldFallback(true)} />
+                    <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} />
                 </div>
             }
             <div className={NowPlayingClasses.applicationStreamingHoverWrapper} onClick={() => {return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }}>

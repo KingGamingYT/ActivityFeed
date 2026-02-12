@@ -75,9 +75,12 @@ layoutUtils.Button("activity_feed_sidebar_item",
 
 export default class ActivityFeed {
     GameNewsStore = NewsStore
-    start() {
+    async start() {
         //Patcher.after("ActivityFeed", FluxDispatcher, "dispatch", (that, props, res) => console.log(props))
+        NewsStore.blacklist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist');
+        if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
+
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
         if (performance.getEntriesByType('navigation')[0]?.type === 'reload') {
             NavigationUtils.transitionTo('/channels/@me')

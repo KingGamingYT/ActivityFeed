@@ -1405,7 +1405,6 @@ function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 
 // activity_feed/components/application_news/FeedBuilder.tsx
 function NewsFeedBuilder() {
-	if (NewsStore.shouldFetch() === true) NewsStore.fetchFeeds();
 	const articles = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getFeedsForDisplay());
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
 	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
@@ -2802,8 +2801,7 @@ function StreamPlaceholder() {
 }
 function StreamPreview({ stream }) {
 	const { previewUrl, isLoading } = Common$1.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
-	const [shouldFallback, setShouldFallback] = react.useState(false);
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, shouldFallback ? BdApi.React.createElement(StreamFallback, null) : isLoading ? BdApi.React.createElement(StreamPlaceholder, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl, onError: () => setShouldFallback(true) })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, isLoading ? BdApi.React.createElement(StreamPlaceholder, null) : !previewUrl ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
 		return Common$1.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common$1.OpenStream(stream);
 	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"]))));
 }
@@ -3317,8 +3315,10 @@ const sidebarItem = layoutUtils.Button(
 );
 class ActivityFeed {
 	GameNewsStore = NewsStore;
-	start() {
+	async start() {
+		NewsStore.blacklist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist");
+		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
 		if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
 			NavigationUtils.transitionTo("/channels/@me");

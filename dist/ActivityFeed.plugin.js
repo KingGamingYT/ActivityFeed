@@ -98,7 +98,9 @@ const layoutUtils = betterdiscord.Webpack.getMangled(
 		Button: (x) => String(x).includes(".BUTTON,")
 	}
 );
-const useLocation = Object.values(betterdiscord.Webpack.getBySource(".location", "withRouter")).find((m) => m.length === 0 && String(m).includes(".location"));
+const Router = betterdiscord.Webpack.getMangled("Router-History", {
+	useLocation: betterdiscord.Webpack.Filters.byRegex(/return .{1,4}.location/)
+});
 const NavigationUtils = betterdiscord.Webpack.getMangled("Transitioning to", {
 	transitionTo: betterdiscord.Webpack.Filters.byStrings("Transitioning to"),
 	replace: betterdiscord.Webpack.Filters.byStrings('"Replacing route with "'),
@@ -3242,7 +3244,7 @@ function webpackify(css) {
 
 // index.ts
 function useSelectedState() {
-	return useLocation().pathname.startsWith("/activity-feed");
+	return Router.useLocation().pathname.startsWith("/activity-feed");
 }
 function NavigatorButton() {
 	return react.createElement(

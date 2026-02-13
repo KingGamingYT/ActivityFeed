@@ -1,7 +1,7 @@
 import { Webpack, Data, Patcher, DOM, Utils, Components, ReactUtils } from "betterdiscord";
 import { createElement, useState } from "react";
 import settings from "./settings/settings.js";
-import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, useLocation } from "./modules/common.js";
+import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, Router } from "./modules/common.js";
 import NewsStore from "./activity_feed/Store.js";
 import { activityPanelCSS } from "./activity_feed/styles.js";
 import { TabBaseBuilder } from "./activity_feed/base.js";
@@ -11,7 +11,7 @@ import styles from "styles";
 import { extraCSS } from "./activity_feed/extra";
 
 function useSelectedState() {
-    return useLocation().pathname.startsWith("/activity-feed");
+    return Router.useLocation().pathname.startsWith("/activity-feed");
 }
 
 function NavigatorButton() {

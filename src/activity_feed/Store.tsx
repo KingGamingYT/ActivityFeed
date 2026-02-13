@@ -106,8 +106,8 @@ class GameNewsStore extends Utils.Store {
 
     setFeeds() {
         this.dataSet = Data.load('dataSet') ? Object.assign(this.dataSet, Data.load('dataSet')) : {};
+        this.whitelist = Data.load('whitelist') || [];
         this.blacklist = Data.load('blacklist') || [];
-        this.whitelist = Data.load('whitelist') || this.initializeWhitelist();
         this.lastTimeFetched = Data.load('lastTimeFetched');
         this.emitChange();
         return;
@@ -121,20 +121,6 @@ class GameNewsStore extends Utils.Store {
 
     getTime() {
         return this.lastTimeFetched;
-    }
-
-    initializeWhitelist() {
-        let g = this.getFeeds();
-        let k = Object.keys(g).filter(k => !isNaN(g[k].news?.application_id));
-        let f = {};
-        for (let i in k) {
-            f[k[i]] = g[k[i]]; 
-        }
-        let w = [];
-        for (let k in f) {
-            w.push({applicationId: f[k].application.id, gameId: f[k].id})
-        }
-        return w;
     }
 
     getWhitelist() {
@@ -303,14 +289,15 @@ class GameNewsStore extends Utils.Store {
         const gameIds = gameList.filter(game => game.id || game.name === "Minecraft").map(game => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
         let applicationList;
 
-        await Common.FetchApplications.fetchApplications(gameIds).then(
-            applicationList = gameList.map(game => ApplicationStore.getApplicationByName(game.name)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
-        )
+        await Common.FetchApplications.fetchApplications(gameIds);
+            
+        applicationList = gameList.map(game => ApplicationStore.getApplicationByName(game.name)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
 
         const feedIds = applicationList.map(game => { const steamSku = game.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"); return steamSku?.sku || game.name });
 
         for (let i = 0; i < feedIds.length; i++) {
             gameData[feedIds[i]] = applicationList[i];
+            this.whitelist[i] = {applicationId: applicationList[i].id, gameId: feedIds[i]};
         }
 
         for (let i in (Data.load("external") || settings.external)) {
@@ -319,6 +306,7 @@ class GameNewsStore extends Utils.Store {
             }
         }
 
+        Data.save('whitelist', this.whitelist);
         return gameData;
     }
 

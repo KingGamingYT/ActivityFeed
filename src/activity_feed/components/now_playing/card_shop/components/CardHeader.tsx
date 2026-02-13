@@ -1,7 +1,7 @@
 import { Utils } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common } from "@./modules/common";
-import Tooltip from "@activity_feed/TooltipBuilder";
+import Tooltip from "@activity_feed/components/common/components/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 

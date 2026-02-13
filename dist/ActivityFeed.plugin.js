@@ -287,8 +287,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	setFeeds() {
 		this.dataSet = betterdiscord.Data.load("dataSet") ? Object.assign(this.dataSet, betterdiscord.Data.load("dataSet")) : {};
+		this.whitelist = betterdiscord.Data.load("whitelist") || [];
 		this.blacklist = betterdiscord.Data.load("blacklist") || [];
-		this.whitelist = betterdiscord.Data.load("whitelist") || this.initializeWhitelist();
 		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
 		this.emitChange();
 		return;
@@ -300,19 +300,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	getTime() {
 		return this.lastTimeFetched;
-	}
-	initializeWhitelist() {
-		let g = this.getFeeds();
-		let k = Object.keys(g).filter((k2) => !isNaN(g[k2].news?.application_id));
-		let f = {};
-		for (let i in k) {
-			f[k[i]] = g[k[i]];
-		}
-		let w = [];
-		for (let k2 in f) {
-			w.push({ applicationId: f[k2].application.id, gameId: f[k2].id });
-		}
-		return w;
 	}
 	getWhitelist() {
 		return this.whitelist;
@@ -470,21 +457,22 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		const gameList = RunningGameStore.getGamesSeen().filter((game) => GameStore.getGameByName(game.name));
 		const gameIds = gameList.filter((game) => game.id || game.name === "Minecraft").map((game) => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
 		let applicationList;
-		await Common$1.FetchApplications.fetchApplications(gameIds).then(
-			applicationList = gameList.map((game) => ApplicationStore.getApplicationByName(game.name)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
-		);
+		await Common$1.FetchApplications.fetchApplications(gameIds);
+		applicationList = gameList.map((game) => ApplicationStore.getApplicationByName(game.name)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"));
 		const feedIds = applicationList.map((game) => {
 			const steamSku = game.thirdPartySkus.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite");
 			return steamSku?.sku || game.name;
 		});
 		for (let i = 0; i < feedIds.length; i++) {
 			gameData[feedIds[i]] = applicationList[i];
+			this.whitelist[i] = { applicationId: applicationList[i].id, gameId: feedIds[i] };
 		}
 		for (let i in betterdiscord.Data.load("external") || settings.external) {
 			if ((betterdiscord.Data.load("external") && betterdiscord.Data.load("external")[i] || settings.external[i].enabled) === true) {
 				gameData[i] = "External Source";
 			}
 		}
+		betterdiscord.Data.save("whitelist", this.whitelist);
 		return gameData;
 	}
 	shouldFetch() {
@@ -1169,7 +1157,7 @@ const modules_98d78101 = {
 };
 const FeedClasses = modules_98d78101;
 
-// activity_feed/TooltipBuilder.tsx
+// activity_feed/components/common/components/TooltipBuilder.tsx
 const Tooltip = ({ note, position, children }) => {
 	return BdApi.React.createElement(Common$1.Tooltip, { text: note, position: position || "top" }, (props) => {
 		children.props = {
@@ -2691,7 +2679,7 @@ function VoiceGuildAsset({ channel, server, streamUser }) {
 				switch (true) {
 					case !!server:
 						return `https://cdn.discordapp.com/icons/${server.id}/${server.icon}.png?size=40`;
-					case !!channel:
+					case (!!channel && channel?.icon):
 						return `https://cdn.discordapp.com/channel-icons/${channel.id}/${channel.icon}.png?size=40`;
 					case !!streamUser:
 						return `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=40`;
@@ -2823,21 +2811,24 @@ function getVoiceParticipants({ voice }) {
 function VoiceCard({ activities, voice, streams }) {
 	if (!voice.length && !streams.length) return;
 	const stream = streams[0]?.stream;
-	const streamUser = streams[0]?.streamUser;
+	const streamsInfo = streams.map((item) => item.stream);
+	const streamUsers = streams.map((item) => item.streamUser);
 	const channel = stream ? ChannelStore$1.getChannel(stream.channelId) : voice[0]?.channel;
 	const members = stream ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
 	const server = voice[0]?.guild;
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser, server })), BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser: streamUsers[0], server })), BdApi.React.createElement(
 		FlexInfo,
 		{
 			className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`,
 			onClick: () => Common$1.OpenVoiceChannel.selectVoiceChannel(channel.id),
 			channel,
-			streamUser,
+			streamUser: streamUsers[0],
 			server,
 			type: "VOICE"
 		}
-	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), stream && streams[0]?.activity && BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider }), BdApi.React.createElement(StreamCard, { stream, streamUser, streamActivity: streams[0]?.activity })), activities.length ? BdApi.React.createElement("div", { className: MainClasses.sectionDivider }) : null);
+	), BdApi.React.createElement(VoiceCardTrailing, { members, server, channel })), stream && streams[0]?.activity && streams.map(
+		(stream2, index) => BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider }), BdApi.React.createElement(StreamCard, { stream: streamsInfo[index], streamUser: streamUsers[index], streamActivity: streams[index]?.activity }))
+	), activities.length ? BdApi.React.createElement("div", { className: MainClasses.sectionDivider }) : null);
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
@@ -3040,7 +3031,7 @@ const SettingsClasses = modules_a52d5642;
 // settings/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
-	const [state, setState] = react.useState(betterdiscord.Data.load(service) || item.enabled);
+	const [state, setState] = react.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
 		"button",
 		{

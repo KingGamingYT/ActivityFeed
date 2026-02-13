@@ -8,7 +8,7 @@ import SettingsClasses from "../ActivityFeedSettings.module.css";
 
 function ExternalItemBuilder({service}) {
     const item = settings.external[service];
-    const [state, setState] = useState(Data.load(service) || item.enabled);
+    const [state, setState] = useState(Data.load("external")?.[service] || item.enabled);
 
     return (
         <div className={SettingsClasses.blacklistItem} style={{ display: "flex" }}>

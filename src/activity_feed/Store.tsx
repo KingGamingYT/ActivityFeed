@@ -37,7 +37,6 @@ class GameNewsStore extends Utils.Store {
     componentWillUnmount() { window.removeEventListener("resize", this.listener); }
 
     setDebugFeeds() {
-        BdApi.Webpack.getByKeys("fetchApplications").fetchApplication('1402418491272986635');
         const application = ApplicationStore.getApplicationByName('Minecraft');
         this.displaySet = [
             {
@@ -149,7 +148,7 @@ class GameNewsStore extends Utils.Store {
         let b = this.blacklist;
         console.log(b)
 
-        if (!b.find(e => e.game_id === gameId)) {
+        if (!this.getBlacklistedGame) {
             b.push({applicationId: applicationId, gameId: gameId});
             console.log(this.blacklist)
             this.emitChange();

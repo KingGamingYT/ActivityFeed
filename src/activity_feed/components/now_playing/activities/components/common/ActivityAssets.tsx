@@ -122,7 +122,7 @@ export function VoiceGuildAsset({channel, server, streamUser}) {
                 {(() => {
                     switch (true) {
                         case !! server: return `https://cdn.discordapp.com/icons/${server.id}/${server.icon}.png?size=40`
-                        case !! channel && channel?.icon: return `https://cdn.discordapp.com/channel-icons/${channel.id}/${channel.icon}.png?size=40`
+                        case !! (channel && channel?.icon): return `https://cdn.discordapp.com/channel-icons/${channel.id}/${channel.icon}.png?size=40`
                         case !! streamUser: return `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=40`
                     }
                 })()} 

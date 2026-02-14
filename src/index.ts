@@ -77,8 +77,8 @@ export default class ActivityFeed {
     GameNewsStore = NewsStore
     async start() {
         //Patcher.after("ActivityFeed", FluxDispatcher, "dispatch", (that, props, res) => console.log(props))
-        NewsStore.blacklist = Data.load('whitelist');
-        NewsStore.blacklist = Data.load('blacklist');
+        NewsStore.whitelist = Data.load('whitelist');
+        NewsStore.blacklist = Data.load('blacklist') || [];
         if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
 
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');

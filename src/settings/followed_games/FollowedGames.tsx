@@ -8,7 +8,7 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "../ActivityFeedSettings.module.css";
 
 function FollowedGameItemBuilder({game, whitelist, blacklist, updateBlacklist, key}) {
-    const application = GameStore.getDetectableGame(game.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
+    const application = GameStore.getDetectableGame(game.applicationId == "356875570916753438" ? "1402418491272986635" : game.applicationId);
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 
     return (
@@ -96,7 +96,7 @@ export function FollowedGameListBuilder() {
 
     const filtered = useMemo(() => {
         const _query = query.toLowerCase();
-        return whitelist?.filter(item => (GameStore.getDetectableGame(item?.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(item?.applicationId)))?.name.toLowerCase().includes(_query));
+        return whitelist?.filter(item => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
     }, [whitelist, query]);
     console.log(filtered, query)
 

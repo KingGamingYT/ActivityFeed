@@ -175,7 +175,7 @@ const settings = {
 
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
-const ChannelStore$1 = betterdiscord.Webpack.getStore("ChannelStore");
+const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
 const DetectableGameSupplementalStore = betterdiscord.Webpack.getStore("DetectableGameSupplementalStore");
 const GameStore = betterdiscord.Webpack.getStore("GameStore");
 const GuildStore = betterdiscord.Webpack.getStore("GuildStore");
@@ -222,7 +222,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		window.removeEventListener("resize", this.listener);
 	}
 	setDebugFeeds() {
-		BdApi.Webpack.getByKeys("fetchApplications").fetchApplication("1402418491272986635");
 		const application = ApplicationStore.getApplicationByName("Minecraft");
 		this.displaySet = [
 			{
@@ -322,7 +321,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	blacklistGame(applicationId, gameId) {
 		let b = this.blacklist;
 		console.log(b);
-		if (!b.find((e) => e.game_id === gameId)) {
+		if (!this.getBlacklistedGame) {
 			b.push({ applicationId, gameId });
 			console.log(this.blacklist);
 			this.emitChange();
@@ -1593,7 +1592,7 @@ function GradGen(check, isSpotify, activity, game, voice, stream) {
 		case !!activity?.platform?.includes("xbox"):
 			input = "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png";
 			break;
-		case (!!activity?.assets && activity?.assets.large_image?.includes("external")):
+		case !!(activity?.assets && activity?.assets.large_image?.includes("external")):
 			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
 			break;
 		case !!activity?.assets:
@@ -1623,10 +1622,10 @@ function SplashGen(isSpotify, activity, game, voice, stream) {
 		case !!["YouTube Music", "Crunchyroll"].includes(activity?.name):
 			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
 			break;
-		case (!!voice && !activity):
+		case !!(voice && !activity):
 			input = "https://cdn.discordapp.com/banners/" + voice[0]?.guild?.id + "/" + voice[0]?.guild?.banner + ".webp?size=1024&keep_aspect_ratio=true";
 			break;
-		case (!!voice && stream):
+		case !!(voice && stream):
 			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
 			break;
 		default:
@@ -2681,7 +2680,7 @@ function VoiceGuildAsset({ channel, server, streamUser }) {
 				switch (true) {
 					case !!server:
 						return `https://cdn.discordapp.com/icons/${server.id}/${server.icon}.png?size=40`;
-					case (!!channel && channel?.icon):
+					case !!(channel && channel?.icon):
 						return `https://cdn.discordapp.com/channel-icons/${channel.id}/${channel.icon}.png?size=40`;
 					case !!streamUser:
 						return `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=40`;
@@ -2815,7 +2814,7 @@ function VoiceCard({ activities, voice, streams }) {
 	const stream = streams[0]?.stream;
 	const streamsInfo = streams.map((item) => item.stream);
 	const streamUsers = streams.map((item) => item.streamUser);
-	const channel = stream ? ChannelStore$1.getChannel(stream.channelId) : voice[0]?.channel;
+	const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
 	const members = stream ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
 	const server = voice[0]?.guild;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser: streamUsers[0], server })), BdApi.React.createElement(
@@ -2853,11 +2852,11 @@ function Splash({ splash, className }) {
 function DiscordTag({ user, voice }) {
 	let outputtedUsername;
 	switch (true) {
-		case (!!voice && voice[0]?.members.length > 2):
+		case !!(voice && voice[0]?.members.length > 2):
 			outputtedUsername = `${user.globalName || user.username}, ${Common$1.intl.intl.formatToPlainString(Common$1.intl.t["zRRd8G"], { count: voice[0]?.members.length - 2, name: voice[0]?.members[voice[0]?.members.length - 1].globalName || voice[0]?.members[voice[0]?.members.length - 1].username })}`;
 			break;
-		case (!!voice && voice[0]?.members.length > 1):
-			outputtedUsername = Common$1.intl.intl.formatToPlainString(Common$1.intl.t["4SM/RX"], { user1: user.globalName || voice[0]?.members[1].username, user2: voice[0]?.members[1].globalName || voice[0]?.members[1].username });
+		case !!(voice && voice[0]?.members.length > 1):
+			outputtedUsername = Common$1.intl.intl.formatToPlainString(Common$1.intl.t["4SM/RX"], { user1: user.globalName || user.username || voice[0]?.members[1].username, user2: voice[0]?.members[1].globalName || voice[0]?.members[1].globalName || voice[0]?.members[1].username });
 			break;
 		default:
 			outputtedUsername = user.globalName || user.username;
@@ -3092,7 +3091,7 @@ function ExternalSourcesListBuilder() {
 
 // settings/followed_games/FollowedGames.tsx
 function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, key }) {
-	const application = GameStore.getDetectableGame(game.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
+	const application = GameStore.getDetectableGame(game.applicationId == "356875570916753438" ? "1402418491272986635" : game.applicationId);
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(
 		"img",
@@ -3157,7 +3156,7 @@ function FollowedGameListBuilder() {
 	const [query, setQuery] = react.useState("");
 	const filtered = react.useMemo(() => {
 		const _query = query.toLowerCase();
-		return whitelist?.filter((item) => (GameStore.getDetectableGame(item?.applicationId) || GameStore.getGameByApplication(ApplicationStore.getApplication(item?.applicationId)))?.name.toLowerCase().includes(_query));
+		return whitelist?.filter((item) => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
 	console.log(filtered, query);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map(
@@ -3309,8 +3308,8 @@ const sidebarItem = layoutUtils.Button(
 class ActivityFeed {
 	GameNewsStore = NewsStore;
 	async start() {
-		NewsStore.blacklist = betterdiscord.Data.load("whitelist");
-		NewsStore.blacklist = betterdiscord.Data.load("blacklist");
+		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
+		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
 		if (performance.getEntriesByType("navigation")[0]?.type === "reload") {

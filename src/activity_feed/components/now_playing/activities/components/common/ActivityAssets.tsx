@@ -99,21 +99,25 @@ export function RichImageAsset({url, tooltipText, onClick, type}: RichImageAsset
     )
 }
 
-export function TwitchImageAsset({url, imageId, altText}) {
+export function TwitchImageAsset({url, imageId, streamUrl}) {
     return (
-        <>
-            { !imageId ? ( <FallbackAsset className="assetsLargeImage" transform="scale(1.65)"/> ) :
-                <img 
-                    className="assetsLargeImageTwitch assetsLargeImage"
-                    aria-label={altText}
-                    alt={altText}
-                    src={url}
-                    onError={(e) => e.currentTarget.src = 'https://static-cdn.jtvnw.net/ttv-static/404_preview-162x90.jpg'}
-                ></img>
-            }
-        </> 
+        <a
+            className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.twitchBackgroundImage}`}
+            href={streamUrl}
+            rel="noreferrer nopener"
+            target="_blank"
+            >
+                { !imageId ? ( <FallbackAsset className={`${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`} transform="scale(1.65)"/> ) :
+                    <img 
+                        className={`${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`}
+                        alt={null}
+                        src={url}
+                        onError={(e) => e.currentTarget.src = 'https://static-cdn.jtvnw.net/ttv-static/404_preview-900x500.jpg'}
+                    ></img>
+                }
+        </a> 
     )
-}
+}   
 
 export function VoiceGuildAsset({channel, server, streamUser}) {
     return (

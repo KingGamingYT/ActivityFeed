@@ -1,26 +1,7 @@
 import { Common } from '@modules/common';
 import { GuildStore, useStateFromStores } from '@modules/stores';
-import { activityCheck, TimeClock } from '@common/methods/common';
+import { TimeClock } from '@common/methods/common';
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-
-/*function Header({ activity, channel, type }) {
-    const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
-    if (channel) {
-        const nickname = useStateFromStores([ RelationshipStore ], () => RelationshipStore.getNickname(guildChannel?.ownerId || channel.getRecipientId()))
-        return (
-            <h3 className="textRow" style={{ display: "flex", alignItems: "center" }}>
-                {Common.VoiceIcon({ channel: channel })}
-                <h3 className="nameWrap nameNormal textRow" style={{ fontWeight: "600" }}>{channel.name || nickname}</h3>
-            </h3>
-        )
-    }
-    if (!activity) return;
-    let result = activity.name;
-    if ([1, 2, 3].includes(activity?.type)) result = activity.details;
-    return (
-        <div className="nameNormal textRow ellipsis" style={{ fontWeight: "600" }}>{result}</div>
-    )
-}*/
 
 function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
@@ -48,8 +29,22 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
             </>
         );
         case "TWITCH": return (
+            <div className={NowPlayingClasses.streamInfo}>
+                <div className={NowPlayingClasses.gameName}>{game?.name}</div>
+                <a
+                    className={`${Common.ButtonVoidClasses.lookLink} ${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.playTime}`}
+                    href={activity.url}
+                    rel="noreferrer nopener"
+                    target="_blank"
+                    role="button">
+                    {activity.url}
+                </a>
+            </div>
+        )
+        case "TWITCH_OVERLAY": return (
             <>
-                {activity.state && <div className="state textRow ellipsis">{`${Common.intl.intl.formatToPlainString(Common.intl.t[`BMTj28`])} ${activity.state}`}</div>}
+                <div className={NowPlayingClasses.streamName}>{activity.details}</div>
+                <div className={NowPlayingClasses.streamGame}>{Common.intl.intl.formatToPlainString(Common.intl.t['IGYgjl'], {gameName: activity.state})}</div>
             </>
         )
         case "VOICE": return (

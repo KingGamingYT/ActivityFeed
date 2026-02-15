@@ -67,8 +67,8 @@
 }
 
 .headerBar {
-    height: calc(var(--custom-channel-header-height) - 1px);
-    min-height: calc(var(--custom-channel-header-height) - 1px);
+    height: var(--custom-channel-header-height);
+    min-height: var(--custom-channel-header-height);
 }
 
 .headerContainer {

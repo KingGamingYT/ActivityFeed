@@ -88,7 +88,7 @@ const CommonExport = () => {
 	});
 	return result;
 };
-const Common$1 = CommonExport();
+const Common = CommonExport();
 const { shell } = require("electron");
 const { container } = betterdiscord.Webpack.getModule((m) => m.container && m.panels);
 const layoutUtils = betterdiscord.Webpack.getMangled(
@@ -145,29 +145,22 @@ const settings = {
 		discord: {
 			name: "Discord",
 			note: "News from Discord's blog.",
-			icon: Common$1.Icons.ClydeIcon,
+			icon: Common.Icons.ClydeIcon,
 			color: "var(--background-brand)",
 			enabled: true
 		},
 		nintendo: {
 			name: "Nintendo",
 			note: "Nintendo news sourced from nintendoeverything.com.",
-			icon: Common$1.Icons.NintendoSwitchNeutralIcon,
+			icon: Common.Icons.NintendoSwitchNeutralIcon,
 			color: "rgba(230, 0, 18, 1)",
 			enabled: false
 		},
 		xbox: {
 			name: "Xbox",
 			note: "News from Xbox's blog.",
-			icon: Common$1.Icons.XboxNeutralIcon,
+			icon: Common.Icons.XboxNeutralIcon,
 			color: "var(--xbox)",
-			enabled: false
-		},
-		playstation: {
-			name: "PlayStation",
-			note: "News from PlayStation's blog.",
-			icon: Common$1.Icons.PlaystationNeutralIcon,
-			color: "var(--playstation)",
 			enabled: false
 		}
 	}
@@ -320,10 +313,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	blacklistGame(applicationId, gameId) {
 		let b = this.blacklist;
-		console.log(b);
-		if (!this.getBlacklistedGame) {
+		if (!this.getBlacklistedGame(gameId)) {
 			b.push({ applicationId, gameId });
-			console.log(this.blacklist);
 			this.emitChange();
 			betterdiscord.Data.save("blacklist", this.blacklist);
 		}
@@ -331,9 +322,11 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	whitelistGame(gameId) {
 		let b = this.blacklist;
-		const g = b.find((e) => e.game_id === gameId);
+		const g = this.getBlacklistedGame(gameId);
+		console.log(b);
 		b.splice(b.indexOf(g), 1);
 		this.emitChange();
+		console.log(b);
 		betterdiscord.Data.save("blacklist", this.blacklist);
 		return this.blacklist;
 	}
@@ -370,8 +363,20 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		};
 	}
 	async #fetchXboxFeeds() {
-	}
-	async #fetchPlaystationFeeds() {
+		const rssFeed = await Promise.all([BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://news.xbox.com/en-us/feed/`).then((r) => r.ok ? r.json() : null)]);
+		const article = this.getRSSItem(rssFeed);
+		return {
+			application: {
+				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+				id: "Xbox"
+			},
+			appId: "Xbox",
+			description: article?.description?.[0],
+			thumbnail: article?.["content:encoded"]?.[0].match(/\"(https:\/\/xboxwire.thesourcemediaassets.com\/sites\/\d+\/\d+\/\d+\/.*(?=).(jpg|jpeg|png))\"/)[1],
+			timestamp: article?.pubDate?.[0],
+			title: article?.title?.[0],
+			url: article?.link?.[0]
+		};
 	}
 	async #fetchMinecraftFeeds(application) {
 		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null)]);
@@ -429,6 +434,9 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 					case "nintendo":
 						feeds = await this.#fetchNintendoFeeds();
 						break;
+					case "xbox":
+						feeds = await this.#fetchXboxFeeds();
+						break;
 					default:
 						feeds = await this.#fetchSteamFeeds(gameId2, gameData[gameId2]);
 				}
@@ -458,7 +466,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		const gameList = RunningGameStore.getGamesSeen().filter((game) => GameStore.getGameByName(game.name));
 		const gameIds = gameList.filter((game) => game.id || game.name === "Minecraft").map((game) => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
 		let applicationList;
-		await Common$1.FetchApplications.fetchApplications(gameIds);
+		await Common.FetchApplications.fetchApplications(gameIds);
 		applicationList = gameList.map((game) => ApplicationStore.getApplicationByName(game.name)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"));
 		const feedIds = applicationList.map((game) => {
 			const steamSku = game.thirdPartySkus.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite");
@@ -468,7 +476,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			gameData[feedIds[i]] = applicationList[i];
 			this.whitelist[i] = { applicationId: applicationList[i].id, gameId: feedIds[i] };
 		}
-		for (let i in betterdiscord.Data.load("external") || settings.external) {
+		for (let i in betterdiscord.Data.load("external") ?? settings.external) {
 			if ((betterdiscord.Data.load("external") && betterdiscord.Data.load("external")[i] || settings.external[i].enabled) === true) {
 				gameData[i] = "External Source";
 			}
@@ -583,7 +591,7 @@ function styles$1() {
 
 // activity_feed/ActivityFeed.module.css
 const css$4 = `
-.activityFeed_21141b {
+.activityFeed_05583e {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-border-frame);
 		display: flex;
@@ -592,7 +600,7 @@ const css$4 = `
 		overflow: hidden;
 }
 
-.scrollerBase_21141b {
+.scrollerBase_05583e {
 		contain: layout size;
 		height: 100%;
 		background: no-repeat bottom;
@@ -613,7 +621,7 @@ const css$4 = `
 		}
 }
 
-.centerContainer_21141b {
+.centerContainer_05583e {
 		display: flex;
 		flex-direction: column;
 		width: 1280px;
@@ -622,7 +630,7 @@ const css$4 = `
 		margin: 0 auto;
 }
 
-.title_21141b {
+.title_05583e {
 		align-items: center;
 		display: flex;
 		justify-content: flex-start;
@@ -634,13 +642,13 @@ const css$4 = `
 		color: var(--text-strong);
 }
 
-.titleWrapper_21141b {
+.titleWrapper_05583e {
 		flex: 0 0 auto;
 		margin: 0 8px 0 0;
 		min-width: auto;
 }
 
-.iconWrapper_21141b {
+.iconWrapper_05583e {
 		align-items: center;
 		display: flex;
 		flex: 0 0 auto;
@@ -651,16 +659,16 @@ const css$4 = `
 		width: var(--space-32);
 }
 
-.headerBar_21141b {
-		height: calc(var(--custom-channel-header-height) - 1px);
-		min-height: calc(var(--custom-channel-header-height) - 1px);
+.headerBar_05583e {
+		height: var(--custom-channel-header-height);
+		min-height: var(--custom-channel-header-height);
 }
 
-.headerContainer_21141b {
+.headerContainer_05583e {
 		flex-direction: row;
 }
 
-.headerText_21141b {
+.headerText_05583e {
 		display: flex;
 		flex: 1;
 		font-size: 18px;
@@ -671,7 +679,7 @@ const css$4 = `
 		color: var(--text-default);
 }
 
-.button_21141b {
+.button_05583e {
 		-webkit-box-align: center;
 		-webkit-box-pack: center;
 		align-items: center;
@@ -687,46 +695,46 @@ const css$4 = `
 		user-select: none;
 }
 
-.sectionDivider_21141b {
+.sectionDivider_05583e {
 		display: flex;
 		width: 100%;
 		border-bottom: 2px solid;
 		margin: 20px 0 20px 0;
 }
 
-.emptyState_21141b {
+.emptyState_05583e {
 		position: relative;
 }
 
-.emptyText_21141b {}
+.emptyText_05583e {}
 
-.emptyTitle_21141b {
+.emptyTitle_05583e {
 		font-size: 16px;
 		line-height: 20px;
 		color: var(--text-default);
 }
 
-.emptySubtitle_21141b {
+.emptySubtitle_05583e {
 		font-size: 14px;
 		color: var(--text-muted);
 }`;
 _loadStyle("ActivityFeed.module.css", css$4);
 const modules_7e65654a = {
-	"activityFeed": "activityFeed_21141b",
-	"scrollerBase": "scrollerBase_21141b",
-	"centerContainer": "centerContainer_21141b",
-	"title": "title_21141b",
-	"titleWrapper": "titleWrapper_21141b",
-	"iconWrapper": "iconWrapper_21141b",
-	"headerBar": "headerBar_21141b",
-	"headerContainer": "headerContainer_21141b",
-	"headerText": "headerText_21141b",
-	"button": "button_21141b",
-	"sectionDivider": "sectionDivider_21141b",
-	"emptyState": "emptyState_21141b",
-	"emptyText": "emptyText_21141b",
-	"emptyTitle": "emptyTitle_21141b",
-	"emptySubtitle": "emptySubtitle_21141b"
+	"activityFeed": "activityFeed_05583e",
+	"scrollerBase": "scrollerBase_05583e",
+	"centerContainer": "centerContainer_05583e",
+	"title": "title_05583e",
+	"titleWrapper": "titleWrapper_05583e",
+	"iconWrapper": "iconWrapper_05583e",
+	"headerBar": "headerBar_05583e",
+	"headerContainer": "headerContainer_05583e",
+	"headerText": "headerText_05583e",
+	"button": "button_05583e",
+	"sectionDivider": "sectionDivider_05583e",
+	"emptyState": "emptyState_05583e",
+	"emptyText": "emptyText_05583e",
+	"emptyTitle": "emptyTitle_05583e",
+	"emptySubtitle": "emptySubtitle_05583e"
 };
 const MainClasses = modules_7e65654a;
 
@@ -1160,7 +1168,7 @@ const FeedClasses = modules_98d78101;
 
 // activity_feed/components/common/components/TooltipBuilder.tsx
 const Tooltip = ({ note, position, children }) => {
-	return BdApi.React.createElement(Common$1.Tooltip, { text: note, position: position || "top" }, (props) => {
+	return BdApi.React.createElement(Common.Tooltip, { text: note, position: position || "top" }, (props) => {
 		children.props = {
 			...props,
 			...children.props
@@ -1174,16 +1182,16 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
 	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 	if (isNaN(applicationId)) {
-		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common$1.Clipboard(articleUrl) }));
+		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }));
 	}
-	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common$1.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common$1.Clipboard(articleUrl) }), BdApi.React.createElement(
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), BdApi.React.createElement(
 		betterdiscord.ContextMenu.Item,
 		{
 			id: "unfollow-game",
 			label: "Unfollow Game",
 			action: () => ModalSystem.openModal(
 				(props) => BdApi.React.createElement(
-					Common$1.ModalRoot.Modal,
+					Common.ModalRoot.Modal,
 					{
 						...props,
 						title: "Are you sure?",
@@ -1205,12 +1213,12 @@ function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
 	return BdApi.React.createElement(
-		Common$1.Popout,
+		Common.Popout,
 		{
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common$1.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { applicationId, gameId, articleUrl, close: () => setShowPopout(false) })),
+			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { applicationId, gameId, articleUrl, close: () => setShowPopout(false) })),
 			position,
 			shouldShow: showPopout
 		},
@@ -1234,7 +1242,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 		"a",
 		{
 			tabindex: currentArticle.index,
-			className: `${Common$1.AnchorClasses.anchor} ${Common$1.AnchorClasses.anchorUnderlineOnHover}`,
+			className: `${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`,
 			href: currentArticle.news?.url || "#",
 			rel: "noreferrer nopener",
 			target: "_blank",
@@ -1254,7 +1262,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 				className: FeedClasses.gameIcon,
 				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
 			}
-		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common$1.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))
+		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))
 	));
 }
 
@@ -1265,7 +1273,7 @@ function FeedMiniCarouselBuilder({ currentArticle }) {
 		"a",
 		{
 			tabindex: currentArticle.index,
-			className: `${Common$1.AnchorClasses.anchor} ${Common$1.AnchorClasses.anchorUnderlineOnHover}`,
+			className: `${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`,
 			href: currentArticle.news?.url || "#",
 			rel: "noreferrer nopener",
 			target: "_blank",
@@ -1304,23 +1312,23 @@ function FeedMiniPaginationBuilder({ articleSet, currentArticle }) {
 		"button",
 		{
 			type: "button",
-			className: `${FeedClasses.prevButtonContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.grow}`,
+			className: `${FeedClasses.prevButtonContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
 			onClick: () => NewsStore.setCurrentArticle(currentArticle.index - 1),
 			disabled: currentArticle.index === 0 && true
 		},
-		BdApi.React.createElement("div", { className: Common$1.ButtonVoidClasses.contents }, BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses.left}` }, BdApi.React.createElement("polygon", { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8" })))
-	), BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.horizontalPaginationItemContainer} ${Common$1.PositionClasses.alignCenter}` }, articleSet.map((article) => {
+		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses.left}` }, BdApi.React.createElement("polygon", { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8" })))
+	), BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.horizontalPaginationItemContainer} ${Common.PositionClasses.alignCenter}` }, articleSet.map((article) => {
 		if (!article) return;
 		return BdApi.React.createElement(MiniSubpagination, { article, currentArticle });
 	}))), BdApi.React.createElement(
 		"button",
 		{
 			type: "button",
-			className: `${FeedClasses.nextButtonContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.grow}`,
+			className: `${FeedClasses.nextButtonContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
 			onClick: () => NewsStore.setCurrentArticle(currentArticle.index + 1),
 			disabled: currentArticle.index === 3 && true
 		},
-		BdApi.React.createElement("div", { className: Common$1.ButtonVoidClasses.contents }, BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses.right}` }, BdApi.React.createElement("polygon", { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8" })))
+		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses.right}` }, BdApi.React.createElement("polygon", { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8" })))
 	));
 }
 
@@ -1440,7 +1448,7 @@ function NewsFeedBuilder() {
 
 // activity_feed/components/common/components/SectionHeader.jsx
 function SectionHeader({ label }) {
-	return BdApi.React.createElement("div", { className: `${MainClasses.headerContainer} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyBetween} ${Common$1.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: MainClasses.headerText }, label));
+	return BdApi.React.createElement("div", { className: `${MainClasses.headerContainer} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: MainClasses.headerText }, label));
 }
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
@@ -1536,17 +1544,17 @@ function LauncherGameBuilder({ game, runningGames }) {
 	const [shouldDisable, setDisable] = react.useState(false);
 	setTimeout(() => setDisable(false), 1e4);
 	const disableCheck = react.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
-	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}, ${Common$1.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
 		"button",
 		{
-			className: `${QuickLauncherClasses.dockItemPlay} ${Common$1.ButtonVoidClasses.button} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorGreen} ${Common$1.ButtonVoidClasses.sizeSmall} ${Common$1.ButtonVoidClasses.fullWidth} ${Common$1.ButtonVoidClasses.grow}`,
+			className: `${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`,
 			disabled: disableCheck,
 			onClick: () => {
 				setDisable(true);
 				shell.openExternal(game.exePath);
 			}
 		},
-		BdApi.React.createElement("div", { className: `${Common$1.ButtonVoidClasses.contents}` }, "Play")
+		BdApi.React.createElement("div", { className: `${Common.ButtonVoidClasses.contents}` }, "Play")
 	));
 }
 function QuickLauncherBuilder(props) {
@@ -1568,13 +1576,13 @@ function chunkArray(cards, num) {
 function TimeClock({ timestamp }) {
 	const time = Math.floor((Date.now() - new Date(parseInt(timestamp))) / 1e3);
 	if (time / 86400 > 1) {
-		return Common$1.intl.intl.formatToPlainString(Common$1.intl.t["2rUo/p"], { time: Math.floor(time / 86400) });
+		return Common.intl.intl.formatToPlainString(Common.intl.t["2rUo/p"], { time: Math.floor(time / 86400) });
 	} else if (time / 3600 > 1) {
-		return Common$1.intl.intl.formatToPlainString(Common$1.intl.t["eNoooU"], { time: Math.floor(time / 3600) });
+		return Common.intl.intl.formatToPlainString(Common.intl.t["eNoooU"], { time: Math.floor(time / 3600) });
 	} else if (time / 60 > 1) {
-		return Common$1.intl.intl.formatToPlainString(Common$1.intl.t["03mIHW"], { time: Math.floor(time / 60) });
+		return Common.intl.intl.formatToPlainString(Common.intl.t["03mIHW"], { time: Math.floor(time / 60) });
 	} else if (time % 60 < 60) {
-		return Common$1.intl.intl.formatToPlainString(Common$1.intl.t["ahzZr+"]);
+		return Common.intl.intl.formatToPlainString(Common.intl.t["ahzZr+"]);
 	}
 }
 function GradGen(check, isSpotify, activity, game, voice, stream) {
@@ -1595,7 +1603,7 @@ function GradGen(check, isSpotify, activity, game, voice, stream) {
 		case !!(activity?.assets && activity?.assets.large_image?.includes("external")):
 			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
 			break;
-		case !!activity?.assets:
+		case !!(activity?.assets && activity?.assets.large_image):
 			input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`;
 			break;
 		case !!game?.icon:
@@ -1608,7 +1616,7 @@ function GradGen(check, isSpotify, activity, game, voice, stream) {
 			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
 			break;
 	}
-	return Common$1.GradientComponent(input || null);
+	return Common.GradientComponent(input || null);
 }
 function SplashGen(isSpotify, activity, game, voice, stream) {
 	let input;
@@ -1650,32 +1658,34 @@ function activityCheck(activities, isSpotify) {
 		if (!activities[i]) {
 			return;
 		}
-		if (activities[i].type == 4) {
-			pass.custom = 1;
+		switch (activities[i]?.activity?.type) {
+			case 0:
+				pass.playing = 1;
+				break;
+			case 1:
+				pass.streaming = 1;
+				break;
+			case 2:
+				pass.listening = 1;
+				break;
+			case 3:
+				pass.watching = 1;
+				break;
+			case 4:
+				pass.custom = 1;
+				break;
+			case 5:
+				pass.competing = 1;
+				break;
 		}
-		if (activities[i].type == 0) {
-			pass.playing = 1;
-		}
-		if (activities[i]?.platform?.includes("xbox")) {
+		if (activities[i]?.activity?.platform?.includes("xbox")) {
 			pass.xbox = 1;
 		}
-		if (activities[i]?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
+		if (activities[i]?.activity?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
 			pass.playstation = 1;
-		}
-		if (activities[i].type == 1) {
-			pass.streaming = 1;
-		}
-		if (activities[i].type == 2) {
-			pass.listening = 1;
 		}
 		if (isSpotify) {
 			pass.spotify = 1;
-		}
-		if (activities[i].type == 3) {
-			pass.watching = 1;
-		}
-		if (activities[i].type == 5) {
-			pass.competing = 1;
 		}
 	}
 	return pass;
@@ -1695,27 +1705,27 @@ function useWindowSize() {
 
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css$1 = `
-.nowPlaying_280635 {}
+.nowPlaying_9079ba {}
 
-.nowPlayingContainer_280635 {
+.nowPlayingContainer_9079ba {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_280635 {
+.nowPlayingColumn_9079ba {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_280635 .itemCard_280635 {
+.nowPlayingContainer_9079ba .itemCard_9079ba {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_280635 {
+.card_9079ba {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -1723,21 +1733,21 @@ const css$1 = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_280635 {
+.cardHeader_9079ba {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_280635 {
+.header_9079ba {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_280635 {
+.nameTag_9079ba {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1746,31 +1756,31 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-.username_280635 {
+.username_9079ba {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_280635:hover {
+.username_9079ba:hover {
 		text-decoration: underline;
 }
 
-.card_280635:hover .headerIcon_280635, .header_280635:has(.headerActions_280635[aria-expanded="true"]) .headerIcon_280635 {
+.card_9079ba:hover .headerIcon_9079ba, .header_9079ba:has(.headerActions_9079ba[aria-expanded="true"]) .headerIcon_9079ba {
 		display: none;
 }
 
-.headerActions_280635 {
+.headerActions_9079ba {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_280635:hover .headerActions_280635, .headerActions_280635[aria-expanded="true"] {
+.card_9079ba:hover .headerActions_9079ba, .headerActions_9079ba[aria-expanded="true"] {
 		display: flex;
 }
 
-.overflowMenu_280635 {
+.overflowMenu_9079ba {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -1779,11 +1789,11 @@ const css$1 = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_280635:hover {
+.overflowMenu_9079ba:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_280635 {
+.headerIcon_9079ba {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -1791,7 +1801,7 @@ const css$1 = `
 		width: 30px;
 }
 
-.splashArt_280635 {
+.splashArt_9079ba {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -1807,72 +1817,72 @@ const css$1 = `
 		top: 0;
 }
 
-.server_280635 {
+.server_9079ba {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_280635 {
+.cardBody_9079ba {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_280635 {
+.section_9079ba {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_280635 {
+.game_9079ba {
 		padding: 20px 0;
 }
 
-.gameBody_280635 {
+.gameBody_9079ba {
 		flex-direction: column;
 }
 
-.activity_280635 {
+.activity_9079ba {
 		flex-direction: row;
 }
 
-.activity_280635:last-child:not(:only-child) {
+.activity_9079ba:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_280635 .serviceButtonWrapper_280635 {
+.activity_9079ba .serviceButtonWrapper_9079ba {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_280635 {
+.richActivity_9079ba {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_280635 {}
+.activityActivityFeed_9079ba {}
 
-.activityFeed_280635 {
+.activityFeed_9079ba {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_280635 {}
+.body_9079ba {}
 
-.bodyNormal_280635 {}
+.bodyNormal_9079ba {}
 
-:is(.gameInfoRich_280635, .gameNameWrapper_280635) {
+:is(.gameInfoRich_9079ba, .gameNameWrapper_9079ba) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_280635 {
+.gameInfoRich_9079ba {
 		align-items: center;
 }
 
-.gameInfo_280635 {
+.gameInfo_9079ba {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -1880,11 +1890,11 @@ const css$1 = `
 		flex: 1;
 }
 
-:is(.gameName_280635, .gameNameWrapper_280635, .streamInfo_280635) {
+:is(.gameName_9079ba, .gameNameWrapper_9079ba, .streamInfo_9079ba) {
 		overflow: hidden;
 }
 
-.gameName_280635 {
+.gameName_9079ba {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -1893,14 +1903,14 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.gameName_280635.clickable_280635:hover {
+.gameName_9079ba.clickable_9079ba:hover {
 		text-decoration: underline;
 }
 
-.playTime_280635:not(a) {
+.playTime_9079ba:not(a) {
 		color: var(--text-muted);
 }
-.playTime_280635 {
+.playTime_9079ba {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -1910,78 +1920,79 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.assets_280635 {
+.assets_9079ba {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_280635 {
+.assetsLargeImageActivityFeed_9079ba {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_280635 {
+.assetsSmallImageActivityFeed_9079ba {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_280635 .assetsLargeImage_280635 {
+.assets_9079ba .assetsLargeImage_9079ba {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_280635 .assetsLargeImageActivityFeedTwitch_280635 {
+.assets_9079ba .assetsLargeImageActivityFeedTwitch_9079ba {
 		border-radius: 5px;
 		height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
 		width: 100%;
+		-webkit-user-drag: none;
 }
 
-.assets_280635:has(.assetsSmallImage_280635) .assetsLargeImage_280635 {
+.assets_9079ba:has(.assetsSmallImage_9079ba) .assetsLargeImage_9079ba {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_280635 .assetsSmallImage_280635, .richActivity_280635 .smallEmptyIcon_280635 {
+.richActivity_9079ba .assetsSmallImage_9079ba, .richActivity_9079ba .smallEmptyIcon_9079ba {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_280635 .smallEmptyIcon_280635 {
+.activity_9079ba .smallEmptyIcon_9079ba {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_280635 .largeEmptyIcon_280635 {
+.assets_9079ba .largeEmptyIcon_9079ba {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_280635 .largeEmptyIcon_280635 path {
+.assets_9079ba .largeEmptyIcon_9079ba path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_280635 svg.assetsSmallImage_280635 {
+.richActivity_9079ba svg.assetsSmallImage_9079ba {
 		border-radius: unset !important;
 }   
 
-.richActivity_280635 .smallEmptyIcon_280635 path {
+.richActivity_9079ba .smallEmptyIcon_9079ba path {
 		transform: scale(1.3) !important;
 }
 
-.assets_280635 .twitchImageContainer_280635 {
+.assets_9079ba .twitchImageContainer_9079ba {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_280635 .twitchBackgroundImage_280635 {
+.assets_9079ba .twitchBackgroundImage_9079ba {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_280635 .twitchImageOverlay_280635 {
+.assets_9079ba .twitchImageOverlay_9079ba {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -1989,14 +2000,14 @@ const css$1 = `
 		right: 0;
 }
 
-.assets_280635 .streamName_280635 {
+.assets_9079ba .streamName_9079ba {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_280635 .streamGame_280635 {
+.assets_9079ba .streamGame_9079ba {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -2004,39 +2015,39 @@ const css$1 = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_280635 {
+.contentImagesActivityFeed_9079ba {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_280635, .contentImagesActivityFeed_280635) {
+:is(.gameInfo_9079ba, .contentImagesActivityFeed_9079ba) {
 		align-self: center;
 		display: grid;
 }
 
-.content_280635 {
+.content_9079ba {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_280635 {
+.details_9079ba {
 		font-weight: 600;
 }
 
-.ellipsis_280635 {
+.ellipsis_9079ba {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_280635 {
+.textRow_9079ba {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.voiceSection_280635 {
+.voiceSection_9079ba {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -2044,7 +2055,7 @@ const css$1 = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_280635 {
+.voiceSectionAssets_9079ba {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -2052,7 +2063,7 @@ const css$1 = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_280635 {
+.voiceSectionIconWrapper_9079ba {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -2064,63 +2075,63 @@ const css$1 = `
 		width: 20px;
 }
 
-.voiceSectionIcon_280635 {
+.voiceSectionIcon_9079ba {
 		color: var(--text-default);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_280635 {
+.voiceSectionGuildImage_9079ba {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_280635 .details_280635 {
+.voiceSection_9079ba .details_9079ba {
 		flex: 1;
 }
 
-.voiceSectionDetails_280635 {
+.voiceSectionDetails_9079ba {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_280635:hover :is(.voiceSectionText_280635, .voiceSectionSubtext_280635) {
+.voiceSectionDetails_9079ba:hover :is(.voiceSectionText_9079ba, .voiceSectionSubtext_9079ba) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_280635 {
+.voiceSectionText_9079ba {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_280635 {
+.voiceSectionSubtext_9079ba {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_280635 {
+.userList_9079ba {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_280635 button {
+.voiceSection_9079ba button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.streamSection_280635 {
+.streamSection_9079ba {
 		position: relative;
 }
 
-.applicationStreamingSection_280635 {
+.applicationStreamingSection_9079ba {
 		display: grid;
 		grid-template-columns: 32px minmax(20px, auto) max-content;
 		-webkit-box-align: center;
@@ -2128,34 +2139,34 @@ const css$1 = `
 		gap: 12px 12px;
 }
 
-.applicationStreamingAvatar_280635 {
+.applicationStreamingAvatar_9079ba {
 		cursor: pointer;
 }
 
-.applicationStreamingDetails_280635 {
+.applicationStreamingDetails_9079ba {
 		margin-left: 16px;
 		min-width: 0;
 }
 
-.applicationStreamingPreviewWrapper_280635 {
+.applicationStreamingPreviewWrapper_9079ba {
 		margin-top: 12px;
 		cursor: pointer;
 		border-radius: 4px;
 		position: relative;
 }
 
-.applicationStreamingPreviewSize_280635 {
+.applicationStreamingPreviewSize_9079ba {
 		height: 100%;
 		width: 100%;
 }
 
-.applicationStreamingPreview_280635 {
+.applicationStreamingPreview_9079ba {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
 }
 
-.applicationStreamingHoverWrapper_280635 {
+.applicationStreamingHoverWrapper_9079ba {
 		opacity: 0;
 		position: absolute;
 		top: 0;
@@ -2171,11 +2182,11 @@ const css$1 = `
 		transition: opacity 0.2s ease-in-out 0s;
 }
 
-.applicationStreamingHoverWrapper_280635:hover {
+.applicationStreamingHoverWrapper_9079ba:hover {
 		opacity: 1;
 }
 
-.applicationStreamingHoverText_280635 {
+.applicationStreamingHoverText_9079ba {
 		color: var(--white);
 		font-size: 16px;
 		font-weight: 600;
@@ -2185,7 +2196,7 @@ const css$1 = `
 		border-radius: 20px;
 }
 
-.emptyPreviewContainer_280635 {
+.emptyPreviewContainer_9079ba {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -2199,7 +2210,7 @@ const css$1 = `
 		justify-content: center;
 }
 
-.emptyPreviewImage_280635 {
+.emptyPreviewImage_9079ba {
 		width: 80%;
 		height: 60%;
 		margin-bottom: 10px;
@@ -2207,11 +2218,11 @@ const css$1 = `
 		background-repeat: no-repeat;
 }
 
-.emptyPreviewText_280635 {
+.emptyPreviewText_9079ba {
 		color: var(--text-default);
 }
 
-.inner_280635 {
+.inner_9079ba {
 		position: absolute;
 		top: 0px;
 		right: 0px;
@@ -2219,17 +2230,17 @@ const css$1 = `
 		left: 0px;
 }
 
-.actionsActivity_280635 .buttonContainer_280635 {
+.actionsActivity_9079ba .buttonContainer_9079ba {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_280635 {
+.partyStatusWrapper_9079ba {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_280635 button {
+.partyStatusWrapper_9079ba button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -2237,40 +2248,40 @@ const css$1 = `
 		justify-self: flex-end;
 }
 
-.partyList_280635 {
+.partyList_9079ba {
 		display: flex;
 }
 
-.player_280635:first-of-type:not(:only-of-type) {
+.player_9079ba:first-of-type:not(:only-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow_280635 {
+.userOverflow_9079ba {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		align-content: center;
 		margin-right: 8px;
 }
 
-.emptyUser_280635:not(:first-of-type), .player_280635:not(:first-of-type) {
+.emptyUser_9079ba:not(:first-of-type), .player_9079ba:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_280635:not(:last-of-type), .player_280635:not(:last-of-type) {
+.emptyUser_9079ba:not(:last-of-type), .player_9079ba:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_280635, .player_280635 {
+.emptyUser_9079ba, .player_9079ba {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_280635 svg {
+.emptyUser_9079ba svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_280635 {
+.partyPlayerCount_9079ba {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
@@ -2278,7 +2289,7 @@ const css$1 = `
 		margin-top: 1px;
 }
 
-.cardV2_280635 {
+.cardV2_9079ba {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -2288,16 +2299,16 @@ const css$1 = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_280635 {
+		.cardHeader_9079ba {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_280635 {
+		.nameTag_9079ba {
 				color: var(--white);
 		}
-		.splashArt_280635, .server_280635 {
+		.splashArt_9079ba, .server_9079ba {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -2314,59 +2325,59 @@ const css$1 = `
 				z-index: -1;
 		}
 		&:hover {
-				.headerIcon_280635 {
+				.headerIcon_9079ba {
 						display: none;
 				}
-				.headerActions_280635 {
+				.headerActions_9079ba {
 						display: flex;
 				}
 		}
-		.cardBody_280635 {
+		.cardBody_9079ba {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_280635 {
+		.section_9079ba {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_280635 {
+		.game_9079ba {
 				padding: 0;
 		}
-		.voiceSectionText_280635 {
+		.voiceSectionText_9079ba {
 				color: var(--white);
 		}
-		.headerIcon_280635, .gameIcon_280635, .assetsLargeImage_280635.assetsLargeImage_280635 {
+		.headerIcon_9079ba, .gameIcon_9079ba, .assetsLargeImage_9079ba.assetsLargeImage_9079ba {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_280635 {
+		.gameInfo_9079ba {
 				color: var(--white);
 		}
-		.playTime_280635:not(a), .voiceSectionSubtext_280635 {
+		.playTime_9079ba:not(a), .voiceSectionSubtext_9079ba {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_280635 {
+		.serviceButtonWrapper_9079ba {
 				margin-left: 20px;
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_280635 {
+		.contentImagesActivityFeed_9079ba {
 				color: var(--white);
 		}
-		.textRow_280635 {
+		.textRow_9079ba {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_280635 {
+		.state_9079ba {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_280635:last-child:not(:only-child) {
+		.activity_9079ba:last-child:not(:only-child) {
 				margin-top: 12px;
 		}
-		.applicationStreamingPreviewWrapper_280635 {
+		.applicationStreamingPreviewWrapper_9079ba {
 				background-color: var(--opacity-white-12);
 				img {
 						border-radius: var(--radius-sm);
@@ -2375,89 +2386,89 @@ const css$1 = `
 }`;
 _loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
-	"nowPlaying": "nowPlaying_280635",
-	"nowPlayingContainer": "nowPlayingContainer_280635",
-	"nowPlayingColumn": "nowPlayingColumn_280635",
-	"itemCard": "itemCard_280635",
-	"card": "card_280635",
-	"cardHeader": "cardHeader_280635",
-	"header": "header_280635",
-	"nameTag": "nameTag_280635",
-	"username": "username_280635",
-	"headerIcon": "headerIcon_280635",
-	"headerActions": "headerActions_280635",
-	"overflowMenu": "overflowMenu_280635",
-	"splashArt": "splashArt_280635",
-	"server": "server_280635",
-	"cardBody": "cardBody_280635",
-	"section": "section_280635",
-	"game": "game_280635",
-	"gameBody": "gameBody_280635",
-	"activity": "activity_280635",
-	"serviceButtonWrapper": "serviceButtonWrapper_280635",
-	"richActivity": "richActivity_280635",
-	"activityActivityFeed": "activityActivityFeed_280635",
-	"activityFeed": "activityFeed_280635",
-	"body": "body_280635",
-	"bodyNormal": "bodyNormal_280635",
-	"gameInfoRich": "gameInfoRich_280635",
-	"gameNameWrapper": "gameNameWrapper_280635",
-	"gameInfo": "gameInfo_280635",
-	"gameName": "gameName_280635",
-	"streamInfo": "streamInfo_280635",
-	"clickable": "clickable_280635",
-	"playTime": "playTime_280635",
-	"assets": "assets_280635",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_280635",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_280635",
-	"assetsLargeImage": "assetsLargeImage_280635",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_280635",
-	"assetsSmallImage": "assetsSmallImage_280635",
-	"smallEmptyIcon": "smallEmptyIcon_280635",
-	"largeEmptyIcon": "largeEmptyIcon_280635",
-	"twitchImageContainer": "twitchImageContainer_280635",
-	"twitchBackgroundImage": "twitchBackgroundImage_280635",
-	"twitchImageOverlay": "twitchImageOverlay_280635",
-	"streamName": "streamName_280635",
-	"streamGame": "streamGame_280635",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_280635",
-	"content": "content_280635",
-	"details": "details_280635",
-	"ellipsis": "ellipsis_280635",
-	"textRow": "textRow_280635",
-	"voiceSection": "voiceSection_280635",
-	"voiceSectionAssets": "voiceSectionAssets_280635",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_280635",
-	"voiceSectionIcon": "voiceSectionIcon_280635",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_280635",
-	"voiceSectionDetails": "voiceSectionDetails_280635",
-	"voiceSectionText": "voiceSectionText_280635",
-	"voiceSectionSubtext": "voiceSectionSubtext_280635",
-	"userList": "userList_280635",
-	"streamSection": "streamSection_280635",
-	"applicationStreamingSection": "applicationStreamingSection_280635",
-	"applicationStreamingAvatar": "applicationStreamingAvatar_280635",
-	"applicationStreamingDetails": "applicationStreamingDetails_280635",
-	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_280635",
-	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_280635",
-	"applicationStreamingPreview": "applicationStreamingPreview_280635",
-	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_280635",
-	"applicationStreamingHoverText": "applicationStreamingHoverText_280635",
-	"emptyPreviewContainer": "emptyPreviewContainer_280635",
-	"emptyPreviewImage": "emptyPreviewImage_280635",
-	"emptyPreviewText": "emptyPreviewText_280635",
-	"inner": "inner_280635",
-	"actionsActivity": "actionsActivity_280635",
-	"buttonContainer": "buttonContainer_280635",
-	"partyStatusWrapper": "partyStatusWrapper_280635",
-	"partyList": "partyList_280635",
-	"player": "player_280635",
-	"userOverflow": "userOverflow_280635",
-	"emptyUser": "emptyUser_280635",
-	"partyPlayerCount": "partyPlayerCount_280635",
-	"cardV2": "cardV2_280635",
-	"gameIcon": "gameIcon_280635",
-	"state": "state_280635"
+	"nowPlaying": "nowPlaying_9079ba",
+	"nowPlayingContainer": "nowPlayingContainer_9079ba",
+	"nowPlayingColumn": "nowPlayingColumn_9079ba",
+	"itemCard": "itemCard_9079ba",
+	"card": "card_9079ba",
+	"cardHeader": "cardHeader_9079ba",
+	"header": "header_9079ba",
+	"nameTag": "nameTag_9079ba",
+	"username": "username_9079ba",
+	"headerIcon": "headerIcon_9079ba",
+	"headerActions": "headerActions_9079ba",
+	"overflowMenu": "overflowMenu_9079ba",
+	"splashArt": "splashArt_9079ba",
+	"server": "server_9079ba",
+	"cardBody": "cardBody_9079ba",
+	"section": "section_9079ba",
+	"game": "game_9079ba",
+	"gameBody": "gameBody_9079ba",
+	"activity": "activity_9079ba",
+	"serviceButtonWrapper": "serviceButtonWrapper_9079ba",
+	"richActivity": "richActivity_9079ba",
+	"activityActivityFeed": "activityActivityFeed_9079ba",
+	"activityFeed": "activityFeed_9079ba",
+	"body": "body_9079ba",
+	"bodyNormal": "bodyNormal_9079ba",
+	"gameInfoRich": "gameInfoRich_9079ba",
+	"gameNameWrapper": "gameNameWrapper_9079ba",
+	"gameInfo": "gameInfo_9079ba",
+	"gameName": "gameName_9079ba",
+	"streamInfo": "streamInfo_9079ba",
+	"clickable": "clickable_9079ba",
+	"playTime": "playTime_9079ba",
+	"assets": "assets_9079ba",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_9079ba",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_9079ba",
+	"assetsLargeImage": "assetsLargeImage_9079ba",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_9079ba",
+	"assetsSmallImage": "assetsSmallImage_9079ba",
+	"smallEmptyIcon": "smallEmptyIcon_9079ba",
+	"largeEmptyIcon": "largeEmptyIcon_9079ba",
+	"twitchImageContainer": "twitchImageContainer_9079ba",
+	"twitchBackgroundImage": "twitchBackgroundImage_9079ba",
+	"twitchImageOverlay": "twitchImageOverlay_9079ba",
+	"streamName": "streamName_9079ba",
+	"streamGame": "streamGame_9079ba",
+	"contentImagesActivityFeed": "contentImagesActivityFeed_9079ba",
+	"content": "content_9079ba",
+	"details": "details_9079ba",
+	"ellipsis": "ellipsis_9079ba",
+	"textRow": "textRow_9079ba",
+	"voiceSection": "voiceSection_9079ba",
+	"voiceSectionAssets": "voiceSectionAssets_9079ba",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper_9079ba",
+	"voiceSectionIcon": "voiceSectionIcon_9079ba",
+	"voiceSectionGuildImage": "voiceSectionGuildImage_9079ba",
+	"voiceSectionDetails": "voiceSectionDetails_9079ba",
+	"voiceSectionText": "voiceSectionText_9079ba",
+	"voiceSectionSubtext": "voiceSectionSubtext_9079ba",
+	"userList": "userList_9079ba",
+	"streamSection": "streamSection_9079ba",
+	"applicationStreamingSection": "applicationStreamingSection_9079ba",
+	"applicationStreamingAvatar": "applicationStreamingAvatar_9079ba",
+	"applicationStreamingDetails": "applicationStreamingDetails_9079ba",
+	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_9079ba",
+	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_9079ba",
+	"applicationStreamingPreview": "applicationStreamingPreview_9079ba",
+	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_9079ba",
+	"applicationStreamingHoverText": "applicationStreamingHoverText_9079ba",
+	"emptyPreviewContainer": "emptyPreviewContainer_9079ba",
+	"emptyPreviewImage": "emptyPreviewImage_9079ba",
+	"emptyPreviewText": "emptyPreviewText_9079ba",
+	"inner": "inner_9079ba",
+	"actionsActivity": "actionsActivity_9079ba",
+	"buttonContainer": "buttonContainer_9079ba",
+	"partyStatusWrapper": "partyStatusWrapper_9079ba",
+	"partyList": "partyList_9079ba",
+	"player": "player_9079ba",
+	"userOverflow": "userOverflow_9079ba",
+	"emptyUser": "emptyUser_9079ba",
+	"partyPlayerCount": "partyPlayerCount_9079ba",
+	"cardV2": "cardV2_9079ba",
+	"gameIcon": "gameIcon_9079ba",
+	"state": "state_9079ba"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -2468,13 +2479,25 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
 		case "REGULAR":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.gameNameWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, game?.name)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity.created_at })));
 		case "RICH":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity.details || activity?.state), activity?.details && BdApi.React.createElement("div", { className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity?.state), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common$1.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common$1.ActivityTimer, { activity }));
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity.details || activity?.state), activity?.details && BdApi.React.createElement("div", { className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity?.state), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common.ActivityTimer, { activity }));
 		case "TWITCH":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, activity.state && BdApi.React.createElement("div", { className: "state textRow ellipsis" }, `${Common$1.intl.intl.formatToPlainString(Common$1.intl.t[`BMTj28`])} ${activity.state}`));
+			return BdApi.React.createElement("div", { className: NowPlayingClasses.streamInfo }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, game?.name), BdApi.React.createElement(
+				"a",
+				{
+					className: `${Common.ButtonVoidClasses.lookLink} ${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.playTime}`,
+					href: activity.url,
+					rel: "noreferrer nopener",
+					target: "_blank",
+					role: "button"
+				},
+				activity.url
+			));
+		case "TWITCH_OVERLAY":
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.streamName }, activity.details), BdApi.React.createElement("div", { className: NowPlayingClasses.streamGame }, Common.intl.intl.formatToPlainString(Common.intl.t["IGYgjl"], { gameName: activity.state })));
 		case "VOICE":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, server?.name || channel?.name || streamUser?.globalName), server && BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, channel?.name));
 		case "STREAM":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { style: { display: "flex", alignItems: "flex-end" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, streamUser.globalName || streamUser.username), BdApi.React.createElement(Common$1.LiveBadge, { style: { marginLeft: "5px" } })), BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, Common$1.intl.intl.format(Common$1.intl.t["0wJXSh"], { name: BdApi.React.createElement("strong", null, stream.name) })));
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { style: { display: "flex", alignItems: "flex-end" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}` }, streamUser.globalName || streamUser.username), BdApi.React.createElement(Common.LiveBadge, { style: { marginLeft: "5px" } })), BdApi.React.createElement("div", { className: `${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}` }, Common.intl.intl.format(Common.intl.t["0wJXSh"], { name: BdApi.React.createElement("strong", null, stream.name) })));
 	}
 }
 function FlexInfo(props) {
@@ -2516,7 +2539,7 @@ function PartyMemberListBuilder({ activity, users }) {
 					return BdApi.React.createElement("div", { className: NowPlayingClasses.emptyUser, style: { background: "var(--experimental-avatar-embed-bg" } });
 				default:
 					return BdApi.React.createElement(
-						Common$1.AvatarFetch,
+						Common.AvatarFetch,
 						{
 							src: `https://cdn.discordapp.com/avatars/${player?.id}/${player?.avatar}.webp?size=16`,
 							size: "SIZE_16",
@@ -2531,7 +2554,7 @@ function RegularCardTrailing({ activity, user, server, players, check, v2Enabled
 	const [width, height] = useWindowSize();
 	if (width < 1240) return;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, server && BdApi.React.createElement(
-		Common$1.VoiceList,
+		Common.VoiceList,
 		{
 			className: `${NowPlayingClasses.userList}`,
 			users: players,
@@ -2539,13 +2562,13 @@ function RegularCardTrailing({ activity, user, server, players, check, v2Enabled
 			guildId: server?.id,
 			size: "SIZE_32"
 		}
-	), check?.spotify !== 0 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.serviceButtonWrapper}` }, BdApi.React.createElement(Common$1.SpotifyButtons, { user, activity })), !activity?.name.includes("YouTube Music") && activity?.assets ? null : BdApi.React.createElement(
+	), check?.spotify !== 0 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.serviceButtonWrapper}` }, BdApi.React.createElement(Common.SpotifyButtons, { user, activity })), !activity?.name.includes("YouTube Music") && activity?.assets ? null : BdApi.React.createElement(
 		"div",
 		{
-			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }
 		},
-		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common$1.ActivityButtons, { user, activity })
+		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common.ActivityButtons, { user, activity })
 	));
 }
 function RichCardTrailing({ activity, user, v2Enabled }) {
@@ -2553,17 +2576,17 @@ function RichCardTrailing({ activity, user, v2Enabled }) {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, width > 1240 && !activity?.name.includes("YouTube Music") && BdApi.React.createElement(
 		"div",
 		{
-			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }
 		},
-		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common$1.ActivityButtons, { user, activity })
+		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common.ActivityButtons, { user, activity })
 	));
 }
 function VoiceCardTrailing({ members, server, channel }) {
 	const [width, height] = useWindowSize();
 	if (width <= 1240) return;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(
-		Common$1.VoiceList,
+		Common.VoiceList,
 		{
 			className: NowPlayingClasses.userList,
 			users: members,
@@ -2572,7 +2595,7 @@ function VoiceCardTrailing({ members, server, channel }) {
 			channelId: channel.id,
 			size: "SIZE_32"
 		}
-	), BdApi.React.createElement(Common$1.CallButtons, { channel }));
+	), BdApi.React.createElement(Common.CallButtons, { channel }));
 }
 function PartyFooter({ party, players, user, activity }) {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider, style: { margin: "8px 0 8px 0" } }), BdApi.React.createElement("div", { className: NowPlayingClasses.partyStatusWrapper }, BdApi.React.createElement(PartyMemberListBuilder, { activity, users: players }), BdApi.React.createElement(
@@ -2581,8 +2604,8 @@ function PartyFooter({ party, players, user, activity }) {
 			className: NowPlayingClasses.partyPlayerCount,
 			style: { flex: "1 1 100%" }
 		},
-		Common$1.intl.intl.formatToPlainString(Common$1.intl.t["gLu7NU"], { partySize: party.size[0], maxPartySize: party.size[1] })
-	), BdApi.React.createElement(Common$1.JoinButton, { user, activity })));
+		Common.intl.intl.formatToPlainString(Common.intl.t["gLu7NU"], { partySize: party.size[0], maxPartySize: party.size[1] })
+	), BdApi.React.createElement(Common.JoinButton, { user, activity })));
 }
 
 // activity_feed/components/now_playing/activities/components/common/ActivityAssets.tsx
@@ -2618,7 +2641,7 @@ function SpotifyAsset({ activity, user }) {
 			width: "40",
 			height: "40",
 			viewBox: "0 0 16 16",
-			onClick: () => Common$1.openSpotifyAlbumFromStatus(activity, user.id),
+			onClick: () => Common.openSpotifyAlbumFromStatus(activity, user.id),
 			onError: () => setShouldFallback(true)
 		},
 		BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement(
@@ -2632,13 +2655,13 @@ function SpotifyAsset({ activity, user }) {
 }
 function GameIconAsset({ url, id, name }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	const useGameProfile = Common$1.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.gameIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"img",
 		{
 			className: NowPlayingClasses.gameIcon,
 			style: { width: "40px", height: "40px", cursor: useGameProfile && "pointer" },
-			"aria-label": Common$1.intl.intl.formatToPlainString(Common$1.intl.t["nh+jWk"], { game: name }),
+			"aria-label": Common.intl.intl.formatToPlainString(Common.intl.t["nh+jWk"], { game: name }),
 			src: url,
 			onClick: useGameProfile,
 			onError: () => setShouldFallback(true)
@@ -2659,17 +2682,25 @@ function RichImageAsset({ url, tooltipText, onClick, type }) {
 		}
 	));
 }
-function TwitchImageAsset({ url, imageId, altText }) {
-	return BdApi.React.createElement(BdApi.React.Fragment, null, !imageId ? BdApi.React.createElement(FallbackAsset, { className: "assetsLargeImage", transform: "scale(1.65)" }) : BdApi.React.createElement(
-		"img",
+function TwitchImageAsset({ url, imageId, streamUrl }) {
+	return BdApi.React.createElement(
+		"a",
 		{
-			className: "assetsLargeImageTwitch assetsLargeImage",
-			"aria-label": altText,
-			alt: altText,
-			src: url,
-			onError: (e) => e.currentTarget.src = "https://static-cdn.jtvnw.net/ttv-static/404_preview-162x90.jpg"
-		}
-	));
+			className: `${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.twitchBackgroundImage}`,
+			href: streamUrl,
+			rel: "noreferrer nopener",
+			target: "_blank"
+		},
+		!imageId ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`, transform: "scale(1.65)" }) : BdApi.React.createElement(
+			"img",
+			{
+				className: `${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`,
+				alt: null,
+				src: url,
+				onError: (e) => e.currentTarget.src = "https://static-cdn.jtvnw.net/ttv-static/404_preview-900x500.jpg"
+			}
+		)
+	);
 }
 function VoiceGuildAsset({ channel, server, streamUser }) {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(
@@ -2692,7 +2723,7 @@ function VoiceGuildAsset({ channel, server, streamUser }) {
 
 // activity_feed/components/now_playing/activities/components/InnerBuilder.tsx
 function RegularActivityBuilder({ activity, user, game, players, server, check, v2Enabled }) {
-	return BdApi.React.createElement("div", { className: `${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.flex} ${NowPlayingClasses.activity}`, style: { flex: "1 1 auto" } }, (() => {
+	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.activity}`, style: { flex: "1 1 auto" } }, (() => {
 		switch (true) {
 			case !!check?.spotify:
 				return BdApi.React.createElement(SpotifyAsset, { activity, user });
@@ -2703,8 +2734,11 @@ function RegularActivityBuilder({ activity, user, game, players, server, check, 
 		}
 	})(), BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.gameInfo, activity, game, type: "REGULAR" }), BdApi.React.createElement(RegularCardTrailing, { activity, user, server, players, check, v2Enabled }));
 }
+function RegularTwitchActivityBuilder({ user, activity, game }) {
+	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.twitchActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(GameIconAsset, { url: `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`, id: activity?.application_id, name: game?.name }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`, activity, game, type: "TWITCH" }), BdApi.React.createElement(RichCardTrailing, { activity, user }));
+}
 function RichActivityBuilder({ user, activity, v2Enabled }) {
-	return BdApi.React.createElement("div", { className: `${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${Common$1.PositionClasses.alignStretch} ${Common$1.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common$1.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.assets}` }, BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.assets}` }, BdApi.React.createElement(
 		RichImageAsset,
 		{
 			url: (() => {
@@ -2729,13 +2763,23 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 		}
 	)), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`, activity, type: "RICH" }), BdApi.React.createElement(RichCardTrailing, { activity, user, v2Enabled }))));
 }
+function RichTwitchActivityBuilder({ activity }) {
+	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: NowPlayingClasses.assets }, BdApi.React.createElement("div", { className: NowPlayingClasses.twitchImageContainer }, BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.twitchImageOverlay, activity, type: "TWITCH_OVERLAY" }), BdApi.React.createElement(
+		TwitchImageAsset,
+		{
+			url: activity.name.includes("YouTube") ? `https://i.ytimg.com/vi/${activity.assets.large_image.substring(activity.assets.large_image.indexOf(":") + 1)}/hqdefault_live.jpg` : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity.assets.large_image.substring(activity.assets.large_image.indexOf(":") + 1)}-900x500.jpg`,
+			imageId: activity.assets.large_image,
+			streamUrl: activity.url
+		}
+	))))));
+}
 
 // activity_feed/components/now_playing/activities/components/CardActivity.tsx
 function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
 	const gameId = currentActivity?.application_id;
 	react.useEffect(() => {
 		(async () => {
-			await Common$1.FetchGames.getDetectableGamesSupplemental([gameId]);
+			await Common.FetchGames.getDetectableGamesSupplemental([gameId]);
 		})();
 	}, [gameId]);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, players, server, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
@@ -2746,7 +2790,7 @@ function ActivityCardWrapper({ user, activities, voice, streams, check, v2Enable
 	if (!activities) return;
 	return activities.map((activity) => {
 		const currentActivity = activity?.activity || streams[0].activity;
-		const currentGame = activity?.game || Common$1.GameStore.getGameByName(streams[0].activity.name);
+		const currentGame = activity?.game || Common.GameStore.getGameByName(streams[0].activity.name);
 		const players = activity.playingMembers;
 		const server = voice[0]?.guild;
 		return BdApi.React.createElement(ActivityCard, { user, activities, currentActivity, currentGame, players, server, check, v2Enabled });
@@ -2754,16 +2798,10 @@ function ActivityCardWrapper({ user, activities, voice, streams, check, v2Enable
 }
 
 // activity_feed/components/now_playing/activities/components/CardTwitch.tsx
-function TwitchCard({ user, activities }) {
-	const activity = activities.filter((activity2) => activity2 && activity2.name && activity2.type === 1)[0];
-	return BdApi.React.createElement("div", { className: "activityProfileContainer activityProfileContainerTwitch" }, BdApi.React.createElement("div", { className: "activityProfile activity" }, BdApi.React.createElement("div", { className: "bodyNormal", style: { display: "flex", alignItems: "center", width: "auto" } }, BdApi.React.createElement("div", { className: "assets", style: { position: "relative" } }, BdApi.React.createElement(
-		TwitchImageAsset,
-		{
-			url: activity.name.includes("YouTube") ? `https://i.ytimg.com/vi/${activity?.assets?.large_image.substring(activity?.assets?.large_image.indexOf(":") + 1)}/hqdefault_live.jpg` : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity?.assets?.large_image.substring(activity?.assets?.large_image.indexOf(":") + 1)}-162x90.jpg`,
-			imageId: activity?.assets?.large_image,
-			altText: activity?.assets?.large_text
-		}
-	)), BdApi.React.createElement(FlexInfo, { className: "contentImagesProfile content", activity, type: "TWITCH" }), BdApi.React.createElement("div", { className: "buttonsWrapper actionsProfile" }, BdApi.React.createElement(Common.ActivityButtons, { user, activity })))));
+function TwitchCard({ user, activity }) {
+	const currentGame = activity?.game;
+	const currentActivity = activity?.activity;
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(RegularTwitchActivityBuilder, { user, activity: currentActivity, game: currentGame }), BdApi.React.createElement(RichTwitchActivityBuilder, { activity: currentActivity }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardStream.tsx
@@ -2771,31 +2809,31 @@ function StreamFallback() {
 	return BdApi.React.createElement(
 		"div",
 		{
-			className: `${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap}${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
+			className: `${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap}${Common.PositionClasses.alignCenter} ${Common.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
 			style: { flex: "1 1 auto" }
 		},
-		BdApi.React.createElement(Common$1.Spinner, null)
+		BdApi.React.createElement(Common.Spinner, null)
 	);
 }
 function StreamPlaceholder() {
 	return BdApi.React.createElement(
 		"div",
 		{
-			className: `${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap}${Common$1.PositionClasses.alignCenter} ${Common$1.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
+			className: `${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap}${Common.PositionClasses.alignCenter} ${Common.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`,
 			style: { flex: "1 1 auto" }
 		},
 		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewImage, style: { backgroundImage: "url(https://static.discord.com/assets/b93ef52d62a513a4f2127a6ca0c3208c.svg)" } }),
-		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["uQZTBV"]))
+		BdApi.React.createElement("div", { className: NowPlayingClasses.emptyPreviewText }, Common.intl.intl.formatToPlainString(Common.intl.t["uQZTBV"]))
 	);
 }
 function StreamPreview({ stream }) {
-	const { previewUrl, isLoading } = Common$1.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
+	const { previewUrl, isLoading } = Common.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, isLoading ? BdApi.React.createElement(StreamPlaceholder, null) : !previewUrl ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
-		return Common$1.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common$1.OpenStream(stream);
-	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common$1.intl.intl.formatToPlainString(Common$1.intl.t["7Xq/nV"]))));
+		return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream);
+	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common.intl.intl.formatToPlainString(Common.intl.t["7Xq/nV"]))));
 }
 function StreamCard({ stream, streamUser, streamActivity }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common$1.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
 }
 
 // activity_feed/components/now_playing/activities/methods/getVoiceParticipants.js
@@ -2821,7 +2859,7 @@ function VoiceCard({ activities, voice, streams }) {
 		FlexInfo,
 		{
 			className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`,
-			onClick: () => Common$1.OpenVoiceChannel.selectVoiceChannel(channel.id),
+			onClick: () => Common.OpenVoiceChannel.selectVoiceChannel(channel.id),
 			channel,
 			streamUser: streamUsers[0],
 			server,
@@ -2834,7 +2872,7 @@ function VoiceCard({ activities, voice, streams }) {
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
 function CardBody({ activities, user, voice, streams, check, isSpotify, v2Enabled }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), (() => {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), (() => {
 		switch (true) {
 			case !!check?.streaming:
 				return BdApi.React.createElement(TwitchCard, { user, activity: activities[0] });
@@ -2853,26 +2891,26 @@ function DiscordTag({ user, voice }) {
 	let outputtedUsername;
 	switch (true) {
 		case !!(voice && voice[0]?.members.length > 2):
-			outputtedUsername = `${user.globalName || user.username}, ${Common$1.intl.intl.formatToPlainString(Common$1.intl.t["zRRd8G"], { count: voice[0]?.members.length - 2, name: voice[0]?.members[voice[0]?.members.length - 1].globalName || voice[0]?.members[voice[0]?.members.length - 1].username })}`;
+			outputtedUsername = `${user.globalName || user.username}, ${Common.intl.intl.formatToPlainString(Common.intl.t["zRRd8G"], { count: voice[0]?.members.length - 2, name: voice[0]?.members[voice[0]?.members.length - 1].globalName || voice[0]?.members[voice[0]?.members.length - 1].username })}`;
 			break;
 		case !!(voice && voice[0]?.members.length > 1):
-			outputtedUsername = Common$1.intl.intl.formatToPlainString(Common$1.intl.t["4SM/RX"], { user1: user.globalName || user.username || voice[0]?.members[1].username, user2: voice[0]?.members[1].globalName || voice[0]?.members[1].globalName || voice[0]?.members[1].username });
+			outputtedUsername = Common.intl.intl.formatToPlainString(Common.intl.t["4SM/RX"], { user1: user.globalName || user.username || voice[0]?.members[1].username, user2: voice[0]?.members[1].globalName || voice[0]?.members[1].username });
 			break;
 		default:
 			outputtedUsername = user.globalName || user.username;
 	}
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common$1.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
 }
 function HeaderActions({ card, user }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${Common$1.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common$1.ButtonVoidClasses.sizeSmall} ${Common$1.ButtonVoidClasses.lookFilled}`, onClick: () => Common$1.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
-		Common$1.Popout,
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`, onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
+		Common.Popout,
 		{
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common$1.PopoutContainer, { position: "left" }, BdApi.React.createElement(Common$1.CardPopout, { party: card.party, close: () => setShowPopout(false) })),
+			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position: "left" }, BdApi.React.createElement(Common.CardPopout, { party: card.party, close: () => setShowPopout(false) })),
 			position: "left",
 			shouldShow: showPopout
 		},
@@ -2885,7 +2923,7 @@ function HeaderActions({ card, user }) {
 					setShowPopout(true);
 				}
 			},
-			BdApi.React.createElement(Tooltip, { note: "More" }, BdApi.React.createElement("button", { className: `${MainClasses.button} ${Common$1.ButtonVoidClasses.lookBlank} ${Common$1.ButtonVoidClasses.grow}`, type: "button" }, BdApi.React.createElement("svg", { className: `${NowPlayingClasses.overflowMenu}`, role: "img", width: "16", height: "16", viewBox: "0 0 24 24" }, BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement("path", { d: "M24 0v24H0V0z" }), BdApi.React.createElement("path", { d: "M12 16c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2z", fill: "currentColor" })))))
+			BdApi.React.createElement(Tooltip, { note: "More" }, BdApi.React.createElement("button", { className: `${MainClasses.button} ${Common.ButtonVoidClasses.lookBlank} ${Common.ButtonVoidClasses.grow}`, type: "button" }, BdApi.React.createElement("svg", { className: `${NowPlayingClasses.overflowMenu}`, role: "img", width: "16", height: "16", viewBox: "0 0 24 24" }, BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement("path", { d: "M24 0v24H0V0z" }), BdApi.React.createElement("path", { d: "M12 16c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2zm0-6c1.1045695 0 2 .8954305 2 2s-.8954305 2-2 2-2-.8954305-2-2 .8954305-2 2-2z", fill: "currentColor" })))))
 		)
 	));
 }
@@ -2894,7 +2932,7 @@ function HeaderIcon({ activities, isSpotify, currentGame }) {
 }
 function CardHeader({ card, activities, game, splash, user, voice, isSpotify }) {
 	const status = card.party.priorityMembers[0].status;
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${Common$1.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(Common$1.AvatarFetch, { imageClassName: "avatar", src: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: "avatar", src: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
 }
 
 // activity_feed/components/now_playing/CardBuilder.tsx
@@ -2909,7 +2947,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 	react.useEffect(() => {
 		(async () => {
-			await Common$1.FetchGames.getDetectableGamesSupplemental([currentGame?.id]);
+			await Common.FetchGames.getDetectableGamesSupplemental([currentGame?.id]);
 		})();
 	}, [currentGame?.id]);
 	const game = DetectableGameSupplementalStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && DetectableGameSupplementalStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
@@ -2920,12 +2958,12 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 // activity_feed/components/now_playing/BaseBuilder.tsx
 function NowPlayingColumnBuilder({ nowPlayingCards }) {
 	return nowPlayingCards.map((card) => [
-		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") || settings.default.v2Cards }),
+		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") ?? settings.default.v2Cards }),
 		betterdiscord.Data.load("cardTypeDebug") && BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: false })
 	]);
 }
 function NowPlayingBuilder(props) {
-	Common$1.FluxDispatcher.dispatch({ type: "NOW_PLAYING_MOUNTED" });
+	Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_MOUNTED" });
 	const nowPlayingCards = useStateFromStores([NowPlayingViewStore], () => NowPlayingViewStore.nowPlayingCards);
 	const cardColumns = chunkArray(nowPlayingCards, 2);
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: MainClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
@@ -2938,7 +2976,7 @@ function Scroller({ children, padding }) {
 function TabBaseBuilder() {
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common$1.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common$1.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: MainClasses.activityFeed }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/ActivityFeedSettings.module.css
@@ -3036,10 +3074,10 @@ function ExternalItemBuilder({ service }) {
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
 		"button",
 		{
-			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			onClick: () => ModalSystem.openModal(
 				(props) => BdApi.React.createElement(
-					Common$1.ModalRoot.Modal,
+					Common.ModalRoot.Modal,
 					{
 						...props,
 						title: "Are you sure?",
@@ -3060,10 +3098,10 @@ function ExternalItemBuilder({ service }) {
 	) : BdApi.React.createElement(
 		"button",
 		{
-			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			onClick: () => ModalSystem.openModal(
 				(props) => BdApi.React.createElement(
-					Common$1.ModalRoot.Modal,
+					Common.ModalRoot.Modal,
 					{
 						...props,
 						title: "Are you sure?",
@@ -3102,10 +3140,10 @@ function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, 
 	), BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, application.name || "Unknown Game"), isUnfollowed ? BdApi.React.createElement(
 		"button",
 		{
-			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			onClick: () => ModalSystem.openModal(
 				(props) => BdApi.React.createElement(
-					Common$1.ModalRoot.Modal,
+					Common.ModalRoot.Modal,
 					{
 						...props,
 						title: "Are you sure?",
@@ -3127,10 +3165,10 @@ function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, 
 	) : BdApi.React.createElement(
 		"button",
 		{
-			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			onClick: () => ModalSystem.openModal(
 				(props) => BdApi.React.createElement(
-					Common$1.ModalRoot.Modal,
+					Common.ModalRoot.Modal,
 					{
 						...props,
 						title: "Are you sure?",
@@ -3158,7 +3196,6 @@ function FollowedGameListBuilder() {
 		const _query = query.toLowerCase();
 		return whitelist?.filter((item) => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
-	console.log(filtered, query);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map(
 		(game) => BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FollowedGameItemBuilder, { game, whitelist, blacklist, updateBlacklist, key: game.applicationId }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }))
 	)) : BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "No results.")));
@@ -3170,7 +3207,7 @@ function SettingsPanelBuilder() {
 		const { name, note, initial, changed } = settings.main[key];
 		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		return BdApi.React.createElement(
-			Common$1.FormSwitch,
+			Common.FormSwitch,
 			{
 				label: name,
 				description: note,
@@ -3186,7 +3223,7 @@ function SettingsPanelBuilder() {
 		const { name, note, initial, type, changed } = settings.debug[key];
 		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		if (type === "switch") return BdApi.React.createElement(
-			Common$1.FormSwitch,
+			Common.FormSwitch,
 			{
 				label: name,
 				description: note,
@@ -3201,7 +3238,7 @@ function SettingsPanelBuilder() {
 		if (type === "button") return BdApi.React.createElement("div", { className: SettingsClasses.buttonItem }, BdApi.React.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}`, style: { fontWeight: 500, fontSize: "16px", color: "var(--text-default)" } }, name), BdApi.React.createElement("div", { className: NowPlayingClasses.textRow }, note)), BdApi.React.createElement(
 			"button",
 			{
-				className: `${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart} ${MainClasses.button} ${SettingsClasses.unhideBlacklisted}`,
+				className: `${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${MainClasses.button} ${SettingsClasses.unhideBlacklisted}`,
 				onClick: () => NewsStore.rerollFeeds()
 			},
 			"Reroll"
@@ -3247,13 +3284,13 @@ function useSelectedState() {
 }
 function NavigatorButton() {
 	return react.createElement(
-		Common$1.LinkButton,
+		Common.LinkButton,
 		{
 			selected: useSelectedState(),
 			route: "/activity-feed",
 			text: "Activity",
 			icon: () => {
-				return react.createElement(Common$1.Icons.GameControllerIcon, { color: "currentColor", className: Common$1.LinkButtonClasses.linkButtonIcon });
+				return react.createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
 			}
 		}
 	);
@@ -3335,7 +3372,7 @@ class ActivityFeed {
 		}
 		betterdiscord.DOM.addStyle("activityPanelCSS", styles$1());
 		betterdiscord.DOM.addStyle("activityPanelSupplementalCSS", extraCSS);
-		betterdiscord.Patcher.after(Common$1.DMSidebar, "A", (that, [props], res) => {
+		betterdiscord.Patcher.after(Common.DMSidebar, "A", (that, [props], res) => {
 			const panel = betterdiscord.Utils.findInTree(res, (m) => m?.homeLink, { walkable: ["props", "children"] });
 			const selected = useSelectedState();
 			if (selected) {
@@ -3359,7 +3396,7 @@ class ActivityFeed {
 				"/activity-feed"
 			];
 		});
-		betterdiscord.Patcher.after(Common$1.RootSectionModule, "buildLayout", (that, [props], res) => {
+		betterdiscord.Patcher.after(Common.RootSectionModule, "buildLayout", (that, [props], res) => {
 			const section = betterdiscord.Utils.findInTree(res, (tree) => Object.values(tree).includes("activity_section"), { walkable: ["props", "children"] });
 			betterdiscord.Patcher.after(section, "buildLayout", (that2, [props2], res2) => {
 				if (!betterdiscord.Utils.findInTree(res2, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
@@ -3418,7 +3455,7 @@ class ActivityFeed {
 				(key) => {
 					const { name, note, initial, changed } = settings.main[key];
 					const [state, setState] = react.useState(betterdiscord.Data.load(key));
-					return react.createElement(Common$1.FormSwitch, {
+					return react.createElement(Common.FormSwitch, {
 						label: name,
 						description: note,
 						checked: state ?? initial,
@@ -3455,7 +3492,7 @@ class ActivityFeed {
 						const { name, note, initial, type, changed } = settings.debug[key];
 						const [state, setState] = react.useState(betterdiscord.Data.load(key));
 						if (type === "switch") {
-							return react.createElement(Common$1.FormSwitch, {
+							return react.createElement(Common.FormSwitch, {
 								label: name,
 								description: note,
 								checked: state ?? initial,
@@ -3475,7 +3512,7 @@ class ActivityFeed {
 							react.createElement(
 								"button",
 								{
-									className: `button_267ac unhideBlacklisted_267ac ${Common$1.ButtonVoidClasses.lookFilled} ${Common$1.ButtonVoidClasses.colorPrimary} ${Common$1.ButtonVoidClasses.sizeTiny} ${Common$1.PositionClasses.flex} ${Common$1.PositionClasses.noWrap} ${Common$1.PositionClasses.justifyStart}`,
+									className: `button_267ac unhideBlacklisted_267ac ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 									onClick: () => NewsStore.displaySet = NewsStore.getRandomFeeds(NewsStore.dataSet)
 								},
 								"Reroll"

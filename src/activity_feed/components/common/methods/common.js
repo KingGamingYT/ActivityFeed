@@ -1,6 +1,20 @@
+import { Net } from 'betterdiscord';
 import { useState, useLayoutEffect } from "react";
 import { Common } from '@./modules/common';
 import { ChannelStore } from "@modules/stores";
+
+function checkImage(url) {
+    let image = new Image();
+    image.onload = function() {
+        if (this.width > 0) {
+            return true;
+        }
+    }
+    image.onerror = function() {
+        return false;
+    }
+    image.src = url;
+}
 
 export function chunkArray(cards, num) {
     let chunkLength = Math.max(cards.length / num, 1);
@@ -41,11 +55,12 @@ export function GradGen(check, isSpotify, activity, game, voice, stream) {
         case !! activity?.name.includes("YouTube Music"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! activity?.platform?.includes("xbox"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
         case !! (activity?.assets && activity?.assets.large_image?.includes('external')): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
-        case !! activity?.assets: input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`; break;
+        case !! (activity?.assets && activity?.assets.large_image): input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`; break;
         case !! game?.icon: input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
         case !! voice[0]?.guild: input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`; break; 
         case !! voice && stream: input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
     }
+    //if (!checkImage(input)) console.warn("[GradientComponent] Failed to load gradient for card", activity, game);
     return Common.GradientComponent(input || null);
 }
 
@@ -79,32 +94,22 @@ export function activityCheck( activities, isSpotify ) {
         if (!activities[i]) {
             return;
         }
-        if (activities[i].type == 4) {
-            pass.custom = 1;
+        switch (activities[i]?.activity?.type) {
+            case 0: pass.playing = 1; break;
+            case 1: pass.streaming = 1; break;
+            case 2: pass.listening = 1; break;
+            case 3: pass.watching = 1; break;
+            case 4: pass.custom = 1; break;
+            case 5: pass.competing = 1; break;
         }
-        if (activities[i].type == 0) {
-            pass.playing = 1;
-        }
-        if (activities[i]?.platform?.includes("xbox")) {
+        if (activities[i]?.activity?.platform?.includes("xbox")) {
             pass.xbox = 1;
         }
-        if (activities[i]?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
+        if (activities[i]?.activity?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
             pass.playstation = 1;
-        }
-        if (activities[i].type == 1) {
-            pass.streaming = 1;
-        }
-        if (activities[i].type == 2) {
-            pass.listening = 1;
         }
         if (isSpotify) {
             pass.spotify = 1;
-        }
-        if (activities[i].type == 3) {
-            pass.watching = 1;
-        }
-        if (activities[i].type == 5) {
-            pass.competing = 1;
         }
     }
     return pass;

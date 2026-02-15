@@ -146,11 +146,9 @@ class GameNewsStore extends Utils.Store {
 
     blacklistGame(applicationId, gameId) {
         let b = this.blacklist;
-        console.log(b)
 
-        if (!this.getBlacklistedGame) {
+        if (!this.getBlacklistedGame(gameId)) {
             b.push({applicationId: applicationId, gameId: gameId});
-            console.log(this.blacklist)
             this.emitChange();
             Data.save('blacklist', this.blacklist);
         }
@@ -159,10 +157,12 @@ class GameNewsStore extends Utils.Store {
 
     whitelistGame(gameId) {
         let b = this.blacklist;
-        const g = b.find(e => e.game_id === gameId);
+        const g = this.getBlacklistedGame(gameId);
 
+        console.log(b)
         b.splice(b.indexOf(g), 1);
         this.emitChange();
+        console.log(b)
         Data.save('blacklist', this.blacklist);
         return this.blacklist;
     }
@@ -201,9 +201,22 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
-    async #fetchXboxFeeds() {}
-
-    async #fetchPlaystationFeeds() {}
+    async #fetchXboxFeeds() {
+        const rssFeed = await Promise.all([ BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://news.xbox.com/en-us/feed/`).then(r => r.ok ? r.json() : null) ])
+        const article = this.getRSSItem(rssFeed);
+        return {
+            application: {
+                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+                id: "Xbox"
+            },
+            appId: "Xbox",
+            description: article?.description?.[0],
+            thumbnail: article?.["content:encoded"]?.[0].match(/\"(https:\/\/xboxwire.thesourcemediaassets.com\/sites\/\d+\/\d+\/\d+\/.*(?=).(jpg|jpeg|png))\"/)[1],
+            timestamp: article?.pubDate?.[0],
+            title: article?.title?.[0],
+            url: article?.link?.[0]
+        }
+    }
 
     async #fetchMinecraftFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])
@@ -256,6 +269,7 @@ class GameNewsStore extends Utils.Store {
                     case "Fortnite": feeds = await this.#fetchFortniteFeeds(gameData[gameId]); break;
                     case "discord": feeds = await this.#fetchDiscordFeeds(); break;
                     case "nintendo": feeds = await this.#fetchNintendoFeeds(); break;
+                    case "xbox": feeds = await this.#fetchXboxFeeds(); break;
                     default: feeds = await this.#fetchSteamFeeds(gameId, gameData[gameId]);
                 }
                 if (this.filterFeeds(feeds)) {
@@ -299,7 +313,7 @@ class GameNewsStore extends Utils.Store {
             this.whitelist[i] = {applicationId: applicationList[i].id, gameId: feedIds[i]};
         }
 
-        for (let i in (Data.load("external") || settings.external)) {
+        for (let i in (Data.load("external") ?? settings.external)) {
             if (((Data.load("external") && (Data.load("external")[i])) || settings.external[i].enabled) === true) {
                 gameData[i] = "External Source";
             }

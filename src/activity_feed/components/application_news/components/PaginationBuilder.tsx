@@ -5,10 +5,6 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 function Subpagination({article}) {
     const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle())
     const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
-    //const direction = Hooks.useStateFromStores([NewsStore], () => NewsStore.getDirection(NewsStore.getCurrentArticle().index - article.index))
-    //if (direction == 1) console.log("hi! i'm going forwards!")
-    //if (direction == -1) console.log("hi! i'm going backwards!")
-    //console.log(NewsStore.getDirection(article.index - NewsStore.getCurrentArticle().index))
     return (
         <div 
             className={article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
@@ -45,35 +41,3 @@ export function FeedPaginationBuilder({articleSet}) {
         </div>
     )
 }
-
-/*
-
-        createElement('div', { className: "pagination_267ac" },
-            createElement('div', { className: "scrollerWrap_267ac" },
-                createElement('div', { className: "scroller_267ac verticalPaginationItemContainer_267ac" },
-                    randomGames.map((game, index) => {
-                        if (!game) return null;
-
-                        return createElement('div', { 
-                            className: article.index === index ? "paginationItem_267ac selectedPage_267ac" : "paginationItem_267ac", 
-                            onClick: () => { setArticle({index: index, direction: handleDirection(index - article.index)}) },
-                            key: index
-                        }, [
-                            createElement('div', { 
-                                className: "splashArt_267ac", 
-                                style: { backgroundImage: game.news?.thumbnail 
-                                    ? `url(${game.news?.thumbnail})` 
-                                    : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.id}/capsule_231x87.jpg)` }
-                                }),
-                            createElement('div', { className: "paginationText_267ac" }, [
-                                createElement('div', { className: "paginationTitle_267ac paginationContent_267ac"}, game.news?.title || "No Title"),
-                                createElement('div', { className: "paginationSubtitle_267ac paginationContent_267ac"}, game.application.name || "Unknown Game")
-                            ]
-                        )
-                    ]);
-                }).filter(Boolean)
-            )
-        )
-    )]);
-}
-*/

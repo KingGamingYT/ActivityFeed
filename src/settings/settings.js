@@ -46,13 +46,6 @@ export default {
             icon: Common.Icons.XboxNeutralIcon,
             color: "var(--xbox)",
             enabled: false
-        },
-        playstation: {
-            name: "PlayStation",
-            note: "News from PlayStation's blog.",
-            icon: Common.Icons.PlaystationNeutralIcon,
-            color: "var(--playstation)",
-            enabled: false
         }
     }
 };

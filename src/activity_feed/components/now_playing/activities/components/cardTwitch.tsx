@@ -1,30 +1,13 @@
-import { ActivityButtons } from '@modules/common';
-import { TwitchImageAsset } from './common/ActivityAssets';
-import { FlexInfo } from './common/FlexInfo'
+import { RegularTwitchActivityBuilder, RichTwitchActivityBuilder } from "./InnerBuilder";
 
-export function TwitchCard({user, activities}) {
-    const activity = activities.filter(activity => activity && activity.name && activity.type === 1)[0];
+export function TwitchCard({user, activity}) {
+    const currentGame = activity?.game;
+    const currentActivity = activity?.activity;
 
     return (
-        <div className="activityProfileContainer activityProfileContainerTwitch">
-            <div className="activityProfile activity">
-                <div className="bodyNormal" style={{ display: "flex", alignItems: "center", width: "auto" }}>
-                    <div className="assets" style={{ position: "relative" }}>
-                        <TwitchImageAsset 
-                            url={
-                                activity.name.includes('YouTube') ? `https://i.ytimg.com/vi/${activity?.assets?.large_image.substring(activity?.assets?.large_image.indexOf(':')+1)}/hqdefault_live.jpg`
-                                : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity?.assets?.large_image.substring(activity?.assets?.large_image.indexOf(':')+1)}-162x90.jpg`
-                            }
-                            imageId={activity?.assets?.large_image}
-                            altText={activity?.assets?.large_text}
-                        />
-                    </div>
-                    <FlexInfo className="contentImagesProfile content" activity={activity} type="TWITCH" />
-                    <div className="buttonsWrapper actionsProfile">
-                        <Common.ActivityButtons user={user} activity={activity} />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <>
+            <RegularTwitchActivityBuilder user={user} activity={currentActivity} game={currentGame} />
+            <RichTwitchActivityBuilder activity={currentActivity} />
+        </>
     )
 }

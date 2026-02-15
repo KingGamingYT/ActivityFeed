@@ -14,8 +14,6 @@ const mapped = Object.fromEntries(
 );
 
 const regex = /^[0-9]/;
-const paragraph = `[hash:16]`;
-console.log(paragraph)
 
 module.exports = defineConfig({
 	input: "src",

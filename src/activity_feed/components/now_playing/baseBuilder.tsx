@@ -11,7 +11,7 @@ import NowPlayingClasses from "./NowPlaying.module.css";
 function NowPlayingColumnBuilder({nowPlayingCards}) {
     return (
         nowPlayingCards.map(card => ([
-            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards') || settings.default.v2Cards} />,
+            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards') ?? settings.default.v2Cards} />,
             Data.load('cardTypeDebug') && <NowPlayingCardBuilder card={card} v2Enabled={false} />
         ]))
     )

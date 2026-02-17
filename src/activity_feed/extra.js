@@ -89,6 +89,10 @@ export const extraCSS = webpackify(`
         display: none;
     }
 
+    .sectionDivider:last-child {
+        display: none;
+    }
+
     .activity .serviceButtonWrapper .sm:not(.hasText) {
         padding: 0;
         width: calc(var(--custom-button-button-sm-height) + 4px);

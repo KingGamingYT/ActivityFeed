@@ -20,14 +20,9 @@ export function chunkArray(cards, num) {
     let chunkLength = Math.max(cards.length / num, 1);
     const chunks = [];
     for (let i = 0; i < num; i++) {
-        if(chunkLength*(i+1)<=cards.length)chunks.push(cards.slice(chunkLength*i, chunkLength*(i+1)));
+        if(chunkLength*(i+1) <= cards.length) chunks.push(cards.slice(Math.floor(chunkLength*i), Math.floor(chunkLength*(i+1))));
     }
-    return chunks.reverse(); 
-}
-
-export function DateGen(date) {
-    const gdate = new Date(date);
-    return ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][gdate.getMonth()] + " " + gdate.getDate() + ", " + gdate.getFullYear();
+    return chunks; 
 }
 
 export function TimeClock({timestamp}) {

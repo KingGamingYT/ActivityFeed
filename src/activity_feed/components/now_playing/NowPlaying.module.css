@@ -235,7 +235,7 @@
 
 .assets .assetsLargeImageActivityFeedTwitch {
     border-radius: 5px;
-    height: 260px;
+    min-height: 260px;
     mask: linear-gradient(0deg, transparent 10%, #000 80%);
     width: 100%;
     -webkit-user-drag: none;

@@ -74,10 +74,10 @@ export function RichTwitchActivityBuilder({activity}) {
                             <FlexInfo className={NowPlayingClasses.twitchImageOverlay} activity={activity} type="TWITCH_OVERLAY" />
                             <TwitchImageAsset
                                 url={
-                                    activity.name.includes('YouTube') ? `https://i.ytimg.com/vi/${activity.assets.large_image.substring(activity.assets.large_image.indexOf(':')+1)}/hqdefault_live.jpg`
-                                    : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity.assets.large_image.substring(activity.assets.large_image.indexOf(':')+1)}-900x500.jpg`
+                                    activity.name.includes('YouTube') ? `https://i.ytimg.com/vi/${activity.assets?.large_image.substring(activity.assets?.large_image.indexOf(':')+1)}/hqdefault_live.jpg`
+                                    : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity.assets?.large_image.substring(activity.assets?.large_image.indexOf(':')+1)}-900x500.jpg`
                                 }
-                                imageId={activity.assets.large_image}
+                                imageId={activity.assets?.large_image}
                                 streamUrl={activity.url}
                             />
                         </div>

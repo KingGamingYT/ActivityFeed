@@ -6,7 +6,12 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "../ActivityFeedSettings.module.css";
 
+// const DataStore = new class DB extends BdApi.Utils.Store {
+
+// }
+
 function ExternalItemBuilder({service}) {
+    //const ext = BdApi.Hooks.useStateFromStore(DataStore, () => DataStore.getExternal())
     const item = settings.external[service];
     const [state, setState] = useState(Data.load("external")?.[service] || item.enabled);
 
@@ -26,7 +31,7 @@ function ExternalItemBuilder({service}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save("external", {[service]: true}); setState(true); props.onClose(); }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save("external", {...Data.load("external"), [service]: true}); setState(true); props.onClose(); }}
                             ]}
                         >
                             <>
@@ -45,7 +50,7 @@ function ExternalItemBuilder({service}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save("external", {[service]: false}); setState(false); props.onClose(); }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { Data.save("external", {...Data.load("external"), [service]: false}); setState(false); props.onClose(); }}
                             ]}
                         >
                             <>

@@ -6,6 +6,7 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function ActivityCard({user, activities, currentActivity, currentGame, players, server, check, v2Enabled}) {
+    if (currentActivity.type == 1) return;
     const gameId = currentActivity?.application_id;
 
     useEffect(() => { 

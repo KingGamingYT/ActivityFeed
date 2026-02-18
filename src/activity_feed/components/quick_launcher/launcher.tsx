@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Common, shell } from '@./modules/common';
-import { GameStore, RunningGameStore, useStateFromStores } from '@./modules/stores';
+import { Common, shell } from '@modules/common';
+import { GameStore, RunningGameStore, useStateFromStores } from '@modules/stores';
 import { SectionHeader } from '../common/components/SectionHeader';
-import MainClasses from "@./activity_feed/ActivityFeed.module.css";
+import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import QuickLauncherClasses from "./QuickLauncher.module.css";
 
 export function LauncherGameBuilder({game, runningGames}) {

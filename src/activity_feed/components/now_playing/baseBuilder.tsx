@@ -1,11 +1,11 @@
 import { Data } from 'betterdiscord';
-import { Common } from "@./modules/common";
-import { NowPlayingViewStore, useStateFromStores } from "@./modules/stores";
+import { Common } from "@modules/common";
+import { NowPlayingViewStore, useStateFromStores } from "@modules/stores";
 import { chunkArray } from "../common/methods/common";
 import { SectionHeader } from "../common/components/SectionHeader";
 import { NowPlayingCardBuilder } from "./CardBuilder";
-import settings from "@./settings/settings";
-import MainClasses from "@./activity_feed/ActivityFeed.module.css";
+import settings from "@settings/settings";
+import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "./NowPlaying.module.css";
 
 function NowPlayingColumnBuilder({nowPlayingCards}) {

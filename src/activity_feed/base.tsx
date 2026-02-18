@@ -1,5 +1,5 @@
-import { Common, ControllerIcon } from "@./modules/common";
-import { UserStore } from "@./modules/stores";
+import { Common, ControllerIcon } from "@modules/common";
+import { UserStore } from "@modules/stores";
 import { NewsFeedBuilder } from "./components/application_news/FeedBuilder";
 import { QuickLauncherBuilder } from "./components/quick_launcher/launcher";
 import { NowPlayingBuilder } from "./components/now_playing/BaseBuilder";

@@ -1,10 +1,49 @@
+import { useRef } from "react";
 import { Common } from "@modules/common";
 import { FeedOverflowBuilder } from "./OverflowBuilder";
-import settings from "@./settings/settings";
+import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
+import NewsStore from "@activity_feed/Store.js";
 
 export function FeedCarouselBuilder({currentArticle}) {
     const External = settings.external[currentArticle.id];
+    /*const getRootStyle = function(value) {
+        var e = article.orientation === "horizontal" ? {
+          translateX: value.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0px", "-15px"]
+          })
+        } : {
+          translateY: value.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0px", "15px"]
+          })
+        };
+        return Animated.accelerate({     
+            transform: [{
+                scale: value.interpolate({
+                    inputRange: [-1, 0, 1],
+                    outputRange: [1.015, 1, 1.015]
+                })
+            }, e],
+            opacity: value.interpolate({
+                inputRange: [-1, 0, 1],
+                outputRange: [0, 1, 0],
+                easing: Animated.Easing.out(Animated.Easing.ease)
+            }),
+            zIndex: 1
+        })
+    }*/
+    const [springs, control] = Common.ReactSpring.useSpring(() =>
+        (NewsStore.getOrientation() === "horizontal" ? {
+            from: { x: 0, y: 0 },
+            to: { x: 15, y: 15 },
+        }
+        : {
+            from: { x: 0, y: 0 },
+            to: { x: 15, y: 15 },
+        })
+    )
 
     return (
         <span className={FeedClasses.carousel}>
@@ -17,7 +56,7 @@ export function FeedCarouselBuilder({currentArticle}) {
                 target="_blank"
                 role="button"
             >
-                <div className={`${FeedClasses.articleStandard} ${FeedClasses.article}`} style={{ opacity: 1, zIndex: 1 }}>
+                <Common.ReactSpring.animated.div className={`${FeedClasses.articleStandard} ${FeedClasses.article}`} style={{ opacity: 1, zIndex: 1 }}>
                     <div className={FeedClasses.background}>
                         <div 
                             className={FeedClasses.backgroundImage}
@@ -47,7 +86,7 @@ export function FeedCarouselBuilder({currentArticle}) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </Common.ReactSpring.animated.div>
             </a>
         </span>
     )

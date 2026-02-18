@@ -1,6 +1,6 @@
 import { Net } from 'betterdiscord';
 import { useState, useLayoutEffect } from "react";
-import { Common } from '@./modules/common';
+import { Common } from '@modules/common';
 import { ChannelStore } from "@modules/stores";
 
 function checkImage(url) {
@@ -20,7 +20,7 @@ export function chunkArray(cards, num) {
     let chunkLength = Math.max(cards.length / num, 1);
     const chunks = [];
     for (let i = 0; i < num; i++) {
-        if(chunkLength*(i+1) <= cards.length) chunks.push(cards.slice(Math.floor(chunkLength*i), Math.floor(chunkLength*(i+1))));
+        if(chunkLength*(i+1) <= cards.length) chunks.push(cards.slice(Math.ceil(chunkLength*i), Math.ceil(chunkLength*(i+1))));
     }
     return chunks; 
 }

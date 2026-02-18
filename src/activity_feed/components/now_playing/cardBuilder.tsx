@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { activityCheck, GradGen, SplashGen } from "../common/methods/common";
-import { Common } from "@./modules/common";
-import { ApplicationStore, DetectableGameSupplementalStore, GameStore } from "@./modules/stores";
+import { Common } from "@modules/common";
+import { ApplicationStore, DetectableGameSupplementalStore, GameStore } from "@modules/stores";
 import { CardHeader, CardBody } from "./card_shop/index";
 import NowPlayingClasses from "./NowPlaying.module.css";
 

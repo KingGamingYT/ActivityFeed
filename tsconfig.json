@@ -13,8 +13,7 @@
             "@quick_launcher/*": ["src/activity_feed/components/quick_launcher/*"],
             "@whats_new/*": ["src/activity_feed/components/whats_new/*"],
             "@modules/*": ["src/modules/*"],
-            "@settings/*": ["src/settings/*"],
-            "@./*": ["src/*"]
+            "@settings/*": ["src/settings/*"]
         }
 	}
 }

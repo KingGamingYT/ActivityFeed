@@ -1,4 +1,4 @@
-import { Common } from "@./modules/common";
+import { Common } from "@modules/common";
 import { ActivityCardWrapper, VoiceCard, TwitchCard } from "@now_playing/activities/index";
 
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";

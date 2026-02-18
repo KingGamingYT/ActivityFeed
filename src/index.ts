@@ -3,7 +3,6 @@ import { createElement, useState } from "react";
 import settings from "./settings/settings.js";
 import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, Router } from "./modules/common.js";
 import NewsStore from "./activity_feed/Store.js";
-import { activityPanelCSS } from "./activity_feed/styles.js";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { SettingsPanelBuilder } from "./settings/builder.js";
 import styleModule, { css } from "./activity_feed/ActivityFeed.module.css"; 

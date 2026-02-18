@@ -37,6 +37,7 @@ const Filters = [
     { name: "Popout", filter: /* @__PURE__ */ Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
     { name: "PopoutContainer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('type', 'position', 'data-popout-animating'), searchExports: true },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
+    { name: "ReactSpring", filter: /* @__PURE__ */ Webpack.Filters.byKeys('useSpring', 'a') },
     { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
     { name: "Spinner", filter: /* @__PURE__ */ Webpack.Filters.byStrings('="wanderingCubes'), searchExports:true },
     { name: "SpotifyButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'PRESS_PLAY_ON_SPOTIFY_BUTTON') },

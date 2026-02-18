@@ -1,7 +1,7 @@
 import { Data, Utils, Net } from "betterdiscord";
-import { Common } from "@./modules/common";
+import { Common } from "@modules/common";
 import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
-import settings from "@./settings/settings";
+import settings from "@settings/settings";
 
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
@@ -32,6 +32,47 @@ class GameNewsStore extends Utils.Store {
         this.state = { size: [window.innerWidth, window.innerHeight] };
         this.emitChange();
     }
+
+    /*getRootStyle = function(value) {
+        var e = this.getOrientation() === "horizontal" ? {
+          translateX: value.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0px", "-15px"]
+          })
+        } : {
+          translateY: value.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0px", "15px"]
+          })
+        };
+        console.log(Animated.accelerate({     
+        transform: [{
+            scale: value.interpolate({
+                inputRange: [-1, 0, 1],
+                outputRange: [1.015, 1, 1.015]
+            })
+        }, e],
+            opacity: value.interpolate({
+                inputRange: [-1, 0, 1],
+                outputRange: [0, 1, 0],
+                easing: Animated.Easing.out(Animated.Easing.ease)
+            }),
+        }))
+        return Animated.accelerate({     
+            transform: [{
+                scale: value.interpolate({
+                    inputRange: [-1, 0, 1],
+                    outputRange: [1.015, 1, 1.015]
+                })
+            }, e],
+            opacity: value.interpolate({
+                inputRange: [-1, 0, 1],
+                outputRange: [0, 1, 0],
+                easing: Animated.Easing.out(Animated.Easing.ease)
+            }),
+            zIndex: 1
+        })
+    }*/
 
     componentDidMount() { window.addEventListener("resize", this.listener); }
     componentWillUnmount() { window.removeEventListener("resize", this.listener); }

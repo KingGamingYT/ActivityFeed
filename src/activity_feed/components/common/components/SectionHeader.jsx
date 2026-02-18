@@ -1,5 +1,5 @@
-import { Common } from "@./modules/common";
-import styleModule from "@./activity_feed/ActivityFeed.module.css";
+import { Common } from "@modules/common";
+import styleModule from "@activity_feed/ActivityFeed.module.css";
 
 export function SectionHeader({ label }) {
 	return (

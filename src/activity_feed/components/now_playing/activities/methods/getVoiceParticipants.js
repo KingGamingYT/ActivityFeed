@@ -1,4 +1,4 @@
-import { UserStore, VoiceStateStore } from '@./modules/stores'
+import { UserStore, VoiceStateStore } from '@modules/stores'
 
 export function getVoiceParticipants({voice}) {
     let participants = [];

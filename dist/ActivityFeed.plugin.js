@@ -209,6 +209,16 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.state = { size: [window.innerWidth, window.innerHeight] };
 		this.emitChange();
 	};
+	getRootStyle = (props) => {
+		let anim = this.getOrientation() === "horizontal" ? props.x.to([0, 1], ["0px", "-15px"]).to((value) => `translateX(${value})`) : props.y.to([0, 1], ["0px", "15px"]).to((value) => `translateY(${value})`);
+		return Common.ReactSpring.useSpring({
+			transform: [
+				props.scale.to([-1, 0, 1], [1.015, 1, 1.015]).to((value) => `scale(${value})`),
+				anim
+			],
+			opacity: props.opacity.to([-1, 0, 1], [0, 1, 0]).to((value) => value)
+		});
+	};
 	componentDidMount() {
 		window.addEventListener("resize", this.listener);
 	}
@@ -1248,6 +1258,10 @@ function FeedCarouselBuilder({ currentArticle }) {
 			to: { x: 15, y: 15 }
 		}
 	);
+	const spring = Common.ReactSpring.useSpring({
+		from: { x: 0, y: 0, scale: 0, opacity: 0 },
+		to: { x: 1, y: 1, scale: 1, opacity: 1, config: Common.ReactSpring.config.gentle }
+	});
 	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
@@ -1258,7 +1272,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 			target: "_blank",
 			role: "button"
 		},
-		BdApi.React.createElement(Common.ReactSpring.animated.div, { className: `${FeedClasses.articleStandard} ${FeedClasses.article}`, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+		BdApi.React.createElement(Common.ReactSpring.animated.div, { className: `${FeedClasses.articleStandard} ${FeedClasses.article}`, style: NewsStore.getRootStyle(spring) }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,

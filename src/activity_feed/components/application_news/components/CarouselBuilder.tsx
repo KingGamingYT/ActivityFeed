@@ -45,6 +45,13 @@ export function FeedCarouselBuilder({currentArticle}) {
         })
     )
 
+    const spring = Common.ReactSpring.useSpring({
+        from: { x: 0, y: 0, scale: 0, opacity: 0 },
+        to: { x: 1, y: 1, scale: 1, opacity: 1, config: Common.ReactSpring.config.gentle  },
+    })
+
+    //const transition = Common.ReactSpring.useTransition()
+
     return (
         <span className={FeedClasses.carousel}>
             <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
@@ -56,7 +63,7 @@ export function FeedCarouselBuilder({currentArticle}) {
                 target="_blank"
                 role="button"
             >
-                <Common.ReactSpring.animated.div className={`${FeedClasses.articleStandard} ${FeedClasses.article}`} style={{ opacity: 1, zIndex: 1 }}>
+                <Common.ReactSpring.animated.div className={`${FeedClasses.articleStandard} ${FeedClasses.article}`} style={NewsStore.getRootStyle(spring)}>
                     <div className={FeedClasses.background}>
                         <div 
                             className={FeedClasses.backgroundImage}

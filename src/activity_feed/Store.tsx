@@ -33,7 +33,41 @@ class GameNewsStore extends Utils.Store {
         this.emitChange();
     }
 
-    /*getRootStyle = function(value) {
+    /*const [springs, control] = Common.ReactSpring.useSpring(() =>
+        (NewsStore.getOrientation() === "horizontal" ? {
+            from: { x: 0, y: 0 },
+            to: { x: 15, y: 15 },
+        }
+        : {
+            from: { x: 0, y: 0 },
+            to: { x: 15, y: 15 },
+        })
+    )*/
+
+    getRootStyle = (props) => {
+        let anim = this.getOrientation() === "horizontal" ?
+            props.x
+            .to([0, 1], ["0px", "-15px"])
+            .to(value => `translateX(${value})`)
+        : 
+            props.y
+            .to([0, 1], ["0px", "15px"])
+            .to(value => `translateY(${value})`)
+        
+        return Common.ReactSpring.useSpring({
+            transform: [
+                props.scale
+                .to([-1, 0, 1], [1.015, 1, 1.015])
+                .to(value => `scale(${value})`),
+                anim
+            ],
+            opacity: props.opacity
+            .to([-1, 0, 1], [0, 1, 0])
+            .to(value => value)
+        })
+    }
+
+    /*oldgetRootStyle = () => {
         var e = this.getOrientation() === "horizontal" ? {
           translateX: value.interpolate({
             inputRange: [0, 1],

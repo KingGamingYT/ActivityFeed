@@ -32,7 +32,8 @@
 'use strict';
 
 const betterdiscord = new BdApi("ActivityFeed");
-const react = BdApi.React;
+const React = BdApi.React;
+const ReactDOM = BdApi.ReactDOM;
 
 // modules/common.js
 const Filters = [
@@ -602,7 +603,7 @@ function styles$1() {
 
 // activity_feed/ActivityFeed.module.css
 const css$4 = `
-.activityFeed_05583e {
+.activityFeed__2cbe2 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-border-frame);
 		display: flex;
@@ -611,7 +612,7 @@ const css$4 = `
 		overflow: hidden;
 }
 
-.scrollerBase_05583e {
+.scrollerBase__2cbe2 {
 		contain: layout size;
 		height: 100%;
 		background: no-repeat bottom;
@@ -632,7 +633,7 @@ const css$4 = `
 		}
 }
 
-.centerContainer_05583e {
+.centerContainer__2cbe2 {
 		display: flex;
 		flex-direction: column;
 		width: 1280px;
@@ -641,7 +642,7 @@ const css$4 = `
 		margin: 0 auto;
 }
 
-.title_05583e {
+.title__2cbe2 {
 		align-items: center;
 		display: flex;
 		justify-content: flex-start;
@@ -653,13 +654,13 @@ const css$4 = `
 		color: var(--text-strong);
 }
 
-.titleWrapper_05583e {
+.titleWrapper__2cbe2 {
 		flex: 0 0 auto;
 		margin: 0 8px 0 0;
 		min-width: auto;
 }
 
-.iconWrapper_05583e {
+.iconWrapper__2cbe2 {
 		align-items: center;
 		display: flex;
 		flex: 0 0 auto;
@@ -670,16 +671,16 @@ const css$4 = `
 		width: var(--space-32);
 }
 
-.headerBar_05583e {
+.headerBar__2cbe2 {
 		height: var(--custom-channel-header-height);
 		min-height: var(--custom-channel-header-height);
 }
 
-.headerContainer_05583e {
+.headerContainer__2cbe2 {
 		flex-direction: row;
 }
 
-.headerText_05583e {
+.headerText__2cbe2 {
 		display: flex;
 		flex: 1;
 		font-size: 18px;
@@ -690,7 +691,7 @@ const css$4 = `
 		color: var(--text-default);
 }
 
-.button_05583e {
+.button__2cbe2 {
 		-webkit-box-align: center;
 		-webkit-box-pack: center;
 		align-items: center;
@@ -706,58 +707,58 @@ const css$4 = `
 		user-select: none;
 }
 
-.sectionDivider_05583e {
+.sectionDivider__2cbe2 {
 		display: flex;
 		width: 100%;
 		border-bottom: 2px solid;
 		margin: 20px 0 20px 0;
 }
 
-.emptyState_05583e {
+.emptyState__2cbe2 {
 		position: relative;
 }
 
-.emptyText_05583e {}
+.emptyText__2cbe2 {}
 
-.emptyTitle_05583e {
+.emptyTitle__2cbe2 {
 		font-size: 16px;
 		line-height: 20px;
 		color: var(--text-default);
 }
 
-.emptySubtitle_05583e {
+.emptySubtitle__2cbe2 {
 		font-size: 14px;
 		color: var(--text-muted);
 }`;
 _loadStyle("ActivityFeed.module.css", css$4);
 const modules_7e65654a = {
-	"activityFeed": "activityFeed_05583e",
-	"scrollerBase": "scrollerBase_05583e",
-	"centerContainer": "centerContainer_05583e",
-	"title": "title_05583e",
-	"titleWrapper": "titleWrapper_05583e",
-	"iconWrapper": "iconWrapper_05583e",
-	"headerBar": "headerBar_05583e",
-	"headerContainer": "headerContainer_05583e",
-	"headerText": "headerText_05583e",
-	"button": "button_05583e",
-	"sectionDivider": "sectionDivider_05583e",
-	"emptyState": "emptyState_05583e",
-	"emptyText": "emptyText_05583e",
-	"emptyTitle": "emptyTitle_05583e",
-	"emptySubtitle": "emptySubtitle_05583e"
+	"activityFeed": "activityFeed__2cbe2",
+	"scrollerBase": "scrollerBase__2cbe2",
+	"centerContainer": "centerContainer__2cbe2",
+	"title": "title__2cbe2",
+	"titleWrapper": "titleWrapper__2cbe2",
+	"iconWrapper": "iconWrapper__2cbe2",
+	"headerBar": "headerBar__2cbe2",
+	"headerContainer": "headerContainer__2cbe2",
+	"headerText": "headerText__2cbe2",
+	"button": "button__2cbe2",
+	"sectionDivider": "sectionDivider__2cbe2",
+	"emptyState": "emptyState__2cbe2",
+	"emptyText": "emptyText__2cbe2",
+	"emptyTitle": "emptyTitle__2cbe2",
+	"emptySubtitle": "emptySubtitle__2cbe2"
 };
 const MainClasses = modules_7e65654a;
 
 // activity_feed/components/application_news/ApplicationNews.module.css
 const css$3 = `
-.feedCarousel_ae3f66 {
+.feedCarousel__94d97 {
 		display: flex;
 		position: relative;
 		margin: 20px;
 }
 
-.carousel_ae3f66 {
+.carousel__94d97 {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		flex: 1 1 75%;
@@ -768,7 +769,7 @@ const css$3 = `
 		transform: translateZ(0);
 }
 
-.article_ae3f66 {
+.article__94d97 {
 		background-color: var(--background-secondary-alt);
 		border-radius: 5px;
 		bottom: 0;
@@ -785,13 +786,13 @@ const css$3 = `
 		justify-content: flex-end;
 }
 
-.articleStandard_ae3f66 {}
+.articleStandard__94d97 {}
 
-.articleSkeleton_ae3f66 {}
+.articleSkeleton__94d97 {}
 
-.articleSimple_ae3f66 {}
+.articleSimple__94d97 {}
 
-.background_ae3f66 {
+.background__94d97 {
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 7.5%;
@@ -800,28 +801,28 @@ const css$3 = `
 		background-position: top;
 }
 
-.backgroundImage_ae3f66 {
+.backgroundImage__94d97 {
 		background-position: top;
 		background-repeat: no-repeat;
 		background-size: cover;
 		bottom: 0;
 }
 
-.background_ae3f66, .backgroundImage_ae3f66 {
+.background__94d97, .backgroundImage__94d97 {
 		left: 0;
 		position: absolute;
 		right: 0;
 		top: 0;
 }
 
-.feedOverflowMenu_ae3f66 {
+.feedOverflowMenu__94d97 {
 		position: absolute;
 		top: 0;
 		right: 0;
 		padding: 8px 12px;
 }
 
-.applicationArea_ae3f66 {
+.applicationArea__94d97 {
 		color: var(--text-default);
 		display: flex;
 		flex-direction: column;
@@ -829,13 +830,13 @@ const css$3 = `
 		position: relative;
 }
 
-.detailsContainer_ae3f66 {}
+.detailsContainer__94d97 {}
 
-.details_ae3f66 {
+.details__94d97 {
 		position: relative;
 }
 
-.titleStandard_ae3f66 {
+.titleStandard__94d97 {
 		margin-top: 8px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -844,13 +845,13 @@ const css$3 = `
 		line-height: 28px;
 }
 
-.title_ae3f66 {
+.title__94d97 {
 		color: var(--text-strong);
 		display: block;
 		font-weight: 500;
 }
 
-.description_ae3f66 {
+.description__94d97 {
 		color: var(--text-default);
 		display: -webkit-box;
 		font-size: 16px;
@@ -875,7 +876,7 @@ const css$3 = `
 		}
 }
 
-.timestamp_ae3f66 {
+.timestamp__94d97 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -883,7 +884,7 @@ const css$3 = `
 		text-transform: uppercase;
 }
 
-.gameIcon_ae3f66 {
+.gameIcon__94d97 {
 		position: relative;
 		pointer-events: auto;
 		cursor: pointer;
@@ -893,18 +894,18 @@ const css$3 = `
 		border-radius: 3px;
 }
 
-.pagination_ae3f66 {
+.pagination__94d97 {
 		-webkit-box-flex: 1;
 		flex: 1 1 25%;
 		min-width: 0;
 }
 
-.verticalPaginationItemContainer_ae3f66 {
+.verticalPaginationItemContainer__94d97 {
 		margin: 0;
 		overflow: hidden;
 }
 
-.scrollerWrap_ae3f66 {
+.scrollerWrap__94d97 {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
@@ -913,22 +914,22 @@ const css$3 = `
 		position: relative;
 }
 
-.scroller_ae3f66 {
+.scroller__94d97 {
 		-webkit-box-flex: 1;
 		contain: layout;
 		flex: 1;
 		min-height: 1px;
 }
 		
-.paginationItem_ae3f66, .paginationItem_ae3f66:before {
+.paginationItem__94d97, .paginationItem__94d97:before {
 		transition: all .2s ease;
 }
 
-.paginationItem_ae3f66:first-child {
+.paginationItem__94d97:first-child {
 		margin-top: 0;
 }
 
-.paginationItem_ae3f66 {
+.paginationItem__94d97 {
 		-webkit-box-align: center;
 		align-items: center;
 		background: var(--background-secondary-alt);
@@ -944,7 +945,7 @@ const css$3 = `
 		transform: translateZ(0);
 }
 
-.paginationItem_ae3f66:before {
+.paginationItem__94d97:before {
 		background: #fff;
 		border-radius: 20px;
 		content: "";
@@ -958,7 +959,7 @@ const css$3 = `
 		z-index: 1;
 }
 
-.paginationItem_ae3f66:after {
+.paginationItem__94d97:after {
 		background-blend-mode: color;
 		border-radius: 5px;
 		bottom: 0;
@@ -969,7 +970,7 @@ const css$3 = `
 		top: 0;
 }
 
-.splashArt_ae3f66 {
+.splashArt__94d97 {
 		filter: grayscale(100%);
 		height: 100%;
 		opacity: .2;
@@ -985,28 +986,28 @@ const css$3 = `
 		top: 0;
 }
 
-.paginationSubtitle_ae3f66, .paginationTitle_ae3f66 {
+.paginationSubtitle__94d97, .paginationTitle__94d97 {
 		font-weight: 600;
 }
 
-.paginationText_ae3f66 {
+.paginationText__94d97 {
 		overflow: hidden;
 }
 
-.paginationContent_ae3f66 {
+.paginationContent__94d97 {
 		overflow: hidden;
 		position: relative;
 		z-index: 1;
 }
 
-.paginationTitle_ae3f66 {
+.paginationTitle__94d97 {
 		color: var(--text-strong);
 		font-size: 16px;
 		line-height: 1.25;
 		max-height: 40px;
 }
 
-.paginationSubtitle_ae3f66 {
+.paginationSubtitle__94d97 {
 		color: var(--text-muted);
 		font-size: 12px;
 		margin-top: 4px;
@@ -1015,20 +1016,20 @@ const css$3 = `
 		white-space: nowrap;
 }
 
-.selectedPage_ae3f66 {
+.selectedPage__94d97 {
 		background: var(--background-surface-higher);
 		cursor: default;
 }
 
-.selectedPage_ae3f66:before {
+.selectedPage__94d97:before {
 		transform: translateY(-50%) translateX(0);
 }
 
-.selectedPage_ae3f66 .splashArt_ae3f66 {
+.selectedPage__94d97 .splashArt__94d97 {
 		filter: grayscale(0);
 }
 
-.smallCarousel_ae3f66 {
+.smallCarousel__94d97 {
 		background-color: var(--background-secondary-alt);
 		-webkit-box-flex: 1;
 		border-radius: 5px;
@@ -1039,7 +1040,7 @@ const css$3 = `
 		transform: translateZ(0);
 }
 
-.titleRowSimple_ae3f66 {
+.titleRowSimple__94d97 {
 		-webkit-box-align: center;
 		-webkit-box-pack: justify;
 		align-items: center;
@@ -1048,7 +1049,7 @@ const css$3 = `
 		justify-content: space-between;
 }
 
-.paginationSmall_ae3f66 {
+.paginationSmall__94d97 {
 		bottom: 0;
 		height: 64px;
 		left: 0;
@@ -1060,17 +1061,17 @@ const css$3 = `
 		display: flex;
 }
 
-.arrow_ae3f66 {
+.arrow__94d97 {
 		color: var(--text-muted);
 		z-index: 2;
 }
 
-svg.arrow_ae3f66 {
+svg.arrow__94d97 {
 		height: 26px;
 		width: 26px;
 }
 
-.arrowContainer_ae3f66 {
+.arrowContainer__94d97 {
 		color: var(--white);
 		cursor: pointer;
 		font-size: 0;
@@ -1082,28 +1083,28 @@ svg.arrow_ae3f66 {
 		width: 50px;
 }
 
-.arrow_ae3f66, .arrowContainer_ae3f66 {
+.arrow__94d97, .arrowContainer__94d97 {
 		box-sizing: border-box;
 		pointer-events: all;
 }
 
-.prevButtonContainer_ae3f66 {
+.prevButtonContainer__94d97 {
 		left: 6px;
 }
 
-.nextButtonContainer_ae3f66 {
+.nextButtonContainer__94d97 {
 		right: 6px;
 }
 
-.left_ae3f66 {
+.left__94d97 {
 		transform: rotate(-90deg);
 }
 
-.right_ae3f66 {
+.right__94d97 {
 		transform: rotate(90deg);
 }
 
-.horizontalPaginationItemContainer_ae3f66 {
+.horizontalPaginationItemContainer__94d97 {
 		-webkit-box-align: center;
 		-webkit-box-flex: initial;
 		align-items: center;
@@ -1113,7 +1114,7 @@ svg.arrow_ae3f66 {
 		overflow-y: hidden;
 }
 
-.dot_ae3f66 {
+.dot__94d97 {
 		background-color: #fff;
 		border-radius: 2px;
 		cursor: pointer;
@@ -1124,56 +1125,56 @@ svg.arrow_ae3f66 {
 		width: 8px;
 }
 
-.dotNormal_ae3f66 {
+.dotNormal__94d97 {
 		opacity: 0.2;
 }
 
-.dotSelected_ae3f66 {
+.dotSelected__94d97 {
 		opacity: 0.6;
 }`;
 _loadStyle("ApplicationNews.module.css", css$3);
 const modules_98d78101 = {
-	"feedCarousel": "feedCarousel_ae3f66",
-	"carousel": "carousel_ae3f66",
-	"article": "article_ae3f66",
-	"articleStandard": "articleStandard_ae3f66",
-	"articleSkeleton": "articleSkeleton_ae3f66",
-	"articleSimple": "articleSimple_ae3f66",
-	"background": "background_ae3f66",
-	"backgroundImage": "backgroundImage_ae3f66",
-	"feedOverflowMenu": "feedOverflowMenu_ae3f66",
-	"applicationArea": "applicationArea_ae3f66",
-	"detailsContainer": "detailsContainer_ae3f66",
-	"details": "details_ae3f66",
-	"titleStandard": "titleStandard_ae3f66",
-	"title": "title_ae3f66",
-	"description": "description_ae3f66",
-	"timestamp": "timestamp_ae3f66",
-	"gameIcon": "gameIcon_ae3f66",
-	"pagination": "pagination_ae3f66",
-	"verticalPaginationItemContainer": "verticalPaginationItemContainer_ae3f66",
-	"scrollerWrap": "scrollerWrap_ae3f66",
-	"scroller": "scroller_ae3f66",
-	"paginationItem": "paginationItem_ae3f66",
-	"splashArt": "splashArt_ae3f66",
-	"paginationSubtitle": "paginationSubtitle_ae3f66",
-	"paginationTitle": "paginationTitle_ae3f66",
-	"paginationText": "paginationText_ae3f66",
-	"paginationContent": "paginationContent_ae3f66",
-	"selectedPage": "selectedPage_ae3f66",
-	"smallCarousel": "smallCarousel_ae3f66",
-	"titleRowSimple": "titleRowSimple_ae3f66",
-	"paginationSmall": "paginationSmall_ae3f66",
-	"arrow": "arrow_ae3f66",
-	"arrowContainer": "arrowContainer_ae3f66",
-	"prevButtonContainer": "prevButtonContainer_ae3f66",
-	"nextButtonContainer": "nextButtonContainer_ae3f66",
-	"left": "left_ae3f66",
-	"right": "right_ae3f66",
-	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer_ae3f66",
-	"dot": "dot_ae3f66",
-	"dotNormal": "dotNormal_ae3f66",
-	"dotSelected": "dotSelected_ae3f66"
+	"feedCarousel": "feedCarousel__94d97",
+	"carousel": "carousel__94d97",
+	"article": "article__94d97",
+	"articleStandard": "articleStandard__94d97",
+	"articleSkeleton": "articleSkeleton__94d97",
+	"articleSimple": "articleSimple__94d97",
+	"background": "background__94d97",
+	"backgroundImage": "backgroundImage__94d97",
+	"feedOverflowMenu": "feedOverflowMenu__94d97",
+	"applicationArea": "applicationArea__94d97",
+	"detailsContainer": "detailsContainer__94d97",
+	"details": "details__94d97",
+	"titleStandard": "titleStandard__94d97",
+	"title": "title__94d97",
+	"description": "description__94d97",
+	"timestamp": "timestamp__94d97",
+	"gameIcon": "gameIcon__94d97",
+	"pagination": "pagination__94d97",
+	"verticalPaginationItemContainer": "verticalPaginationItemContainer__94d97",
+	"scrollerWrap": "scrollerWrap__94d97",
+	"scroller": "scroller__94d97",
+	"paginationItem": "paginationItem__94d97",
+	"splashArt": "splashArt__94d97",
+	"paginationSubtitle": "paginationSubtitle__94d97",
+	"paginationTitle": "paginationTitle__94d97",
+	"paginationText": "paginationText__94d97",
+	"paginationContent": "paginationContent__94d97",
+	"selectedPage": "selectedPage__94d97",
+	"smallCarousel": "smallCarousel__94d97",
+	"titleRowSimple": "titleRowSimple__94d97",
+	"paginationSmall": "paginationSmall__94d97",
+	"arrow": "arrow__94d97",
+	"arrowContainer": "arrowContainer__94d97",
+	"prevButtonContainer": "prevButtonContainer__94d97",
+	"nextButtonContainer": "nextButtonContainer__94d97",
+	"left": "left__94d97",
+	"right": "right__94d97",
+	"horizontalPaginationItemContainer": "horizontalPaginationItemContainer__94d97",
+	"dot": "dot__94d97",
+	"dotNormal": "dotNormal__94d97",
+	"dotSelected": "dotSelected__94d97"
 };
 const FeedClasses = modules_98d78101;
 
@@ -1221,8 +1222,8 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 	));
 }
 function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
-	const [showPopout, setShowPopout] = react.useState(false);
-	const refDOM = react.useRef(null);
+	const [showPopout, setShowPopout] = React.useState(false);
+	const refDOM = React.useRef(null);
 	return BdApi.React.createElement(
 		Common.Popout,
 		{
@@ -1246,9 +1247,1605 @@ function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
 	);
 }
 
+// @babel
+function _extends() {
+	return _extends = Object.assign ? Object.assign.bind() : function (n) {
+		for (var e = 1; e < arguments.length; e++) {
+			var t = arguments[e];
+			for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+		}
+		return n;
+	}, _extends.apply(null, arguments);
+}
+
+// @babel
+function _objectWithoutPropertiesLoose(r, e) {
+	if (null == r) return {};
+	var t = {};
+	for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
+		if (-1 !== e.indexOf(n)) continue;
+		t[n] = r[n];
+	}
+	return t;
+}
+
+// @babel
+function _setPrototypeOf(t, e) {
+	return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+		return t.__proto__ = e, t;
+	}, _setPrototypeOf(t, e);
+}
+
+// @babel
+function _inheritsLoose(t, o) {
+	t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o);
+}
+
+// commonjsHelpers.js
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+// prop-types
+var propTypes = {exports: {}};
+
+// react-is
+var reactIs = {exports: {}};
+
+// react-is
+var reactIs_production_min = {};
+
+// react-is
+var hasRequiredReactIs_production_min;
+function requireReactIs_production_min () {
+	if (hasRequiredReactIs_production_min) return reactIs_production_min;
+	hasRequiredReactIs_production_min = 1;
+var b="function"===typeof Symbol&&Symbol.for,c=b?Symbol.for("react.element"):60103,d=b?Symbol.for("react.portal"):60106,e=b?Symbol.for("react.fragment"):60107,f=b?Symbol.for("react.strict_mode"):60108,g=b?Symbol.for("react.profiler"):60114,h=b?Symbol.for("react.provider"):60109,k=b?Symbol.for("react.context"):60110,l=b?Symbol.for("react.async_mode"):60111,m=b?Symbol.for("react.concurrent_mode"):60111,n=b?Symbol.for("react.forward_ref"):60112,p=b?Symbol.for("react.suspense"):60113,q=b?
+	Symbol.for("react.suspense_list"):60120,r=b?Symbol.for("react.memo"):60115,t=b?Symbol.for("react.lazy"):60116,v=b?Symbol.for("react.block"):60121,w=b?Symbol.for("react.fundamental"):60117,x=b?Symbol.for("react.responder"):60118,y=b?Symbol.for("react.scope"):60119;
+	function z(a){if("object"===typeof a&&null!==a){var u=a.$$typeof;switch(u){case c:switch(a=a.type,a){case l:case m:case e:case g:case f:case p:return a;default:switch(a=a&&a.$$typeof,a){case k:case n:case t:case r:case h:return a;default:return u}}case d:return u}}}function A(a){return z(a)===m}reactIs_production_min.AsyncMode=l;reactIs_production_min.ConcurrentMode=m;reactIs_production_min.ContextConsumer=k;reactIs_production_min.ContextProvider=h;reactIs_production_min.Element=c;reactIs_production_min.ForwardRef=n;reactIs_production_min.Fragment=e;reactIs_production_min.Lazy=t;reactIs_production_min.Memo=r;reactIs_production_min.Portal=d;
+	reactIs_production_min.Profiler=g;reactIs_production_min.StrictMode=f;reactIs_production_min.Suspense=p;reactIs_production_min.isAsyncMode=function(a){return A(a)||z(a)===l};reactIs_production_min.isConcurrentMode=A;reactIs_production_min.isContextConsumer=function(a){return z(a)===k};reactIs_production_min.isContextProvider=function(a){return z(a)===h};reactIs_production_min.isElement=function(a){return "object"===typeof a&&null!==a&&a.$$typeof===c};reactIs_production_min.isForwardRef=function(a){return z(a)===n};reactIs_production_min.isFragment=function(a){return z(a)===e};reactIs_production_min.isLazy=function(a){return z(a)===t};
+	reactIs_production_min.isMemo=function(a){return z(a)===r};reactIs_production_min.isPortal=function(a){return z(a)===d};reactIs_production_min.isProfiler=function(a){return z(a)===g};reactIs_production_min.isStrictMode=function(a){return z(a)===f};reactIs_production_min.isSuspense=function(a){return z(a)===p};
+	reactIs_production_min.isValidElementType=function(a){return "string"===typeof a||"function"===typeof a||a===e||a===m||a===g||a===f||a===p||a===q||"object"===typeof a&&null!==a&&(a.$$typeof===t||a.$$typeof===r||a.$$typeof===h||a.$$typeof===k||a.$$typeof===n||a.$$typeof===w||a.$$typeof===x||a.$$typeof===y||a.$$typeof===v)};reactIs_production_min.typeOf=z;
+	return reactIs_production_min;
+}
+
+// react-is
+var reactIs_development = {};
+
+// react-is
+var hasRequiredReactIs_development;
+function requireReactIs_development () {
+	if (hasRequiredReactIs_development) return reactIs_development;
+	hasRequiredReactIs_development = 1;
+	if (process.env.NODE_ENV !== "production") {
+		(function() {
+	var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+	var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+	var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+	var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+	var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+	var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+	var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+	var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace;
+	var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
+	var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+	var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+	var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+	var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+	var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+	var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+	var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
+	var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
+	var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
+	var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
+	function isValidElementType(type) {
+		return typeof type === 'string' || typeof type === 'function' ||
+		type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE || type.$$typeof === REACT_BLOCK_TYPE);
+	}
+	function typeOf(object) {
+		if (typeof object === 'object' && object !== null) {
+			var $$typeof = object.$$typeof;
+			switch ($$typeof) {
+				case REACT_ELEMENT_TYPE:
+					var type = object.type;
+					switch (type) {
+						case REACT_ASYNC_MODE_TYPE:
+						case REACT_CONCURRENT_MODE_TYPE:
+						case REACT_FRAGMENT_TYPE:
+						case REACT_PROFILER_TYPE:
+						case REACT_STRICT_MODE_TYPE:
+						case REACT_SUSPENSE_TYPE:
+							return type;
+						default:
+							var $$typeofType = type && type.$$typeof;
+							switch ($$typeofType) {
+								case REACT_CONTEXT_TYPE:
+								case REACT_FORWARD_REF_TYPE:
+								case REACT_LAZY_TYPE:
+								case REACT_MEMO_TYPE:
+								case REACT_PROVIDER_TYPE:
+									return $$typeofType;
+								default:
+									return $$typeof;
+							}
+					}
+				case REACT_PORTAL_TYPE:
+					return $$typeof;
+			}
+		}
+		return undefined;
+	}
+	var AsyncMode = REACT_ASYNC_MODE_TYPE;
+	var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
+	var ContextConsumer = REACT_CONTEXT_TYPE;
+	var ContextProvider = REACT_PROVIDER_TYPE;
+	var Element = REACT_ELEMENT_TYPE;
+	var ForwardRef = REACT_FORWARD_REF_TYPE;
+	var Fragment = REACT_FRAGMENT_TYPE;
+	var Lazy = REACT_LAZY_TYPE;
+	var Memo = REACT_MEMO_TYPE;
+	var Portal = REACT_PORTAL_TYPE;
+	var Profiler = REACT_PROFILER_TYPE;
+	var StrictMode = REACT_STRICT_MODE_TYPE;
+	var Suspense = REACT_SUSPENSE_TYPE;
+	var hasWarnedAboutDeprecatedIsAsyncMode = false;
+	function isAsyncMode(object) {
+		{
+			if (!hasWarnedAboutDeprecatedIsAsyncMode) {
+				hasWarnedAboutDeprecatedIsAsyncMode = true;
+				console['warn']('The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
+			}
+		}
+		return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
+	}
+	function isConcurrentMode(object) {
+		return typeOf(object) === REACT_CONCURRENT_MODE_TYPE;
+	}
+	function isContextConsumer(object) {
+		return typeOf(object) === REACT_CONTEXT_TYPE;
+	}
+	function isContextProvider(object) {
+		return typeOf(object) === REACT_PROVIDER_TYPE;
+	}
+	function isElement(object) {
+		return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+	}
+	function isForwardRef(object) {
+		return typeOf(object) === REACT_FORWARD_REF_TYPE;
+	}
+	function isFragment(object) {
+		return typeOf(object) === REACT_FRAGMENT_TYPE;
+	}
+	function isLazy(object) {
+		return typeOf(object) === REACT_LAZY_TYPE;
+	}
+	function isMemo(object) {
+		return typeOf(object) === REACT_MEMO_TYPE;
+	}
+	function isPortal(object) {
+		return typeOf(object) === REACT_PORTAL_TYPE;
+	}
+	function isProfiler(object) {
+		return typeOf(object) === REACT_PROFILER_TYPE;
+	}
+	function isStrictMode(object) {
+		return typeOf(object) === REACT_STRICT_MODE_TYPE;
+	}
+	function isSuspense(object) {
+		return typeOf(object) === REACT_SUSPENSE_TYPE;
+	}
+	reactIs_development.AsyncMode = AsyncMode;
+	reactIs_development.ConcurrentMode = ConcurrentMode;
+	reactIs_development.ContextConsumer = ContextConsumer;
+	reactIs_development.ContextProvider = ContextProvider;
+	reactIs_development.Element = Element;
+	reactIs_development.ForwardRef = ForwardRef;
+	reactIs_development.Fragment = Fragment;
+	reactIs_development.Lazy = Lazy;
+	reactIs_development.Memo = Memo;
+	reactIs_development.Portal = Portal;
+	reactIs_development.Profiler = Profiler;
+	reactIs_development.StrictMode = StrictMode;
+	reactIs_development.Suspense = Suspense;
+	reactIs_development.isAsyncMode = isAsyncMode;
+	reactIs_development.isConcurrentMode = isConcurrentMode;
+	reactIs_development.isContextConsumer = isContextConsumer;
+	reactIs_development.isContextProvider = isContextProvider;
+	reactIs_development.isElement = isElement;
+	reactIs_development.isForwardRef = isForwardRef;
+	reactIs_development.isFragment = isFragment;
+	reactIs_development.isLazy = isLazy;
+	reactIs_development.isMemo = isMemo;
+	reactIs_development.isPortal = isPortal;
+	reactIs_development.isProfiler = isProfiler;
+	reactIs_development.isStrictMode = isStrictMode;
+	reactIs_development.isSuspense = isSuspense;
+	reactIs_development.isValidElementType = isValidElementType;
+	reactIs_development.typeOf = typeOf;
+		})();
+	}
+	return reactIs_development;
+}
+
+// react-is
+reactIs.exports;
+var hasRequiredReactIs;
+function requireReactIs () {
+	if (hasRequiredReactIs) return reactIs.exports;
+	hasRequiredReactIs = 1;
+	if (process.env.NODE_ENV === 'production') {
+		reactIs.exports = /*@__PURE__*/ requireReactIs_production_min();
+	} else {
+		reactIs.exports = /*@__PURE__*/ requireReactIs_development();
+	}
+	return reactIs.exports;
+}
+
+// object-assign
+var objectAssign;
+var hasRequiredObjectAssign;
+function requireObjectAssign () {
+	if (hasRequiredObjectAssign) return objectAssign;
+	hasRequiredObjectAssign = 1;
+	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+	function toObject(val) {
+		if (val === null || val === undefined) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
+		return Object(val);
+	}
+	function shouldUseNative() {
+		try {
+			if (!Object.assign) {
+				return false;
+			}
+			var test1 = new String('abc');
+			test1[5] = 'de';
+			if (Object.getOwnPropertyNames(test1)[0] === '5') {
+				return false;
+			}
+			var test2 = {};
+			for (var i = 0; i < 10; i++) {
+				test2['_' + String.fromCharCode(i)] = i;
+			}
+			var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+				return test2[n];
+			});
+			if (order2.join('') !== '0123456789') {
+				return false;
+			}
+			var test3 = {};
+			'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+				test3[letter] = letter;
+			});
+			if (Object.keys(Object.assign({}, test3)).join('') !==
+					'abcdefghijklmnopqrst') {
+				return false;
+			}
+			return true;
+		} catch (err) {
+			return false;
+		}
+	}
+	objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
+		var from;
+		var to = toObject(target);
+		var symbols;
+		for (var s = 1; s < arguments.length; s++) {
+			from = Object(arguments[s]);
+			for (var key in from) {
+				if (hasOwnProperty.call(from, key)) {
+					to[key] = from[key];
+				}
+			}
+			if (getOwnPropertySymbols) {
+				symbols = getOwnPropertySymbols(from);
+				for (var i = 0; i < symbols.length; i++) {
+					if (propIsEnumerable.call(from, symbols[i])) {
+						to[symbols[i]] = from[symbols[i]];
+					}
+				}
+			}
+		}
+		return to;
+	};
+	return objectAssign;
+}
+
+// prop-types
+var ReactPropTypesSecret_1;
+var hasRequiredReactPropTypesSecret;
+function requireReactPropTypesSecret () {
+	if (hasRequiredReactPropTypesSecret) return ReactPropTypesSecret_1;
+	hasRequiredReactPropTypesSecret = 1;
+	var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+	ReactPropTypesSecret_1 = ReactPropTypesSecret;
+	return ReactPropTypesSecret_1;
+}
+
+// prop-types
+var has;
+var hasRequiredHas;
+function requireHas () {
+	if (hasRequiredHas) return has;
+	hasRequiredHas = 1;
+	has = Function.call.bind(Object.prototype.hasOwnProperty);
+	return has;
+}
+
+// prop-types
+var checkPropTypes_1;
+var hasRequiredCheckPropTypes;
+function requireCheckPropTypes () {
+	if (hasRequiredCheckPropTypes) return checkPropTypes_1;
+	hasRequiredCheckPropTypes = 1;
+	var printWarning = function() {};
+	if (process.env.NODE_ENV !== 'production') {
+		var ReactPropTypesSecret = /*@__PURE__*/ requireReactPropTypesSecret();
+		var loggedTypeFailures = {};
+		var has = /*@__PURE__*/ requireHas();
+		printWarning = function(text) {
+			var message = 'Warning: ' + text;
+			if (typeof console !== 'undefined') {
+				console.error(message);
+			}
+			try {
+				throw new Error(message);
+			} catch (x) {  }
+		};
+	}
+	function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+		if (process.env.NODE_ENV !== 'production') {
+			for (var typeSpecName in typeSpecs) {
+				if (has(typeSpecs, typeSpecName)) {
+					var error;
+					try {
+						if (typeof typeSpecs[typeSpecName] !== 'function') {
+							var err = Error(
+								(componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' +
+								'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.' +
+								'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.'
+							);
+							err.name = 'Invariant Violation';
+							throw err;
+						}
+						error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
+					} catch (ex) {
+						error = ex;
+					}
+					if (error && !(error instanceof Error)) {
+						printWarning(
+							(componentName || 'React class') + ': type specification of ' +
+							location + ' `' + typeSpecName + '` is invalid; the type checker ' +
+							'function must return `null` or an `Error` but returned a ' + typeof error + '. ' +
+							'You may have forgotten to pass an argument to the type checker ' +
+							'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
+							'shape all require an argument).'
+						);
+					}
+					if (error instanceof Error && !(error.message in loggedTypeFailures)) {
+						loggedTypeFailures[error.message] = true;
+						var stack = getStack ? getStack() : '';
+						printWarning(
+							'Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
+						);
+					}
+				}
+			}
+		}
+	}
+	checkPropTypes.resetWarningCache = function() {
+		if (process.env.NODE_ENV !== 'production') {
+			loggedTypeFailures = {};
+		}
+	};
+	checkPropTypes_1 = checkPropTypes;
+	return checkPropTypes_1;
+}
+
+// prop-types
+var factoryWithTypeCheckers;
+var hasRequiredFactoryWithTypeCheckers;
+function requireFactoryWithTypeCheckers () {
+	if (hasRequiredFactoryWithTypeCheckers) return factoryWithTypeCheckers;
+	hasRequiredFactoryWithTypeCheckers = 1;
+	var ReactIs = /*@__PURE__*/ requireReactIs();
+	var assign = /*@__PURE__*/ requireObjectAssign();
+	var ReactPropTypesSecret = /*@__PURE__*/ requireReactPropTypesSecret();
+	var has = /*@__PURE__*/ requireHas();
+	var checkPropTypes = /*@__PURE__*/ requireCheckPropTypes();
+	var printWarning = function() {};
+	if (process.env.NODE_ENV !== 'production') {
+		printWarning = function(text) {
+			var message = 'Warning: ' + text;
+			if (typeof console !== 'undefined') {
+				console.error(message);
+			}
+			try {
+				throw new Error(message);
+			} catch (x) {}
+		};
+	}
+	function emptyFunctionThatReturnsNull() {
+		return null;
+	}
+	factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
+		var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
+		var FAUX_ITERATOR_SYMBOL = '@@iterator';
+		function getIteratorFn(maybeIterable) {
+			var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
+			if (typeof iteratorFn === 'function') {
+				return iteratorFn;
+			}
+		}
+		var ANONYMOUS = '<<anonymous>>';
+		var ReactPropTypes = {
+			array: createPrimitiveTypeChecker('array'),
+			bigint: createPrimitiveTypeChecker('bigint'),
+			bool: createPrimitiveTypeChecker('boolean'),
+			func: createPrimitiveTypeChecker('function'),
+			number: createPrimitiveTypeChecker('number'),
+			object: createPrimitiveTypeChecker('object'),
+			string: createPrimitiveTypeChecker('string'),
+			symbol: createPrimitiveTypeChecker('symbol'),
+			any: createAnyTypeChecker(),
+			arrayOf: createArrayOfTypeChecker,
+			element: createElementTypeChecker(),
+			elementType: createElementTypeTypeChecker(),
+			instanceOf: createInstanceTypeChecker,
+			node: createNodeChecker(),
+			objectOf: createObjectOfTypeChecker,
+			oneOf: createEnumTypeChecker,
+			oneOfType: createUnionTypeChecker,
+			shape: createShapeTypeChecker,
+			exact: createStrictShapeTypeChecker,
+		};
+		function is(x, y) {
+			if (x === y) {
+				return x !== 0 || 1 / x === 1 / y;
+			} else {
+				return x !== x && y !== y;
+			}
+		}
+		function PropTypeError(message, data) {
+			this.message = message;
+			this.data = data && typeof data === 'object' ? data: {};
+			this.stack = '';
+		}
+		PropTypeError.prototype = Error.prototype;
+		function createChainableTypeChecker(validate) {
+			if (process.env.NODE_ENV !== 'production') {
+				var manualPropTypeCallCache = {};
+				var manualPropTypeWarningCount = 0;
+			}
+			function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
+				componentName = componentName || ANONYMOUS;
+				propFullName = propFullName || propName;
+				if (secret !== ReactPropTypesSecret) {
+					if (throwOnDirectAccess) {
+						var err = new Error(
+							'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+							'Use `PropTypes.checkPropTypes()` to call them. ' +
+							'Read more at http://fb.me/use-check-prop-types'
+						);
+						err.name = 'Invariant Violation';
+						throw err;
+					} else if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined') {
+						var cacheKey = componentName + ':' + propName;
+						if (
+							!manualPropTypeCallCache[cacheKey] &&
+							manualPropTypeWarningCount < 3
+						) {
+							printWarning(
+								'You are manually calling a React.PropTypes validation ' +
+								'function for the `' + propFullName + '` prop on `' + componentName + '`. This is deprecated ' +
+								'and will throw in the standalone `prop-types` package. ' +
+								'You may be seeing this warning due to a third-party PropTypes ' +
+								'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.'
+							);
+							manualPropTypeCallCache[cacheKey] = true;
+							manualPropTypeWarningCount++;
+						}
+					}
+				}
+				if (props[propName] == null) {
+					if (isRequired) {
+						if (props[propName] === null) {
+							return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
+						}
+						return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
+					}
+					return null;
+				} else {
+					return validate(props, propName, componentName, location, propFullName);
+				}
+			}
+			var chainedCheckType = checkType.bind(null, false);
+			chainedCheckType.isRequired = checkType.bind(null, true);
+			return chainedCheckType;
+		}
+		function createPrimitiveTypeChecker(expectedType) {
+			function validate(props, propName, componentName, location, propFullName, secret) {
+				var propValue = props[propName];
+				var propType = getPropType(propValue);
+				if (propType !== expectedType) {
+					var preciseType = getPreciseType(propValue);
+					return new PropTypeError(
+						'Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'),
+						{expectedType: expectedType}
+					);
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createAnyTypeChecker() {
+			return createChainableTypeChecker(emptyFunctionThatReturnsNull);
+		}
+		function createArrayOfTypeChecker(typeChecker) {
+			function validate(props, propName, componentName, location, propFullName) {
+				if (typeof typeChecker !== 'function') {
+					return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
+				}
+				var propValue = props[propName];
+				if (!Array.isArray(propValue)) {
+					var propType = getPropType(propValue);
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
+				}
+				for (var i = 0; i < propValue.length; i++) {
+					var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
+					if (error instanceof Error) {
+						return error;
+					}
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createElementTypeChecker() {
+			function validate(props, propName, componentName, location, propFullName) {
+				var propValue = props[propName];
+				if (!isValidElement(propValue)) {
+					var propType = getPropType(propValue);
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createElementTypeTypeChecker() {
+			function validate(props, propName, componentName, location, propFullName) {
+				var propValue = props[propName];
+				if (!ReactIs.isValidElementType(propValue)) {
+					var propType = getPropType(propValue);
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement type.'));
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createInstanceTypeChecker(expectedClass) {
+			function validate(props, propName, componentName, location, propFullName) {
+				if (!(props[propName] instanceof expectedClass)) {
+					var expectedClassName = expectedClass.name || ANONYMOUS;
+					var actualClassName = getClassName(props[propName]);
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createEnumTypeChecker(expectedValues) {
+			if (!Array.isArray(expectedValues)) {
+				if (process.env.NODE_ENV !== 'production') {
+					if (arguments.length > 1) {
+						printWarning(
+							'Invalid arguments supplied to oneOf, expected an array, got ' + arguments.length + ' arguments. ' +
+							'A common mistake is to write oneOf(x, y, z) instead of oneOf([x, y, z]).'
+						);
+					} else {
+						printWarning('Invalid argument supplied to oneOf, expected an array.');
+					}
+				}
+				return emptyFunctionThatReturnsNull;
+			}
+			function validate(props, propName, componentName, location, propFullName) {
+				var propValue = props[propName];
+				for (var i = 0; i < expectedValues.length; i++) {
+					if (is(propValue, expectedValues[i])) {
+						return null;
+					}
+				}
+				var valuesString = JSON.stringify(expectedValues, function replacer(key, value) {
+					var type = getPreciseType(value);
+					if (type === 'symbol') {
+						return String(value);
+					}
+					return value;
+				});
+				return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + String(propValue) + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createObjectOfTypeChecker(typeChecker) {
+			function validate(props, propName, componentName, location, propFullName) {
+				if (typeof typeChecker !== 'function') {
+					return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
+				}
+				var propValue = props[propName];
+				var propType = getPropType(propValue);
+				if (propType !== 'object') {
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
+				}
+				for (var key in propValue) {
+					if (has(propValue, key)) {
+						var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+						if (error instanceof Error) {
+							return error;
+						}
+					}
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createUnionTypeChecker(arrayOfTypeCheckers) {
+			if (!Array.isArray(arrayOfTypeCheckers)) {
+				process.env.NODE_ENV !== 'production' ? printWarning('Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
+				return emptyFunctionThatReturnsNull;
+			}
+			for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+				var checker = arrayOfTypeCheckers[i];
+				if (typeof checker !== 'function') {
+					printWarning(
+						'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
+						'received ' + getPostfixForTypeWarning(checker) + ' at index ' + i + '.'
+					);
+					return emptyFunctionThatReturnsNull;
+				}
+			}
+			function validate(props, propName, componentName, location, propFullName) {
+				var expectedTypes = [];
+				for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+					var checker = arrayOfTypeCheckers[i];
+					var checkerResult = checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret);
+					if (checkerResult == null) {
+						return null;
+					}
+					if (checkerResult.data && has(checkerResult.data, 'expectedType')) {
+						expectedTypes.push(checkerResult.data.expectedType);
+					}
+				}
+				var expectedTypesMessage = (expectedTypes.length > 0) ? ', expected one of type [' + expectedTypes.join(', ') + ']': '';
+				return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`' + expectedTypesMessage + '.'));
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createNodeChecker() {
+			function validate(props, propName, componentName, location, propFullName) {
+				if (!isNode(props[propName])) {
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function invalidValidatorError(componentName, location, propFullName, key, type) {
+			return new PropTypeError(
+				(componentName || 'React class') + ': ' + location + ' type `' + propFullName + '.' + key + '` is invalid; ' +
+				'it must be a function, usually from the `prop-types` package, but received `' + type + '`.'
+			);
+		}
+		function createShapeTypeChecker(shapeTypes) {
+			function validate(props, propName, componentName, location, propFullName) {
+				var propValue = props[propName];
+				var propType = getPropType(propValue);
+				if (propType !== 'object') {
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+				}
+				for (var key in shapeTypes) {
+					var checker = shapeTypes[key];
+					if (typeof checker !== 'function') {
+						return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
+					}
+					var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+					if (error) {
+						return error;
+					}
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function createStrictShapeTypeChecker(shapeTypes) {
+			function validate(props, propName, componentName, location, propFullName) {
+				var propValue = props[propName];
+				var propType = getPropType(propValue);
+				if (propType !== 'object') {
+					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+				}
+				var allKeys = assign({}, props[propName], shapeTypes);
+				for (var key in allKeys) {
+					var checker = shapeTypes[key];
+					if (has(shapeTypes, key) && typeof checker !== 'function') {
+						return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
+					}
+					if (!checker) {
+						return new PropTypeError(
+							'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
+							'\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+							'\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
+						);
+					}
+					var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+					if (error) {
+						return error;
+					}
+				}
+				return null;
+			}
+			return createChainableTypeChecker(validate);
+		}
+		function isNode(propValue) {
+			switch (typeof propValue) {
+				case 'number':
+				case 'string':
+				case 'undefined':
+					return true;
+				case 'boolean':
+					return !propValue;
+				case 'object':
+					if (Array.isArray(propValue)) {
+						return propValue.every(isNode);
+					}
+					if (propValue === null || isValidElement(propValue)) {
+						return true;
+					}
+					var iteratorFn = getIteratorFn(propValue);
+					if (iteratorFn) {
+						var iterator = iteratorFn.call(propValue);
+						var step;
+						if (iteratorFn !== propValue.entries) {
+							while (!(step = iterator.next()).done) {
+								if (!isNode(step.value)) {
+									return false;
+								}
+							}
+						} else {
+							while (!(step = iterator.next()).done) {
+								var entry = step.value;
+								if (entry) {
+									if (!isNode(entry[1])) {
+										return false;
+									}
+								}
+							}
+						}
+					} else {
+						return false;
+					}
+					return true;
+				default:
+					return false;
+			}
+		}
+		function isSymbol(propType, propValue) {
+			if (propType === 'symbol') {
+				return true;
+			}
+			if (!propValue) {
+				return false;
+			}
+			if (propValue['@@toStringTag'] === 'Symbol') {
+				return true;
+			}
+			if (typeof Symbol === 'function' && propValue instanceof Symbol) {
+				return true;
+			}
+			return false;
+		}
+		function getPropType(propValue) {
+			var propType = typeof propValue;
+			if (Array.isArray(propValue)) {
+				return 'array';
+			}
+			if (propValue instanceof RegExp) {
+				return 'object';
+			}
+			if (isSymbol(propType, propValue)) {
+				return 'symbol';
+			}
+			return propType;
+		}
+		function getPreciseType(propValue) {
+			if (typeof propValue === 'undefined' || propValue === null) {
+				return '' + propValue;
+			}
+			var propType = getPropType(propValue);
+			if (propType === 'object') {
+				if (propValue instanceof Date) {
+					return 'date';
+				} else if (propValue instanceof RegExp) {
+					return 'regexp';
+				}
+			}
+			return propType;
+		}
+		function getPostfixForTypeWarning(value) {
+			var type = getPreciseType(value);
+			switch (type) {
+				case 'array':
+				case 'object':
+					return 'an ' + type;
+				case 'boolean':
+				case 'date':
+				case 'regexp':
+					return 'a ' + type;
+				default:
+					return type;
+			}
+		}
+		function getClassName(propValue) {
+			if (!propValue.constructor || !propValue.constructor.name) {
+				return ANONYMOUS;
+			}
+			return propValue.constructor.name;
+		}
+		ReactPropTypes.checkPropTypes = checkPropTypes;
+		ReactPropTypes.resetWarningCache = checkPropTypes.resetWarningCache;
+		ReactPropTypes.PropTypes = ReactPropTypes;
+		return ReactPropTypes;
+	};
+	return factoryWithTypeCheckers;
+}
+
+// prop-types
+var factoryWithThrowingShims;
+var hasRequiredFactoryWithThrowingShims;
+function requireFactoryWithThrowingShims () {
+	if (hasRequiredFactoryWithThrowingShims) return factoryWithThrowingShims;
+	hasRequiredFactoryWithThrowingShims = 1;
+	var ReactPropTypesSecret = /*@__PURE__*/ requireReactPropTypesSecret();
+	function emptyFunction() {}
+	function emptyFunctionWithReset() {}
+	emptyFunctionWithReset.resetWarningCache = emptyFunction;
+	factoryWithThrowingShims = function() {
+		function shim(props, propName, componentName, location, propFullName, secret) {
+			if (secret === ReactPropTypesSecret) {
+				return;
+			}
+			var err = new Error(
+				'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+				'Use PropTypes.checkPropTypes() to call them. ' +
+				'Read more at http://fb.me/use-check-prop-types'
+			);
+			err.name = 'Invariant Violation';
+			throw err;
+		}		shim.isRequired = shim;
+		function getShim() {
+			return shim;
+		}		var ReactPropTypes = {
+			array: shim,
+			bigint: shim,
+			bool: shim,
+			func: shim,
+			number: shim,
+			object: shim,
+			string: shim,
+			symbol: shim,
+			any: shim,
+			arrayOf: getShim,
+			element: shim,
+			elementType: shim,
+			instanceOf: getShim,
+			node: shim,
+			objectOf: getShim,
+			oneOf: getShim,
+			oneOfType: getShim,
+			shape: getShim,
+			exact: getShim,
+			checkPropTypes: emptyFunctionWithReset,
+			resetWarningCache: emptyFunction
+		};
+		ReactPropTypes.PropTypes = ReactPropTypes;
+		return ReactPropTypes;
+	};
+	return factoryWithThrowingShims;
+}
+
+// prop-types
+propTypes.exports;
+var hasRequiredPropTypes;
+function requirePropTypes () {
+	if (hasRequiredPropTypes) return propTypes.exports;
+	hasRequiredPropTypes = 1;
+	if (process.env.NODE_ENV !== 'production') {
+		var ReactIs = /*@__PURE__*/ requireReactIs();
+		var throwOnDirectAccess = true;
+		propTypes.exports = /*@__PURE__*/ requireFactoryWithTypeCheckers()(ReactIs.isElement, throwOnDirectAccess);
+	} else {
+		propTypes.exports = /*@__PURE__*/ requireFactoryWithThrowingShims()();
+	}
+	return propTypes.exports;
+}
+
+// prop-types
+var propTypesExports = /*@__PURE__*/ requirePropTypes();
+const PropTypes = /*@__PURE__*/getDefaultExportFromCjs(propTypesExports);
+
+// dom-helpers
+function hasClass(element, className) {
+	if (element.classList) return !!className && element.classList.contains(className);
+	return (" " + (element.className.baseVal || element.className) + " ").indexOf(" " + className + " ") !== -1;
+}
+
+// dom-helpers
+function addClass(element, className) {
+	if (element.classList) element.classList.add(className);else if (!hasClass(element, className)) if (typeof element.className === 'string') element.className = element.className + " " + className;else element.setAttribute('class', (element.className && element.className.baseVal || '') + " " + className);
+}
+
+// dom-helpers
+function replaceClassName(origClass, classToRemove) {
+	return origClass.replace(new RegExp("(^|\\s)" + classToRemove + "(?:\\s|$)", 'g'), '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '');
+}
+function removeClass$1(element, className) {
+	if (element.classList) {
+		element.classList.remove(className);
+	} else if (typeof element.className === 'string') {
+		element.className = replaceClassName(element.className, className);
+	} else {
+		element.setAttribute('class', replaceClassName(element.className && element.className.baseVal || '', className));
+	}
+}
+
+// react-transition-group
+const config = {
+	disabled: false
+};
+
+// react-transition-group
+var timeoutsShape = process.env.NODE_ENV !== 'production' ? PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+	enter: PropTypes.number,
+	exit: PropTypes.number,
+	appear: PropTypes.number
+}).isRequired]) : null;
+var classNamesShape = process.env.NODE_ENV !== 'production' ? PropTypes.oneOfType([PropTypes.string, PropTypes.shape({
+	enter: PropTypes.string,
+	exit: PropTypes.string,
+	active: PropTypes.string
+}), PropTypes.shape({
+	enter: PropTypes.string,
+	enterDone: PropTypes.string,
+	enterActive: PropTypes.string,
+	exit: PropTypes.string,
+	exitDone: PropTypes.string,
+	exitActive: PropTypes.string
+})]) : null;
+
+// react-transition-group
+const TransitionGroupContext = React.createContext(null);
+
+// react-transition-group
+var forceReflow = function forceReflow(node) {
+	return node.scrollTop;
+};
+
+// react-transition-group
+var UNMOUNTED = 'unmounted';
+var EXITED = 'exited';
+var ENTERING = 'entering';
+var ENTERED = 'entered';
+var EXITING = 'exiting';
+var Transition = /*#__PURE__*/function (_React$Component) {
+	_inheritsLoose(Transition, _React$Component);
+	function Transition(props, context) {
+		var _this;
+		_this = _React$Component.call(this, props, context) || this;
+		var parentGroup = context;
+		var appear = parentGroup && !parentGroup.isMounting ? props.enter : props.appear;
+		var initialStatus;
+		_this.appearStatus = null;
+		if (props.in) {
+			if (appear) {
+				initialStatus = EXITED;
+				_this.appearStatus = ENTERING;
+			} else {
+				initialStatus = ENTERED;
+			}
+		} else {
+			if (props.unmountOnExit || props.mountOnEnter) {
+				initialStatus = UNMOUNTED;
+			} else {
+				initialStatus = EXITED;
+			}
+		}
+		_this.state = {
+			status: initialStatus
+		};
+		_this.nextCallback = null;
+		return _this;
+	}
+	Transition.getDerivedStateFromProps = function getDerivedStateFromProps(_ref, prevState) {
+		var nextIn = _ref.in;
+		if (nextIn && prevState.status === UNMOUNTED) {
+			return {
+				status: EXITED
+			};
+		}
+		return null;
+	}
+	;
+	var _proto = Transition.prototype;
+	_proto.componentDidMount = function componentDidMount() {
+		this.updateStatus(true, this.appearStatus);
+	};
+	_proto.componentDidUpdate = function componentDidUpdate(prevProps) {
+		var nextStatus = null;
+		if (prevProps !== this.props) {
+			var status = this.state.status;
+			if (this.props.in) {
+				if (status !== ENTERING && status !== ENTERED) {
+					nextStatus = ENTERING;
+				}
+			} else {
+				if (status === ENTERING || status === ENTERED) {
+					nextStatus = EXITING;
+				}
+			}
+		}
+		this.updateStatus(false, nextStatus);
+	};
+	_proto.componentWillUnmount = function componentWillUnmount() {
+		this.cancelNextCallback();
+	};
+	_proto.getTimeouts = function getTimeouts() {
+		var timeout = this.props.timeout;
+		var exit, enter, appear;
+		exit = enter = appear = timeout;
+		if (timeout != null && typeof timeout !== 'number') {
+			exit = timeout.exit;
+			enter = timeout.enter;
+			appear = timeout.appear !== undefined ? timeout.appear : enter;
+		}
+		return {
+			exit: exit,
+			enter: enter,
+			appear: appear
+		};
+	};
+	_proto.updateStatus = function updateStatus(mounting, nextStatus) {
+		if (mounting === void 0) {
+			mounting = false;
+		}
+		if (nextStatus !== null) {
+			this.cancelNextCallback();
+			if (nextStatus === ENTERING) {
+				if (this.props.unmountOnExit || this.props.mountOnEnter) {
+					var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
+					if (node) forceReflow(node);
+				}
+				this.performEnter(mounting);
+			} else {
+				this.performExit();
+			}
+		} else if (this.props.unmountOnExit && this.state.status === EXITED) {
+			this.setState({
+				status: UNMOUNTED
+			});
+		}
+	};
+	_proto.performEnter = function performEnter(mounting) {
+		var _this2 = this;
+		var enter = this.props.enter;
+		var appearing = this.context ? this.context.isMounting : mounting;
+		var _ref2 = this.props.nodeRef ? [appearing] : [ReactDOM.findDOMNode(this), appearing],
+				maybeNode = _ref2[0],
+				maybeAppearing = _ref2[1];
+		var timeouts = this.getTimeouts();
+		var enterTimeout = appearing ? timeouts.appear : timeouts.enter;
+		if (!mounting && !enter || config.disabled) {
+			this.safeSetState({
+				status: ENTERED
+			}, function () {
+				_this2.props.onEntered(maybeNode);
+			});
+			return;
+		}
+		this.props.onEnter(maybeNode, maybeAppearing);
+		this.safeSetState({
+			status: ENTERING
+		}, function () {
+			_this2.props.onEntering(maybeNode, maybeAppearing);
+			_this2.onTransitionEnd(enterTimeout, function () {
+				_this2.safeSetState({
+					status: ENTERED
+				}, function () {
+					_this2.props.onEntered(maybeNode, maybeAppearing);
+				});
+			});
+		});
+	};
+	_proto.performExit = function performExit() {
+		var _this3 = this;
+		var exit = this.props.exit;
+		var timeouts = this.getTimeouts();
+		var maybeNode = this.props.nodeRef ? undefined : ReactDOM.findDOMNode(this);
+		if (!exit || config.disabled) {
+			this.safeSetState({
+				status: EXITED
+			}, function () {
+				_this3.props.onExited(maybeNode);
+			});
+			return;
+		}
+		this.props.onExit(maybeNode);
+		this.safeSetState({
+			status: EXITING
+		}, function () {
+			_this3.props.onExiting(maybeNode);
+			_this3.onTransitionEnd(timeouts.exit, function () {
+				_this3.safeSetState({
+					status: EXITED
+				}, function () {
+					_this3.props.onExited(maybeNode);
+				});
+			});
+		});
+	};
+	_proto.cancelNextCallback = function cancelNextCallback() {
+		if (this.nextCallback !== null) {
+			this.nextCallback.cancel();
+			this.nextCallback = null;
+		}
+	};
+	_proto.safeSetState = function safeSetState(nextState, callback) {
+		callback = this.setNextCallback(callback);
+		this.setState(nextState, callback);
+	};
+	_proto.setNextCallback = function setNextCallback(callback) {
+		var _this4 = this;
+		var active = true;
+		this.nextCallback = function (event) {
+			if (active) {
+				active = false;
+				_this4.nextCallback = null;
+				callback(event);
+			}
+		};
+		this.nextCallback.cancel = function () {
+			active = false;
+		};
+		return this.nextCallback;
+	};
+	_proto.onTransitionEnd = function onTransitionEnd(timeout, handler) {
+		this.setNextCallback(handler);
+		var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
+		var doesNotHaveTimeoutOrListener = timeout == null && !this.props.addEndListener;
+		if (!node || doesNotHaveTimeoutOrListener) {
+			setTimeout(this.nextCallback, 0);
+			return;
+		}
+		if (this.props.addEndListener) {
+			var _ref3 = this.props.nodeRef ? [this.nextCallback] : [node, this.nextCallback],
+					maybeNode = _ref3[0],
+					maybeNextCallback = _ref3[1];
+			this.props.addEndListener(maybeNode, maybeNextCallback);
+		}
+		if (timeout != null) {
+			setTimeout(this.nextCallback, timeout);
+		}
+	};
+	_proto.render = function render() {
+		var status = this.state.status;
+		if (status === UNMOUNTED) {
+			return null;
+		}
+		var _this$props = this.props,
+				children = _this$props.children;
+				_this$props.in;
+				_this$props.mountOnEnter;
+				_this$props.unmountOnExit;
+				_this$props.appear;
+				_this$props.enter;
+				_this$props.exit;
+				_this$props.timeout;
+				_this$props.addEndListener;
+				_this$props.onEnter;
+				_this$props.onEntering;
+				_this$props.onEntered;
+				_this$props.onExit;
+				_this$props.onExiting;
+				_this$props.onExited;
+				_this$props.nodeRef;
+				var childProps = _objectWithoutPropertiesLoose(_this$props, ["children", "in", "mountOnEnter", "unmountOnExit", "appear", "enter", "exit", "timeout", "addEndListener", "onEnter", "onEntering", "onEntered", "onExit", "onExiting", "onExited", "nodeRef"]);
+		return (
+			/*#__PURE__*/
+			React.createElement(TransitionGroupContext.Provider, {
+				value: null
+			}, typeof children === 'function' ? children(status, childProps) : React.cloneElement(React.Children.only(children), childProps))
+		);
+	};
+	return Transition;
+}(React.Component);
+Transition.contextType = TransitionGroupContext;
+Transition.propTypes = process.env.NODE_ENV !== "production" ? {
+	nodeRef: PropTypes.shape({
+		current: typeof Element === 'undefined' ? PropTypes.any : function (propValue, key, componentName, location, propFullName, secret) {
+			var value = propValue[key];
+			return PropTypes.instanceOf(value && 'ownerDocument' in value ? value.ownerDocument.defaultView.Element : Element)(propValue, key, componentName, location, propFullName, secret);
+		}
+	}),
+	children: PropTypes.oneOfType([PropTypes.func.isRequired, PropTypes.element.isRequired]).isRequired,
+	in: PropTypes.bool,
+	mountOnEnter: PropTypes.bool,
+	unmountOnExit: PropTypes.bool,
+	appear: PropTypes.bool,
+	enter: PropTypes.bool,
+	exit: PropTypes.bool,
+	timeout: function timeout(props) {
+		var pt = timeoutsShape;
+		if (!props.addEndListener) pt = pt.isRequired;
+		for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+			args[_key - 1] = arguments[_key];
+		}
+		return pt.apply(void 0, [props].concat(args));
+	},
+	addEndListener: PropTypes.func,
+	onEnter: PropTypes.func,
+	onEntering: PropTypes.func,
+	onEntered: PropTypes.func,
+	onExit: PropTypes.func,
+	onExiting: PropTypes.func,
+	onExited: PropTypes.func
+} : {};
+function noop() {}
+Transition.defaultProps = {
+	in: false,
+	mountOnEnter: false,
+	unmountOnExit: false,
+	appear: false,
+	enter: true,
+	exit: true,
+	onEnter: noop,
+	onEntering: noop,
+	onEntered: noop,
+	onExit: noop,
+	onExiting: noop,
+	onExited: noop
+};
+Transition.UNMOUNTED = UNMOUNTED;
+Transition.EXITED = EXITED;
+Transition.ENTERING = ENTERING;
+Transition.ENTERED = ENTERED;
+Transition.EXITING = EXITING;
+const Transition$1 = Transition;
+
+// react-transition-group
+var _addClass = function addClass$1(node, classes) {
+	return node && classes && classes.split(' ').forEach(function (c) {
+		return addClass(node, c);
+	});
+};
+var removeClass = function removeClass(node, classes) {
+	return node && classes && classes.split(' ').forEach(function (c) {
+		return removeClass$1(node, c);
+	});
+};
+var CSSTransition = /*#__PURE__*/function (_React$Component) {
+	_inheritsLoose(CSSTransition, _React$Component);
+	function CSSTransition() {
+		var _this;
+		for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+		_this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
+		_this.appliedClasses = {
+			appear: {},
+			enter: {},
+			exit: {}
+		};
+		_this.onEnter = function (maybeNode, maybeAppearing) {
+			var _this$resolveArgument = _this.resolveArguments(maybeNode, maybeAppearing),
+					node = _this$resolveArgument[0],
+					appearing = _this$resolveArgument[1];
+			_this.removeClasses(node, 'exit');
+			_this.addClass(node, appearing ? 'appear' : 'enter', 'base');
+			if (_this.props.onEnter) {
+				_this.props.onEnter(maybeNode, maybeAppearing);
+			}
+		};
+		_this.onEntering = function (maybeNode, maybeAppearing) {
+			var _this$resolveArgument2 = _this.resolveArguments(maybeNode, maybeAppearing),
+					node = _this$resolveArgument2[0],
+					appearing = _this$resolveArgument2[1];
+			var type = appearing ? 'appear' : 'enter';
+			_this.addClass(node, type, 'active');
+			if (_this.props.onEntering) {
+				_this.props.onEntering(maybeNode, maybeAppearing);
+			}
+		};
+		_this.onEntered = function (maybeNode, maybeAppearing) {
+			var _this$resolveArgument3 = _this.resolveArguments(maybeNode, maybeAppearing),
+					node = _this$resolveArgument3[0],
+					appearing = _this$resolveArgument3[1];
+			var type = appearing ? 'appear' : 'enter';
+			_this.removeClasses(node, type);
+			_this.addClass(node, type, 'done');
+			if (_this.props.onEntered) {
+				_this.props.onEntered(maybeNode, maybeAppearing);
+			}
+		};
+		_this.onExit = function (maybeNode) {
+			var _this$resolveArgument4 = _this.resolveArguments(maybeNode),
+					node = _this$resolveArgument4[0];
+			_this.removeClasses(node, 'appear');
+			_this.removeClasses(node, 'enter');
+			_this.addClass(node, 'exit', 'base');
+			if (_this.props.onExit) {
+				_this.props.onExit(maybeNode);
+			}
+		};
+		_this.onExiting = function (maybeNode) {
+			var _this$resolveArgument5 = _this.resolveArguments(maybeNode),
+					node = _this$resolveArgument5[0];
+			_this.addClass(node, 'exit', 'active');
+			if (_this.props.onExiting) {
+				_this.props.onExiting(maybeNode);
+			}
+		};
+		_this.onExited = function (maybeNode) {
+			var _this$resolveArgument6 = _this.resolveArguments(maybeNode),
+					node = _this$resolveArgument6[0];
+			_this.removeClasses(node, 'exit');
+			_this.addClass(node, 'exit', 'done');
+			if (_this.props.onExited) {
+				_this.props.onExited(maybeNode);
+			}
+		};
+		_this.resolveArguments = function (maybeNode, maybeAppearing) {
+			return _this.props.nodeRef ? [_this.props.nodeRef.current, maybeNode]
+			: [maybeNode, maybeAppearing];
+		};
+		_this.getClassNames = function (type) {
+			var classNames = _this.props.classNames;
+			var isStringClassNames = typeof classNames === 'string';
+			var prefix = isStringClassNames && classNames ? classNames + "-" : '';
+			var baseClassName = isStringClassNames ? "" + prefix + type : classNames[type];
+			var activeClassName = isStringClassNames ? baseClassName + "-active" : classNames[type + "Active"];
+			var doneClassName = isStringClassNames ? baseClassName + "-done" : classNames[type + "Done"];
+			return {
+				baseClassName: baseClassName,
+				activeClassName: activeClassName,
+				doneClassName: doneClassName
+			};
+		};
+		return _this;
+	}
+	var _proto = CSSTransition.prototype;
+	_proto.addClass = function addClass(node, type, phase) {
+		var className = this.getClassNames(type)[phase + "ClassName"];
+		var _this$getClassNames = this.getClassNames('enter'),
+				doneClassName = _this$getClassNames.doneClassName;
+		if (type === 'appear' && phase === 'done' && doneClassName) {
+			className += " " + doneClassName;
+		}
+		if (phase === 'active') {
+			if (node) forceReflow(node);
+		}
+		if (className) {
+			this.appliedClasses[type][phase] = className;
+			_addClass(node, className);
+		}
+	};
+	_proto.removeClasses = function removeClasses(node, type) {
+		var _this$appliedClasses$ = this.appliedClasses[type],
+				baseClassName = _this$appliedClasses$.base,
+				activeClassName = _this$appliedClasses$.active,
+				doneClassName = _this$appliedClasses$.done;
+		this.appliedClasses[type] = {};
+		if (baseClassName) {
+			removeClass(node, baseClassName);
+		}
+		if (activeClassName) {
+			removeClass(node, activeClassName);
+		}
+		if (doneClassName) {
+			removeClass(node, doneClassName);
+		}
+	};
+	_proto.render = function render() {
+		var _this$props = this.props;
+				_this$props.classNames;
+				var props = _objectWithoutPropertiesLoose(_this$props, ["classNames"]);
+		return /*#__PURE__*/React.createElement(Transition$1, _extends({}, props, {
+			onEnter: this.onEnter,
+			onEntered: this.onEntered,
+			onEntering: this.onEntering,
+			onExit: this.onExit,
+			onExiting: this.onExiting,
+			onExited: this.onExited
+		}));
+	};
+	return CSSTransition;
+}(React.Component);
+CSSTransition.defaultProps = {
+	classNames: ''
+};
+CSSTransition.propTypes = process.env.NODE_ENV !== "production" ? _extends({}, Transition$1.propTypes, {
+	classNames: classNamesShape,
+	onEnter: PropTypes.func,
+	onEntering: PropTypes.func,
+	onEntered: PropTypes.func,
+	onExit: PropTypes.func,
+	onExiting: PropTypes.func,
+	onExited: PropTypes.func
+}) : {};
+const CSSTransition$1 = CSSTransition;
+
+// react-transition-group
+var _leaveRenders, _enterRenders;
+function areChildrenDifferent(oldChildren, newChildren) {
+	if (oldChildren === newChildren) return false;
+	if (React.isValidElement(oldChildren) && React.isValidElement(newChildren) && oldChildren.key != null && oldChildren.key === newChildren.key) {
+		return false;
+	}
+	return true;
+}
+var modes = {
+	out: 'out-in',
+	in: 'in-out'
+};
+var callHook = function callHook(element, name, cb) {
+	return function () {
+		var _element$props;
+		element.props[name] && (_element$props = element.props)[name].apply(_element$props, arguments);
+		cb();
+	};
+};
+var leaveRenders = (_leaveRenders = {}, _leaveRenders[modes.out] = function (_ref) {
+	var current = _ref.current,
+			changeState = _ref.changeState;
+	return React.cloneElement(current, {
+		in: false,
+		onExited: callHook(current, 'onExited', function () {
+			changeState(ENTERING, null);
+		})
+	});
+}, _leaveRenders[modes.in] = function (_ref2) {
+	var current = _ref2.current,
+			changeState = _ref2.changeState,
+			children = _ref2.children;
+	return [current, React.cloneElement(children, {
+		in: true,
+		onEntered: callHook(children, 'onEntered', function () {
+			changeState(ENTERING);
+		})
+	})];
+}, _leaveRenders);
+var enterRenders = (_enterRenders = {}, _enterRenders[modes.out] = function (_ref3) {
+	var children = _ref3.children,
+			changeState = _ref3.changeState;
+	return React.cloneElement(children, {
+		in: true,
+		onEntered: callHook(children, 'onEntered', function () {
+			changeState(ENTERED, React.cloneElement(children, {
+				in: true
+			}));
+		})
+	});
+}, _enterRenders[modes.in] = function (_ref4) {
+	var current = _ref4.current,
+			children = _ref4.children,
+			changeState = _ref4.changeState;
+	return [React.cloneElement(current, {
+		in: false,
+		onExited: callHook(current, 'onExited', function () {
+			changeState(ENTERED, React.cloneElement(children, {
+				in: true
+			}));
+		})
+	}), React.cloneElement(children, {
+		in: true
+	})];
+}, _enterRenders);
+var SwitchTransition = /*#__PURE__*/function (_React$Component) {
+	_inheritsLoose(SwitchTransition, _React$Component);
+	function SwitchTransition() {
+		var _this;
+		for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+		_this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
+		_this.state = {
+			status: ENTERED,
+			current: null
+		};
+		_this.appeared = false;
+		_this.changeState = function (status, current) {
+			if (current === void 0) {
+				current = _this.state.current;
+			}
+			_this.setState({
+				status: status,
+				current: current
+			});
+		};
+		return _this;
+	}
+	var _proto = SwitchTransition.prototype;
+	_proto.componentDidMount = function componentDidMount() {
+		this.appeared = true;
+	};
+	SwitchTransition.getDerivedStateFromProps = function getDerivedStateFromProps(props, state) {
+		if (props.children == null) {
+			return {
+				current: null
+			};
+		}
+		if (state.status === ENTERING && props.mode === modes.in) {
+			return {
+				status: ENTERING
+			};
+		}
+		if (state.current && areChildrenDifferent(state.current, props.children)) {
+			return {
+				status: EXITING
+			};
+		}
+		return {
+			current: React.cloneElement(props.children, {
+				in: true
+			})
+		};
+	};
+	_proto.render = function render() {
+		var _this$props = this.props,
+				children = _this$props.children,
+				mode = _this$props.mode,
+				_this$state = this.state,
+				status = _this$state.status,
+				current = _this$state.current;
+		var data = {
+			children: children,
+			current: current,
+			changeState: this.changeState,
+			status: status
+		};
+		var component;
+		switch (status) {
+			case ENTERING:
+				component = enterRenders[mode](data);
+				break;
+			case EXITING:
+				component = leaveRenders[mode](data);
+				break;
+			case ENTERED:
+				component = current;
+		}
+		return /*#__PURE__*/React.createElement(TransitionGroupContext.Provider, {
+			value: {
+				isMounting: !this.appeared
+			}
+		}, component);
+	};
+	return SwitchTransition;
+}(React.Component);
+SwitchTransition.propTypes = process.env.NODE_ENV !== "production" ? {
+	mode: PropTypes.oneOf([modes.in, modes.out]),
+	children: PropTypes.oneOfType([PropTypes.element.isRequired])
+} : {};
+SwitchTransition.defaultProps = {
+	mode: modes.out
+};
+const SwitchTransition$1 = SwitchTransition;
+
 // activity_feed/components/application_news/components/CarouselBuilder.tsx
 function FeedCarouselBuilder({ currentArticle }) {
 	const External = settings.external[currentArticle.id];
+	const ref = React.useRef(null);
 	Common.ReactSpring.useSpring(
 		() => NewsStore.getOrientation() === "horizontal" ? {
 			from: { x: 0, y: 0 },
@@ -1258,7 +2855,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 			to: { x: 15, y: 15 }
 		}
 	);
-	const spring = Common.ReactSpring.useSpring({
+	Common.ReactSpring.useSpring({
 		from: { x: 0, y: 0, scale: 0, opacity: 0 },
 		to: { x: 1, y: 1, scale: 1, opacity: 1, config: Common.ReactSpring.config.gentle }
 	});
@@ -1272,7 +2869,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 			target: "_blank",
 			role: "button"
 		},
-		BdApi.React.createElement(Common.ReactSpring.animated.div, { className: `${FeedClasses.articleStandard} ${FeedClasses.article}`, style: NewsStore.getRootStyle(spring) }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+		BdApi.React.createElement(SwitchTransition$1, null, BdApi.React.createElement(CSSTransition$1, { classNames: "slide", nodeRef: ref, timeout: 350 }, BdApi.React.createElement("div", { className: `${FeedClasses.articleStandard} ${FeedClasses.article}`, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,
@@ -1286,7 +2883,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 				className: FeedClasses.gameIcon,
 				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
 			}
-		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))
+		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))))
 	));
 }
 
@@ -1430,9 +3027,9 @@ function NewsFeedBuilder() {
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
 	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
-	const [time, setTime] = react.useState(new Date());
-	const [waitTime, setWaitTime] = react.useState(true);
-	react.useEffect(() => {
+	const [time, setTime] = React.useState(new Date());
+	const [waitTime, setWaitTime] = React.useState(true);
+	React.useEffect(() => {
 		const inv = setInterval(() => {
 			const newTime = Math.floor((Math.floor((new Date()).getTime()) - Math.floor(time.getTime())) / 1e3);
 			if (newTime > 0 && articles) {
@@ -1477,11 +3074,11 @@ function SectionHeader({ label }) {
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
 const css$2 = `
-.quickLauncher_8e586c {
+.quickLauncher__1ffe5 {
 		display: block;
 }
 
-.dock_8e586c {
+.dock__1ffe5 {
 		margin-top: 10px;
 		display: flex;
 		overflow: hidden;
@@ -1489,7 +3086,7 @@ const css$2 = `
 		max-width: 1280px;
 }
 
-.dockItem_8e586c {
+.dockItem__1ffe5 {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: pointer;
@@ -1499,11 +3096,11 @@ const css$2 = `
 		flex-direction: column;
 }
 
-.dockIcon_8e586c:first-child {
+.dockIcon__1ffe5:first-child {
 		margin-left: 0;
 }
 
-.dockIcon_8e586c {
+.dockIcon__1ffe5 {
 		background-size: 100%;
 		border-radius: 3px;
 		height: 40px;
@@ -1512,7 +3109,7 @@ const css$2 = `
 		width: 40px;
 }
 
-.dockItemText_8e586c {
+.dockItemText__1ffe5 {
 		font-weight: 500;
 		height: 31px;
 		line-height: normal;
@@ -1525,49 +3122,49 @@ const css$2 = `
 		color: var(--text-default);
 }
 
-.dockItemPlay_8e586c {
+.dockItemPlay__1ffe5 {
 		display: none;
 		z-index: 9999;
 }
 
-.dockItemPlay_8e586c:disabled, .dockItemPlay_8e586c[aria-disabled=true] {
+.dockItemPlay__1ffe5:disabled, .dockItemPlay__1ffe5[aria-disabled=true] {
 		background-color: var(--green-active, var(--button-positive-background-active)) !important;
 }
 
-.dockItem_8e586c:hover {
+.dockItem__1ffe5:hover {
 		background: var(--background-base-lowest);
 }
 
-.dockItem_8e586c:hover .dockItemText_8e586c {
+.dockItem__1ffe5:hover .dockItemText__1ffe5 {
 		display: none;
 }
 
-.dockItem_8e586c:hover .dockItemPlay_8e586c {
+.dockItem__1ffe5:hover .dockItemPlay__1ffe5 {
 		display: flex;
 }
 
-.emptyIcon_8e586c {
+.emptyIcon__1ffe5 {
 		height: 24px;
 		margin-right: 8px;
 		width: 24px;
 }`;
 _loadStyle("QuickLauncher.module.css", css$2);
 const modules_1116a9ae = {
-	"quickLauncher": "quickLauncher_8e586c",
-	"dock": "dock_8e586c",
-	"dockItem": "dockItem_8e586c",
-	"dockIcon": "dockIcon_8e586c",
-	"dockItemText": "dockItemText_8e586c",
-	"dockItemPlay": "dockItemPlay_8e586c",
-	"emptyIcon": "emptyIcon_8e586c"
+	"quickLauncher": "quickLauncher__1ffe5",
+	"dock": "dock__1ffe5",
+	"dockItem": "dockItem__1ffe5",
+	"dockIcon": "dockIcon__1ffe5",
+	"dockItemText": "dockItemText__1ffe5",
+	"dockItemPlay": "dockItemPlay__1ffe5",
+	"emptyIcon": "emptyIcon__1ffe5"
 };
 const QuickLauncherClasses = modules_1116a9ae;
 
 // activity_feed/components/quick_launcher/launcher.tsx
 function LauncherGameBuilder({ game, runningGames }) {
-	const [shouldDisable, setDisable] = react.useState(false);
+	const [shouldDisable, setDisable] = React.useState(false);
 	setTimeout(() => setDisable(false), 1e4);
-	const disableCheck = react.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
+	const disableCheck = React.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
 	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
 		"button",
 		{
@@ -1715,8 +3312,8 @@ function activityCheck(activities, isSpotify) {
 	return pass;
 }
 function useWindowSize() {
-	const [size, setSize] = react.useState([0, 0]);
-	react.useLayoutEffect(() => {
+	const [size, setSize] = React.useState([0, 0]);
+	React.useLayoutEffect(() => {
 		function updateSize() {
 			setSize([window.innerWidth, window.innerHeight]);
 		}
@@ -1729,27 +3326,27 @@ function useWindowSize() {
 
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css$1 = `
-.nowPlaying_77d53e {}
+.nowPlaying__93528 {}
 
-.nowPlayingContainer_77d53e {
+.nowPlayingContainer__93528 {
 		display: flex;
 		margin-top: var(--space-lg);
 		gap: var(--space-lg);
 }
 
-.nowPlayingColumn_77d53e {
+.nowPlayingColumn__93528 {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
 		width: calc(50% - (var(--space-lg) / 2))
 }
 
-.nowPlayingContainer_77d53e .itemCard_77d53e {
+.nowPlayingContainer__93528 .itemCard__93528 {
 		flex: 1 0 0;
 		margin: 16px 16px 0 0;
 }
 
-.card_77d53e {
+.card__93528 {
 		border-radius: 5px;
 		box-sizing: border-box;
 		cursor: default;
@@ -1757,21 +3354,21 @@ const css$1 = `
 		transform: translateZ(0);
 }
 		
-.cardHeader_77d53e {
+.cardHeader__93528 {
 		padding: 20px;
 		position: relative;
 		flex-direction: row;
 		background: var(--background-base-lowest);
 }
 
-.header_77d53e {
+.header__93528 {
 		display: flex;
 		align-items: center;
 		width: 100%;
 		height: 40px;
 }
 
-.nameTag_77d53e {
+.nameTag__93528 {
 		line-height: 17px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1780,31 +3377,31 @@ const css$1 = `
 		color: var(--text-default);
 }
 
-.username_77d53e {
+.username__93528 {
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: 500;
 		line-height: 20px;
 }
 
-.username_77d53e:hover {
+.username__93528:hover {
 		text-decoration: underline;
 }
 
-.card_77d53e:hover .headerIcon_77d53e, .header_77d53e:has(.headerActions_77d53e[aria-expanded="true"]) .headerIcon_77d53e {
+.card__93528:hover .headerIcon__93528, .header__93528:has(.headerActions__93528[aria-expanded="true"]) .headerIcon__93528 {
 		display: none;
 }
 
-.headerActions_77d53e {
+.headerActions__93528 {
 		display: none;
 		margin-left: 8px;
 }
 
-.card_77d53e:hover .headerActions_77d53e, .headerActions_77d53e[aria-expanded="true"] {
+.card__93528:hover .headerActions__93528, .headerActions__93528[aria-expanded="true"] {
 		display: flex;
 }
 
-.overflowMenu_77d53e {
+.overflowMenu__93528 {
 		cursor: pointer;
 		height: 24px;
 		margin-left: 8px;
@@ -1813,11 +3410,11 @@ const css$1 = `
 		color: var(--interactive-icon-hover);
 }
 
-.overflowMenu_77d53e:hover {
+.overflowMenu__93528:hover {
 		color: var(--interactive-icon-default);
 }
 
-.headerIcon_77d53e {
+.headerIcon__93528 {
 		border-radius: 4px;
 		display: block;
 		height: 30px;
@@ -1825,7 +3422,7 @@ const css$1 = `
 		width: 30px;
 }
 
-.splashArt_77d53e {
+.splashArt__93528 {
 		filter: grayscale(100%);
 		mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
 		opacity: .3;
@@ -1841,72 +3438,72 @@ const css$1 = `
 		top: 0;
 }
 
-.server_77d53e {
+.server__93528 {
 		mask: radial-gradient(80% 100% at top right, hsla(0, 0%, 100%, .5) 0, hsla(0, 0%, 100%, 0) 100%);
 		right: 0;
 		left: unset;
 }
 
-.cardBody_77d53e {
+.cardBody__93528 {
 		display: flex;
 		padding: 0 20px;
 		background: var(--background-mod-strong)
 }
 
-.section_77d53e {
+.section__93528 {
 		-webkit-box-flex: 1;
 		flex: 1 0 calc(50% - 20px);
 }
 
-.game_77d53e {
+.game__93528 {
 		padding: 20px 0;
 }
 
-.gameBody_77d53e {
+.gameBody__93528 {
 		flex-direction: column;
 }
 
-.activity_77d53e {
+.activity__93528 {
 		flex-direction: row;
 }
 
-.activity_77d53e:last-child:not(:only-child) {
+.activity__93528:last-child:not(:only-child) {
 		margin-top: 20px;
 }
 
-.activity_77d53e .serviceButtonWrapper_77d53e {
+.activity__93528 .serviceButtonWrapper__93528 {
 		gap: 6px;
 		display: flex;
 		flex-direction: row;
 }
 
-.richActivity_77d53e {
+.richActivity__93528 {
 		margin-top: 20px;
 }
 
-.activityActivityFeed_77d53e {}
+.activityActivityFeed__93528 {}
 
-.activityFeed_77d53e {
+.activityFeed__93528 {
 		-webkit-box-flex: 1;
 		flex: 1 1 50%;
 		min-width: 0;
 }
 
-.body_77d53e {}
+.body__93528 {}
 
-.bodyNormal_77d53e {}
+.bodyNormal__93528 {}
 
-:is(.gameInfoRich_77d53e, .gameNameWrapper_77d53e) {
+:is(.gameInfoRich__93528, .gameNameWrapper__93528) {
 		-webkit-box-flex: 1;
 		display: flex;
 		flex: 1;
 }
 
-.gameInfoRich_77d53e {
+.gameInfoRich__93528 {
 		align-items: center;
 }
 
-.gameInfo_77d53e {
+.gameInfo__93528 {
 		margin-left: 20px;
 		min-width: 0;
 		color: var(--text-default);
@@ -1914,11 +3511,11 @@ const css$1 = `
 		flex: 1;
 }
 
-:is(.gameName_77d53e, .gameNameWrapper_77d53e, .streamInfo_77d53e) {
+:is(.gameName__93528, .gameNameWrapper__93528, .streamInfo__93528) {
 		overflow: hidden;
 }
 
-.gameName_77d53e {
+.gameName__93528 {
 		font-size: 16px;
 		line-height: 20px;
 		margin-right: 10px;
@@ -1927,14 +3524,14 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.gameName_77d53e.clickable_77d53e:hover {
+.gameName__93528.clickable__93528:hover {
 		text-decoration: underline;
 }
 
-.playTime_77d53e:not(a) {
+.playTime__93528:not(a) {
 		color: var(--text-muted);
 }
-.playTime_77d53e {
+.playTime__93528 {
 		font-size: 12px;
 		font-weight: 500;
 		line-height: 14px;
@@ -1944,27 +3541,27 @@ const css$1 = `
 		white-space: nowrap;
 }
 
-.assets_77d53e {
+.assets__93528 {
 		position: relative;
 }
 
-.assetsLargeImageActivityFeed_77d53e {
+.assetsLargeImageActivityFeed__93528 {
 		width: 90px;
 		height: 90px;
 }
 
-.assetsSmallImageActivityFeed_77d53e {
+.assetsSmallImageActivityFeed__93528 {
 		height: 30px;
 		width: 30px;
 }
 
-.assets_77d53e .assetsLargeImage_77d53e {
+.assets__93528 .assetsLargeImage__93528 {
 		display: block;
 		border-radius: 4px; 
 		object-fit: cover;
 }
 
-.assets_77d53e .assetsLargeImageActivityFeedTwitch_77d53e {
+.assets__93528 .assetsLargeImageActivityFeedTwitch__93528 {
 		border-radius: 5px;
 		min-height: 260px;
 		mask: linear-gradient(0deg, transparent 10%, #000 80%);
@@ -1972,51 +3569,51 @@ const css$1 = `
 		-webkit-user-drag: none;
 }
 
-.assets_77d53e:has(.assetsSmallImage_77d53e) .assetsLargeImage_77d53e {
+.assets__93528:has(.assetsSmallImage__93528) .assetsLargeImage__93528 {
 		mask: url('https://discord.com/assets/725244a8d98fc7f9f2c4a3b3257176e6.svg');
 }
 
-.richActivity_77d53e .assetsSmallImage_77d53e, .richActivity_77d53e .smallEmptyIcon_77d53e {
+.richActivity__93528 .assetsSmallImage__93528, .richActivity__93528 .smallEmptyIcon__93528 {
 		border-radius: 50%;
 		position: absolute;
 		bottom: -4px;
 		right: -4px; 
 }
 
-.activity_77d53e .smallEmptyIcon_77d53e {
+.activity__93528 .smallEmptyIcon__93528 {
 		width: 40px;
 		height: 40px;
 }
 
-.assets_77d53e .largeEmptyIcon_77d53e {
+.assets__93528 .largeEmptyIcon__93528 {
 		width: 90px;
 		height: 90px;
 }
 
-.assets_77d53e .largeEmptyIcon_77d53e path {
+.assets__93528 .largeEmptyIcon__93528 path {
 		transform: scale(3.65) !important;
 }
 
-.richActivity_77d53e svg.assetsSmallImage_77d53e {
+.richActivity__93528 svg.assetsSmallImage__93528 {
 		border-radius: unset !important;
 }   
 
-.richActivity_77d53e .smallEmptyIcon_77d53e path {
+.richActivity__93528 .smallEmptyIcon__93528 path {
 		transform: scale(1.3) !important;
 }
 
-.assets_77d53e .twitchImageContainer_77d53e {
+.assets__93528 .twitchImageContainer__93528 {
 		background: var(--background-secondary-alt);
 		border-radius: 5px;
 		position: relative;
 }
 
-.assets_77d53e .twitchBackgroundImage_77d53e {
+.assets__93528 .twitchBackgroundImage__93528 {
 		display: inline-block;
 		min-height: 260px;
 }
 
-.assets_77d53e .twitchImageOverlay_77d53e {
+.assets__93528 .twitchImageOverlay__93528 {
 		bottom: 0;
 		left: 0;
 		padding: 16px;
@@ -2024,14 +3621,14 @@ const css$1 = `
 		right: 0;
 }
 
-.assets_77d53e .streamName_77d53e {
+.assets__93528 .streamName__93528 {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 500;
 		margin-top: 8px;
 }
 
-.assets_77d53e .streamGame_77d53e {
+.assets__93528 .streamGame__93528 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 600;
@@ -2039,39 +3636,39 @@ const css$1 = `
 		text-transform: uppercase;
 }
 
-.contentImagesActivityFeed_77d53e {
+.contentImagesActivityFeed__93528 {
 		margin-left: 20px;
 		color: var(--text-default);
 }
 
-:is(.gameInfo_77d53e, .contentImagesActivityFeed_77d53e) {
+:is(.gameInfo__93528, .contentImagesActivityFeed__93528) {
 		align-self: center;
 		display: grid;
 }
 
-.content_77d53e {
+.content__93528 {
 		flex: 1;
 		overflow: hidden;
 }
 
-.details_77d53e {
+.details__93528 {
 		font-weight: 600;
 }
 
-.ellipsis_77d53e {
+.ellipsis__93528 {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 }
 
-.textRow_77d53e {
+.textRow__93528 {
 		display: block;
 		font-size: 14px;
 		line-height: 16px;
 		margin-bottom: 4px;
 }
 
-.voiceSection_77d53e {
+.voiceSection__93528 {
 		display: flex;
 		flex: 1 1 auto;
 		flex-wrap: nowrap;
@@ -2079,7 +3676,7 @@ const css$1 = `
 		justify-content: flex-start;
 }
 
-.voiceSectionAssets_77d53e {
+.voiceSectionAssets__93528 {
 		align-items: center;
 		border-radius: 50%;
 		display: flex;
@@ -2087,7 +3684,7 @@ const css$1 = `
 		position: relative;
 }
 
-.voiceSectionIconWrapper_77d53e {
+.voiceSectionIconWrapper__93528 {
 		align-items: center;
 		border-radius: 50%;
 		bottom: -4px;
@@ -2099,63 +3696,63 @@ const css$1 = `
 		width: 20px;
 }
 
-.voiceSectionIcon_77d53e {
+.voiceSectionIcon__93528 {
 		color: var(--text-default);
 		height: 12px;
 		width: 12px;
 }
 
-.voiceSectionGuildImage_77d53e {
+.voiceSectionGuildImage__93528 {
 		border-radius: 50%;
 		mask: url('https://discord.com/assets/a90b040155ee449f.svg');
 		mask-size: 100%;
 		mask-type: luminance;
 }
 
-.voiceSection_77d53e .details_77d53e {
+.voiceSection__93528 .details__93528 {
 		flex: 1;
 }
 
-.voiceSectionDetails_77d53e {
+.voiceSectionDetails__93528 {
 		cursor: pointer;
 		margin-left: 20px;
 		min-width: 0;
 }
 
-.voiceSectionDetails_77d53e:hover :is(.voiceSectionText_77d53e, .voiceSectionSubtext_77d53e) {
+.voiceSectionDetails__93528:hover :is(.voiceSectionText__93528, .voiceSectionSubtext__93528) {
 		text-decoration: underline;
 }
 
-.voiceSectionText_77d53e {
+.voiceSectionText__93528 {
 		color: var(--text-default);
 		font-size: 14px;
 		font-weight: 600;
 		line-height: 1.2857142857142858;
 }
 
-.voiceSectionSubtext_77d53e {
+.voiceSectionSubtext__93528 {
 		color: var(--text-muted);
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 1.3333333333333333;
 }
 
-.userList_77d53e {
+.userList__93528 {
 		flex: 0 1 auto;
 		justify-content: flex-end;
 }
 
-.voiceSection_77d53e button {
+.voiceSection__93528 button {
 		flex: 0 1 auto !important;
 		width: auto !important;
 		margin-left: 20px;
 }
 
-.streamSection_77d53e {
+.streamSection__93528 {
 		position: relative;
 }
 
-.applicationStreamingSection_77d53e {
+.applicationStreamingSection__93528 {
 		display: grid;
 		grid-template-columns: 32px minmax(20px, auto) max-content;
 		-webkit-box-align: center;
@@ -2163,34 +3760,34 @@ const css$1 = `
 		gap: 12px 12px;
 }
 
-.applicationStreamingAvatar_77d53e {
+.applicationStreamingAvatar__93528 {
 		cursor: pointer;
 }
 
-.applicationStreamingDetails_77d53e {
+.applicationStreamingDetails__93528 {
 		margin-left: 16px;
 		min-width: 0;
 }
 
-.applicationStreamingPreviewWrapper_77d53e {
+.applicationStreamingPreviewWrapper__93528 {
 		margin-top: 12px;
 		cursor: pointer;
 		border-radius: 4px;
 		position: relative;
 }
 
-.applicationStreamingPreviewSize_77d53e {
+.applicationStreamingPreviewSize__93528 {
 		height: 100%;
 		width: 100%;
 }
 
-.applicationStreamingPreview_77d53e {
+.applicationStreamingPreview__93528 {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
 }
 
-.applicationStreamingHoverWrapper_77d53e {
+.applicationStreamingHoverWrapper__93528 {
 		opacity: 0;
 		position: absolute;
 		top: 0;
@@ -2206,11 +3803,11 @@ const css$1 = `
 		transition: opacity 0.2s ease-in-out 0s;
 }
 
-.applicationStreamingHoverWrapper_77d53e:hover {
+.applicationStreamingHoverWrapper__93528:hover {
 		opacity: 1;
 }
 
-.applicationStreamingHoverText_77d53e {
+.applicationStreamingHoverText__93528 {
 		color: var(--white);
 		font-size: 16px;
 		font-weight: 600;
@@ -2220,7 +3817,7 @@ const css$1 = `
 		border-radius: 20px;
 }
 
-.emptyPreviewContainer_77d53e {
+.emptyPreviewContainer__93528 {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -2234,7 +3831,7 @@ const css$1 = `
 		justify-content: center;
 }
 
-.emptyPreviewImage_77d53e {
+.emptyPreviewImage__93528 {
 		width: 80%;
 		height: 60%;
 		margin-bottom: 10px;
@@ -2242,11 +3839,11 @@ const css$1 = `
 		background-repeat: no-repeat;
 }
 
-.emptyPreviewText_77d53e {
+.emptyPreviewText__93528 {
 		color: var(--text-default);
 }
 
-.inner_77d53e {
+.inner__93528 {
 		position: absolute;
 		top: 0px;
 		right: 0px;
@@ -2254,17 +3851,17 @@ const css$1 = `
 		left: 0px;
 }
 
-.actionsActivity_77d53e .buttonContainer_77d53e {
+.actionsActivity__93528 .buttonContainer__93528 {
 		flex-direction: inherit;
 }
 
-.partyStatusWrapper_77d53e {
+.partyStatusWrapper__93528 {
 		display: flex;
 		gap: 4px;
 		align-items: center;
 }
 
-.partyStatusWrapper_77d53e button {
+.partyStatusWrapper__93528 button {
 		flex: 0 1 50% !important;
 		max-height: 24px;
 		min-height: 24px !important;
@@ -2272,40 +3869,40 @@ const css$1 = `
 		justify-self: flex-end;
 }
 
-.partyList_77d53e {
+.partyList__93528 {
 		display: flex;
 }
 
-.player_77d53e:first-of-type:not(:only-of-type) {
+.player__93528:first-of-type:not(:only-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.userOverflow_77d53e {
+.userOverflow__93528 {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		align-content: center;
 		margin-right: 8px;
 }
 
-.emptyUser_77d53e:not(:first-of-type), .player_77d53e:not(:first-of-type) {
+.emptyUser__93528:not(:first-of-type), .player__93528:not(:first-of-type) {
 		margin-left: -4px;
 }
 
-.emptyUser_77d53e:not(:last-of-type), .player_77d53e:not(:last-of-type) {
+.emptyUser__93528:not(:last-of-type), .player__93528:not(:last-of-type) {
 		mask: url(#svg-mask-voice-user-summary-item);
 }
 
-.emptyUser_77d53e, .player_77d53e {
+.emptyUser__93528, .player__93528 {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
 }
 
-.emptyUser_77d53e svg {
+.emptyUser__93528 svg {
 		margin-left: 3px;
 }
 
-.partyPlayerCount_77d53e {
+.partyPlayerCount__93528 {
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		font-weight: 500;
@@ -2313,7 +3910,7 @@ const css$1 = `
 		margin-top: 1px;
 }
 
-.cardV2_77d53e {
+.cardV2__93528 {
 		background: linear-gradient(45deg, var(--background-base-lowest), var(--background-base-low));
 		border-radius: var(--radius-md);
 		outline: 1px solid var(--border-normal);
@@ -2323,16 +3920,16 @@ const css$1 = `
 		overflow: hidden;
 		transform: translateZ(0);
 
-		.cardHeader_77d53e {
+		.cardHeader__93528 {
 				padding: var(--space-lg);
 				position: relative;
 				flex-direction: row;
 				background: unset;
 		}
-		.nameTag_77d53e {
+		.nameTag__93528 {
 				color: var(--white);
 		}
-		.splashArt_77d53e, .server_77d53e {
+		.splashArt__93528, .server__93528 {
 				background-position: center;
 				background-repeat: no-repeat;
 				background-size: cover;
@@ -2349,59 +3946,59 @@ const css$1 = `
 				z-index: -1;
 		}
 		&:hover {
-				.headerIcon_77d53e {
+				.headerIcon__93528 {
 						display: none;
 				}
-				.headerActions_77d53e {
+				.headerActions__93528 {
 						display: flex;
 				}
 		}
-		.cardBody_77d53e {
+		.cardBody__93528 {
 				display: flex;
 				gap: var(--space-lg);
 				padding: 0 var(--space-lg) var(--space-lg);
 				background: unset;
 		}
-		.section_77d53e {
+		.section__93528 {
 				background: var(--background-mod-normal);
 				border-radius: var(--radius-sm);
 				padding: var(--space-sm);
 		}
-		.game_77d53e {
+		.game__93528 {
 				padding: 0;
 		}
-		.voiceSectionText_77d53e {
+		.voiceSectionText__93528 {
 				color: var(--white);
 		}
-		.headerIcon_77d53e, .gameIcon_77d53e, .assetsLargeImage_77d53e.assetsLargeImage_77d53e {
+		.headerIcon__93528, .gameIcon__93528, .assetsLargeImage__93528.assetsLargeImage__93528 {
 				border-radius: var(--radius-sm);
 		}
-		.gameInfo_77d53e {
+		.gameInfo__93528 {
 				color: var(--white);
 		}
-		.playTime_77d53e:not(a), .voiceSectionSubtext_77d53e {
+		.playTime__93528:not(a), .voiceSectionSubtext__93528 {
 				color: var(--app-message-embed-secondary-text) !important;
 		}
-		.serviceButtonWrapper_77d53e {
+		.serviceButtonWrapper__93528 {
 				margin-left: 20px;
 				gap: 8px !important;
 		}
-		.contentImagesActivityFeed_77d53e {
+		.contentImagesActivityFeed__93528 {
 				color: var(--white);
 		}
-		.textRow_77d53e {
+		.textRow__93528 {
 				font-size: 16px;
 				line-height: 18px;
 		}
-		.state_77d53e {
+		.state__93528 {
 				color: var(--app-message-embed-secondary-text);
 				font-size: 14px;
 				line-height: 16px;
 		}
-		.activity_77d53e:last-child:not(:only-child) {
+		.activity__93528:last-child:not(:only-child) {
 				margin-top: 12px;
 		}
-		.applicationStreamingPreviewWrapper_77d53e {
+		.applicationStreamingPreviewWrapper__93528 {
 				background-color: var(--opacity-white-12);
 				img {
 						border-radius: var(--radius-sm);
@@ -2410,89 +4007,89 @@ const css$1 = `
 }`;
 _loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
-	"nowPlaying": "nowPlaying_77d53e",
-	"nowPlayingContainer": "nowPlayingContainer_77d53e",
-	"nowPlayingColumn": "nowPlayingColumn_77d53e",
-	"itemCard": "itemCard_77d53e",
-	"card": "card_77d53e",
-	"cardHeader": "cardHeader_77d53e",
-	"header": "header_77d53e",
-	"nameTag": "nameTag_77d53e",
-	"username": "username_77d53e",
-	"headerIcon": "headerIcon_77d53e",
-	"headerActions": "headerActions_77d53e",
-	"overflowMenu": "overflowMenu_77d53e",
-	"splashArt": "splashArt_77d53e",
-	"server": "server_77d53e",
-	"cardBody": "cardBody_77d53e",
-	"section": "section_77d53e",
-	"game": "game_77d53e",
-	"gameBody": "gameBody_77d53e",
-	"activity": "activity_77d53e",
-	"serviceButtonWrapper": "serviceButtonWrapper_77d53e",
-	"richActivity": "richActivity_77d53e",
-	"activityActivityFeed": "activityActivityFeed_77d53e",
-	"activityFeed": "activityFeed_77d53e",
-	"body": "body_77d53e",
-	"bodyNormal": "bodyNormal_77d53e",
-	"gameInfoRich": "gameInfoRich_77d53e",
-	"gameNameWrapper": "gameNameWrapper_77d53e",
-	"gameInfo": "gameInfo_77d53e",
-	"gameName": "gameName_77d53e",
-	"streamInfo": "streamInfo_77d53e",
-	"clickable": "clickable_77d53e",
-	"playTime": "playTime_77d53e",
-	"assets": "assets_77d53e",
-	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed_77d53e",
-	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed_77d53e",
-	"assetsLargeImage": "assetsLargeImage_77d53e",
-	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch_77d53e",
-	"assetsSmallImage": "assetsSmallImage_77d53e",
-	"smallEmptyIcon": "smallEmptyIcon_77d53e",
-	"largeEmptyIcon": "largeEmptyIcon_77d53e",
-	"twitchImageContainer": "twitchImageContainer_77d53e",
-	"twitchBackgroundImage": "twitchBackgroundImage_77d53e",
-	"twitchImageOverlay": "twitchImageOverlay_77d53e",
-	"streamName": "streamName_77d53e",
-	"streamGame": "streamGame_77d53e",
-	"contentImagesActivityFeed": "contentImagesActivityFeed_77d53e",
-	"content": "content_77d53e",
-	"details": "details_77d53e",
-	"ellipsis": "ellipsis_77d53e",
-	"textRow": "textRow_77d53e",
-	"voiceSection": "voiceSection_77d53e",
-	"voiceSectionAssets": "voiceSectionAssets_77d53e",
-	"voiceSectionIconWrapper": "voiceSectionIconWrapper_77d53e",
-	"voiceSectionIcon": "voiceSectionIcon_77d53e",
-	"voiceSectionGuildImage": "voiceSectionGuildImage_77d53e",
-	"voiceSectionDetails": "voiceSectionDetails_77d53e",
-	"voiceSectionText": "voiceSectionText_77d53e",
-	"voiceSectionSubtext": "voiceSectionSubtext_77d53e",
-	"userList": "userList_77d53e",
-	"streamSection": "streamSection_77d53e",
-	"applicationStreamingSection": "applicationStreamingSection_77d53e",
-	"applicationStreamingAvatar": "applicationStreamingAvatar_77d53e",
-	"applicationStreamingDetails": "applicationStreamingDetails_77d53e",
-	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper_77d53e",
-	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize_77d53e",
-	"applicationStreamingPreview": "applicationStreamingPreview_77d53e",
-	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper_77d53e",
-	"applicationStreamingHoverText": "applicationStreamingHoverText_77d53e",
-	"emptyPreviewContainer": "emptyPreviewContainer_77d53e",
-	"emptyPreviewImage": "emptyPreviewImage_77d53e",
-	"emptyPreviewText": "emptyPreviewText_77d53e",
-	"inner": "inner_77d53e",
-	"actionsActivity": "actionsActivity_77d53e",
-	"buttonContainer": "buttonContainer_77d53e",
-	"partyStatusWrapper": "partyStatusWrapper_77d53e",
-	"partyList": "partyList_77d53e",
-	"player": "player_77d53e",
-	"userOverflow": "userOverflow_77d53e",
-	"emptyUser": "emptyUser_77d53e",
-	"partyPlayerCount": "partyPlayerCount_77d53e",
-	"cardV2": "cardV2_77d53e",
-	"gameIcon": "gameIcon_77d53e",
-	"state": "state_77d53e"
+	"nowPlaying": "nowPlaying__93528",
+	"nowPlayingContainer": "nowPlayingContainer__93528",
+	"nowPlayingColumn": "nowPlayingColumn__93528",
+	"itemCard": "itemCard__93528",
+	"card": "card__93528",
+	"cardHeader": "cardHeader__93528",
+	"header": "header__93528",
+	"nameTag": "nameTag__93528",
+	"username": "username__93528",
+	"headerIcon": "headerIcon__93528",
+	"headerActions": "headerActions__93528",
+	"overflowMenu": "overflowMenu__93528",
+	"splashArt": "splashArt__93528",
+	"server": "server__93528",
+	"cardBody": "cardBody__93528",
+	"section": "section__93528",
+	"game": "game__93528",
+	"gameBody": "gameBody__93528",
+	"activity": "activity__93528",
+	"serviceButtonWrapper": "serviceButtonWrapper__93528",
+	"richActivity": "richActivity__93528",
+	"activityActivityFeed": "activityActivityFeed__93528",
+	"activityFeed": "activityFeed__93528",
+	"body": "body__93528",
+	"bodyNormal": "bodyNormal__93528",
+	"gameInfoRich": "gameInfoRich__93528",
+	"gameNameWrapper": "gameNameWrapper__93528",
+	"gameInfo": "gameInfo__93528",
+	"gameName": "gameName__93528",
+	"streamInfo": "streamInfo__93528",
+	"clickable": "clickable__93528",
+	"playTime": "playTime__93528",
+	"assets": "assets__93528",
+	"assetsLargeImageActivityFeed": "assetsLargeImageActivityFeed__93528",
+	"assetsSmallImageActivityFeed": "assetsSmallImageActivityFeed__93528",
+	"assetsLargeImage": "assetsLargeImage__93528",
+	"assetsLargeImageActivityFeedTwitch": "assetsLargeImageActivityFeedTwitch__93528",
+	"assetsSmallImage": "assetsSmallImage__93528",
+	"smallEmptyIcon": "smallEmptyIcon__93528",
+	"largeEmptyIcon": "largeEmptyIcon__93528",
+	"twitchImageContainer": "twitchImageContainer__93528",
+	"twitchBackgroundImage": "twitchBackgroundImage__93528",
+	"twitchImageOverlay": "twitchImageOverlay__93528",
+	"streamName": "streamName__93528",
+	"streamGame": "streamGame__93528",
+	"contentImagesActivityFeed": "contentImagesActivityFeed__93528",
+	"content": "content__93528",
+	"details": "details__93528",
+	"ellipsis": "ellipsis__93528",
+	"textRow": "textRow__93528",
+	"voiceSection": "voiceSection__93528",
+	"voiceSectionAssets": "voiceSectionAssets__93528",
+	"voiceSectionIconWrapper": "voiceSectionIconWrapper__93528",
+	"voiceSectionIcon": "voiceSectionIcon__93528",
+	"voiceSectionGuildImage": "voiceSectionGuildImage__93528",
+	"voiceSectionDetails": "voiceSectionDetails__93528",
+	"voiceSectionText": "voiceSectionText__93528",
+	"voiceSectionSubtext": "voiceSectionSubtext__93528",
+	"userList": "userList__93528",
+	"streamSection": "streamSection__93528",
+	"applicationStreamingSection": "applicationStreamingSection__93528",
+	"applicationStreamingAvatar": "applicationStreamingAvatar__93528",
+	"applicationStreamingDetails": "applicationStreamingDetails__93528",
+	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper__93528",
+	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize__93528",
+	"applicationStreamingPreview": "applicationStreamingPreview__93528",
+	"applicationStreamingHoverWrapper": "applicationStreamingHoverWrapper__93528",
+	"applicationStreamingHoverText": "applicationStreamingHoverText__93528",
+	"emptyPreviewContainer": "emptyPreviewContainer__93528",
+	"emptyPreviewImage": "emptyPreviewImage__93528",
+	"emptyPreviewText": "emptyPreviewText__93528",
+	"inner": "inner__93528",
+	"actionsActivity": "actionsActivity__93528",
+	"buttonContainer": "buttonContainer__93528",
+	"partyStatusWrapper": "partyStatusWrapper__93528",
+	"partyList": "partyList__93528",
+	"player": "player__93528",
+	"userOverflow": "userOverflow__93528",
+	"emptyUser": "emptyUser__93528",
+	"partyPlayerCount": "partyPlayerCount__93528",
+	"cardV2": "cardV2__93528",
+	"gameIcon": "gameIcon__93528",
+	"state": "state__93528"
 };
 const NowPlayingClasses = modules_7260a078;
 
@@ -2656,7 +4253,7 @@ function FallbackAsset(props) {
 	));
 }
 function SpotifyAsset({ activity, user }) {
-	const [shouldFallback, setShouldFallback] = react.useState(false);
+	const [shouldFallback, setShouldFallback] = React.useState(false);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.smallEmptyIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"svg",
 		{
@@ -2678,7 +4275,7 @@ function SpotifyAsset({ activity, user }) {
 	));
 }
 function GameIconAsset({ url, id, name }) {
-	const [shouldFallback, setShouldFallback] = react.useState(false);
+	const [shouldFallback, setShouldFallback] = React.useState(false);
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.gameIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"img",
@@ -2693,7 +4290,7 @@ function GameIconAsset({ url, id, name }) {
 	));
 }
 function RichImageAsset({ url, tooltipText, onClick, type }) {
-	const [shouldFallback, setShouldFallback] = react.useState(false);
+	const [shouldFallback, setShouldFallback] = React.useState(false);
 	return BdApi.React.createElement(Tooltip, { note: tooltipText }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`, transform: type === "Large" ? "scale(3.65)" : "scale(1.30)" }) : BdApi.React.createElement(
 		"img",
 		{
@@ -2802,7 +4399,7 @@ function RichTwitchActivityBuilder({ activity }) {
 function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
 	if (currentActivity.type == 1) return;
 	const gameId = currentActivity?.application_id;
-	react.useEffect(() => {
+	React.useEffect(() => {
 		(async () => {
 			await Common.FetchGames.getDetectableGamesSupplemental([gameId]);
 		})();
@@ -2921,8 +4518,8 @@ function DiscordTag({ user, voice }) {
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
 }
 function HeaderActions({ card, user }) {
-	const [showPopout, setShowPopout] = react.useState(false);
-	const refDOM = react.useRef(null);
+	const [showPopout, setShowPopout] = React.useState(false);
+	const refDOM = React.useRef(null);
 	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`, onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
 		Common.Popout,
 		{
@@ -2964,7 +4561,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const isSpotify = card.party.isSpotifyActivity;
 	const filterCheck = activityCheck(activities, isSpotify);
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
-	react.useEffect(() => {
+	React.useEffect(() => {
 		(async () => {
 			await Common.FetchGames.getDetectableGamesSupplemental([currentGame?.id]);
 		})();
@@ -3000,27 +4597,27 @@ function TabBaseBuilder() {
 
 // settings/ActivityFeedSettings.module.css
 const css = `
-.blacklist_8ebe67 {
+.blacklist__97b5e {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 }
 
-.settingsDivider_8ebe67 {
+.settingsDivider__97b5e {
 		margin-bottom: var(--space-12) !important;
 }
 
-.blacklistItem_8ebe67 {
+.blacklistItem__97b5e {
 		display: flex;
 }
 
-.blacklistItem_8ebe67 .blacklistItemIcon_8ebe67 {
+.blacklistItem__97b5e .blacklistItemIcon__97b5e {
 		border-radius: 8px;
 		height: 32px;
 		width: 32px;
 }
 
-.blacklistItem_8ebe67 .blacklistItemName_8ebe67, .blacklistItem_8ebe67 .blacklistItemTextContainer_8ebe67 {
+.blacklistItem__97b5e .blacklistItemName__97b5e, .blacklistItem__97b5e .blacklistItemTextContainer__97b5e {
 		margin-left: 20px;
 		margin-bottom: 0;
 		min-width: 0;
@@ -3029,20 +4626,20 @@ const css = `
 		flex: 1;
 }
 
-.blacklistItem_8ebe67 .blacklistItemTextContainer_8ebe67 > .blacklistItemName_8ebe67 {
+.blacklistItem__97b5e .blacklistItemTextContainer__97b5e > .blacklistItemName__97b5e {
 		margin-left: 0;
 }
 
-.blacklistItem_8ebe67 .blacklistItemDescription_8ebe67 {}
+.blacklistItem__97b5e .blacklistItemDescription__97b5e {}
 
-.blacklistItem_8ebe67 button {
+.blacklistItem__97b5e button {
 		flex: 0 1 auto;
 		align-self: center;
 		width: auto;
 		margin-left: 20px;
 }
 
-.search_8ebe67 {
+.search__97b5e {
 		padding: 12px;
 		margin: 12px 0;
 		input::placeholder {
@@ -3064,32 +4661,32 @@ const css = `
 		}
 }
 
-.toggleStack_8ebe67 {
+.toggleStack__97b5e {
 		padding: var(--space-16) 0 var(--space-16) 0;
 }
 
-.buttonItem_8ebe67 {
+.buttonItem__97b5e {
 		display: flex;
 }`;
 _loadStyle("ActivityFeedSettings.module.css", css);
 const modules_a52d5642 = {
-	"blacklist": "blacklist_8ebe67",
-	"settingsDivider": "settingsDivider_8ebe67",
-	"blacklistItem": "blacklistItem_8ebe67",
-	"blacklistItemIcon": "blacklistItemIcon_8ebe67",
-	"blacklistItemName": "blacklistItemName_8ebe67",
-	"blacklistItemTextContainer": "blacklistItemTextContainer_8ebe67",
-	"blacklistItemDescription": "blacklistItemDescription_8ebe67",
-	"search": "search_8ebe67",
-	"toggleStack": "toggleStack_8ebe67",
-	"buttonItem": "buttonItem_8ebe67"
+	"blacklist": "blacklist__97b5e",
+	"settingsDivider": "settingsDivider__97b5e",
+	"blacklistItem": "blacklistItem__97b5e",
+	"blacklistItemIcon": "blacklistItemIcon__97b5e",
+	"blacklistItemName": "blacklistItemName__97b5e",
+	"blacklistItemTextContainer": "blacklistItemTextContainer__97b5e",
+	"blacklistItemDescription": "blacklistItemDescription__97b5e",
+	"search": "search__97b5e",
+	"toggleStack": "toggleStack__97b5e",
+	"buttonItem": "buttonItem__97b5e"
 };
 const SettingsClasses = modules_a52d5642;
 
 // settings/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
-	const [state, setState] = react.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
+	const [state, setState] = React.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
 		"button",
 		{
@@ -3209,9 +4806,9 @@ function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, 
 }
 function FollowedGameListBuilder() {
 	const whitelist = NewsStore.getWhitelist();
-	const [blacklist, updateBlacklist] = react.useState(NewsStore.getBlacklist());
-	const [query, setQuery] = react.useState("");
-	const filtered = react.useMemo(() => {
+	const [blacklist, updateBlacklist] = React.useState(NewsStore.getBlacklist());
+	const [query, setQuery] = React.useState("");
+	const filtered = React.useMemo(() => {
 		const _query = query.toLowerCase();
 		return whitelist?.filter((item) => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
@@ -3224,7 +4821,7 @@ function FollowedGameListBuilder() {
 function SettingsPanelBuilder() {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
 		const { name, note, initial, changed } = settings.main[key];
-		const [state, setState] = react.useState(betterdiscord.Data.load(key));
+		const [state, setState] = React.useState(betterdiscord.Data.load(key));
 		return BdApi.React.createElement(
 			Common.FormSwitch,
 			{
@@ -3240,7 +4837,7 @@ function SettingsPanelBuilder() {
 		);
 	})), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "External News", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "News from external sources outside of your game library.")), BdApi.React.createElement(ExternalSourcesListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
 		const { name, note, initial, type, changed } = settings.debug[key];
-		const [state, setState] = react.useState(betterdiscord.Data.load(key));
+		const [state, setState] = React.useState(betterdiscord.Data.load(key));
 		if (type === "switch") return BdApi.React.createElement(
 			Common.FormSwitch,
 			{
@@ -3302,14 +4899,14 @@ function useSelectedState() {
 	return Router.useLocation().pathname.startsWith("/activity-feed");
 }
 function NavigatorButton() {
-	return react.createElement(
+	return React.createElement(
 		Common.LinkButton,
 		{
 			selected: useSelectedState(),
 			route: "/activity-feed",
 			text: "Activity",
 			icon: () => {
-				return react.createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
+				return React.createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
 			}
 		}
 	);
@@ -3319,7 +4916,7 @@ const panelObj = layoutUtils.Panel(
 	{
 		buildLayout: () => [],
 		key: "activity_feed_panel",
-		StronglyDiscouragedCustomComponent: () => react.createElement(SettingsPanelBuilder),
+		StronglyDiscouragedCustomComponent: () => React.createElement(SettingsPanelBuilder),
 		type: 3,
 		useTitle: () => "Activity Feed"
 	}
@@ -3328,7 +4925,7 @@ const sidebarItem = layoutUtils.Button(
 	"activity_feed_sidebar_item",
 	{
 		buildLayout: () => [panelObj],
-		icon: () => react.createElement("svg", {
+		icon: () => React.createElement("svg", {
 			className: "newspaperIcon_267ac",
 			role: "img",
 			width: "20",
@@ -3340,20 +4937,20 @@ const sidebarItem = layoutUtils.Button(
 			strokeLinecap: "round",
 			strokeLinejoin: "round"
 		}, [
-			react.createElement(
+			React.createElement(
 				"defs",
 				{},
-				react.createElement("mask", { id: "newspaper-mask" }, [
-					react.createElement("rect", { width: 24, height: 24, fill: "#fff", stroke: "none" }),
-					react.createElement("g", { stroke: "#000" }, [
-						react.createElement("path", { d: "M15 18h-5" }),
-						react.createElement("path", { d: "M18 14h-8" }),
-						react.createElement("path", { d: "M10 6h8v4h-8V6Z" })
+				React.createElement("mask", { id: "newspaper-mask" }, [
+					React.createElement("rect", { width: 24, height: 24, fill: "#fff", stroke: "none" }),
+					React.createElement("g", { stroke: "#000" }, [
+						React.createElement("path", { d: "M15 18h-5" }),
+						React.createElement("path", { d: "M18 14h-8" }),
+						React.createElement("path", { d: "M10 6h8v4h-8V6Z" })
 					])
 				])
 			),
-			react.createElement("path", { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
-			react.createElement("path", { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" })
+			React.createElement("path", { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
+			React.createElement("path", { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" })
 		]),
 		key: "activity_feed_sidebar_item",
 		legacySearchKey: "ACTIVITY_FEED",
@@ -3379,7 +4976,7 @@ class ActivityFeed {
 				children.splice(index, 1);
 			}
 			children.push(
-				react.createElement(Route, {
+				React.createElement(Route, {
 					disableTrack: true,
 					path: "/activity-feed",
 					render: () => TabBaseBuilder(),
@@ -3405,7 +5002,7 @@ class ActivityFeed {
 			const index = panel.children.findIndex((m) => m?.key === "activityCenter_button");
 			if (index !== -1) return;
 			panel.children.unshift(
-				react.createElement(NavigatorButton, { key: "activityCenter_button" })
+				React.createElement(NavigatorButton, { key: "activityCenter_button" })
 			);
 		});
 		betterdiscord.Patcher.after(betterdiscord.Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {
@@ -3470,11 +5067,11 @@ class ActivityFeed {
 	}
 	getSettingsPanel() {
 		return [
-			react.createElement(() => Object.keys(settings.main).map(
+			React.createElement(() => Object.keys(settings.main).map(
 				(key) => {
 					const { name, note, initial, changed } = settings.main[key];
-					const [state, setState] = react.useState(betterdiscord.Data.load(key));
-					return react.createElement(Common.FormSwitch, {
+					const [state, setState] = React.useState(betterdiscord.Data.load(key));
+					return React.createElement(Common.FormSwitch, {
 						label: name,
 						description: note,
 						checked: state ?? initial,
@@ -3487,31 +5084,31 @@ class ActivityFeed {
 					});
 				}
 			)),
-			react.createElement(betterdiscord.Components.Text, { size: betterdiscord.Components.Text.Sizes.SIZE_16, strong: true, style: { borderTop: "thin solid var(--border-subtle)", paddingTop: "var(--space-12)", paddingBottom: "var(--space-12)" } }, "Activity Feed"),
-			react.createElement(betterdiscord.Components.SettingGroup, {
+			React.createElement(betterdiscord.Components.Text, { size: betterdiscord.Components.Text.Sizes.SIZE_16, strong: true, style: { borderTop: "thin solid var(--border-subtle)", paddingTop: "var(--space-12)", paddingBottom: "var(--space-12)" } }, "Activity Feed"),
+			React.createElement(betterdiscord.Components.SettingGroup, {
 				name: "Games You've Hidden",
 				collapsible: true,
 				shown: false,
 				children: [
-					react.createElement(
+					React.createElement(
 						"div",
 						{ className: "blacklist_267ac emptyState_267ac", style: { padding: 0, borderBottom: "unset" } },
-						react.createElement("div", { className: "emptyText_267ac" }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Below are the games you have hidden.")
+						React.createElement("div", { className: "emptyText_267ac" }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Below are the games you have hidden.")
 					)
 				]
 			}),
-			react.createElement(betterdiscord.Components.SettingGroup, {
+			React.createElement(betterdiscord.Components.SettingGroup, {
 				name: "Advanced/Debug",
 				collapsible: true,
 				shown: false,
-				children: react.createElement(
+				children: React.createElement(
 					"div",
 					{ className: "toggleStack_267ac", style: { padding: "var(--space-16) 0 var(--space-16) 0" } },
-					react.createElement(() => Object.keys(settings.debug).map((key) => {
+					React.createElement(() => Object.keys(settings.debug).map((key) => {
 						const { name, note, initial, type, changed } = settings.debug[key];
-						const [state, setState] = react.useState(betterdiscord.Data.load(key));
+						const [state, setState] = React.useState(betterdiscord.Data.load(key));
 						if (type === "switch") {
-							return react.createElement(Common.FormSwitch, {
+							return React.createElement(Common.FormSwitch, {
 								label: name,
 								description: note,
 								checked: state ?? initial,
@@ -3523,12 +5120,12 @@ class ActivityFeed {
 								}
 							});
 						}
-						return react.createElement("div", { className: "buttonItem_267ac", style: { display: "flex" } }, [
-							react.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, [
-								react.createElement("div", { className: "blacklistItemName_267ac textRow_267ac", style: { fontWeight: 500, fontSize: "16px", color: "var(--text-primary)" } }, name),
-								react.createElement("div", { className: "textRow_267ac" }, note)
+						return React.createElement("div", { className: "buttonItem_267ac", style: { display: "flex" } }, [
+							React.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, [
+								React.createElement("div", { className: "blacklistItemName_267ac textRow_267ac", style: { fontWeight: 500, fontSize: "16px", color: "var(--text-primary)" } }, name),
+								React.createElement("div", { className: "textRow_267ac" }, note)
 							]),
-							react.createElement(
+							React.createElement(
 								"button",
 								{
 									className: `button_267ac unhideBlacklisted_267ac ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,

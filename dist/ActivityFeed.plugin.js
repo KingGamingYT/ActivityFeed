@@ -168,6 +168,1536 @@ const settings = {
 	}
 };
 
+// fast-xml-parser
+const nameStartChar = ':A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
+const nameChar = nameStartChar + '\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
+const nameRegexp = '[' + nameStartChar + '][' + nameChar + ']*';
+const regexName = new RegExp('^' + nameRegexp + '$');
+function getAllMatches(string, regex) {
+	const matches = [];
+	let match = regex.exec(string);
+	while (match) {
+		const allmatches = [];
+		allmatches.startIndex = regex.lastIndex - match[0].length;
+		const len = match.length;
+		for (let index = 0; index < len; index++) {
+			allmatches.push(match[index]);
+		}
+		matches.push(allmatches);
+		match = regex.exec(string);
+	}
+	return matches;
+}
+const isName = function (string) {
+	const match = regexName.exec(string);
+	return !(match === null || typeof match === 'undefined');
+};
+function isExist(v) {
+	return typeof v !== 'undefined';
+}
+
+// fast-xml-parser
+const defaultOptions$1 = {
+	allowBooleanAttributes: false,
+	unpairedTags: []
+};
+function validate(xmlData, options) {
+	options = Object.assign({}, defaultOptions$1, options);
+	const tags = [];
+	let tagFound = false;
+	let reachedRoot = false;
+	if (xmlData[0] === '\ufeff') {
+		xmlData = xmlData.substr(1);
+	}
+	for (let i = 0; i < xmlData.length; i++) {
+		if (xmlData[i] === '<' && xmlData[i+1] === '?') {
+			i+=2;
+			i = readPI(xmlData,i);
+			if (i.err) return i;
+		}else if (xmlData[i] === '<') {
+			let tagStartPos = i;
+			i++;
+			if (xmlData[i] === '!') {
+				i = readCommentAndCDATA(xmlData, i);
+				continue;
+			} else {
+				let closingTag = false;
+				if (xmlData[i] === '/') {
+					closingTag = true;
+					i++;
+				}
+				let tagName = '';
+				for (; i < xmlData.length &&
+					xmlData[i] !== '>' &&
+					xmlData[i] !== ' ' &&
+					xmlData[i] !== '\t' &&
+					xmlData[i] !== '\n' &&
+					xmlData[i] !== '\r'; i++
+				) {
+					tagName += xmlData[i];
+				}
+				tagName = tagName.trim();
+				if (tagName[tagName.length - 1] === '/') {
+					tagName = tagName.substring(0, tagName.length - 1);
+					i--;
+				}
+				if (!validateTagName(tagName)) {
+					let msg;
+					if (tagName.trim().length === 0) {
+						msg = "Invalid space after '<'.";
+					} else {
+						msg = "Tag '"+tagName+"' is an invalid name.";
+					}
+					return getErrorObject('InvalidTag', msg, getLineNumberForPosition(xmlData, i));
+				}
+				const result = readAttributeStr(xmlData, i);
+				if (result === false) {
+					return getErrorObject('InvalidAttr', "Attributes for '"+tagName+"' have open quote.", getLineNumberForPosition(xmlData, i));
+				}
+				let attrStr = result.value;
+				i = result.index;
+				if (attrStr[attrStr.length - 1] === '/') {
+					const attrStrStart = i - attrStr.length;
+					attrStr = attrStr.substring(0, attrStr.length - 1);
+					const isValid = validateAttributeString(attrStr, options);
+					if (isValid === true) {
+						tagFound = true;
+					} else {
+						return getErrorObject(isValid.err.code, isValid.err.msg, getLineNumberForPosition(xmlData, attrStrStart + isValid.err.line));
+					}
+				} else if (closingTag) {
+					if (!result.tagClosed) {
+						return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' doesn't have proper closing.", getLineNumberForPosition(xmlData, i));
+					} else if (attrStr.trim().length > 0) {
+						return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' can't have attributes or invalid starting.", getLineNumberForPosition(xmlData, tagStartPos));
+					} else if (tags.length === 0) {
+						return getErrorObject('InvalidTag', "Closing tag '"+tagName+"' has not been opened.", getLineNumberForPosition(xmlData, tagStartPos));
+					} else {
+						const otg = tags.pop();
+						if (tagName !== otg.tagName) {
+							let openPos = getLineNumberForPosition(xmlData, otg.tagStartPos);
+							return getErrorObject('InvalidTag',
+								"Expected closing tag '"+otg.tagName+"' (opened in line "+openPos.line+", col "+openPos.col+") instead of closing tag '"+tagName+"'.",
+								getLineNumberForPosition(xmlData, tagStartPos));
+						}
+						if (tags.length == 0) {
+							reachedRoot = true;
+						}
+					}
+				} else {
+					const isValid = validateAttributeString(attrStr, options);
+					if (isValid !== true) {
+						return getErrorObject(isValid.err.code, isValid.err.msg, getLineNumberForPosition(xmlData, i - attrStr.length + isValid.err.line));
+					}
+					if (reachedRoot === true) {
+						return getErrorObject('InvalidXml', 'Multiple possible root nodes found.', getLineNumberForPosition(xmlData, i));
+					} else if(options.unpairedTags.indexOf(tagName) !== -1); else {
+						tags.push({tagName, tagStartPos});
+					}
+					tagFound = true;
+				}
+				for (i++; i < xmlData.length; i++) {
+					if (xmlData[i] === '<') {
+						if (xmlData[i + 1] === '!') {
+							i++;
+							i = readCommentAndCDATA(xmlData, i);
+							continue;
+						} else if (xmlData[i+1] === '?') {
+							i = readPI(xmlData, ++i);
+							if (i.err) return i;
+						} else {
+							break;
+						}
+					} else if (xmlData[i] === '&') {
+						const afterAmp = validateAmpersand(xmlData, i);
+						if (afterAmp == -1)
+							return getErrorObject('InvalidChar', "char '&' is not expected.", getLineNumberForPosition(xmlData, i));
+						i = afterAmp;
+					}else {
+						if (reachedRoot === true && !isWhiteSpace(xmlData[i])) {
+							return getErrorObject('InvalidXml', "Extra text at the end", getLineNumberForPosition(xmlData, i));
+						}
+					}
+				}
+				if (xmlData[i] === '<') {
+					i--;
+				}
+			}
+		} else {
+			if ( isWhiteSpace(xmlData[i])) {
+				continue;
+			}
+			return getErrorObject('InvalidChar', "char '"+xmlData[i]+"' is not expected.", getLineNumberForPosition(xmlData, i));
+		}
+	}
+	if (!tagFound) {
+		return getErrorObject('InvalidXml', 'Start tag expected.', 1);
+	}else if (tags.length == 1) {
+			return getErrorObject('InvalidTag', "Unclosed tag '"+tags[0].tagName+"'.", getLineNumberForPosition(xmlData, tags[0].tagStartPos));
+	}else if (tags.length > 0) {
+			return getErrorObject('InvalidXml', "Invalid '"+
+					JSON.stringify(tags.map(t => t.tagName), null, 4).replace(/\r?\n/g, '')+
+					"' found.", {line: 1, col: 1});
+	}
+	return true;
+}function isWhiteSpace(char){
+	return char === ' ' || char === '\t' || char === '\n'  || char === '\r';
+}
+function readPI(xmlData, i) {
+	const start = i;
+	for (; i < xmlData.length; i++) {
+		if (xmlData[i] == '?' || xmlData[i] == ' ') {
+			const tagname = xmlData.substr(start, i - start);
+			if (i > 5 && tagname === 'xml') {
+				return getErrorObject('InvalidXml', 'XML declaration allowed only at the start of the document.', getLineNumberForPosition(xmlData, i));
+			} else if (xmlData[i] == '?' && xmlData[i + 1] == '>') {
+				i++;
+				break;
+			} else {
+				continue;
+			}
+		}
+	}
+	return i;
+}
+function readCommentAndCDATA(xmlData, i) {
+	if (xmlData.length > i + 5 && xmlData[i + 1] === '-' && xmlData[i + 2] === '-') {
+		for (i += 3; i < xmlData.length; i++) {
+			if (xmlData[i] === '-' && xmlData[i + 1] === '-' && xmlData[i + 2] === '>') {
+				i += 2;
+				break;
+			}
+		}
+	} else if (
+		xmlData.length > i + 8 &&
+		xmlData[i + 1] === 'D' &&
+		xmlData[i + 2] === 'O' &&
+		xmlData[i + 3] === 'C' &&
+		xmlData[i + 4] === 'T' &&
+		xmlData[i + 5] === 'Y' &&
+		xmlData[i + 6] === 'P' &&
+		xmlData[i + 7] === 'E'
+	) {
+		let angleBracketsCount = 1;
+		for (i += 8; i < xmlData.length; i++) {
+			if (xmlData[i] === '<') {
+				angleBracketsCount++;
+			} else if (xmlData[i] === '>') {
+				angleBracketsCount--;
+				if (angleBracketsCount === 0) {
+					break;
+				}
+			}
+		}
+	} else if (
+		xmlData.length > i + 9 &&
+		xmlData[i + 1] === '[' &&
+		xmlData[i + 2] === 'C' &&
+		xmlData[i + 3] === 'D' &&
+		xmlData[i + 4] === 'A' &&
+		xmlData[i + 5] === 'T' &&
+		xmlData[i + 6] === 'A' &&
+		xmlData[i + 7] === '['
+	) {
+		for (i += 8; i < xmlData.length; i++) {
+			if (xmlData[i] === ']' && xmlData[i + 1] === ']' && xmlData[i + 2] === '>') {
+				i += 2;
+				break;
+			}
+		}
+	}
+	return i;
+}
+const doubleQuote = '"';
+const singleQuote = "'";
+function readAttributeStr(xmlData, i) {
+	let attrStr = '';
+	let startChar = '';
+	let tagClosed = false;
+	for (; i < xmlData.length; i++) {
+		if (xmlData[i] === doubleQuote || xmlData[i] === singleQuote) {
+			if (startChar === '') {
+				startChar = xmlData[i];
+			} else if (startChar !== xmlData[i]) ; else {
+				startChar = '';
+			}
+		} else if (xmlData[i] === '>') {
+			if (startChar === '') {
+				tagClosed = true;
+				break;
+			}
+		}
+		attrStr += xmlData[i];
+	}
+	if (startChar !== '') {
+		return false;
+	}
+	return {
+		value: attrStr,
+		index: i,
+		tagClosed: tagClosed
+	};
+}
+const validAttrStrRegxp = new RegExp('(\\s*)([^\\s=]+)(\\s*=)?(\\s*([\'"])(([\\s\\S])*?)\\5)?', 'g');
+function validateAttributeString(attrStr, options) {
+	const matches = getAllMatches(attrStr, validAttrStrRegxp);
+	const attrNames = {};
+	for (let i = 0; i < matches.length; i++) {
+		if (matches[i][1].length === 0) {
+			return getErrorObject('InvalidAttr', "Attribute '"+matches[i][2]+"' has no space in starting.", getPositionFromMatch(matches[i]))
+		} else if (matches[i][3] !== undefined && matches[i][4] === undefined) {
+			return getErrorObject('InvalidAttr', "Attribute '"+matches[i][2]+"' is without value.", getPositionFromMatch(matches[i]));
+		} else if (matches[i][3] === undefined && !options.allowBooleanAttributes) {
+			return getErrorObject('InvalidAttr', "boolean attribute '"+matches[i][2]+"' is not allowed.", getPositionFromMatch(matches[i]));
+		}
+		const attrName = matches[i][2];
+		if (!validateAttrName(attrName)) {
+			return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is an invalid name.", getPositionFromMatch(matches[i]));
+		}
+		if (!attrNames.hasOwnProperty(attrName)) {
+			attrNames[attrName] = 1;
+		} else {
+			return getErrorObject('InvalidAttr', "Attribute '"+attrName+"' is repeated.", getPositionFromMatch(matches[i]));
+		}
+	}
+	return true;
+}
+function validateNumberAmpersand(xmlData, i) {
+	let re = /\d/;
+	if (xmlData[i] === 'x') {
+		i++;
+		re = /[\da-fA-F]/;
+	}
+	for (; i < xmlData.length; i++) {
+		if (xmlData[i] === ';')
+			return i;
+		if (!xmlData[i].match(re))
+			break;
+	}
+	return -1;
+}
+function validateAmpersand(xmlData, i) {
+	i++;
+	if (xmlData[i] === ';')
+		return -1;
+	if (xmlData[i] === '#') {
+		i++;
+		return validateNumberAmpersand(xmlData, i);
+	}
+	let count = 0;
+	for (; i < xmlData.length; i++, count++) {
+		if (xmlData[i].match(/\w/) && count < 20)
+			continue;
+		if (xmlData[i] === ';')
+			break;
+		return -1;
+	}
+	return i;
+}
+function getErrorObject(code, message, lineNumber) {
+	return {
+		err: {
+			code: code,
+			msg: message,
+			line: lineNumber.line || lineNumber,
+			col: lineNumber.col,
+		},
+	};
+}
+function validateAttrName(attrName) {
+	return isName(attrName);
+}
+function validateTagName(tagname) {
+	return isName(tagname) ;
+}
+function getLineNumberForPosition(xmlData, index) {
+	const lines = xmlData.substring(0, index).split(/\r?\n/);
+	return {
+		line: lines.length,
+		col: lines[lines.length - 1].length + 1
+	};
+}
+function getPositionFromMatch(match) {
+	return match.startIndex + match[1].length;
+}
+
+// fast-xml-parser
+const defaultOptions = {
+	preserveOrder: false,
+	attributeNamePrefix: '@_',
+	attributesGroupName: false,
+	textNodeName: '#text',
+	ignoreAttributes: true,
+	removeNSPrefix: false,
+	allowBooleanAttributes: false,
+	parseTagValue: true,
+	parseAttributeValue: false,
+	trimValues: true,
+	cdataPropName: false,
+	numberParseOptions: {
+		hex: true,
+		leadingZeros: true,
+		eNotation: true
+	},
+	tagValueProcessor: function (tagName, val) {
+		return val;
+	},
+	attributeValueProcessor: function (attrName, val) {
+		return val;
+	},
+	stopNodes: [],
+	alwaysCreateTextNode: false,
+	isArray: () => false,
+	commentPropName: false,
+	unpairedTags: [],
+	processEntities: true,
+	htmlEntities: false,
+	ignoreDeclaration: false,
+	ignorePiTags: false,
+	transformTagName: false,
+	transformAttributeName: false,
+	updateTag: function (tagName, jPath, attrs) {
+		return tagName
+	},
+	captureMetaData: false,
+};
+function normalizeProcessEntities(value) {
+	if (typeof value === 'boolean') {
+		return {
+			enabled: value,
+			maxEntitySize: 10000,
+			maxExpansionDepth: 10,
+			maxTotalExpansions: 1000,
+			maxExpandedLength: 100000,
+			allowedTags: null,
+			tagFilter: null
+		};
+	}
+	if (typeof value === 'object' && value !== null) {
+		return {
+			enabled: value.enabled !== false,
+			maxEntitySize: value.maxEntitySize ?? 10000,
+			maxExpansionDepth: value.maxExpansionDepth ?? 10,
+			maxTotalExpansions: value.maxTotalExpansions ?? 1000,
+			maxExpandedLength: value.maxExpandedLength ?? 100000,
+			allowedTags: value.allowedTags ?? null,
+			tagFilter: value.tagFilter ?? null
+		};
+	}
+	return normalizeProcessEntities(true);
+}
+const buildOptions = function (options) {
+	const built = Object.assign({}, defaultOptions, options);
+	built.processEntities = normalizeProcessEntities(built.processEntities);
+	return built;
+};
+
+// fast-xml-parser
+let METADATA_SYMBOL$1;
+if (typeof Symbol !== "function") {
+	METADATA_SYMBOL$1 = "@@xmlMetadata";
+} else {
+	METADATA_SYMBOL$1 = Symbol("XML Node Metadata");
+}
+class XmlNode{
+	constructor(tagname) {
+		this.tagname = tagname;
+		this.child = [];
+		this[":@"] = {};
+	}
+	add(key,val){
+		if(key === "__proto__") key = "#__proto__";
+		this.child.push( {[key]: val });
+	}
+	addChild(node, startIndex) {
+		if(node.tagname === "__proto__") node.tagname = "#__proto__";
+		if(node[":@"] && Object.keys(node[":@"]).length > 0){
+			this.child.push( { [node.tagname]: node.child, [":@"]: node[":@"] });
+		}else {
+			this.child.push( { [node.tagname]: node.child });
+		}
+		if (startIndex !== undefined) {
+			this.child[this.child.length - 1][METADATA_SYMBOL$1] = { startIndex };
+		}
+	}
+	static getMetaDataSymbol() {
+		return METADATA_SYMBOL$1;
+	}
+}
+
+// fast-xml-parser
+class DocTypeReader {
+		constructor(options) {
+				this.suppressValidationErr = !options;
+				this.options = options;
+		}
+		readDocType(xmlData, i) {
+				const entities = {};
+				if (xmlData[i + 3] === 'O' &&
+						xmlData[i + 4] === 'C' &&
+						xmlData[i + 5] === 'T' &&
+						xmlData[i + 6] === 'Y' &&
+						xmlData[i + 7] === 'P' &&
+						xmlData[i + 8] === 'E') {
+						i = i + 9;
+						let angleBracketsCount = 1;
+						let hasBody = false, comment = false;
+						let exp = "";
+						for (; i < xmlData.length; i++) {
+								if (xmlData[i] === '<' && !comment) {
+										if (hasBody && hasSeq(xmlData, "!ENTITY", i)) {
+												i += 7;
+												let entityName, val;
+												[entityName, val, i] = this.readEntityExp(xmlData, i + 1, this.suppressValidationErr);
+												if (val.indexOf("&") === -1) {
+														const escaped = entityName.replace(/[.\-+*:]/g, '\\.');
+														entities[entityName] = {
+																regx: RegExp(`&${escaped};`, "g"),
+																val: val
+														};
+												}
+										}
+										else if (hasBody && hasSeq(xmlData, "!ELEMENT", i)) {
+												i += 8;
+												const { index } = this.readElementExp(xmlData, i + 1);
+												i = index;
+										} else if (hasBody && hasSeq(xmlData, "!ATTLIST", i)) {
+												i += 8;
+										} else if (hasBody && hasSeq(xmlData, "!NOTATION", i)) {
+												i += 9;
+												const { index } = this.readNotationExp(xmlData, i + 1, this.suppressValidationErr);
+												i = index;
+										} else if (hasSeq(xmlData, "!--", i)) comment = true;
+										else throw new Error(`Invalid DOCTYPE`);
+										angleBracketsCount++;
+										exp = "";
+								} else if (xmlData[i] === '>') {
+										if (comment) {
+												if (xmlData[i - 1] === "-" && xmlData[i - 2] === "-") {
+														comment = false;
+														angleBracketsCount--;
+												}
+										} else {
+												angleBracketsCount--;
+										}
+										if (angleBracketsCount === 0) {
+												break;
+										}
+								} else if (xmlData[i] === '[') {
+										hasBody = true;
+								} else {
+										exp += xmlData[i];
+								}
+						}
+						if (angleBracketsCount !== 0) {
+								throw new Error(`Unclosed DOCTYPE`);
+						}
+				} else {
+						throw new Error(`Invalid Tag instead of DOCTYPE`);
+				}
+				return { entities, i };
+		}
+		readEntityExp(xmlData, i) {
+				i = skipWhitespace(xmlData, i);
+				let entityName = "";
+				while (i < xmlData.length && !/\s/.test(xmlData[i]) && xmlData[i] !== '"' && xmlData[i] !== "'") {
+						entityName += xmlData[i];
+						i++;
+				}
+				validateEntityName(entityName);
+				i = skipWhitespace(xmlData, i);
+				if (!this.suppressValidationErr) {
+						if (xmlData.substring(i, i + 6).toUpperCase() === "SYSTEM") {
+								throw new Error("External entities are not supported");
+						} else if (xmlData[i] === "%") {
+								throw new Error("Parameter entities are not supported");
+						}
+				}
+				let entityValue = "";
+				[i, entityValue] = this.readIdentifierVal(xmlData, i, "entity");
+				if (this.options.enabled !== false &&
+						this.options.maxEntitySize &&
+						entityValue.length > this.options.maxEntitySize) {
+						throw new Error(
+								`Entity "${entityName}" size (${entityValue.length}) exceeds maximum allowed size (${this.options.maxEntitySize})`
+						);
+				}
+				i--;
+				return [entityName, entityValue, i];
+		}
+		readNotationExp(xmlData, i) {
+				i = skipWhitespace(xmlData, i);
+				let notationName = "";
+				while (i < xmlData.length && !/\s/.test(xmlData[i])) {
+						notationName += xmlData[i];
+						i++;
+				}
+				!this.suppressValidationErr && validateEntityName(notationName);
+				i = skipWhitespace(xmlData, i);
+				const identifierType = xmlData.substring(i, i + 6).toUpperCase();
+				if (!this.suppressValidationErr && identifierType !== "SYSTEM" && identifierType !== "PUBLIC") {
+						throw new Error(`Expected SYSTEM or PUBLIC, found "${identifierType}"`);
+				}
+				i += identifierType.length;
+				i = skipWhitespace(xmlData, i);
+				let publicIdentifier = null;
+				let systemIdentifier = null;
+				if (identifierType === "PUBLIC") {
+						[i, publicIdentifier] = this.readIdentifierVal(xmlData, i, "publicIdentifier");
+						i = skipWhitespace(xmlData, i);
+						if (xmlData[i] === '"' || xmlData[i] === "'") {
+								[i, systemIdentifier] = this.readIdentifierVal(xmlData, i, "systemIdentifier");
+						}
+				} else if (identifierType === "SYSTEM") {
+						[i, systemIdentifier] = this.readIdentifierVal(xmlData, i, "systemIdentifier");
+						if (!this.suppressValidationErr && !systemIdentifier) {
+								throw new Error("Missing mandatory system identifier for SYSTEM notation");
+						}
+				}
+				return { notationName, publicIdentifier, systemIdentifier, index: --i };
+		}
+		readIdentifierVal(xmlData, i, type) {
+				let identifierVal = "";
+				const startChar = xmlData[i];
+				if (startChar !== '"' && startChar !== "'") {
+						throw new Error(`Expected quoted string, found "${startChar}"`);
+				}
+				i++;
+				while (i < xmlData.length && xmlData[i] !== startChar) {
+						identifierVal += xmlData[i];
+						i++;
+				}
+				if (xmlData[i] !== startChar) {
+						throw new Error(`Unterminated ${type} value`);
+				}
+				i++;
+				return [i, identifierVal];
+		}
+		readElementExp(xmlData, i) {
+				i = skipWhitespace(xmlData, i);
+				let elementName = "";
+				while (i < xmlData.length && !/\s/.test(xmlData[i])) {
+						elementName += xmlData[i];
+						i++;
+				}
+				if (!this.suppressValidationErr && !isName(elementName)) {
+						throw new Error(`Invalid element name: "${elementName}"`);
+				}
+				i = skipWhitespace(xmlData, i);
+				let contentModel = "";
+				if (xmlData[i] === "E" && hasSeq(xmlData, "MPTY", i)) i += 4;
+				else if (xmlData[i] === "A" && hasSeq(xmlData, "NY", i)) i += 2;
+				else if (xmlData[i] === "(") {
+						i++;
+						while (i < xmlData.length && xmlData[i] !== ")") {
+								contentModel += xmlData[i];
+								i++;
+						}
+						if (xmlData[i] !== ")") {
+								throw new Error("Unterminated content model");
+						}
+				} else if (!this.suppressValidationErr) {
+						throw new Error(`Invalid Element Expression, found "${xmlData[i]}"`);
+				}
+				return {
+						elementName,
+						contentModel: contentModel.trim(),
+						index: i
+				};
+		}
+		readAttlistExp(xmlData, i) {
+				i = skipWhitespace(xmlData, i);
+				let elementName = "";
+				while (i < xmlData.length && !/\s/.test(xmlData[i])) {
+						elementName += xmlData[i];
+						i++;
+				}
+				validateEntityName(elementName);
+				i = skipWhitespace(xmlData, i);
+				let attributeName = "";
+				while (i < xmlData.length && !/\s/.test(xmlData[i])) {
+						attributeName += xmlData[i];
+						i++;
+				}
+				if (!validateEntityName(attributeName)) {
+						throw new Error(`Invalid attribute name: "${attributeName}"`);
+				}
+				i = skipWhitespace(xmlData, i);
+				let attributeType = "";
+				if (xmlData.substring(i, i + 8).toUpperCase() === "NOTATION") {
+						attributeType = "NOTATION";
+						i += 8;
+						i = skipWhitespace(xmlData, i);
+						if (xmlData[i] !== "(") {
+								throw new Error(`Expected '(', found "${xmlData[i]}"`);
+						}
+						i++;
+						let allowedNotations = [];
+						while (i < xmlData.length && xmlData[i] !== ")") {
+								let notation = "";
+								while (i < xmlData.length && xmlData[i] !== "|" && xmlData[i] !== ")") {
+										notation += xmlData[i];
+										i++;
+								}
+								notation = notation.trim();
+								if (!validateEntityName(notation)) {
+										throw new Error(`Invalid notation name: "${notation}"`);
+								}
+								allowedNotations.push(notation);
+								if (xmlData[i] === "|") {
+										i++;
+										i = skipWhitespace(xmlData, i);
+								}
+						}
+						if (xmlData[i] !== ")") {
+								throw new Error("Unterminated list of notations");
+						}
+						i++;
+						attributeType += " (" + allowedNotations.join("|") + ")";
+				} else {
+						while (i < xmlData.length && !/\s/.test(xmlData[i])) {
+								attributeType += xmlData[i];
+								i++;
+						}
+						const validTypes = ["CDATA", "ID", "IDREF", "IDREFS", "ENTITY", "ENTITIES", "NMTOKEN", "NMTOKENS"];
+						if (!this.suppressValidationErr && !validTypes.includes(attributeType.toUpperCase())) {
+								throw new Error(`Invalid attribute type: "${attributeType}"`);
+						}
+				}
+				i = skipWhitespace(xmlData, i);
+				let defaultValue = "";
+				if (xmlData.substring(i, i + 8).toUpperCase() === "#REQUIRED") {
+						defaultValue = "#REQUIRED";
+						i += 8;
+				} else if (xmlData.substring(i, i + 7).toUpperCase() === "#IMPLIED") {
+						defaultValue = "#IMPLIED";
+						i += 7;
+				} else {
+						[i, defaultValue] = this.readIdentifierVal(xmlData, i, "ATTLIST");
+				}
+				return {
+						elementName,
+						attributeName,
+						attributeType,
+						defaultValue,
+						index: i
+				}
+		}
+}
+const skipWhitespace = (data, index) => {
+		while (index < data.length && /\s/.test(data[index])) {
+				index++;
+		}
+		return index;
+};
+function hasSeq(data, seq, i) {
+		for (let j = 0; j < seq.length; j++) {
+				if (seq[j] !== data[i + j + 1]) return false;
+		}
+		return true;
+}
+function validateEntityName(name) {
+		if (isName(name))
+				return name;
+		else
+				throw new Error(`Invalid entity name ${name}`);
+}
+
+// strnum
+const hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
+const numRegex = /^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/;
+const consider = {
+		hex :  true,
+		leadingZeros: true,
+		decimalPoint: "\.",
+		eNotation: true,
+};
+function toNumber(str, options = {}){
+		options = Object.assign({}, consider, options );
+		if(!str || typeof str !== "string" ) return str;
+		let trimmedStr  = str.trim();
+		if(options.skipLike !== undefined && options.skipLike.test(trimmedStr)) return str;
+		else if(str==="0") return 0;
+		else if (options.hex && hexRegex.test(trimmedStr)) {
+				return parse_int(trimmedStr, 16);
+		}else if (trimmedStr.includes('e') || trimmedStr.includes('E')) {
+				return resolveEnotation(str,trimmedStr,options);
+		}else {
+				const match = numRegex.exec(trimmedStr);
+				if(match){
+						const sign = match[1] || "";
+						const leadingZeros = match[2];
+						let numTrimmedByZeros = trimZeros(match[3]);
+						const decimalAdjacentToLeadingZeros = sign ?
+								str[leadingZeros.length+1] === "."
+								: str[leadingZeros.length] === ".";
+						if(!options.leadingZeros
+								&& (leadingZeros.length > 1
+										|| (leadingZeros.length === 1 && !decimalAdjacentToLeadingZeros))){
+								return str;
+						}
+						else {
+								const num = Number(trimmedStr);
+								const parsedStr = String(num);
+								if( num === 0) return num;
+								if(parsedStr.search(/[eE]/) !== -1){
+										if(options.eNotation) return num;
+										else return str;
+								}else if(trimmedStr.indexOf(".") !== -1){
+										if(parsedStr === "0") return num;
+										else if(parsedStr === numTrimmedByZeros) return num;
+										else if( parsedStr === `${sign}${numTrimmedByZeros}`) return num;
+										else return str;
+								}
+								let n = leadingZeros? numTrimmedByZeros : trimmedStr;
+								if(leadingZeros){
+										return (n === parsedStr) || (sign+n === parsedStr) ? num : str
+								}else  {
+										return (n === parsedStr) || (n === sign+parsedStr) ? num : str
+								}
+						}
+				}else {
+						return str;
+				}
+		}
+}
+const eNotationRegx = /^([-+])?(0*)(\d*(\.\d*)?[eE][-\+]?\d+)$/;
+function resolveEnotation(str,trimmedStr,options){
+		if(!options.eNotation) return str;
+		const notation = trimmedStr.match(eNotationRegx);
+		if(notation){
+				let sign = notation[1] || "";
+				const eChar = notation[3].indexOf("e") === -1 ? "E" : "e";
+				const leadingZeros = notation[2];
+				const eAdjacentToLeadingZeros = sign ?
+						str[leadingZeros.length+1] === eChar
+						: str[leadingZeros.length] === eChar;
+				if(leadingZeros.length > 1 && eAdjacentToLeadingZeros) return str;
+				else if(leadingZeros.length === 1
+						&& (notation[3].startsWith(`.${eChar}`) || notation[3][0] === eChar)){
+								return Number(trimmedStr);
+				}else if(options.leadingZeros && !eAdjacentToLeadingZeros){
+						trimmedStr = (notation[1] || "") + notation[3];
+						return Number(trimmedStr);
+				}else return str;
+		}else {
+				return str;
+		}
+}
+function trimZeros(numStr){
+		if(numStr && numStr.indexOf(".") !== -1){
+				numStr = numStr.replace(/0+$/, "");
+				if(numStr === ".")  numStr = "0";
+				else if(numStr[0] === ".")  numStr = "0"+numStr;
+				else if(numStr[numStr.length-1] === ".")  numStr = numStr.substring(0,numStr.length-1);
+				return numStr;
+		}
+		return numStr;
+}
+function parse_int(numStr, base){
+		if(parseInt) return parseInt(numStr, base);
+		else if(Number.parseInt) return Number.parseInt(numStr, base);
+		else if(window && window.parseInt) return window.parseInt(numStr, base);
+		else throw new Error("parseInt, Number.parseInt, window.parseInt are not supported")
+}
+
+// fast-xml-parser
+function getIgnoreAttributesFn(ignoreAttributes) {
+		if (typeof ignoreAttributes === 'function') {
+				return ignoreAttributes
+		}
+		if (Array.isArray(ignoreAttributes)) {
+				return (attrName) => {
+						for (const pattern of ignoreAttributes) {
+								if (typeof pattern === 'string' && attrName === pattern) {
+										return true
+								}
+								if (pattern instanceof RegExp && pattern.test(attrName)) {
+										return true
+								}
+						}
+				}
+		}
+		return () => false
+}
+
+// fast-xml-parser
+class OrderedObjParser {
+	constructor(options) {
+		this.options = options;
+		this.currentNode = null;
+		this.tagsNodeStack = [];
+		this.docTypeEntities = {};
+		this.lastEntities = {
+			"apos": { regex: /&(apos|#39|#x27);/g, val: "'" },
+			"gt": { regex: /&(gt|#62|#x3E);/g, val: ">" },
+			"lt": { regex: /&(lt|#60|#x3C);/g, val: "<" },
+			"quot": { regex: /&(quot|#34|#x22);/g, val: "\"" },
+		};
+		this.ampEntity = { regex: /&(amp|#38|#x26);/g, val: "&" };
+		this.htmlEntities = {
+			"space": { regex: /&(nbsp|#160);/g, val: " " },
+			"cent": { regex: /&(cent|#162);/g, val: "¢" },
+			"pound": { regex: /&(pound|#163);/g, val: "£" },
+			"yen": { regex: /&(yen|#165);/g, val: "¥" },
+			"euro": { regex: /&(euro|#8364);/g, val: "€" },
+			"copyright": { regex: /&(copy|#169);/g, val: "©" },
+			"reg": { regex: /&(reg|#174);/g, val: "®" },
+			"inr": { regex: /&(inr|#8377);/g, val: "₹" },
+			"num_dec": { regex: /&#([0-9]{1,7});/g, val: (_, str) => fromCodePoint(str, 10, "&#") },
+			"num_hex": { regex: /&#x([0-9a-fA-F]{1,6});/g, val: (_, str) => fromCodePoint(str, 16, "&#x") },
+		};
+		this.addExternalEntities = addExternalEntities;
+		this.parseXml = parseXml;
+		this.parseTextData = parseTextData;
+		this.resolveNameSpace = resolveNameSpace;
+		this.buildAttributesMap = buildAttributesMap;
+		this.isItStopNode = isItStopNode;
+		this.replaceEntitiesValue = replaceEntitiesValue;
+		this.readStopNodeData = readStopNodeData;
+		this.saveTextToParentTag = saveTextToParentTag;
+		this.addChild = addChild;
+		this.ignoreAttributesFn = getIgnoreAttributesFn(this.options.ignoreAttributes);
+		this.entityExpansionCount = 0;
+		this.currentExpandedLength = 0;
+		if (this.options.stopNodes && this.options.stopNodes.length > 0) {
+			this.stopNodesExact = new Set();
+			this.stopNodesWildcard = new Set();
+			for (let i = 0; i < this.options.stopNodes.length; i++) {
+				const stopNodeExp = this.options.stopNodes[i];
+				if (typeof stopNodeExp !== 'string') continue;
+				if (stopNodeExp.startsWith("*.")) {
+					this.stopNodesWildcard.add(stopNodeExp.substring(2));
+				} else {
+					this.stopNodesExact.add(stopNodeExp);
+				}
+			}
+		}
+	}
+}
+function addExternalEntities(externalEntities) {
+	const entKeys = Object.keys(externalEntities);
+	for (let i = 0; i < entKeys.length; i++) {
+		const ent = entKeys[i];
+		const escaped = ent.replace(/[.\-+*:]/g, '\\.');
+		this.lastEntities[ent] = {
+			regex: new RegExp("&" + escaped + ";", "g"),
+			val: externalEntities[ent]
+		};
+	}
+}
+function parseTextData(val, tagName, jPath, dontTrim, hasAttributes, isLeafNode, escapeEntities) {
+	if (val !== undefined) {
+		if (this.options.trimValues && !dontTrim) {
+			val = val.trim();
+		}
+		if (val.length > 0) {
+			if (!escapeEntities) val = this.replaceEntitiesValue(val, tagName, jPath);
+			const newval = this.options.tagValueProcessor(tagName, val, jPath, hasAttributes, isLeafNode);
+			if (newval === null || newval === undefined) {
+				return val;
+			} else if (typeof newval !== typeof val || newval !== val) {
+				return newval;
+			} else if (this.options.trimValues) {
+				return parseValue(val, this.options.parseTagValue, this.options.numberParseOptions);
+			} else {
+				const trimmedVal = val.trim();
+				if (trimmedVal === val) {
+					return parseValue(val, this.options.parseTagValue, this.options.numberParseOptions);
+				} else {
+					return val;
+				}
+			}
+		}
+	}
+}
+function resolveNameSpace(tagname) {
+	if (this.options.removeNSPrefix) {
+		const tags = tagname.split(':');
+		const prefix = tagname.charAt(0) === '/' ? '/' : '';
+		if (tags[0] === 'xmlns') {
+			return '';
+		}
+		if (tags.length === 2) {
+			tagname = prefix + tags[1];
+		}
+	}
+	return tagname;
+}
+const attrsRegx = new RegExp('([^\\s=]+)\\s*(=\\s*([\'"])([\\s\\S]*?)\\3)?', 'gm');
+function buildAttributesMap(attrStr, jPath, tagName) {
+	if (this.options.ignoreAttributes !== true && typeof attrStr === 'string') {
+		const matches = getAllMatches(attrStr, attrsRegx);
+		const len = matches.length;
+		const attrs = {};
+		for (let i = 0; i < len; i++) {
+			const attrName = this.resolveNameSpace(matches[i][1]);
+			if (this.ignoreAttributesFn(attrName, jPath)) {
+				continue
+			}
+			let oldVal = matches[i][4];
+			let aName = this.options.attributeNamePrefix + attrName;
+			if (attrName.length) {
+				if (this.options.transformAttributeName) {
+					aName = this.options.transformAttributeName(aName);
+				}
+				if (aName === "__proto__") aName = "#__proto__";
+				if (oldVal !== undefined) {
+					if (this.options.trimValues) {
+						oldVal = oldVal.trim();
+					}
+					oldVal = this.replaceEntitiesValue(oldVal, tagName, jPath);
+					const newVal = this.options.attributeValueProcessor(attrName, oldVal, jPath);
+					if (newVal === null || newVal === undefined) {
+						attrs[aName] = oldVal;
+					} else if (typeof newVal !== typeof oldVal || newVal !== oldVal) {
+						attrs[aName] = newVal;
+					} else {
+						attrs[aName] = parseValue(
+							oldVal,
+							this.options.parseAttributeValue,
+							this.options.numberParseOptions
+						);
+					}
+				} else if (this.options.allowBooleanAttributes) {
+					attrs[aName] = true;
+				}
+			}
+		}
+		if (!Object.keys(attrs).length) {
+			return;
+		}
+		if (this.options.attributesGroupName) {
+			const attrCollection = {};
+			attrCollection[this.options.attributesGroupName] = attrs;
+			return attrCollection;
+		}
+		return attrs
+	}
+}
+const parseXml = function (xmlData) {
+	xmlData = xmlData.replace(/\r\n?/g, "\n");
+	const xmlObj = new XmlNode('!xml');
+	let currentNode = xmlObj;
+	let textData = "";
+	let jPath = "";
+	this.entityExpansionCount = 0;
+	this.currentExpandedLength = 0;
+	const docTypeReader = new DocTypeReader(this.options.processEntities);
+	for (let i = 0; i < xmlData.length; i++) {
+		const ch = xmlData[i];
+		if (ch === '<') {
+			if (xmlData[i + 1] === '/') {
+				const closeIndex = findClosingIndex(xmlData, ">", i, "Closing Tag is not closed.");
+				let tagName = xmlData.substring(i + 2, closeIndex).trim();
+				if (this.options.removeNSPrefix) {
+					const colonIndex = tagName.indexOf(":");
+					if (colonIndex !== -1) {
+						tagName = tagName.substr(colonIndex + 1);
+					}
+				}
+				if (this.options.transformTagName) {
+					tagName = this.options.transformTagName(tagName);
+				}
+				if (currentNode) {
+					textData = this.saveTextToParentTag(textData, currentNode, jPath);
+				}
+				const lastTagName = jPath.substring(jPath.lastIndexOf(".") + 1);
+				if (tagName && this.options.unpairedTags.indexOf(tagName) !== -1) {
+					throw new Error(`Unpaired tag can not be used as closing tag: </${tagName}>`);
+				}
+				let propIndex = 0;
+				if (lastTagName && this.options.unpairedTags.indexOf(lastTagName) !== -1) {
+					propIndex = jPath.lastIndexOf('.', jPath.lastIndexOf('.') - 1);
+					this.tagsNodeStack.pop();
+				} else {
+					propIndex = jPath.lastIndexOf(".");
+				}
+				jPath = jPath.substring(0, propIndex);
+				currentNode = this.tagsNodeStack.pop();
+				textData = "";
+				i = closeIndex;
+			} else if (xmlData[i + 1] === '?') {
+				let tagData = readTagExp(xmlData, i, false, "?>");
+				if (!tagData) throw new Error("Pi Tag is not closed.");
+				textData = this.saveTextToParentTag(textData, currentNode, jPath);
+				if ((this.options.ignoreDeclaration && tagData.tagName === "?xml") || this.options.ignorePiTags) ; else {
+					const childNode = new XmlNode(tagData.tagName);
+					childNode.add(this.options.textNodeName, "");
+					if (tagData.tagName !== tagData.tagExp && tagData.attrExpPresent) {
+						childNode[":@"] = this.buildAttributesMap(tagData.tagExp, jPath, tagData.tagName);
+					}
+					this.addChild(currentNode, childNode, jPath, i);
+				}
+				i = tagData.closeIndex + 1;
+			} else if (xmlData.substr(i + 1, 3) === '!--') {
+				const endIndex = findClosingIndex(xmlData, "-->", i + 4, "Comment is not closed.");
+				if (this.options.commentPropName) {
+					const comment = xmlData.substring(i + 4, endIndex - 2);
+					textData = this.saveTextToParentTag(textData, currentNode, jPath);
+					currentNode.add(this.options.commentPropName, [{ [this.options.textNodeName]: comment }]);
+				}
+				i = endIndex;
+			} else if (xmlData.substr(i + 1, 2) === '!D') {
+				const result = docTypeReader.readDocType(xmlData, i);
+				this.docTypeEntities = result.entities;
+				i = result.i;
+			} else if (xmlData.substr(i + 1, 2) === '![') {
+				const closeIndex = findClosingIndex(xmlData, "]]>", i, "CDATA is not closed.") - 2;
+				const tagExp = xmlData.substring(i + 9, closeIndex);
+				textData = this.saveTextToParentTag(textData, currentNode, jPath);
+				let val = this.parseTextData(tagExp, currentNode.tagname, jPath, true, false, true, true);
+				if (val == undefined) val = "";
+				if (this.options.cdataPropName) {
+					currentNode.add(this.options.cdataPropName, [{ [this.options.textNodeName]: tagExp }]);
+				} else {
+					currentNode.add(this.options.textNodeName, val);
+				}
+				i = closeIndex + 2;
+			} else {
+				let result = readTagExp(xmlData, i, this.options.removeNSPrefix);
+				let tagName = result.tagName;
+				const rawTagName = result.rawTagName;
+				let tagExp = result.tagExp;
+				let attrExpPresent = result.attrExpPresent;
+				let closeIndex = result.closeIndex;
+				if (this.options.transformTagName) {
+					const newTagName = this.options.transformTagName(tagName);
+					if (tagExp === tagName) {
+						tagExp = newTagName;
+					}
+					tagName = newTagName;
+				}
+				if (currentNode && textData) {
+					if (currentNode.tagname !== '!xml') {
+						textData = this.saveTextToParentTag(textData, currentNode, jPath, false);
+					}
+				}
+				const lastTag = currentNode;
+				if (lastTag && this.options.unpairedTags.indexOf(lastTag.tagname) !== -1) {
+					currentNode = this.tagsNodeStack.pop();
+					jPath = jPath.substring(0, jPath.lastIndexOf("."));
+				}
+				if (tagName !== xmlObj.tagname) {
+					jPath += jPath ? "." + tagName : tagName;
+				}
+				const startIndex = i;
+				if (this.isItStopNode(this.stopNodesExact, this.stopNodesWildcard, jPath, tagName)) {
+					let tagContent = "";
+					if (tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1) {
+						if (tagName[tagName.length - 1] === "/") {
+							tagName = tagName.substr(0, tagName.length - 1);
+							jPath = jPath.substr(0, jPath.length - 1);
+							tagExp = tagName;
+						} else {
+							tagExp = tagExp.substr(0, tagExp.length - 1);
+						}
+						i = result.closeIndex;
+					}
+					else if (this.options.unpairedTags.indexOf(tagName) !== -1) {
+						i = result.closeIndex;
+					}
+					else {
+						const result = this.readStopNodeData(xmlData, rawTagName, closeIndex + 1);
+						if (!result) throw new Error(`Unexpected end of ${rawTagName}`);
+						i = result.i;
+						tagContent = result.tagContent;
+					}
+					const childNode = new XmlNode(tagName);
+					if (tagName !== tagExp && attrExpPresent) {
+						childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
+					}
+					if (tagContent) {
+						tagContent = this.parseTextData(tagContent, tagName, jPath, true, attrExpPresent, true, true);
+					}
+					jPath = jPath.substr(0, jPath.lastIndexOf("."));
+					childNode.add(this.options.textNodeName, tagContent);
+					this.addChild(currentNode, childNode, jPath, startIndex);
+				} else {
+					if (tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1) {
+						if (tagName[tagName.length - 1] === "/") {
+							tagName = tagName.substr(0, tagName.length - 1);
+							jPath = jPath.substr(0, jPath.length - 1);
+							tagExp = tagName;
+						} else {
+							tagExp = tagExp.substr(0, tagExp.length - 1);
+						}
+						if (this.options.transformTagName) {
+							const newTagName = this.options.transformTagName(tagName);
+							if (tagExp === tagName) {
+								tagExp = newTagName;
+							}
+							tagName = newTagName;
+						}
+						const childNode = new XmlNode(tagName);
+						if (tagName !== tagExp && attrExpPresent) {
+							childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
+						}
+						this.addChild(currentNode, childNode, jPath, startIndex);
+						jPath = jPath.substr(0, jPath.lastIndexOf("."));
+					}
+					else {
+						const childNode = new XmlNode(tagName);
+						this.tagsNodeStack.push(currentNode);
+						if (tagName !== tagExp && attrExpPresent) {
+							childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
+						}
+						this.addChild(currentNode, childNode, jPath, startIndex);
+						currentNode = childNode;
+					}
+					textData = "";
+					i = closeIndex;
+				}
+			}
+		} else {
+			textData += xmlData[i];
+		}
+	}
+	return xmlObj.child;
+};
+function addChild(currentNode, childNode, jPath, startIndex) {
+	if (!this.options.captureMetaData) startIndex = undefined;
+	const result = this.options.updateTag(childNode.tagname, jPath, childNode[":@"]);
+	if (result === false) ; else if (typeof result === "string") {
+		childNode.tagname = result;
+		currentNode.addChild(childNode, startIndex);
+	} else {
+		currentNode.addChild(childNode, startIndex);
+	}
+}
+const replaceEntitiesValue = function (val, tagName, jPath) {
+	if (val.indexOf('&') === -1) {
+		return val;
+	}
+	const entityConfig = this.options.processEntities;
+	if (!entityConfig.enabled) {
+		return val;
+	}
+	if (entityConfig.allowedTags) {
+		if (!entityConfig.allowedTags.includes(tagName)) {
+			return val;
+		}
+	}
+	if (entityConfig.tagFilter) {
+		if (!entityConfig.tagFilter(tagName, jPath)) {
+			return val;
+		}
+	}
+	for (let entityName in this.docTypeEntities) {
+		const entity = this.docTypeEntities[entityName];
+		const matches = val.match(entity.regx);
+		if (matches) {
+			this.entityExpansionCount += matches.length;
+			if (entityConfig.maxTotalExpansions &&
+				this.entityExpansionCount > entityConfig.maxTotalExpansions) {
+				throw new Error(
+					`Entity expansion limit exceeded: ${this.entityExpansionCount} > ${entityConfig.maxTotalExpansions}`
+				);
+			}
+			const lengthBefore = val.length;
+			val = val.replace(entity.regx, entity.val);
+			if (entityConfig.maxExpandedLength) {
+				this.currentExpandedLength += (val.length - lengthBefore);
+				if (this.currentExpandedLength > entityConfig.maxExpandedLength) {
+					throw new Error(
+						`Total expanded content size exceeded: ${this.currentExpandedLength} > ${entityConfig.maxExpandedLength}`
+					);
+				}
+			}
+		}
+	}
+	if (val.indexOf('&') === -1) return val;
+	for (let entityName in this.lastEntities) {
+		const entity = this.lastEntities[entityName];
+		val = val.replace(entity.regex, entity.val);
+	}
+	if (val.indexOf('&') === -1) return val;
+	if (this.options.htmlEntities) {
+		for (let entityName in this.htmlEntities) {
+			const entity = this.htmlEntities[entityName];
+			val = val.replace(entity.regex, entity.val);
+		}
+	}
+	val = val.replace(this.ampEntity.regex, this.ampEntity.val);
+	return val;
+};
+function saveTextToParentTag(textData, currentNode, jPath, isLeafNode) {
+	if (textData) {
+		if (isLeafNode === undefined) isLeafNode = currentNode.child.length === 0;
+		textData = this.parseTextData(textData,
+			currentNode.tagname,
+			jPath,
+			false,
+			currentNode[":@"] ? Object.keys(currentNode[":@"]).length !== 0 : false,
+			isLeafNode);
+		if (textData !== undefined && textData !== "")
+			currentNode.add(this.options.textNodeName, textData);
+		textData = "";
+	}
+	return textData;
+}
+function isItStopNode(stopNodesExact, stopNodesWildcard, jPath, currentTagName) {
+	if (stopNodesWildcard && stopNodesWildcard.has(currentTagName)) return true;
+	if (stopNodesExact && stopNodesExact.has(jPath)) return true;
+	return false;
+}
+function tagExpWithClosingIndex(xmlData, i, closingChar = ">") {
+	let attrBoundary;
+	let tagExp = "";
+	for (let index = i; index < xmlData.length; index++) {
+		let ch = xmlData[index];
+		if (attrBoundary) {
+			if (ch === attrBoundary) attrBoundary = "";
+		} else if (ch === '"' || ch === "'") {
+			attrBoundary = ch;
+		} else if (ch === closingChar[0]) {
+			if (closingChar[1]) {
+				if (xmlData[index + 1] === closingChar[1]) {
+					return {
+						data: tagExp,
+						index: index
+					}
+				}
+			} else {
+				return {
+					data: tagExp,
+					index: index
+				}
+			}
+		} else if (ch === '\t') {
+			ch = " ";
+		}
+		tagExp += ch;
+	}
+}
+function findClosingIndex(xmlData, str, i, errMsg) {
+	const closingIndex = xmlData.indexOf(str, i);
+	if (closingIndex === -1) {
+		throw new Error(errMsg)
+	} else {
+		return closingIndex + str.length - 1;
+	}
+}
+function readTagExp(xmlData, i, removeNSPrefix, closingChar = ">") {
+	const result = tagExpWithClosingIndex(xmlData, i + 1, closingChar);
+	if (!result) return;
+	let tagExp = result.data;
+	const closeIndex = result.index;
+	const separatorIndex = tagExp.search(/\s/);
+	let tagName = tagExp;
+	let attrExpPresent = true;
+	if (separatorIndex !== -1) {
+		tagName = tagExp.substring(0, separatorIndex);
+		tagExp = tagExp.substring(separatorIndex + 1).trimStart();
+	}
+	const rawTagName = tagName;
+	if (removeNSPrefix) {
+		const colonIndex = tagName.indexOf(":");
+		if (colonIndex !== -1) {
+			tagName = tagName.substr(colonIndex + 1);
+			attrExpPresent = tagName !== result.data.substr(colonIndex + 1);
+		}
+	}
+	return {
+		tagName: tagName,
+		tagExp: tagExp,
+		closeIndex: closeIndex,
+		attrExpPresent: attrExpPresent,
+		rawTagName: rawTagName,
+	}
+}
+function readStopNodeData(xmlData, tagName, i) {
+	const startIndex = i;
+	let openTagCount = 1;
+	for (; i < xmlData.length; i++) {
+		if (xmlData[i] === "<") {
+			if (xmlData[i + 1] === "/") {
+				const closeIndex = findClosingIndex(xmlData, ">", i, `${tagName} is not closed`);
+				let closeTagName = xmlData.substring(i + 2, closeIndex).trim();
+				if (closeTagName === tagName) {
+					openTagCount--;
+					if (openTagCount === 0) {
+						return {
+							tagContent: xmlData.substring(startIndex, i),
+							i: closeIndex
+						}
+					}
+				}
+				i = closeIndex;
+			} else if (xmlData[i + 1] === '?') {
+				const closeIndex = findClosingIndex(xmlData, "?>", i + 1, "StopNode is not closed.");
+				i = closeIndex;
+			} else if (xmlData.substr(i + 1, 3) === '!--') {
+				const closeIndex = findClosingIndex(xmlData, "-->", i + 3, "StopNode is not closed.");
+				i = closeIndex;
+			} else if (xmlData.substr(i + 1, 2) === '![') {
+				const closeIndex = findClosingIndex(xmlData, "]]>", i, "StopNode is not closed.") - 2;
+				i = closeIndex;
+			} else {
+				const tagData = readTagExp(xmlData, i, '>');
+				if (tagData) {
+					const openTagName = tagData && tagData.tagName;
+					if (openTagName === tagName && tagData.tagExp[tagData.tagExp.length - 1] !== "/") {
+						openTagCount++;
+					}
+					i = tagData.closeIndex;
+				}
+			}
+		}
+	}
+}
+function parseValue(val, shouldParse, options) {
+	if (shouldParse && typeof val === 'string') {
+		const newval = val.trim();
+		if (newval === 'true') return true;
+		else if (newval === 'false') return false;
+		else return toNumber(val, options);
+	} else {
+		if (isExist(val)) {
+			return val;
+		} else {
+			return '';
+		}
+	}
+}
+function fromCodePoint(str, base, prefix) {
+	const codePoint = Number.parseInt(str, base);
+	if (codePoint >= 0 && codePoint <= 0x10FFFF) {
+		return String.fromCodePoint(codePoint);
+	} else {
+		return prefix + str + ";";
+	}
+}
+
+// fast-xml-parser
+const METADATA_SYMBOL = XmlNode.getMetaDataSymbol();
+function prettify(node, options){
+	return compress( node, options);
+}
+function compress(arr, options, jPath){
+	let text;
+	const compressedObj = {};
+	for (let i = 0; i < arr.length; i++) {
+		const tagObj = arr[i];
+		const property = propName(tagObj);
+		let newJpath = "";
+		if(jPath === undefined) newJpath = property;
+		else newJpath = jPath + "." + property;
+		if(property === options.textNodeName){
+			if(text === undefined) text = tagObj[property];
+			else text += "" + tagObj[property];
+		}else if(property === undefined){
+			continue;
+		}else if(tagObj[property]){
+			let val = compress(tagObj[property], options, newJpath);
+			const isLeaf = isLeafTag(val, options);
+			if (tagObj[METADATA_SYMBOL] !== undefined) {
+				val[METADATA_SYMBOL] = tagObj[METADATA_SYMBOL];
+			}
+			if(tagObj[":@"]){
+				assignAttributes( val, tagObj[":@"], newJpath, options);
+			}else if(Object.keys(val).length === 1 && val[options.textNodeName] !== undefined && !options.alwaysCreateTextNode){
+				val = val[options.textNodeName];
+			}else if(Object.keys(val).length === 0){
+				if(options.alwaysCreateTextNode) val[options.textNodeName] = "";
+				else val = "";
+			}
+			if(compressedObj[property] !== undefined && compressedObj.hasOwnProperty(property)) {
+				if(!Array.isArray(compressedObj[property])) {
+						compressedObj[property] = [ compressedObj[property] ];
+				}
+				compressedObj[property].push(val);
+			}else {
+				if (options.isArray(property, newJpath, isLeaf )) {
+					compressedObj[property] = [val];
+				}else {
+					compressedObj[property] = val;
+				}
+			}
+		}
+	}
+	if(typeof text === "string"){
+		if(text.length > 0) compressedObj[options.textNodeName] = text;
+	}else if(text !== undefined) compressedObj[options.textNodeName] = text;
+	return compressedObj;
+}
+function propName(obj){
+	const keys = Object.keys(obj);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		if(key !== ":@") return key;
+	}
+}
+function assignAttributes(obj, attrMap, jpath, options){
+	if (attrMap) {
+		const keys = Object.keys(attrMap);
+		const len = keys.length;
+		for (let i = 0; i < len; i++) {
+			const atrrName = keys[i];
+			if (options.isArray(atrrName, jpath + "." + atrrName, true, true)) {
+				obj[atrrName] = [ attrMap[atrrName] ];
+			} else {
+				obj[atrrName] = attrMap[atrrName];
+			}
+		}
+	}
+}
+function isLeafTag(obj, options){
+	const { textNodeName } = options;
+	const propCount = Object.keys(obj).length;
+	if (propCount === 0) {
+		return true;
+	}
+	if (
+		propCount === 1 &&
+		(obj[textNodeName] || typeof obj[textNodeName] === "boolean" || obj[textNodeName] === 0)
+	) {
+		return true;
+	}
+	return false;
+}
+
+// fast-xml-parser
+class XMLParser{
+		constructor(options){
+				this.externalEntities = {};
+				this.options = buildOptions(options);
+		}
+		parse(xmlData,validationOption){
+				if(typeof xmlData !== "string" && xmlData.toString){
+						xmlData = xmlData.toString();
+				}else if(typeof xmlData !== "string"){
+						throw new Error("XML data is accepted in String or Bytes[] form.")
+				}
+				if( validationOption){
+						if(validationOption === true) validationOption = {};
+						const result = validate(xmlData, validationOption);
+						if (result !== true) {
+							throw Error( `${result.err.msg}:${result.err.line}:${result.err.col}` )
+						}
+					}
+				const orderedObjParser = new OrderedObjParser(this.options);
+				orderedObjParser.addExternalEntities(this.externalEntities);
+				const orderedResult = orderedObjParser.parseXml(xmlData);
+				if(this.options.preserveOrder || orderedResult === undefined) return orderedResult;
+				else return prettify(orderedResult, this.options);
+		}
+		addEntity(key, value){
+				if(value.indexOf("&") !== -1){
+						throw new Error("Entity value can't have '&'")
+				}else if(key.indexOf("&") !== -1 || key.indexOf(";") !== -1){
+						throw new Error("An entity must be set without '&' and ';'. Eg. use '#xD' for '&#xD;'")
+				}else if(value === "&"){
+						throw new Error("An entity with value '&' is not permitted");
+				}else {
+						this.externalEntities[key] = value;
+				}
+		}
+		static getMetaDataSymbol() {
+				return XmlNode.getMetaDataSymbol();
+		}
+}
+
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
 const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
@@ -181,6 +1711,262 @@ const UserStore = betterdiscord.Webpack.getStore("UserStore");
 const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
 const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
 const WindowStore = betterdiscord.Webpack.getStore("WindowStore");
+
+// activity_feed/components/common/methods/common.js
+function chunkArray(cards, num) {
+	let chunkLength = Math.max(cards.length / num, 1);
+	const chunks = [];
+	for (let i = 0; i < num; i++) {
+		if (chunkLength * (i + 1) <= cards.length) chunks.push(cards.slice(Math.ceil(chunkLength * i), Math.ceil(chunkLength * (i + 1))));
+	}
+	return chunks;
+}
+function TimeClock({ timestamp }) {
+	const time = Math.floor((Date.now() - new Date(parseInt(timestamp))) / 1e3);
+	if (time / 86400 > 1) {
+		return Common.intl.intl.formatToPlainString(Common.intl.t["2rUo/p"], { time: Math.floor(time / 86400) });
+	} else if (time / 3600 > 1) {
+		return Common.intl.intl.formatToPlainString(Common.intl.t["eNoooU"], { time: Math.floor(time / 3600) });
+	} else if (time / 60 > 1) {
+		return Common.intl.intl.formatToPlainString(Common.intl.t["03mIHW"], { time: Math.floor(time / 60) });
+	} else if (time % 60 < 60) {
+		return Common.intl.intl.formatToPlainString(Common.intl.t["ahzZr+"]);
+	}
+}
+function GradGen(check, isSpotify, activity, game, voice, stream) {
+	let input;
+	switch (true) {
+		case !!check?.streaming:
+			input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
+			break;
+		case !!isSpotify:
+			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
+			break;
+		case !!activity?.name.includes("YouTube Music"):
+			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
+			break;
+		case !!activity?.platform?.includes("xbox"):
+			input = "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png";
+			break;
+		case !!(activity?.assets && activity?.assets.large_image?.includes("external")):
+			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
+			break;
+		case !!(activity?.assets && activity?.assets.large_image):
+			input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`;
+			break;
+		case !!game?.icon:
+			input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon}.png?size=1024&keep_aspect_ratio=true`;
+			break;
+		case !!voice[0]?.guild:
+			input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`;
+			break;
+		case (!!voice && stream):
+			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
+			break;
+	}
+	return Common.GradientComponent(input || null);
+}
+function SplashGen(isSpotify, activity, game, voice, stream) {
+	let input;
+	switch (true) {
+		case !!game?.currentGame?.splash?.length:
+			input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.currentGame?.splash}.png?size=1024&keep_aspect_ratio=true`;
+			break;
+		case !!isSpotify:
+			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
+			break;
+		case !!["YouTube Music", "Crunchyroll"].includes(activity?.name):
+			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
+			break;
+		case !!(voice && !activity):
+			input = "https://cdn.discordapp.com/banners/" + voice[0]?.guild?.id + "/" + voice[0]?.guild?.banner + ".webp?size=1024&keep_aspect_ratio=true";
+			break;
+		case !!(voice && stream):
+			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
+			break;
+		default:
+			input = game?.data?.artwork[0];
+	}
+	return input || null;
+}
+function activityCheck(activities, isSpotify) {
+	if (!activities) return;
+	let pass = {
+		playing: 0,
+		xbox: 0,
+		playstation: 0,
+		streaming: 0,
+		listening: 0,
+		spotify: 0,
+		watching: 0,
+		competing: 0,
+		custom: 0
+	};
+	for (let i = 0; i < activities.length; i++) {
+		if (!activities[i]) {
+			return;
+		}
+		switch (activities[i]?.activity?.type) {
+			case 0:
+				pass.playing = 1;
+				break;
+			case 1:
+				pass.streaming = 1;
+				break;
+			case 2:
+				pass.listening = 1;
+				break;
+			case 3:
+				pass.watching = 1;
+				break;
+			case 4:
+				pass.custom = 1;
+				break;
+			case 5:
+				pass.competing = 1;
+				break;
+		}
+		if (activities[i]?.activity?.platform?.includes("xbox")) {
+			pass.xbox = 1;
+		}
+		if (activities[i]?.activity?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
+			pass.playstation = 1;
+		}
+		if (isSpotify) {
+			pass.spotify = 1;
+		}
+	}
+	return pass;
+}
+function useWindowSize() {
+	const [size, setSize] = React.useState([0, 0]);
+	React.useLayoutEffect(() => {
+		function updateSize() {
+			setSize([window.innerWidth, window.innerHeight]);
+		}
+		window.addEventListener("resize", updateSize);
+		updateSize();
+		return () => window.removeEventListener("resize", updateSize);
+	}, []);
+	return size;
+}
+async function parseXML(xml) {
+	let body = await xml;
+	let result;
+	const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_" });
+	try {
+		result = await parser.parse(body);
+	} catch (e) {
+		return null;
+	}
+	return result;
+}
+
+// commonjsHelpers.js
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+// @jitbit
+var HtmlSanitizer$1 = {exports: {}};
+
+// @jitbit
+HtmlSanitizer$1.exports;
+var hasRequiredHtmlSanitizer;
+function requireHtmlSanitizer () {
+	if (hasRequiredHtmlSanitizer) return HtmlSanitizer$1.exports;
+	hasRequiredHtmlSanitizer = 1;
+	(function (module) {
+		const HtmlSanitizer = new (function () {
+			const _tagWhitelist = {
+				'A': true, 'ABBR': true, 'B': true, 'BLOCKQUOTE': true, 'BODY': true, 'BR': true, 'CENTER': true, 'CODE': true, 'DD': true, 'DIV': true, 'DL': true, 'DT': true, 'EM': true, 'FONT': true,
+				'H1': true, 'H2': true, 'H3': true, 'H4': true, 'H5': true, 'H6': true, 'HR': true, 'I': true, 'IMG': true, 'LABEL': true, 'LI': true, 'OL': true, 'P': true, 'PRE': true,
+				'SMALL': true, 'SOURCE': true, 'SPAN': true, 'STRONG': true, 'SUB': true, 'SUP': true, 'TABLE': true, 'TBODY': true, 'TR': true, 'TD': true, 'TH': true, 'THEAD': true, 'UL': true, 'U': true, 'VIDEO': true
+			};
+			const _contentTagWhiteList = { 'FORM': true, 'GOOGLE-SHEETS-HTML-ORIGIN': true };
+			const _attributeWhitelist = { 'align': true, 'color': true, 'controls': true, 'height': true, 'href': true, 'id': true, 'src': true, 'style': true, 'target': true, 'title': true, 'type': true, 'width': true };
+			const _cssWhitelist = { 'background-color': true, 'color': true, 'font-size': true, 'font-weight': true, 'text-align': true, 'text-decoration': true, 'width': true };
+			const _schemaWhiteList = [ 'http:', 'https:', 'data:', 'm-files:', 'file:', 'ftp:', 'mailto:', 'pw:' ];
+			const _uriAttributes = { 'href': true, 'action': true };
+			const _parser = new DOMParser();
+			this.SanitizeHtml = function (input, extraSelector, callback) {
+				input = input.trim();
+				if (input == "") return "";
+				if (input == "<br>") return "";
+				if (input.indexOf("<body")==-1) input = "<body>" + input + "</body>";
+				let doc = _parser.parseFromString(input, "text/html");
+				if (doc.body.tagName !== 'BODY')
+					doc.body.remove();
+				if (typeof doc.createElement !== 'function')
+					doc.createElement.remove();
+				function makeSanitizedCopy(node) {
+					let newNode;
+					if (node.nodeType == Node.TEXT_NODE) {
+						newNode = node.cloneNode(true);
+					} else if (node.nodeType == Node.ELEMENT_NODE && (_tagWhitelist[node.tagName] || _contentTagWhiteList[node.tagName] || (extraSelector && node.matches(extraSelector))) && (!callback || callback(node))) {
+						if (_contentTagWhiteList[node.tagName])
+							newNode = doc.createElement('DIV');
+						else
+							newNode = doc.createElement(node.tagName);
+						for (let i = 0; i < node.attributes.length; i++) {
+							let attr = node.attributes[i];
+							if (_attributeWhitelist[attr.name]) {
+								if (attr.name == "style") {
+									for (let s = 0; s < node.style.length; s++) {
+										let styleName = node.style[s];
+										if (_cssWhitelist[styleName])
+											newNode.style.setProperty(styleName, node.style.getPropertyValue(styleName));
+									}
+								}
+								else {
+									if (_uriAttributes[attr.name]) {
+										if (attr.value.indexOf(":") > -1 && !startsWithAny(attr.value, _schemaWhiteList))
+											continue;
+									}
+									newNode.setAttribute(attr.name, attr.value);
+								}
+							}
+						}
+						for (let i = 0; i < node.childNodes.length; i++) {
+							let subCopy = makeSanitizedCopy(node.childNodes[i]);
+							newNode.appendChild(subCopy, false);
+						}
+						if ((newNode.tagName == "SPAN" || newNode.tagName == "B" || newNode.tagName == "I" || newNode.tagName == "U")
+							&& newNode.innerHTML.trim() == "") {
+							return doc.createDocumentFragment();
+						}
+					} else {
+						newNode = doc.createDocumentFragment();
+					}
+					return newNode;
+				}				let resultElement = makeSanitizedCopy(doc.body);
+				return resultElement.innerHTML
+					.replace(/div><div/g, "div>\n<div");
+			};
+			function startsWithAny(str, substrings) {
+				for (let i = 0; i < substrings.length; i++) {
+					if (str.indexOf(substrings[i]) == 0) {
+						return true;
+					}
+				}
+				return false;
+			}
+			this.AllowedTags = _tagWhitelist;
+			this.AllowedAttributes = _attributeWhitelist;
+			this.AllowedCssStyles = _cssWhitelist;
+			this.AllowedSchemas = _schemaWhiteList;
+		});
+		if (module.exports) {
+			module.exports = HtmlSanitizer;
+		}
+	} (HtmlSanitizer$1));
+	return HtmlSanitizer$1.exports;
+}
+
+// @jitbit
+var HtmlSanitizerExports = /*@__PURE__*/ requireHtmlSanitizer();
+const HtmlSanitizer = /*@__PURE__*/getDefaultExportFromCjs(HtmlSanitizerExports);
 
 // activity_feed/Store.tsx
 class GameNewsStore extends betterdiscord.Utils.Store {
@@ -342,41 +2128,45 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		betterdiscord.Data.save("blacklist", this.blacklist);
 		return this.blacklist;
 	}
+	async fetchAnyFeed(url) {
+		const rssFeed = await Promise.all([parseXML(betterdiscord.Net.fetch(`${url}`).then((r) => r.ok ? r.text() : null))]);
+		return rssFeed;
+	}
 	async #fetchDiscordFeeds() {
-		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then((r) => r.ok ? r.json() : null)]);
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then((r) => r.ok ? r.text() : null)]);
 		const article = this.getRSSItem(rssFeed);
 		return {
 			application: {
-				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+				name: rssFeed[0]?.rss?.channel?.title,
 				id: "Discord"
 			},
 			appId: "Discord",
-			description: article?.description?.[0],
-			thumbnail: article?.["media:thumbnail"]?.[0].$.url,
-			timestamp: article?.pubDate?.[0],
-			title: article?.title?.[0],
-			url: article?.link?.[0]
+			description: article?.description,
+			thumbnail: article?.["media:thumbnail"]?._url,
+			timestamp: article?.pubDate,
+			title: article?.title,
+			url: article?.link
 		};
 	}
 	async #fetchNintendoFeeds() {
-		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://nintendoeverything.com/feed/`).then((r) => r.ok ? r.json() : null)]);
+		const rssFeed = await Promise.all([parseXML(betterdiscord.Net.fetch(`https://nintendoeverything.com/feed/`).then((r) => r.ok ? r.text() : null))]);
 		const article = this.getRSSItem(rssFeed);
 		return {
 			application: {
-				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+				name: rssFeed[0]?.rss?.channel?.title,
 				id: "Nintendo"
 			},
 			appId: "Nintendo",
-			description: article?.description?.[0],
-			thumbnail: article?.["media:content"]?.[0].$.url,
-			timestamp: article?.pubDate?.[0],
-			title: article?.title?.[0],
-			url: article?.link?.[0]
+			description: article?.description,
+			thumbnail: article?.["media:content"]?._url,
+			timestamp: article?.pubDate,
+			title: article?.title,
+			url: article?.link
 		};
 	}
 	async #fetchXboxFeeds() {
 		const rssFeed = await Promise.all([BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://news.xbox.com/en-us/feed/`).then((r) => r.ok ? r.json() : null)]);
-		const article = this.getRSSItem(rssFeed);
+		const article = this.getRSSItemLegacy(rssFeed);
 		return {
 			application: {
 				name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
@@ -416,20 +2206,24 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		};
 	}
 	async #fetchSteamFeeds(gameId, application) {
-		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://rssjson.vercel.app/api?url=https://store.steampowered.com/feeds/news/app/${gameId}`).then((r) => r.ok ? r.json() : null)]);
+		const rssFeed = await Promise.all([parseXML(betterdiscord.Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then((r) => r.ok ? r.text() : null))]);
 		const article = this.getRSSItem(rssFeed);
 		return {
 			application,
 			appId: application.id,
-			description: article?.description?.[0],
-			thumbnail: article?.enclosure?.[0]?.$?.url,
-			timestamp: article?.pubDate?.[0],
-			title: article?.title?.[0],
-			url: article?.link?.[0]
+			description: article?.description,
+			thumbnail: article?.enclosure?._url,
+			timestamp: article?.pubDate,
+			title: article?.title,
+			url: article?.link
 		};
 	}
 	async fetchFeeds() {
 		const gameData = await this.getFeedGameData();
+		const ignore = ["IMG", "VIDEO", "LI"];
+		for (let i = 0; i < ignore.length; i++) {
+			delete HtmlSanitizer.AllowedTags[ignore[i]];
+		}
 		for (const gameId of Object.keys(gameData)) {
 			(async (gameId2) => {
 				let feeds;
@@ -458,10 +2252,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 						application: feeds.application,
 						news: {
 							application_id: feeds.appId,
-							description: feeds.description,
+							description: HtmlSanitizer.SanitizeHtml(feeds.description),
 							thumbnail: feeds.thumbnail,
 							timestamp: feeds.timestamp,
-							title: feeds.title,
+							title: HtmlSanitizer.SanitizeHtml(feeds.title),
 							url: feeds?.url
 						},
 						type: "application_news"
@@ -475,8 +2269,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	async getFeedGameData() {
 		const gameData = {};
-		const gameList = RunningGameStore.getGamesSeen().filter((game) => GameStore.getGameByName(game.name));
-		const gameIds = gameList.filter((game) => game.id || game.name === "Minecraft").map((game) => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
+		const gameList = RunningGameStore.getGamesSeen().filter((game) => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]));
+		const gameIds = gameList.filter((game) => game.id || game.name === "Minecraft").map((game) => game.name === "Minecraft" ? GameStore.searchGamesByName(game.name)[0] : game.id);
 		let applicationList;
 		await Common.FetchApplications.fetchApplications(gameIds);
 		applicationList = gameList.map((game) => ApplicationStore.getApplicationByName(game.name)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"));
@@ -530,6 +2324,13 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return r;
 	}
 	getRSSItem(feed, itemIndex = 0) {
+		try {
+			return feed[0]?.rss?.channel?.item[itemIndex];
+		} catch (e) {
+			return null;
+		}
+	}
+	getRSSItemLegacy(feed, itemIndex = 0) {
 		try {
 			return feed?.[0]?.rss?.channel?.[0]?.item?.[itemIndex];
 		} catch (e) {
@@ -1279,12 +3080,6 @@ function _setPrototypeOf(t, e) {
 // @babel
 function _inheritsLoose(t, o) {
 	t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o);
-}
-
-// commonjsHelpers.js
-
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
 // prop-types
@@ -3165,7 +4960,8 @@ function LauncherGameBuilder({ game, runningGames }) {
 	const [shouldDisable, setDisable] = React.useState(false);
 	setTimeout(() => setDisable(false), 1e4);
 	const disableCheck = React.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
-	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + GameStore.getGameByName(game.name).id + "/" + GameStore.getGameByName(game.name).icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
+	const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
+	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + fullGame.id + "/" + fullGame.icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
 		"button",
 		{
 			className: `${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`,
@@ -3181,147 +4977,8 @@ function LauncherGameBuilder({ game, runningGames }) {
 function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
 	const gameList = useStateFromStores([RunningGameStore], () => RunningGameStore.getGamesSeen());
-	const _gameList = gameList.filter((game) => GameStore.getGameByName(game.name)).slice(0, 12);
+	const _gameList = gameList.filter((game) => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0])).slice(0, 12);
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 ? BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dock} ${QuickLauncherClasses.emptyState}` }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!")) : BdApi.React.createElement("div", { className: QuickLauncherClasses.dock }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
-}
-
-// activity_feed/components/common/methods/common.js
-function chunkArray(cards, num) {
-	let chunkLength = Math.max(cards.length / num, 1);
-	const chunks = [];
-	for (let i = 0; i < num; i++) {
-		if (chunkLength * (i + 1) <= cards.length) chunks.push(cards.slice(Math.ceil(chunkLength * i), Math.ceil(chunkLength * (i + 1))));
-	}
-	return chunks;
-}
-function TimeClock({ timestamp }) {
-	const time = Math.floor((Date.now() - new Date(parseInt(timestamp))) / 1e3);
-	if (time / 86400 > 1) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["2rUo/p"], { time: Math.floor(time / 86400) });
-	} else if (time / 3600 > 1) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["eNoooU"], { time: Math.floor(time / 3600) });
-	} else if (time / 60 > 1) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["03mIHW"], { time: Math.floor(time / 60) });
-	} else if (time % 60 < 60) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["ahzZr+"]);
-	}
-}
-function GradGen(check, isSpotify, activity, game, voice, stream) {
-	let input;
-	switch (true) {
-		case !!check?.streaming:
-			input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
-			break;
-		case !!isSpotify:
-			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
-			break;
-		case !!activity?.name.includes("YouTube Music"):
-			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
-			break;
-		case !!activity?.platform?.includes("xbox"):
-			input = "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png";
-			break;
-		case !!(activity?.assets && activity?.assets.large_image?.includes("external")):
-			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
-			break;
-		case !!(activity?.assets && activity?.assets.large_image):
-			input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`;
-			break;
-		case !!game?.icon:
-			input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon}.png?size=1024&keep_aspect_ratio=true`;
-			break;
-		case !!voice[0]?.guild:
-			input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`;
-			break;
-		case (!!voice && stream):
-			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
-			break;
-	}
-	return Common.GradientComponent(input || null);
-}
-function SplashGen(isSpotify, activity, game, voice, stream) {
-	let input;
-	switch (true) {
-		case !!game?.currentGame?.splash?.length:
-			input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.currentGame?.splash}.png?size=1024&keep_aspect_ratio=true`;
-			break;
-		case !!isSpotify:
-			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
-			break;
-		case !!["YouTube Music", "Crunchyroll"].includes(activity?.name):
-			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
-			break;
-		case !!(voice && !activity):
-			input = "https://cdn.discordapp.com/banners/" + voice[0]?.guild?.id + "/" + voice[0]?.guild?.banner + ".webp?size=1024&keep_aspect_ratio=true";
-			break;
-		case !!(voice && stream):
-			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
-			break;
-		default:
-			input = game?.data?.artwork[0];
-	}
-	return input || null;
-}
-function activityCheck(activities, isSpotify) {
-	if (!activities) return;
-	let pass = {
-		playing: 0,
-		xbox: 0,
-		playstation: 0,
-		streaming: 0,
-		listening: 0,
-		spotify: 0,
-		watching: 0,
-		competing: 0,
-		custom: 0
-	};
-	for (let i = 0; i < activities.length; i++) {
-		if (!activities[i]) {
-			return;
-		}
-		switch (activities[i]?.activity?.type) {
-			case 0:
-				pass.playing = 1;
-				break;
-			case 1:
-				pass.streaming = 1;
-				break;
-			case 2:
-				pass.listening = 1;
-				break;
-			case 3:
-				pass.watching = 1;
-				break;
-			case 4:
-				pass.custom = 1;
-				break;
-			case 5:
-				pass.competing = 1;
-				break;
-		}
-		if (activities[i]?.activity?.platform?.includes("xbox")) {
-			pass.xbox = 1;
-		}
-		if (activities[i]?.activity?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
-			pass.playstation = 1;
-		}
-		if (isSpotify) {
-			pass.spotify = 1;
-		}
-	}
-	return pass;
-}
-function useWindowSize() {
-	const [size, setSize] = React.useState([0, 0]);
-	React.useLayoutEffect(() => {
-		function updateSize() {
-			setSize([window.innerWidth, window.innerHeight]);
-		}
-		window.addEventListener("resize", updateSize);
-		updateSize();
-		return () => window.removeEventListener("resize", updateSize);
-	}, []);
-	return size;
 }
 
 // activity_feed/components/now_playing/NowPlaying.module.css
@@ -4412,7 +6069,7 @@ function ActivityCardWrapper({ user, activities, voice, streams, check, v2Enable
 	if (!activities) return;
 	return activities.map((activity) => {
 		const currentActivity = activity?.activity || streams[0].activity;
-		const currentGame = activity?.game || Common.GameStore.getGameByName(streams[0].activity.name);
+		const currentGame = activity?.game || GameStore.getDetectableGame(GameStore.searchGamesByName(streams[0].activity.name)[0]);
 		const players = activity.playingMembers;
 		const server = voice[0]?.guild;
 		return BdApi.React.createElement(ActivityCard, { user, activities, currentActivity, currentGame, players, server, check, v2Enabled });
@@ -4495,7 +6152,7 @@ function VoiceCard({ activities, voice, streams }) {
 
 // activity_feed/components/now_playing/card_shop/components/CardBody.tsx
 function CardBody({ activities, user, voice, streams, check, isSpotify, v2Enabled }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), BdApi.React.createElement(TwitchCard, { user, activity: activities.find((entry) => entry.activity.type == 1) || streams.find((entry) => entry.activity.type == 1), check }), BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, check, v2Enabled })))));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), BdApi.React.createElement(TwitchCard, { user, activity: activities.find((entry) => entry.activity?.type == 1) || streams.find((entry) => entry.activity?.type == 1), check }), BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, check, v2Enabled })))));
 }
 
 // activity_feed/components/now_playing/card_shop/components/CardHeader.tsx

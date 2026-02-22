@@ -1,5 +1,6 @@
 import { Net } from 'betterdiscord';
 import { useState, useLayoutEffect } from "react";
+import { XMLParser } from "fast-xml-parser";
 import { Common } from '@modules/common';
 import { ChannelStore } from "@modules/stores";
 
@@ -121,4 +122,16 @@ export function useWindowSize() {
         return () => window.removeEventListener('resize', updateSize);
     }, []);
     return size;
+}
+
+export async function parseXML(xml) {
+    let body = await xml;
+    let result;
+    const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_" });
+    try {
+        result = await parser.parse(body);
+    } catch (e) {
+        return null;
+    }
+    return result
 }

@@ -9,10 +9,11 @@ export function LauncherGameBuilder({game, runningGames}) {
     const [shouldDisable, setDisable] = useState(false);
     const timer = setTimeout(() => setDisable(false), 10000);
     const disableCheck = useMemo(() => ~runningGames.findIndex(m => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
+    const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0])
 
     return (
         <div className={`${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`} style={{ flex: "0 0 auto"}}>
-            <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + GameStore.getGameByName(game.name).id + '/' + GameStore.getGameByName(game.name).icon + '.webp'})` }} />
+            <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} />
             <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
             <button 
                 className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
@@ -27,7 +28,7 @@ export function LauncherGameBuilder({game, runningGames}) {
 export function QuickLauncherBuilder(props) {
     const runningGames = useStateFromStores([ RunningGameStore ], () => RunningGameStore.getRunningGames());
     const gameList = useStateFromStores([ RunningGameStore ], () => RunningGameStore.getGamesSeen());
-    const _gameList = gameList.filter(game => GameStore.getGameByName(game.name)).slice(0, 12);
+    const _gameList = gameList.filter(game => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0])).slice(0, 12);
 
     return (
         <div {...props}>

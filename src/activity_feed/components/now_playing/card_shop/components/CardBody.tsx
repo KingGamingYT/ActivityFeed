@@ -10,7 +10,7 @@ export function CardBody({activities, user, voice, streams, check, isSpotify, v2
                 <div className={NowPlayingClasses.game}>
                     <div className={`${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`} style={{ flex: "1 1 auto" }}>
                         <VoiceCard activities={activities} voice={voice} streams={streams} />
-                        <TwitchCard user={user} activity={activities.find(entry => entry.activity.type == 1) || streams.find(entry => entry.activity.type == 1)} check={check} />
+                        <TwitchCard user={user} activity={activities.find(entry => entry.activity?.type == 1) || streams.find(entry => entry.activity?.type == 1)} check={check} />
                         <ActivityCardWrapper user={user} activities={activities} voice={voice} streams={streams} check={check} v2Enabled={v2Enabled} />
                     </div>
                 </div>

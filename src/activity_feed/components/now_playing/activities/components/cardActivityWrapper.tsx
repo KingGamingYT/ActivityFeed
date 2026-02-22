@@ -1,8 +1,8 @@
-import { Common } from "@modules/common";
+import { GameStore } from "@modules/stores";
 import { ActivityCard } from "./CardActivity";
 interface CardWrapper {
     user: Object,
-    activities: Object,
+    activities: Array<Object>,
     voice?: Object,
     streams?: Object,
     check: Object,
@@ -14,7 +14,7 @@ export function ActivityCardWrapper({user, activities, voice, streams, check, v2
 
     return activities.map(activity => {
         const currentActivity = activity?.activity || streams[0].activity;
-        const currentGame = activity?.game || Common.GameStore.getGameByName(streams[0].activity.name);
+        const currentGame = activity?.game || GameStore.getDetectableGame(GameStore.searchGamesByName(streams[0].activity.name)[0]);
         const players = activity.playingMembers;
         const server = voice[0]?.guild;
 

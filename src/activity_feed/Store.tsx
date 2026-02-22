@@ -1,7 +1,9 @@
 import { Data, Utils, Net } from "betterdiscord";
+import { parseXML } from "@activity_feed/components/common/methods/common";
 import { Common } from "@modules/common";
 import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
+import HtmlSanitizer from '@jitbit/htmlsanitizer';
 
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
@@ -242,43 +244,48 @@ class GameNewsStore extends Utils.Store {
         return this.blacklist;
     }
 
+    async fetchAnyFeed(url) {
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`${url}`).then(r => r.ok ? r.text() : null)) ]);
+        return rssFeed;
+    }
+
     async #fetchDiscordFeeds() {
-        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then(r => r.ok ? r.json() : null) ]);
+        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then(r => r.ok ? r.text() : null) ]);
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
-                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+                name: rssFeed[0]?.rss?.channel?.title,
                 id: "Discord"
             },
             appId: "Discord",
-            description: article?.description?.[0],
-            thumbnail: article?.["media:thumbnail"]?.[0].$.url, 
-            timestamp: article?.pubDate?.[0], 
-            title: article?.title?.[0], 
-            url: article?.link?.[0]
+            description: article?.description,
+            thumbnail: article?.["media:thumbnail"]?._url, 
+            timestamp: article?.pubDate, 
+            title: article?.title, 
+            url: article?.link
         }
     }
 
     async #fetchNintendoFeeds() {
-        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://nintendoeverything.com/feed/`).then(r => r.ok ? r.json() : null) ])
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://nintendoeverything.com/feed/`).then(r => r.ok ? r.text() : null)) ])
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
-                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+                name: rssFeed[0]?.rss?.channel?.title,
                 id: "Nintendo"
             },
             appId: "Nintendo",
-            description: article?.description?.[0],
-            thumbnail: article?.["media:content"]?.[0].$.url, 
-            timestamp: article?.pubDate?.[0], 
-            title: article?.title?.[0], 
-            url: article?.link?.[0]
+            description: article?.description,
+            thumbnail: article?.["media:content"]?._url, 
+            timestamp: article?.pubDate, 
+            title: article?.title, 
+            url: article?.link
         }
     }
 
     async #fetchXboxFeeds() {
         const rssFeed = await Promise.all([ BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://news.xbox.com/en-us/feed/`).then(r => r.ok ? r.json() : null) ])
-        const article = this.getRSSItem(rssFeed);
+        const article = this.getRSSItemLegacy(rssFeed);
         return {
             application: {
                 name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
@@ -321,21 +328,25 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchSteamFeeds(gameId, application) {
-        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://store.steampowered.com/feeds/news/app/${gameId}`).then(r => r.ok ? r.json() : null) ])
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then(r => r.ok ? r.text() : null)) ])
         const article = this.getRSSItem(rssFeed)
         return {
             application, 
             appId: application.id, 
-            description: article?.description?.[0],
-            thumbnail: article?.enclosure?.[0]?.$?.url, 
-            timestamp: article?.pubDate?.[0], 
-            title: article?.title?.[0], 
-            url: article?.link?.[0]
+            description: article?.description,
+            thumbnail: article?.enclosure?._url, 
+            timestamp: article?.pubDate, 
+            title: article?.title, 
+            url: article?.link
         }
     }
 
     async fetchFeeds() {
         const gameData = await this.getFeedGameData();
+        const ignore = ['IMG', 'VIDEO', 'LI']
+        for (let i = 0; i < ignore.length; i++) {
+            delete HtmlSanitizer.AllowedTags[ignore[i]];
+        }
         for (const gameId of Object.keys(gameData)) {
             (async (gameId) => {
                 let feeds;
@@ -353,10 +364,10 @@ class GameNewsStore extends Utils.Store {
                         application: feeds.application,
                         news: {
                             application_id: feeds.appId,
-                            description: feeds.description,
+                            description: HtmlSanitizer.SanitizeHtml(feeds.description),
                             thumbnail: feeds.thumbnail,
                             timestamp: feeds.timestamp,
-                            title: feeds.title,
+                            title: HtmlSanitizer.SanitizeHtml(feeds.title),
                             url: feeds?.url
                         },
                         type: "application_news"
@@ -373,8 +384,8 @@ class GameNewsStore extends Utils.Store {
 
     async getFeedGameData() {
         const gameData = {}
-        const gameList = RunningGameStore.getGamesSeen().filter(game => GameStore.getGameByName(game.name));
-        const gameIds = gameList.filter(game => game.id || game.name === "Minecraft").map(game => game.name === "Minecraft" ? GameStore.getGameByName(game.name).id : game.id);
+        const gameList = RunningGameStore.getGamesSeen().filter(game => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]));
+        const gameIds = gameList.filter(game => game.id || game.name === "Minecraft").map(game => game.name === "Minecraft" ? GameStore.searchGamesByName(game.name)[0] : game.id);
         let applicationList;
 
         await Common.FetchApplications.fetchApplications(gameIds);
@@ -435,6 +446,14 @@ class GameNewsStore extends Utils.Store {
     }
 
     getRSSItem(feed, itemIndex = 0) {
+        try {
+            return feed[0]?.rss?.channel?.item[itemIndex];
+        } catch (e) {
+            return null;
+        }
+    }
+
+    getRSSItemLegacy(feed, itemIndex = 0) {
         try {
             return feed?.[0]?.rss?.channel?.[0]?.item?.[itemIndex];
         } catch (e) {

@@ -45,6 +45,7 @@ const Filters = [
     { name: "UpperIconClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('icon', 'upperContainer') },
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
     { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId') },
+    { name: "ManaSwitch", filter: Webpack.Filters.byStrings('SWITCH_BACKGROUND_DEFAULT'), searchExports: true }
 ]
 
 export const bulkData = /* @__PURE__ */ Webpack.getBulk(...Filters);

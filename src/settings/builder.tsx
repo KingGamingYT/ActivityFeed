@@ -11,6 +11,7 @@ import SettingsClasses from "../settings/ActivityFeedSettings.module.css";
 export function SettingsPanelBuilder() {
     return (
         <>
+            <Common.ManaSwitch checked={false} />
             <div className={SettingsClasses.toggleStack}>
                 {Object.keys(settings.main).map((key) => {
                     const { name, note, initial, changed } = settings.main[key];

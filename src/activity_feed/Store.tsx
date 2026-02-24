@@ -3,7 +3,7 @@ import { parseXML } from "@activity_feed/components/common/methods/common";
 import { Common } from "@modules/common";
 import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
-import HtmlSanitizer from '@jitbit/htmlsanitizer';
+import HtmlSanitizer from "@jitbit/htmlsanitizer";
 
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";

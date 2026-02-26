@@ -2407,7 +2407,7 @@ function styles$1() {
 const css$4 = `
 .activityFeed__2cbe2 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
-		border-top: 1px solid var(--app-border-frame);
+		border-top: 1px solid var(--app-frame-border);
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -4879,7 +4879,8 @@ const css$2 = `
 		margin-top: 10px;
 		display: flex;
 		overflow: hidden;
-		flex-wrap: nowrap;
+		flex-wrap: wrap;
+		max-height: 100px;
 		max-width: 1280px;
 }
 

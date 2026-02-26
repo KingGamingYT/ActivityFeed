@@ -1,6 +1,6 @@
 .activityFeed {
     background: var(--background-gradient-chat, var(--background-base-lower));
-    border-top: 1px solid var(--app-border-frame);
+    border-top: 1px solid var(--app-frame-border);
     display: flex;
     flex-direction: column;
     width: 100%;

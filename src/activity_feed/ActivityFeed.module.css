@@ -24,7 +24,7 @@
         border-radius: 8px;
     }
     &:hover::-webkit-scrollbar-thumb {
-        background-color: var(--bg-overlay-6, var(--background-tertiary));
+        background-color: var(--scrollbar-auto-thumb);
     }
 }
 
@@ -33,7 +33,7 @@
     flex-direction: column;
     width: 1280px;
     max-width: 100%;
-    min-width: 480px;
+    min-width: 245px;
     margin: 0 auto;
 }
 

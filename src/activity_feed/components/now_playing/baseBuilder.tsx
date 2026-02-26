@@ -1,7 +1,7 @@
 import { Data } from 'betterdiscord';
 import { Common } from "@modules/common";
 import { NowPlayingViewStore, useStateFromStores } from "@modules/stores";
-import { chunkArray } from "../common/methods/common";
+import { chunkArray, useWindowSize } from "../common/methods/common";
 import { SectionHeader } from "../common/components/SectionHeader";
 import { NowPlayingCardBuilder } from "./CardBuilder";
 import settings from "@settings/settings";
@@ -19,8 +19,11 @@ function NowPlayingColumnBuilder({nowPlayingCards}) {
 
 export function NowPlayingBuilder(props) {
     Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_MOUNTED'});
+    const [width, height] = useWindowSize();
     const nowPlayingCards = useStateFromStores([ NowPlayingViewStore ], () => NowPlayingViewStore.nowPlayingCards);
-    const cardColumns = chunkArray(nowPlayingCards, 2);
+    const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);
+    const cardColumns = chunkArray(nowPlayingCards, numColumns);
+    const spacer = 20 - 20 / cardColumns.length;
 
     return (
         <div {...props}>
@@ -33,7 +36,7 @@ export function NowPlayingBuilder(props) {
                     </div>
                 :
                     <div className={NowPlayingClasses.nowPlayingContainer}>
-                        {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn}>
+                        {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
                             <NowPlayingColumnBuilder nowPlayingCards={column} />
                         </div>)}
                     </div>

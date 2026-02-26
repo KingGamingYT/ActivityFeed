@@ -26,10 +26,6 @@ const styles = Object.assign({
 );
 
 export const extraCSS = webpackify(`
-    .description .sharedFilePreviewYouTubeVideo {
-        display: none;
-    }
-
     .nowPlayingColumn .tabularNumbers {
         color: var(--text-default) !important;
     }
@@ -109,14 +105,6 @@ export const extraCSS = webpackify(`
     .partyStatusWrapper .disabledButtonOverlay {
         height: 24px;
         width: 100%;
-    }
-
-    .theme-dark .applicationStreamingPreviewWrapper {
-        background-color: var(--background-mod-strong);
-    }
-
-    .theme-light .applicationStreamingPreviewWrapper {
-        background-color: var(--interactive-background-default);
     }
 
     .cardV2 {

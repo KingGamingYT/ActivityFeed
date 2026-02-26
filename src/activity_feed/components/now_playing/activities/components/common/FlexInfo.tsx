@@ -30,7 +30,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
         );
         case "TWITCH": return (
             <div className={NowPlayingClasses.streamInfo}>
-                <div className={NowPlayingClasses.gameName}>{game?.name}</div>
+                <div className={NowPlayingClasses.gameName}>{activity.name.toLowerCase().includes('twitch') ? game?.name : game?.name.substring(0, 13) + activity.name}</div>
                 <a
                     className={`${Common.ButtonVoidClasses.lookLink} ${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.playTime}`}
                     href={activity.url}
@@ -44,7 +44,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
         case "TWITCH_OVERLAY": return (
             <>
                 <div className={NowPlayingClasses.streamName}>{activity.details}</div>
-                <div className={NowPlayingClasses.streamGame}>{Common.intl.intl.formatToPlainString(Common.intl.t['IGYgjl'], {gameName: activity.state})}</div>
+                {activity.state && <div className={NowPlayingClasses.streamGame}>{Common.intl.intl.formatToPlainString(Common.intl.t['IGYgjl'], {gameName: activity.state})}</div>}
             </>
         )
         case "VOICE": return (

@@ -23,7 +23,7 @@ export function RegularActivityBuilder({activity, user, game, players, server, c
 export function RegularTwitchActivityBuilder({user, activity, game}) {
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.twitchActivity}`} style={{ flex: "1 1 auto" }}>
-            <GameIconAsset url={`https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`} id={activity?.application_id} name={game?.name} />
+            <GameIconAsset url={ activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`} id={activity?.application_id} name={game?.name} />
             <FlexInfo className={`${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`} activity={activity} game={game} type="TWITCH" />
             <RichCardTrailing activity={activity} user={user} />
         </div>

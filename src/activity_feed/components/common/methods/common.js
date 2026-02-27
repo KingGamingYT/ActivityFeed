@@ -46,7 +46,7 @@ export function TimeClock({timestamp}) {
 export function GradGen(check, isSpotify, activity, game, voice, stream) {
     let input;
     switch (true) {
-        case !! check?.streaming: activity.name.toLowerCase().includes("youtube") ? input = 'https://discord.com/assets/0fa530ba9c04ac32.svg' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
+        case !! check?.streaming: activity.name.toLowerCase().includes("youtube") ? input = 'https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
         case !! activity?.name.includes("YouTube Music"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! activity?.platform?.includes("xbox"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;

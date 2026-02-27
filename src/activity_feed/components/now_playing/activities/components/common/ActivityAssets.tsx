@@ -69,10 +69,12 @@ export function GameIconAsset({url, id, name}) {
             { shouldFallback ? ( <FallbackAsset className={NowPlayingClasses.gameIcon} style={{ width: "40px", height: "40px" }} transform="scale(1.65)" /> ) :
                 <img 
                     className={NowPlayingClasses.gameIcon}
-                    style={{ width: "40px", height: "40px", cursor: useGameProfile && "pointer" }}
+                    style={{ width: "40px", height: "40px" }}
                     aria-label={Common.intl.intl.formatToPlainString(Common.intl.t['nh+jWk'], {game: name})}
                     src={url}
                     onClick={useGameProfile}
+                    onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                    onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                     onError={() => (setShouldFallback(true))}
                 ></img>
             }

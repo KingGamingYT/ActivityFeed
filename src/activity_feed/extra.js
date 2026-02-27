@@ -36,7 +36,6 @@ export const extraCSS = webpackify(`
 
     .nowPlayingColumn .header > .wrapper {
         display: flex;
-        cursor: pointer;
         margin-right: 20px;
         transition: opacity .2s ease;
     }

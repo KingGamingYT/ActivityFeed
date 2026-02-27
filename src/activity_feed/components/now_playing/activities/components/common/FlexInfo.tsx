@@ -5,11 +5,17 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
     switch (type) {
         case "REGULAR": return (
             <>
                 <div className={NowPlayingClasses.gameNameWrapper}>
-                    <div className={NowPlayingClasses.gameName}>{game?.name}</div>
+                    <div 
+                        className={NowPlayingClasses.gameName}
+                        onClick={useGameProfile}
+                        onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                        onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                    >{game?.name}</div>
                 </div>
                 {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
                     <TimeClock timestamp={ activity.created_at } />
@@ -30,7 +36,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
         );
         case "TWITCH": return (
             <div className={NowPlayingClasses.streamInfo}>
-                <div className={NowPlayingClasses.gameName}>{activity.name.toLowerCase().includes('twitch') ? game?.name : game?.name.substring(0, 13) + activity.name}</div>
+                <div className={NowPlayingClasses.gameName}>{activity?.name.toLowerCase().includes('twitch') ? game?.name : game?.name.substring(0, 13) + activity?.name}</div>
                 <a
                     className={`${Common.ButtonVoidClasses.lookLink} ${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.playTime}`}
                     href={activity.url}

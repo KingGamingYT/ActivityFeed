@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
-    /*width: calc(50% - (var(--space-lg) / 2))*/
+    width: calc(50% - (var(--space-lg) / 2))
 }
 
 .nowPlayingContainer .itemCard {
@@ -652,6 +652,14 @@
     }
     .headerIcon, .gameIcon, .assetsLargeImage.assetsLargeImage {
         border-radius: var(--radius-sm);
+    }
+    .clickableIcon {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    .clickableText {
+        text-decoration: underline;
+        cursor: pointer;
     }
     .gameInfo {
         color: var(--white);

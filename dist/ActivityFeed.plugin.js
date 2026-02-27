@@ -1738,7 +1738,7 @@ function GradGen(check, isSpotify, activity, game, voice, stream) {
 	let input;
 	switch (true) {
 		case !!check?.streaming:
-			activity.name.toLowerCase().includes("youtube") ? input = "https://discord.com/assets/0fa530ba9c04ac32.svg" : input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
+			activity.name.toLowerCase().includes("youtube") ? input = "https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png" : input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
 			break;
 		case !!isSpotify:
 			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
@@ -5001,7 +5001,7 @@ const css$1 = `
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
-		/*width: calc(50% - (var(--space-lg) / 2))*/
+		width: calc(50% - (var(--space-lg) / 2))
 }
 
 .nowPlayingContainer__93528 .itemCard__93528 {
@@ -5644,6 +5644,14 @@ const css$1 = `
 		.headerIcon__93528, .gameIcon__93528, .assetsLargeImage__93528.assetsLargeImage__93528 {
 				border-radius: var(--radius-sm);
 		}
+		.clickableIcon__93528 {
+				opacity: 0.8;
+				cursor: pointer;
+		}
+		.clickableText__93528 {
+				text-decoration: underline;
+				cursor: pointer;
+		}
 		.gameInfo__93528 {
 				color: var(--white);
 		}
@@ -5760,6 +5768,8 @@ const modules_7260a078 = {
 	"partyPlayerCount": "partyPlayerCount__93528",
 	"cardV2": "cardV2__93528",
 	"gameIcon": "gameIcon__93528",
+	"clickableIcon": "clickableIcon__93528",
+	"clickableText": "clickableText__93528",
 	"state": "state__93528"
 };
 const NowPlayingClasses = modules_7260a078;
@@ -5767,13 +5777,23 @@ const NowPlayingClasses = modules_7260a078;
 // activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
 function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
 	useStateFromStores([GuildStore], () => GuildStore.getGuild(channel?.guild_id));
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
 	switch (type) {
 		case "REGULAR":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.gameNameWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, game?.name)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity.created_at })));
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.gameNameWrapper }, BdApi.React.createElement(
+				"div",
+				{
+					className: NowPlayingClasses.gameName,
+					onClick: useGameProfile,
+					onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
+					onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
+				},
+				game?.name
+			)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity.created_at })));
 		case "RICH":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity.details || activity?.state), activity?.details && BdApi.React.createElement("div", { className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity?.state), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common.ActivityTimer, { activity }));
 		case "TWITCH":
-			return BdApi.React.createElement("div", { className: NowPlayingClasses.streamInfo }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, activity.name.toLowerCase().includes("twitch") ? game?.name : game?.name.substring(0, 13) + activity.name), BdApi.React.createElement(
+			return BdApi.React.createElement("div", { className: NowPlayingClasses.streamInfo }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, activity?.name.toLowerCase().includes("twitch") ? game?.name : game?.name.substring(0, 13) + activity?.name), BdApi.React.createElement(
 				"a",
 				{
 					className: `${Common.ButtonVoidClasses.lookLink} ${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.playTime}`,
@@ -5952,10 +5972,12 @@ function GameIconAsset({ url, id, name }) {
 		"img",
 		{
 			className: NowPlayingClasses.gameIcon,
-			style: { width: "40px", height: "40px", cursor: useGameProfile && "pointer" },
+			style: { width: "40px", height: "40px" },
 			"aria-label": Common.intl.intl.formatToPlainString(Common.intl.t["nh+jWk"], { game: name }),
 			src: url,
 			onClick: useGameProfile,
+			onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
 			onError: () => setShouldFallback(true)
 		}
 	));
@@ -6256,7 +6278,7 @@ function NowPlayingBuilder(props) {
 	const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);
 	const cardColumns = chunkArray(nowPlayingCards, numColumns);
 	const spacer = 20 - 20 / cardColumns.length;
-	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: MainClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn, style: { width: `calc(${100 / cardColumns.length}% - ${spacer}px)` } }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
+	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 ? BdApi.React.createElement("div", { className: MainClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn, style: { width: nowPlayingCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)` } }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column })))));
 }
 
 // activity_feed/base.tsx
@@ -6558,7 +6580,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			cursor: pointer;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");

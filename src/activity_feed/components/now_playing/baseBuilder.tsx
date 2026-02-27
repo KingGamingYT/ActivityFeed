@@ -36,7 +36,7 @@ export function NowPlayingBuilder(props) {
                     </div>
                 :
                     <div className={NowPlayingClasses.nowPlayingContainer}>
-                        {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
+                        {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: nowPlayingCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
                             <NowPlayingColumnBuilder nowPlayingCards={column} />
                         </div>)}
                     </div>

@@ -64,6 +64,9 @@
     margin: 0;
     position: relative;
     width: var(--space-32);
+    path {
+        fill: currentColor;
+    }
 }
 
 .headerBar {
@@ -124,4 +127,12 @@
 .emptySubtitle {
     font-size: 14px;
     color: var(--text-muted);
+}
+
+.activityFeedV2 {
+    .headerText {
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1.25;
+    }
 }

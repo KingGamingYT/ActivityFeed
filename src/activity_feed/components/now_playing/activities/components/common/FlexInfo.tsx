@@ -65,7 +65,10 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
                     <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{streamUser.globalName || streamUser.username}</div>
                     <Common.LiveBadge style={{ marginLeft: "5px" }} />
                 </div>
-                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{Common.intl.intl.format(Common.intl.t['0wJXSh'],  {name: <strong>{stream.name}</strong>})}</div>
+               <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{
+                    activity ? Common.intl.intl.format(Common.intl.t['0wJXSh'],  {name: <strong>{stream.name}</strong>}) 
+                    : Common.intl.intl.formatToPlainString(Common.intl.t['KDdjou'])
+                }</div>
             </>
         )
     }

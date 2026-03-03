@@ -73,3 +73,18 @@
     margin-right: 8px;
     width: 24px;
 }
+
+.dockV2 {
+  margin-top: var(--space-lg);
+    .dockItem {
+        border-radius: var(--radius-md);
+        &:hover {
+            background: var(--interactive-background-hover);
+            outline: 1px solid var(--border-normal);
+            outline-offset: -1px;
+        }
+    }
+    .dockIcon {
+        border-radius: var(--radius-sm);
+    }
+}

@@ -127,7 +127,7 @@ export function useWindowSize() {
 export async function parseXML(xml) {
     let body = await xml;
     let result;
-    const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_" });
+    const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
     try {
         result = await parser.parse(body);
     } catch (e) {

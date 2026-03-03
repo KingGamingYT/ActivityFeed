@@ -1,8 +1,10 @@
+import { Data, Utils } from "betterdiscord";
 import { Common, ControllerIcon } from "@modules/common";
 import { UserStore } from "@modules/stores";
 import { NewsFeedBuilder } from "./components/application_news/FeedBuilder";
 import { QuickLauncherBuilder } from "./components/quick_launcher/launcher";
 import { NowPlayingBuilder } from "./components/now_playing/BaseBuilder";
+import settings from "@settings/settings";
 import MainClasses from "./ActivityFeed.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css"
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css"
@@ -15,7 +17,7 @@ export function TabBaseBuilder() {
     document.title = "Activity";
     const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"]
     return (
-        <div className={MainClasses.activityFeed}>
+        <div className={Utils.className((Data.load('v2Frame') ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed)}>
             <Common.HeaderBar className={MainClasses.headerBar} aria-label="Activity">
                 <div className={MainClasses.iconWrapper}>
                     <Common.Icons.GameControllerIcon />

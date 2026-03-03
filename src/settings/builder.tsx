@@ -12,23 +12,28 @@ export function SettingsPanelBuilder() {
     return (
         <>
             <Common.ManaSwitch checked={false} />
-            <div className={SettingsClasses.toggleStack}>
-                {Object.keys(settings.main).map((key) => {
-                    const { name, note, initial, changed } = settings.main[key];
-                    const [state, setState] = useState(Data.load(key));
+            <Components.SettingGroup name="Visual Refresh" collapsible={false} shown={true}>
+                <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
+                    <div className={MainClasses.emptyText}>Modern styling toggles for each part of the Activity Feed.</div>
+                </div>
+                <div className={SettingsClasses.toggleStack}>
+                    {Object.keys(settings.main).map((key) => {
+                        const { name, note, initial, changed } = settings.main[key];
+                        const [state, setState] = useState(Data.load(key));
 
-                    return <Common.FormSwitch
-                        label={name}
-                        description={note}
-                        checked={state ?? initial}
-                        onChange={(v) => {
-                            Data.save(key, v);
-                            setState(v);
-                            if (changed) changed(v);
-                        }}
-                    />
-                })}
-            </div>
+                        return <Common.FormSwitch
+                            label={name}
+                            description={note}
+                            checked={state ?? initial}
+                            onChange={(v) => {
+                                Data.save(key, v);
+                                setState(v);
+                                if (changed) changed(v);
+                            }}
+                        />
+                    })}
+                </div>
+            </Components.SettingGroup>
             <div className={`${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}`} />
             <Components.SettingGroup name="Games You Follow" collapsible={false} shown={true}>
                 <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>

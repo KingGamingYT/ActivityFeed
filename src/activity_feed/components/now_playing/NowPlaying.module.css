@@ -692,4 +692,8 @@
             border-radius: var(--radius-sm);
         }
     }
+    .streamGame {
+        font-weight: 400;
+        text-transform: unset;
+    }
 }

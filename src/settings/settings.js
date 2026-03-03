@@ -2,8 +2,23 @@ import { Common } from "@modules/common";
 
 export default {
     main: {
+        v2Frame: {
+            name: "Refreshed Activity Feed",
+            note: "Enables basic modern styling for the Activity Feed. Below options are highly recommended.",
+            initial: true
+        },
+        v2News: {
+            name: "Refreshed Application News",
+            note: "Enables modern styling for news articles. Recommended.",
+            initial: true
+        },
+        v2Dock: {
+            name: "Refreshed Quick Launcher",
+            note: "Enables modern styling for the quick launcher. Recommended.",
+            initial: true
+        },
         v2Cards: {
-            name: "Activity Cards V2",
+            name: "Refreshed Activity Cards",
             note: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
             initial: true,
         }
@@ -22,6 +37,9 @@ export default {
         }
     },
     default:  {
+        v2Frame: true,
+        v2News: true,
+        v2Dock: true,
         v2Cards: true,
         cardTypeDebug: false,
     },

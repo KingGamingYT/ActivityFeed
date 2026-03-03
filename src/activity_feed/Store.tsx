@@ -367,7 +367,7 @@ class GameNewsStore extends Utils.Store {
                             description: HtmlSanitizer.SanitizeHtml(feeds.description),
                             thumbnail: feeds.thumbnail,
                             timestamp: feeds.timestamp,
-                            title: HtmlSanitizer.SanitizeHtml(feeds.title),
+                            title: feeds.title,
                             url: feeds?.url
                         },
                         type: "application_news"

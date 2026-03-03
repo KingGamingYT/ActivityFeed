@@ -1,6 +1,7 @@
-import { Hooks } from "betterdiscord";
+import { Hooks, Utils, Data } from "betterdiscord";
 import { useState, useEffect } from "react";
 import { FeedCarouselBuilder, FeedMiniCarouselBuilder, FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
+import settings from "@settings/settings";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
@@ -30,7 +31,7 @@ export function NewsFeedBuilder() {
     })
 
     if (Object.keys(articles).length) return (
-        <div className={FeedClasses.feedCarousel} onMouseOver={() => {
+        <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)} onMouseOver={() => {
             NewsStore.setIdling(false)
             setTime(new Date())
         }} onMouseLeave={() => {

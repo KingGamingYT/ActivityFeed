@@ -1,7 +1,9 @@
+import { Utils, Data } from 'betterdiscord';
 import { useState, useMemo } from 'react';
 import { Common, shell } from '@modules/common';
 import { GameStore, RunningGameStore, useStateFromStores } from '@modules/stores';
 import { SectionHeader } from '../common/components/SectionHeader';
+import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import QuickLauncherClasses from "./QuickLauncher.module.css";
 
@@ -49,7 +51,7 @@ export function QuickLauncherBuilder(props) {
                 ?
                     <LauncherEmptyBuilder />
                 : 
-                    <div className={QuickLauncherClasses.dock}>{_gameList.map(game => <LauncherGameBuilder game={game} runningGames={runningGames} />)}</div>
+                    <div className={Utils.className((Data.load('v2Dock') ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock)}>{_gameList.map(game => <LauncherGameBuilder game={game} runningGames={runningGames} />)}</div>
             }
         </div>
     )

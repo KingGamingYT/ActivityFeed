@@ -63,7 +63,10 @@
 }
 
 .toggleStack {
+    display: flex;
+    flex-direction: column;
     padding: var(--space-16) 0 var(--space-16) 0;
+    gap: 20px;
 }
 
 .buttonItem {

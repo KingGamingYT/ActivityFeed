@@ -29,7 +29,7 @@ export function NowPlayingBuilder(props) {
         <div {...props}>
             <SectionHeader label="Now Playing" />
             {
-                nowPlayingCards.length === 0 ?
+                nowPlayingCards.length === 0 || (Data.load('freezeCards') ?? settings.default.freezeCards) ?
                     <div className={MainClasses.emptyState}>
                         <div className={MainClasses.emptyTitle}>Nobody is playing anything right now...</div>
                         <div className={MainClasses.emptySubtitle}>When someone starts playing a game we'll show it here!</div>

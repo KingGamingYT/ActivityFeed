@@ -30,6 +30,15 @@ export function NewsFeedBuilder() {
         return () => clearInterval(inv)
     })
 
+    switch(Data.load("freezeNews") ?? Number(settings.default.freezeNews)) {
+        case 0: break;
+        case 1: return <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}><FeedSkeletonErrorBuilder 
+            errorText="Activity Feed Unavailable"
+            errorDescription="If you're seeing this, you've manually triggered this error. Welcome to the club!"
+        /></div>
+        case 2: return <FeedSkeletonBuilder />
+    }
+
     if (Object.keys(articles).length) return (
         <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)} onMouseOver={() => {
             NewsStore.setIdling(false)

@@ -47,7 +47,7 @@ export function QuickLauncherBuilder(props) {
         <div {...props}>
             <SectionHeader label="Quick Launcher" />
             {   
-                gameList.length === 0 
+                gameList.length === 0 || (Data.load('freezeDock') ?? settings.default.freezeDock)
                 ?
                     <LauncherEmptyBuilder />
                 : 

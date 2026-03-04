@@ -1,4 +1,5 @@
-import { Hooks } from "betterdiscord";
+import { Hooks, Utils, Data } from "betterdiscord";
+import settings from "@settings/settings";
 import NewsStore from "@activity_feed/Store";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
@@ -7,7 +8,7 @@ export function FeedSkeletonBuilder() {
     
     if (type === "vertical") {
 		return (
-			<div className={FeedClasses.feedCarousel}>
+			<div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}>
 				<span className={FeedClasses.carousel}>
 					<div className={`${FeedClasses.articleSkeleton} ${FeedClasses.article}`} />
 				</span>
@@ -26,7 +27,7 @@ export function FeedSkeletonBuilder() {
 	} 
 	else if (type === "horizontal") {
 		return (
-			<div className={FeedClasses.feedCarousel}>
+			<div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}>
 				<span className={FeedClasses.smallCarousel}>
 					<div className={`${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}`} />
 				</span>

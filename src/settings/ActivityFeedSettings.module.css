@@ -72,3 +72,8 @@
 .buttonItem {
     display: flex;
 }
+
+.radioItem {
+    display: flex;
+    flex-direction: column;
+}

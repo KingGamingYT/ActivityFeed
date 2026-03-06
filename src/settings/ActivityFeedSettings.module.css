@@ -4,6 +4,10 @@
     gap: 8px;
 }
 
+.external {
+    margin-bottom: var(--space-12);
+}
+
 .settingsDivider {
     margin-bottom: var(--space-12) !important;
 }
@@ -77,3 +81,5 @@
     display: flex;
     flex-direction: column;
 }
+
+.newspaperIcon {}

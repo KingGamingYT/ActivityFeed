@@ -43,7 +43,7 @@ export function SettingsPanelBuilder() {
                 <FollowedGameListBuilder />
             </Components.SettingGroup>
             <Components.SettingGroup name="External News" collapsible={false} shown={true}>
-                <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
+                <div className={`${SettingsClasses.external} ${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
                     <div className={MainClasses.emptyText}>News from external sources outside of your game library.</div>
                 </div>
                 <ExternalSourcesListBuilder />

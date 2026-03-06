@@ -16,6 +16,7 @@ class GameNewsStore extends Utils.Store {
     state = [];
     lastTimeFetched;
     idling;
+    hasDismissedSettingsCoachmark;
     constructor() {
         super();
         this.articleSet = {};
@@ -26,6 +27,7 @@ class GameNewsStore extends Utils.Store {
         this.whitelist = [];
         this.lastTimeFetched;
         this.idling = true;
+        this.hasDismissedSettingsCoachmark = false;
 
         window.addEventListener("resize", this.listener)
     }

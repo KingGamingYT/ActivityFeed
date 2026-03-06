@@ -2,6 +2,7 @@ import { Webpack, Data, Patcher, DOM, Utils, Components, ReactUtils } from "bett
 import { createElement, useState } from "react";
 import settings from "./settings/settings.js";
 import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, Router } from "./modules/common.js";
+import { NewspaperIcon } from "./settings/components/SidebarItemIcon";
 import NewsStore from "./activity_feed/Store.js";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { SettingsPanelBuilder } from "./settings/builder.js";
@@ -40,31 +41,7 @@ const sidebarItem =
 layoutUtils.Button("activity_feed_sidebar_item", 
     {
         buildLayout: () => [panelObj],
-        icon: () => createElement('svg', {
-            className: "newspaperIcon_267ac", 
-            role: "img", 
-            width: "20", 
-            height: "20", 
-            fill: "none", 
-            viewBox: "0 0 24 24", 
-            stroke: "currentColor", 
-            strokeWidth: "2", 
-            strokeLinecap: "round", 
-            strokeLinejoin: "round" 
-        }, [
-            createElement('defs', {},
-                createElement('mask', { id: "newspaper-mask" }, [
-                    createElement('rect', { width: 24, height: 24, fill: "#fff", stroke: "none" }),
-                    createElement('g', {stroke: "#000"}, [
-                        createElement('path', { d: "M15 18h-5" }),
-                        createElement('path', { d: "M18 14h-8" }),
-                        createElement('path', { d: "M10 6h8v4h-8V6Z" })
-                    ])
-                ])
-            ),
-            createElement('path', { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
-            createElement('path', { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" }),
-        ]),
+        icon: () => createElement(NewspaperIcon),
         key: "activity_feed_sidebar_item",
         legacySearchKey: "ACTIVITY_FEED",
         type: 2,
@@ -123,11 +100,11 @@ export default class ActivityFeed {
                 }
             }
 
-            const index = panel.children.findIndex(m => m?.key === "activityCenter_button");
+            const index = panel.children.findIndex(m => m?.key === "activityFeed_button");
             if (index !== -1) return;
 
             panel.children.unshift(
-                createElement(NavigatorButton, {key: "activityCenter_button"})
+                createElement(NavigatorButton, {key: "activityFeed_button"})
             );
         });
 

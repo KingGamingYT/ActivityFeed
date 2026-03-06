@@ -1929,6 +1929,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	state = [];
 	lastTimeFetched;
 	idling;
+	hasDismissedSettingsCoachmark;
 	constructor() {
 		super();
 		this.articleSet = {};
@@ -1939,6 +1940,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.whitelist = [];
 		this.lastTimeFetched;
 		this.idling = true;
+		this.hasDismissedSettingsCoachmark = false;
 		window.addEventListener("resize", this.listener);
 	}
 	listener = () => {
@@ -2457,8 +2459,135 @@ function styles$1() {
 	return _styles;
 }
 
-// activity_feed/ActivityFeed.module.css
+// settings/ActivityFeedSettings.module.css
 const css$4 = `
+.blacklist__97b5e {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+}
+
+.external__97b5e {
+		margin-bottom: var(--space-12);
+}
+
+.settingsDivider__97b5e {
+		margin-bottom: var(--space-12) !important;
+}
+
+.blacklistItem__97b5e {
+		display: flex;
+}
+
+.blacklistItem__97b5e .blacklistItemIcon__97b5e {
+		border-radius: 8px;
+		height: 32px;
+		width: 32px;
+}
+
+.blacklistItem__97b5e .blacklistItemName__97b5e, .blacklistItem__97b5e .blacklistItemTextContainer__97b5e {
+		margin-left: 20px;
+		margin-bottom: 0;
+		min-width: 0;
+		font-weight: 500;
+		align-content: center;
+		flex: 1;
+}
+
+.blacklistItem__97b5e .blacklistItemTextContainer__97b5e > .blacklistItemName__97b5e {
+		margin-left: 0;
+}
+
+.blacklistItem__97b5e .blacklistItemDescription__97b5e {}
+
+.blacklistItem__97b5e button {
+		flex: 0 1 auto;
+		align-self: center;
+		width: auto;
+		margin-left: 20px;
+}
+
+.search__97b5e {
+		padding: 12px;
+		margin: 12px 0;
+		input::placeholder {
+				font-weight: 600;
+				font-size: 14px;
+				color: var(--text-muted);
+		}
+		svg {
+				path {
+						fill: var(--text-muted);
+				}
+				circle {
+						color: var(--text-muted);
+				}
+				path, circle {
+						stroke: var(--text-muted);
+						stroke-width: 3px;
+				}
+		}
+}
+
+.toggleStack__97b5e {
+		display: flex;
+		flex-direction: column;
+		padding: var(--space-16) 0 var(--space-16) 0;
+		gap: 20px;
+}
+
+.buttonItem__97b5e {
+		display: flex;
+}
+
+.radioItem__97b5e {
+		display: flex;
+		flex-direction: column;
+}
+
+.newspaperIcon__97b5e {}`;
+_loadStyle("ActivityFeedSettings.module.css", css$4);
+const modules_a52d5642 = {
+	"blacklist": "blacklist__97b5e",
+	"external": "external__97b5e",
+	"settingsDivider": "settingsDivider__97b5e",
+	"blacklistItem": "blacklistItem__97b5e",
+	"blacklistItemIcon": "blacklistItemIcon__97b5e",
+	"blacklistItemName": "blacklistItemName__97b5e",
+	"blacklistItemTextContainer": "blacklistItemTextContainer__97b5e",
+	"blacklistItemDescription": "blacklistItemDescription__97b5e",
+	"search": "search__97b5e",
+	"toggleStack": "toggleStack__97b5e",
+	"buttonItem": "buttonItem__97b5e",
+	"radioItem": "radioItem__97b5e",
+	"newspaperIcon": "newspaperIcon__97b5e"
+};
+const SettingsClasses = modules_a52d5642;
+
+// settings/components/SidebarItemIcon.tsx
+function NewspaperIcon() {
+	return BdApi.React.createElement(
+		"svg",
+		{
+			className: SettingsClasses.newspaperIcon,
+			role: "img",
+			width: "20",
+			height: "20",
+			viewBox: "0 0 24 24",
+			fill: "none",
+			stroke: "currentColor",
+			strokeWidth: "2",
+			strokeLinecap: "round",
+			strokeLinejoin: "round"
+		},
+		BdApi.React.createElement("defs", null, BdApi.React.createElement("mask", { id: "newspaper-mask" }, BdApi.React.createElement("rect", { width: "24", height: "24", fill: "#fff", stroke: "none" }), BdApi.React.createElement("g", { stroke: "#000" }, BdApi.React.createElement("path", { d: "M15 18h-5" }), BdApi.React.createElement("path", { d: "M18 14h-8" }), BdApi.React.createElement("path", { d: "M10 6h8v4h-8V6Z" })))),
+		BdApi.React.createElement("path", { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
+		BdApi.React.createElement("path", { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" })
+	);
+}
+
+// activity_feed/ActivityFeed.module.css
+const css$3 = `
 .activityFeed__2cbe2 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-frame-border);
@@ -2597,7 +2726,7 @@ const css$4 = `
 				line-height: 1.25;
 		}
 }`;
-_loadStyle("ActivityFeed.module.css", css$4);
+_loadStyle("ActivityFeed.module.css", css$3);
 const modules_7e65654a = {
 	"activityFeed": "activityFeed__2cbe2",
 	"scrollerBase": "scrollerBase__2cbe2",
@@ -2619,7 +2748,7 @@ const modules_7e65654a = {
 const MainClasses = modules_7e65654a;
 
 // activity_feed/components/application_news/ApplicationNews.module.css
-const css$3 = `
+const css$2 = `
 .feedCarousel__94d97 {
 		display: flex;
 		position: relative;
@@ -3131,7 +3260,7 @@ svg.arrow__94d97 {
 		}
 
 }`;
-_loadStyle("ApplicationNews.module.css", css$3);
+_loadStyle("ApplicationNews.module.css", css$2);
 const modules_98d78101 = {
 	"feedCarousel": "feedCarousel__94d97",
 	"carousel": "carousel__94d97",
@@ -5084,7 +5213,7 @@ function SectionHeader({ label }) {
 }
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
-const css$2 = `
+const css$1 = `
 .quickLauncher__1ffe5 {
 		display: block;
 }
@@ -5175,7 +5304,7 @@ const css$2 = `
 				border-radius: var(--radius-sm);
 		}
 }`;
-_loadStyle("QuickLauncher.module.css", css$2);
+_loadStyle("QuickLauncher.module.css", css$1);
 const modules_1116a9ae = {
 	"quickLauncher": "quickLauncher__1ffe5",
 	"dock": "dock__1ffe5",
@@ -5218,7 +5347,7 @@ function QuickLauncherBuilder(props) {
 }
 
 // activity_feed/components/now_playing/NowPlaying.module.css
-const css$1 = `
+const css = `
 .nowPlaying__93528 {}
 
 .nowPlayingContainer__93528 {
@@ -5918,7 +6047,7 @@ const css$1 = `
 				text-transform: unset;
 		}
 }`;
-_loadStyle("NowPlaying.module.css", css$1);
+_loadStyle("NowPlaying.module.css", css);
 const modules_7260a078 = {
 	"nowPlaying": "nowPlaying__93528",
 	"nowPlayingContainer": "nowPlayingContainer__93528",
@@ -6515,103 +6644,6 @@ function TabBaseBuilder() {
 	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
-// settings/ActivityFeedSettings.module.css
-const css = `
-.blacklist__97b5e {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-}
-
-.settingsDivider__97b5e {
-		margin-bottom: var(--space-12) !important;
-}
-
-.blacklistItem__97b5e {
-		display: flex;
-}
-
-.blacklistItem__97b5e .blacklistItemIcon__97b5e {
-		border-radius: 8px;
-		height: 32px;
-		width: 32px;
-}
-
-.blacklistItem__97b5e .blacklistItemName__97b5e, .blacklistItem__97b5e .blacklistItemTextContainer__97b5e {
-		margin-left: 20px;
-		margin-bottom: 0;
-		min-width: 0;
-		font-weight: 500;
-		align-content: center;
-		flex: 1;
-}
-
-.blacklistItem__97b5e .blacklistItemTextContainer__97b5e > .blacklistItemName__97b5e {
-		margin-left: 0;
-}
-
-.blacklistItem__97b5e .blacklistItemDescription__97b5e {}
-
-.blacklistItem__97b5e button {
-		flex: 0 1 auto;
-		align-self: center;
-		width: auto;
-		margin-left: 20px;
-}
-
-.search__97b5e {
-		padding: 12px;
-		margin: 12px 0;
-		input::placeholder {
-				font-weight: 600;
-				font-size: 14px;
-				color: var(--text-muted);
-		}
-		svg {
-				path {
-						fill: var(--text-muted);
-				}
-				circle {
-						color: var(--text-muted);
-				}
-				path, circle {
-						stroke: var(--text-muted);
-						stroke-width: 3px;
-				}
-		}
-}
-
-.toggleStack__97b5e {
-		display: flex;
-		flex-direction: column;
-		padding: var(--space-16) 0 var(--space-16) 0;
-		gap: 20px;
-}
-
-.buttonItem__97b5e {
-		display: flex;
-}
-
-.radioItem__97b5e {
-		display: flex;
-		flex-direction: column;
-}`;
-_loadStyle("ActivityFeedSettings.module.css", css);
-const modules_a52d5642 = {
-	"blacklist": "blacklist__97b5e",
-	"settingsDivider": "settingsDivider__97b5e",
-	"blacklistItem": "blacklistItem__97b5e",
-	"blacklistItemIcon": "blacklistItemIcon__97b5e",
-	"blacklistItemName": "blacklistItemName__97b5e",
-	"blacklistItemTextContainer": "blacklistItemTextContainer__97b5e",
-	"blacklistItemDescription": "blacklistItemDescription__97b5e",
-	"search": "search__97b5e",
-	"toggleStack": "toggleStack__97b5e",
-	"buttonItem": "buttonItem__97b5e",
-	"radioItem": "radioItem__97b5e"
-};
-const SettingsClasses = modules_a52d5642;
-
 // settings/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
@@ -6791,7 +6823,7 @@ function SettingsPanelBuilder() {
 				}
 			}
 		);
-	}))), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "External News", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "News from external sources outside of your game library.")), BdApi.React.createElement(ExternalSourcesListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
+	}))), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "External News", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.external} ${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "News from external sources outside of your game library.")), BdApi.React.createElement(ExternalSourcesListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
 		const { name, note, innerText, initial, type, changed, options, onClick } = settings.debug[key];
 		const [state, setState] = React.useState(betterdiscord.Data.load(key));
 		switch (type) {
@@ -6899,33 +6931,7 @@ const sidebarItem = layoutUtils.Button(
 	"activity_feed_sidebar_item",
 	{
 		buildLayout: () => [panelObj],
-		icon: () => React.createElement("svg", {
-			className: "newspaperIcon_267ac",
-			role: "img",
-			width: "20",
-			height: "20",
-			fill: "none",
-			viewBox: "0 0 24 24",
-			stroke: "currentColor",
-			strokeWidth: "2",
-			strokeLinecap: "round",
-			strokeLinejoin: "round"
-		}, [
-			React.createElement(
-				"defs",
-				{},
-				React.createElement("mask", { id: "newspaper-mask" }, [
-					React.createElement("rect", { width: 24, height: 24, fill: "#fff", stroke: "none" }),
-					React.createElement("g", { stroke: "#000" }, [
-						React.createElement("path", { d: "M15 18h-5" }),
-						React.createElement("path", { d: "M18 14h-8" }),
-						React.createElement("path", { d: "M10 6h8v4h-8V6Z" })
-					])
-				])
-			),
-			React.createElement("path", { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
-			React.createElement("path", { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" })
-		]),
+		icon: () => React.createElement(NewspaperIcon),
 		key: "activity_feed_sidebar_item",
 		legacySearchKey: "ACTIVITY_FEED",
 		type: 2,
@@ -6973,10 +6979,10 @@ class ActivityFeed {
 					}
 				}
 			}
-			const index = panel.children.findIndex((m) => m?.key === "activityCenter_button");
+			const index = panel.children.findIndex((m) => m?.key === "activityFeed_button");
 			if (index !== -1) return;
 			panel.children.unshift(
-				React.createElement(NavigatorButton, { key: "activityCenter_button" })
+				React.createElement(NavigatorButton, { key: "activityFeed_button" })
 			);
 		});
 		betterdiscord.Patcher.after(betterdiscord.Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {

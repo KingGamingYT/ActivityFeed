@@ -13,7 +13,6 @@ const Filters = [
     { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write'), searchExports: true },
     { name: "DMSidebar", filter: /* @__PURE__ */ Webpack.Filters.bySource(".A.CONTACTS_LIST") },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("fetchApplication") },
-    { name: "FetchGames", filter: /* @__PURE__ */ Webpack.Filters.byKeys("getDetectableGamesSupplemental") },
     { name: "FetchUtils", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "FluxDispatcher", filter: /* @__PURE__ */ Webpack.Filters.byKeys('dispatch', 'subscribe', 'register'), searchExports: true },
     { name: "FormSwitch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"data-toggleable-component":"switch"', 'layout:"horizontal"'), searchExports: true },

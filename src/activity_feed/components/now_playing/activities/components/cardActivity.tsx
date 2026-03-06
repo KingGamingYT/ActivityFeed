@@ -9,12 +9,6 @@ export function ActivityCard({user, activities, currentActivity, currentGame, pl
     if (currentActivity.type == 1) return;
     const gameId = currentActivity?.application_id;
 
-    useEffect(() => { 
-        (async () => {
-            await Common.FetchGames.getDetectableGamesSupplemental([gameId]);
-        })()
-    }, [gameId]);
-
     return (
         <>
             <div className={NowPlayingClasses.activityContainer}>

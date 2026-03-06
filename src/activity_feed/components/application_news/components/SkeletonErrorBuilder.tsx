@@ -9,7 +9,7 @@ export function FeedSkeletonErrorBuilder({errorText, errorDescription}) {
 	if (type === "vertical") {
 		return (
 			<span className={FeedClasses.carousel}>
-				<div className={`${FeedClasses.articleSkeleton} ${FeedClasses.article}`}>
+				<div className={`${FeedClasses.unavailable} ${FeedClasses.articleSkeleton} ${FeedClasses.article}`}>
 					<div className={FeedClasses.background}>
 						<div
 							className={FeedClasses.backgroundImage}

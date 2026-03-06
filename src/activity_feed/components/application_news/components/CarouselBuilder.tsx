@@ -53,7 +53,6 @@ export function FeedCarouselBuilder({currentArticle}) {
     })
 
     //const transition = Common.ReactSpring.useTransition()
-
     return (
         <span className={FeedClasses.carousel}>
             <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />

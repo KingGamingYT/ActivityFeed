@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { activityCheck, GradGen, SplashGen } from "../common/methods/common";
 import { Common } from "@modules/common";
-import { ApplicationStore, DetectableGameSupplementalStore, GameStore } from "@modules/stores";
+import { ApplicationStore, NewGameStore, GameStore } from "@modules/stores";
 import { CardHeader, CardBody } from "./card_shop/index";
 import NowPlayingClasses from "./NowPlaying.module.css";
 
@@ -14,14 +14,8 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const isSpotify = card.party.isSpotifyActivity;
     const filterCheck = activityCheck(activities, isSpotify);
     const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
-
-    useEffect(() => { 
-        (async () => {
-            await Common.FetchGames.getDetectableGamesSupplemental([currentGame?.id]);
-        })()
-    }, [currentGame?.id]);
     
-    const game = DetectableGameSupplementalStore.getGame(currentGame?.id) || (ApplicationStore.getApplication(currentGame?.id) && DetectableGameSupplementalStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id));
+    const game = NewGameStore.getGame(currentGame?.id) || (ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id));
     const splash = SplashGen(isSpotify, activities[0]?.activity, {currentGame: currentGame, data: game}, voice, streams[0]?.stream);
 
     return (

@@ -49,7 +49,6 @@ const Filters = [
 	{ name: "Clipboard", filter: betterdiscord.Webpack.Filters.byStrings("navigator.clipboard.write"), searchExports: true },
 	{ name: "DMSidebar", filter: betterdiscord.Webpack.Filters.bySource(".A.CONTACTS_LIST") },
 	{ name: "FetchApplications", filter: betterdiscord.Webpack.Filters.byKeys("fetchApplication") },
-	{ name: "FetchGames", filter: betterdiscord.Webpack.Filters.byKeys("getDetectableGamesSupplemental") },
 	{ name: "FetchUtils", filter: (x) => typeof x === "object" && x.del && x.put, searchExports: true },
 	{ name: "FluxDispatcher", filter: betterdiscord.Webpack.Filters.byKeys("dispatch", "subscribe", "register"), searchExports: true },
 	{ name: "FormSwitch", filter: betterdiscord.Webpack.Filters.byStrings('"data-toggleable-component":"switch"', 'layout:"horizontal"'), searchExports: true },
@@ -1651,9 +1650,9 @@ class XMLParser{
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
 const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
-const DetectableGameSupplementalStore = betterdiscord.Webpack.getStore("DetectableGameSupplementalStore");
 const GameStore = betterdiscord.Webpack.getStore("GameStore");
 const GuildStore = betterdiscord.Webpack.getStore("GuildStore");
+const NewGameStore = betterdiscord.Webpack.getStore("NewGameStore");
 const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
 const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
 const ThemeStore = betterdiscord.Webpack.getStore("ThemeStore");
@@ -1735,7 +1734,7 @@ function SplashGen(isSpotify, activity, game, voice, stream) {
 			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
 			break;
 		default:
-			input = game?.data?.artwork[0];
+			input = game?.supplementalData?.artwork[0];
 	}
 	return input || null;
 }
@@ -2662,6 +2661,8 @@ const css$3 = `
 
 .articleSimple__94d97 {}
 
+.unavailable__94d97 {}
+
 .background__94d97 {
 		background-repeat: no-repeat;
 		background-size: cover;
@@ -3007,37 +3008,21 @@ svg.arrow__94d97 {
 
 @keyframes pulse__94d97 {
 	0% {
-		background: var(--background-base-lower);
+		background: var(--background-surface-high);
 	}
 	30% {
-		background: var(--background-base-low);
+		background: var(--background-surface-highest);
 	}
 	70% {
-		background: var(--background-base-low);
+		background: var(--background-surface-highest);
 	}
 	to {
-		background: var(--background-base-lower);
+		background: var(--background-surface-high);
 	}
 }
 
-@-webkit-keyframes pulse__94d97 {
-	0% {
-		background: var(--background-base-lower);
-	}
-	30% {
-		background: var(--background-base-low);
-	}
-	70% {
-		background: var(--background-base-low);
-	}
-	to {
-		background: var(--background-base-lower);
-	}
-}
-
-.full-motion .feedCarouselV2__94d97 :is(.articleSkeleton__94d97, .paginationSkeleton__94d97) {
+.full-motion .feedCarouselV2__94d97 :is(.articleSkeleton__94d97:not(.unavailable__94d97), .paginationSkeleton__94d97) {
 		animation: pulse__94d97 2s ease-in-out infinite alternate;
-		-webkit-animation: pulse__94d97 2s ease-in-out infinite alternate;
 		animation-fill-mode: backwards;
 }
 .full-motion .feedCarouselV2__94d97 :is(.articleSkeleton__94d97, .paginationSkeleton__94d97):nth-of-type(5n+1) {
@@ -3154,6 +3139,7 @@ const modules_98d78101 = {
 	"articleStandard": "articleStandard__94d97",
 	"articleSkeleton": "articleSkeleton__94d97",
 	"articleSimple": "articleSimple__94d97",
+	"unavailable": "unavailable__94d97",
 	"background": "background__94d97",
 	"backgroundImage": "backgroundImage__94d97",
 	"feedOverflowMenu": "feedOverflowMenu__94d97",
@@ -5013,7 +4999,7 @@ function FeedSkeletonBuilder() {
 function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 	const type = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	if (type === "vertical") {
-		return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+		return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement("div", { className: `${FeedClasses.unavailable} ${FeedClasses.articleSkeleton} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,
@@ -6339,12 +6325,7 @@ function RichTwitchActivityBuilder({ activity }) {
 // activity_feed/components/now_playing/activities/components/CardActivity.tsx
 function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
 	if (currentActivity.type == 1) return;
-	const gameId = currentActivity?.application_id;
-	React.useEffect(() => {
-		(async () => {
-			await Common.FetchGames.getDetectableGamesSupplemental([gameId]);
-		})();
-	}, [gameId]);
+	currentActivity?.application_id;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, players, server, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
 }
 
@@ -6502,12 +6483,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const isSpotify = card.party.isSpotifyActivity;
 	const filterCheck = activityCheck(activities, isSpotify);
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
-	React.useEffect(() => {
-		(async () => {
-			await Common.FetchGames.getDetectableGamesSupplemental([currentGame?.id]);
-		})();
-	}, [currentGame?.id]);
-	const game = DetectableGameSupplementalStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && DetectableGameSupplementalStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
+	const game = NewGameStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
 	const splash = SplashGen(isSpotify, activities[0]?.activity, { currentGame, data: game }, voice, streams[0]?.stream);
 	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(CardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(CardBody, { activities, user, voice, streams, check: filterCheck, isSpotify, v2Enabled }));
 }

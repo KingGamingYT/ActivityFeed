@@ -39,6 +39,8 @@
 
 .articleSimple {}
 
+.unavailable {}
+
 .background {
     background-repeat: no-repeat;
     background-size: cover;
@@ -384,37 +386,21 @@ svg.arrow {
 
 @keyframes :local(pulse) {
   0% {
-    background: var(--background-base-lower);
+    background: var(--background-surface-high);
   }
   30% {
-    background: var(--background-base-low);
+    background: var(--background-surface-highest);
   }
   70% {
-    background: var(--background-base-low);
+    background: var(--background-surface-highest);
   }
   to {
-    background: var(--background-base-lower);
+    background: var(--background-surface-high);
   }
 }
 
-@-webkit-keyframes :local(pulse) {
-  0% {
-    background: var(--background-base-lower);
-  }
-  30% {
-    background: var(--background-base-low);
-  }
-  70% {
-    background: var(--background-base-low);
-  }
-  to {
-    background: var(--background-base-lower);
-  }
-}
-
-:global(.full-motion) .feedCarouselV2 :is(.articleSkeleton, .paginationSkeleton) {
+:global(.full-motion) .feedCarouselV2 :is(.articleSkeleton:not(.unavailable), .paginationSkeleton) {
     animation: pulse 2s ease-in-out infinite alternate;
-    -webkit-animation: pulse 2s ease-in-out infinite alternate;
     animation-fill-mode: backwards;
 }
 :global(.full-motion) .feedCarouselV2 :is(.articleSkeleton, .paginationSkeleton):nth-of-type(5n+1) {

@@ -32,6 +32,13 @@ export default {
             type: "button",
             onClick: () => NewsStore.rerollFeeds()
         },
+        resetCoachmark: {
+            name: "Reset Settings Coachmark",
+            note: "Settings coachmark will reappear again after having previously been dismissed.",
+            innerText: "Reset",
+            type: "button",
+            onClick: () => NewsStore.setHasDismissedSettingsCoachmark(false)
+        },
         cardTypeDebug: {
             name: "Show both card types at once",
             note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",

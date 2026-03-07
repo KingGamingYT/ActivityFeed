@@ -45,6 +45,7 @@ const Filters = [
 	{ name: "ButtonVoidClasses", filter: betterdiscord.Webpack.Filters.byKeys("lookFilled", "button") },
 	{ name: "ButtonManaClasses", filter: (x) => x.primary && x.hasText && !x.hasTrailing },
 	{ name: "CallButtons", filter: betterdiscord.Webpack.Filters.byStrings("PRESS_JOIN_CALL_BUTTON") },
+	{ name: "CaretClasses", filter: betterdiscord.Webpack.Filters.byKeys("caret", "caret--center") },
 	{ name: "CardPopout", filter: betterdiscord.Webpack.Filters.byStrings("party", "close", "onSelect"), searchExports: true },
 	{ name: "Clipboard", filter: betterdiscord.Webpack.Filters.byStrings("navigator.clipboard.write"), searchExports: true },
 	{ name: "DMSidebar", filter: betterdiscord.Webpack.Filters.bySource(".A.CONTACTS_LIST") },
@@ -71,9 +72,11 @@ const Filters = [
 	{ name: "OpenStream", filter: betterdiscord.Webpack.Filters.byStrings("guildId", "getWindowOpen", "CHANNEL_CALL_POPOUT"), searchExports: true },
 	{ name: "Popout", filter: betterdiscord.Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
 	{ name: "PopoutContainer", filter: betterdiscord.Webpack.Filters.byStrings("type", "position", "data-popout-animating"), searchExports: true },
+	{ name: "PopoverClasses", filter: (x) => x.graphic && x.closeButton },
 	{ name: "PositionClasses", filter: betterdiscord.Webpack.Filters.byKeys("noWrap") },
 	{ name: "ReactSpring", filter: betterdiscord.Webpack.Filters.byKeys("useSpring", "a") },
 	{ name: "RootSectionModule", filter: (x) => x?.key === "$Root", searchExports: true },
+	{ name: "SettingsButton", filter: betterdiscord.Webpack.Filters.bySource("webBuildOverride") },
 	{ name: "Spinner", filter: betterdiscord.Webpack.Filters.byStrings('="wanderingCubes'), searchExports: true },
 	{ name: "SpotifyButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "PRESS_PLAY_ON_SPOTIFY_BUTTON") },
 	{ name: "Tooltip", filter: betterdiscord.Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
@@ -116,6 +119,156 @@ const ModalSystem = betterdiscord.Webpack.getMangled(".modalKey?", {
 	closeModal: betterdiscord.Webpack.Filters.byStrings(".onCloseCallback()"),
 	closeAllModals: betterdiscord.Webpack.Filters.byStrings(".getState();for")
 });
+
+// styles
+let _styles = "";
+function _loadStyle(path, css) {
+	_styles += "/*" + path + "*/\n" + css + "\n";
+}
+function styles$1() {
+	return _styles;
+}
+
+// settings/ActivityFeedSettings.module.css
+const css$5 = `
+.blacklist__97b5e {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+}
+
+.external__97b5e {
+		margin-bottom: var(--space-20);
+}
+
+.settingsDivider__97b5e {
+		margin-bottom: var(--space-12) !important;
+}
+
+.blacklistItem__97b5e {
+		display: flex;
+}
+
+.blacklistItem__97b5e .blacklistItemIcon__97b5e {
+		border-radius: 8px;
+		height: 32px;
+		width: 32px;
+}
+
+.blacklistItem__97b5e .blacklistItemName__97b5e, .blacklistItem__97b5e .blacklistItemTextContainer__97b5e {
+		margin-left: 20px;
+		margin-bottom: 0;
+		min-width: 0;
+		font-weight: 500;
+		align-content: center;
+		flex: 1;
+}
+
+.blacklistItem__97b5e .blacklistItemTextContainer__97b5e > .blacklistItemName__97b5e {
+		margin-left: 0;
+}
+
+.blacklistItem__97b5e .blacklistItemDescription__97b5e {}
+
+.blacklistItem__97b5e button {
+		flex: 0 1 auto;
+		align-self: center;
+		width: auto;
+		margin-left: 20px;
+}
+
+.search__97b5e {
+		padding: 12px;
+		margin: 20px 0;
+		input::placeholder {
+				font-weight: 600;
+				font-size: 14px;
+				color: var(--text-muted);
+		}
+		svg {
+				path {
+						fill: var(--text-muted);
+				}
+				circle {
+						color: var(--text-muted);
+				}
+				path, circle {
+						stroke: var(--text-muted);
+						stroke-width: 3px;
+				}
+		}
+}
+
+.toggleStack__97b5e {
+		display: flex;
+		flex-direction: column;
+		padding: var(--space-16) 0 var(--space-16) 0;
+		gap: 20px;
+}
+
+.buttonItem__97b5e {
+		display: flex;
+}
+
+.radioItem__97b5e {
+		display: flex;
+		flex-direction: column;
+}
+
+.newspaperIcon__97b5e {}`;
+_loadStyle("ActivityFeedSettings.module.css", css$5);
+const modules_a52d5642 = {
+	"blacklist": "blacklist__97b5e",
+	"external": "external__97b5e",
+	"settingsDivider": "settingsDivider__97b5e",
+	"blacklistItem": "blacklistItem__97b5e",
+	"blacklistItemIcon": "blacklistItemIcon__97b5e",
+	"blacklistItemName": "blacklistItemName__97b5e",
+	"blacklistItemTextContainer": "blacklistItemTextContainer__97b5e",
+	"blacklistItemDescription": "blacklistItemDescription__97b5e",
+	"search": "search__97b5e",
+	"toggleStack": "toggleStack__97b5e",
+	"buttonItem": "buttonItem__97b5e",
+	"radioItem": "radioItem__97b5e",
+	"newspaperIcon": "newspaperIcon__97b5e"
+};
+const SettingsClasses = modules_a52d5642;
+
+// settings/components/SidebarItemIcon.tsx
+function NewspaperIcon() {
+	return BdApi.React.createElement(
+		"svg",
+		{
+			className: SettingsClasses.newspaperIcon,
+			role: "img",
+			width: "20",
+			height: "20",
+			viewBox: "0 0 24 24",
+			fill: "none",
+			stroke: "currentColor",
+			strokeWidth: "2",
+			strokeLinecap: "round",
+			strokeLinejoin: "round"
+		},
+		BdApi.React.createElement("defs", null, BdApi.React.createElement("mask", { id: "newspaper-mask" }, BdApi.React.createElement("rect", { width: "24", height: "24", fill: "#fff", stroke: "none" }), BdApi.React.createElement("g", { stroke: "#000" }, BdApi.React.createElement("path", { d: "M15 18h-5" }), BdApi.React.createElement("path", { d: "M18 14h-8" }), BdApi.React.createElement("path", { d: "M10 6h8v4h-8V6Z" })))),
+		BdApi.React.createElement("path", { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
+		BdApi.React.createElement("path", { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" })
+	);
+}
+
+// modules/stores.js
+const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
+const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
+const GameStore = betterdiscord.Webpack.getStore("GameStore");
+const GuildStore = betterdiscord.Webpack.getStore("GuildStore");
+const NewGameStore = betterdiscord.Webpack.getStore("NewGameStore");
+const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
+const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
+const ThemeStore = betterdiscord.Webpack.getStore("ThemeStore");
+const UserStore = betterdiscord.Webpack.getStore("UserStore");
+const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
+const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
+const WindowStore = betterdiscord.Webpack.getStore("WindowStore");
 
 // fast-xml-parser
 const nameStartChar = ':A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
@@ -1647,20 +1800,6 @@ class XMLParser{
 		}
 }
 
-// modules/stores.js
-const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
-const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
-const GameStore = betterdiscord.Webpack.getStore("GameStore");
-const GuildStore = betterdiscord.Webpack.getStore("GuildStore");
-const NewGameStore = betterdiscord.Webpack.getStore("NewGameStore");
-const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
-const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
-const ThemeStore = betterdiscord.Webpack.getStore("ThemeStore");
-const UserStore = betterdiscord.Webpack.getStore("UserStore");
-const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
-const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
-const WindowStore = betterdiscord.Webpack.getStore("WindowStore");
-
 // activity_feed/components/common/methods/common.js
 function chunkArray(cards, num) {
 	let chunkLength = Math.max(cards.length / num, 1);
@@ -1811,6 +1950,119 @@ async function parseXML(xml) {
 	return result;
 }
 
+// settings/settings.js
+const settings = {
+	main: {
+		v2Frame: {
+			name: "Refreshed Activity Feed",
+			note: "Enables basic modern styling for the Activity Feed. Below options are highly recommended.",
+			initial: true
+		},
+		v2News: {
+			name: "Refreshed Application News",
+			note: "Enables modern styling for news articles. Recommended.",
+			initial: true
+		},
+		v2Dock: {
+			name: "Refreshed Quick Launcher",
+			note: "Enables modern styling for the quick launcher. Recommended.",
+			initial: true
+		},
+		v2Cards: {
+			name: "Refreshed Activity Cards",
+			note: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
+			initial: true
+		}
+	},
+	debug: {
+		forceRefreshFeed: {
+			name: "Force refresh the news article feed",
+			note: "Re-roll currently displayed articles. Will not fetch new ones.",
+			innerText: "Reroll",
+			type: "button",
+			onClick: () => NewsStore.rerollFeeds()
+		},
+		resetCoachmark: {
+			name: "Reset Settings Coachmark",
+			note: "Settings coachmark will reappear again after having previously been dismissed.",
+			innerText: "Reset",
+			type: "button",
+			onClick: () => NewsStore.setHasDismissedSettingsCoachmark(false)
+		},
+		cardTypeDebug: {
+			name: "Show both card types at once",
+			note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",
+			initial: false,
+			type: "switch"
+		},
+		freezeDock: {
+			name: "Force empty quick launcher",
+			note: "Always make the quick launcher act as if it is empty.",
+			type: "switch"
+		},
+		freezeCards: {
+			name: "Force empty activity cards",
+			note: "Always make the now playing section act as if it is empty.",
+			type: "switch"
+		},
+		freezeNews: {
+			name: "Force news feed state",
+			initial: 0,
+			type: "radio",
+			options: [
+				{
+					name: "Off",
+					description: "Feed will load normally.",
+					value: 0
+				},
+				{
+					name: "Always fail",
+					description: "Feed will always fail to load, displaying the article fallback.",
+					value: 1
+				},
+				{
+					name: "Always continuously load",
+					description: "Feed will always display the feed skeleton.",
+					value: 2
+				}
+			]
+		}
+	},
+	default: {
+		v2Frame: true,
+		v2News: true,
+		v2Dock: true,
+		v2Cards: true,
+		cardTypeDebug: false,
+		freezeDock: false,
+		freezeCards: false,
+		freezeNews: false
+	},
+	external: {
+		discord: {
+			name: "Discord",
+			note: "News from Discord's blog.",
+			icon: Common.Icons.ClydeIcon,
+			color: "var(--background-brand)",
+			enabled: true
+		},
+		nintendo: {
+			name: "Nintendo",
+			note: "Nintendo news sourced from nintendoeverything.com.",
+			icon: Common.Icons.NintendoSwitchNeutralIcon,
+			color: "rgba(230, 0, 18, 1)",
+			enabled: false
+		},
+		xbox: {
+			name: "Xbox",
+			note: "News from Xbox's blog.",
+			icon: Common.Icons.XboxNeutralIcon,
+			color: "var(--xbox)",
+			enabled: false
+		}
+	}
+};
+
 // commonjsHelpers.js
 
 function getDefaultExportFromCjs (x) {
@@ -1921,7 +2173,6 @@ const HtmlSanitizer = /*@__PURE__*/getDefaultExportFromCjs(HtmlSanitizerExports)
 class GameNewsStore extends betterdiscord.Utils.Store {
 	static displayName = "GameNewsStore";
 	article = {};
-	articleSet = {};
 	dataSet = {};
 	displaySet = [];
 	blacklist = [];
@@ -1932,7 +2183,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	hasDismissedSettingsCoachmark;
 	constructor() {
 		super();
-		this.articleSet = {};
 		this.dataSet = {};
 		this.displaySet = [];
 		this.article = {};
@@ -1940,7 +2190,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.whitelist = [];
 		this.lastTimeFetched;
 		this.idling = true;
-		this.hasDismissedSettingsCoachmark = false;
+		this.hasDismissedSettingsCoachmark = betterdiscord.Data.load("hasDismissedSettingsCoachmark") ?? false;
 		window.addEventListener("resize", this.listener);
 	}
 	listener = () => {
@@ -2024,6 +2274,12 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			}
 		];
 		this.article = this.displaySet[0];
+	}
+	setHasDismissedSettingsCoachmark(v) {
+		this.hasDismissedSettingsCoachmark = v;
+		betterdiscord.Data.save("hasDismissedSettingsCoachmark", v);
+		this.emitChange();
+		return;
 	}
 	getFeeds() {
 		return this.dataSet;
@@ -2344,250 +2600,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 }
 const NewsStore = new GameNewsStore();
 
-// settings/settings.js
-const settings = {
-	main: {
-		v2Frame: {
-			name: "Refreshed Activity Feed",
-			note: "Enables basic modern styling for the Activity Feed. Below options are highly recommended.",
-			initial: true
-		},
-		v2News: {
-			name: "Refreshed Application News",
-			note: "Enables modern styling for news articles. Recommended.",
-			initial: true
-		},
-		v2Dock: {
-			name: "Refreshed Quick Launcher",
-			note: "Enables modern styling for the quick launcher. Recommended.",
-			initial: true
-		},
-		v2Cards: {
-			name: "Refreshed Activity Cards",
-			note: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
-			initial: true
-		}
-	},
-	debug: {
-		forceRefreshFeed: {
-			name: "Force refresh the news article feed",
-			note: "Re-roll currently displayed articles. Will not fetch new ones.",
-			innerText: "Reroll",
-			type: "button",
-			onClick: () => NewsStore.rerollFeeds()
-		},
-		cardTypeDebug: {
-			name: "Show both card types at once",
-			note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",
-			initial: false,
-			type: "switch"
-		},
-		freezeDock: {
-			name: "Force empty quick launcher",
-			note: "Always make the quick launcher act as if it is empty.",
-			type: "switch"
-		},
-		freezeCards: {
-			name: "Force empty activity cards",
-			note: "Always make the now playing section act as if it is empty.",
-			type: "switch"
-		},
-		freezeNews: {
-			name: "Force news feed state",
-			initial: 0,
-			type: "radio",
-			options: [
-				{
-					name: "Off",
-					description: "Feed will load normally.",
-					value: 0
-				},
-				{
-					name: "Always fail",
-					description: "Feed will always fail to load, displaying the article fallback.",
-					value: 1
-				},
-				{
-					name: "Always continuously load",
-					description: "Feed will always display the feed skeleton.",
-					value: 2
-				}
-			]
-		}
-	},
-	default: {
-		v2Frame: true,
-		v2News: true,
-		v2Dock: true,
-		v2Cards: true,
-		cardTypeDebug: false,
-		freezeDock: false,
-		freezeCards: false,
-		freezeNews: false
-	},
-	external: {
-		discord: {
-			name: "Discord",
-			note: "News from Discord's blog.",
-			icon: Common.Icons.ClydeIcon,
-			color: "var(--background-brand)",
-			enabled: true
-		},
-		nintendo: {
-			name: "Nintendo",
-			note: "Nintendo news sourced from nintendoeverything.com.",
-			icon: Common.Icons.NintendoSwitchNeutralIcon,
-			color: "rgba(230, 0, 18, 1)",
-			enabled: false
-		},
-		xbox: {
-			name: "Xbox",
-			note: "News from Xbox's blog.",
-			icon: Common.Icons.XboxNeutralIcon,
-			color: "var(--xbox)",
-			enabled: false
-		}
-	}
-};
-
-// styles
-let _styles = "";
-function _loadStyle(path, css) {
-	_styles += "/*" + path + "*/\n" + css + "\n";
-}
-function styles$1() {
-	return _styles;
-}
-
-// settings/ActivityFeedSettings.module.css
-const css$4 = `
-.blacklist__97b5e {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-}
-
-.external__97b5e {
-		margin-bottom: var(--space-12);
-}
-
-.settingsDivider__97b5e {
-		margin-bottom: var(--space-12) !important;
-}
-
-.blacklistItem__97b5e {
-		display: flex;
-}
-
-.blacklistItem__97b5e .blacklistItemIcon__97b5e {
-		border-radius: 8px;
-		height: 32px;
-		width: 32px;
-}
-
-.blacklistItem__97b5e .blacklistItemName__97b5e, .blacklistItem__97b5e .blacklistItemTextContainer__97b5e {
-		margin-left: 20px;
-		margin-bottom: 0;
-		min-width: 0;
-		font-weight: 500;
-		align-content: center;
-		flex: 1;
-}
-
-.blacklistItem__97b5e .blacklistItemTextContainer__97b5e > .blacklistItemName__97b5e {
-		margin-left: 0;
-}
-
-.blacklistItem__97b5e .blacklistItemDescription__97b5e {}
-
-.blacklistItem__97b5e button {
-		flex: 0 1 auto;
-		align-self: center;
-		width: auto;
-		margin-left: 20px;
-}
-
-.search__97b5e {
-		padding: 12px;
-		margin: 12px 0;
-		input::placeholder {
-				font-weight: 600;
-				font-size: 14px;
-				color: var(--text-muted);
-		}
-		svg {
-				path {
-						fill: var(--text-muted);
-				}
-				circle {
-						color: var(--text-muted);
-				}
-				path, circle {
-						stroke: var(--text-muted);
-						stroke-width: 3px;
-				}
-		}
-}
-
-.toggleStack__97b5e {
-		display: flex;
-		flex-direction: column;
-		padding: var(--space-16) 0 var(--space-16) 0;
-		gap: 20px;
-}
-
-.buttonItem__97b5e {
-		display: flex;
-}
-
-.radioItem__97b5e {
-		display: flex;
-		flex-direction: column;
-}
-
-.newspaperIcon__97b5e {}`;
-_loadStyle("ActivityFeedSettings.module.css", css$4);
-const modules_a52d5642 = {
-	"blacklist": "blacklist__97b5e",
-	"external": "external__97b5e",
-	"settingsDivider": "settingsDivider__97b5e",
-	"blacklistItem": "blacklistItem__97b5e",
-	"blacklistItemIcon": "blacklistItemIcon__97b5e",
-	"blacklistItemName": "blacklistItemName__97b5e",
-	"blacklistItemTextContainer": "blacklistItemTextContainer__97b5e",
-	"blacklistItemDescription": "blacklistItemDescription__97b5e",
-	"search": "search__97b5e",
-	"toggleStack": "toggleStack__97b5e",
-	"buttonItem": "buttonItem__97b5e",
-	"radioItem": "radioItem__97b5e",
-	"newspaperIcon": "newspaperIcon__97b5e"
-};
-const SettingsClasses = modules_a52d5642;
-
-// settings/components/SidebarItemIcon.tsx
-function NewspaperIcon() {
-	return BdApi.React.createElement(
-		"svg",
-		{
-			className: SettingsClasses.newspaperIcon,
-			role: "img",
-			width: "20",
-			height: "20",
-			viewBox: "0 0 24 24",
-			fill: "none",
-			stroke: "currentColor",
-			strokeWidth: "2",
-			strokeLinecap: "round",
-			strokeLinejoin: "round"
-		},
-		BdApi.React.createElement("defs", null, BdApi.React.createElement("mask", { id: "newspaper-mask" }, BdApi.React.createElement("rect", { width: "24", height: "24", fill: "#fff", stroke: "none" }), BdApi.React.createElement("g", { stroke: "#000" }, BdApi.React.createElement("path", { d: "M15 18h-5" }), BdApi.React.createElement("path", { d: "M18 14h-8" }), BdApi.React.createElement("path", { d: "M10 6h8v4h-8V6Z" })))),
-		BdApi.React.createElement("path", { d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z", fill: "currentColor", mask: "url(#newspaper-mask)" }),
-		BdApi.React.createElement("path", { d: "M4 22a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" })
-	);
-}
-
 // activity_feed/ActivityFeed.module.css
-const css$3 = `
+const css$4 = `
 .activityFeed__2cbe2 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
 		border-top: 1px solid var(--app-frame-border);
@@ -2726,7 +2740,7 @@ const css$3 = `
 				line-height: 1.25;
 		}
 }`;
-_loadStyle("ActivityFeed.module.css", css$3);
+_loadStyle("ActivityFeed.module.css", css$4);
 const modules_7e65654a = {
 	"activityFeed": "activityFeed__2cbe2",
 	"scrollerBase": "scrollerBase__2cbe2",
@@ -2748,7 +2762,7 @@ const modules_7e65654a = {
 const MainClasses = modules_7e65654a;
 
 // activity_feed/components/application_news/ApplicationNews.module.css
-const css$2 = `
+const css$3 = `
 .feedCarousel__94d97 {
 		display: flex;
 		position: relative;
@@ -3260,7 +3274,7 @@ svg.arrow__94d97 {
 		}
 
 }`;
-_loadStyle("ApplicationNews.module.css", css$2);
+_loadStyle("ApplicationNews.module.css", css$3);
 const modules_98d78101 = {
 	"feedCarousel": "feedCarousel__94d97",
 	"carousel": "carousel__94d97",
@@ -3311,8 +3325,8 @@ const modules_98d78101 = {
 const FeedClasses = modules_98d78101;
 
 // activity_feed/components/common/components/TooltipBuilder.tsx
-const Tooltip = ({ note, position, children }) => {
-	return BdApi.React.createElement(Common.Tooltip, { text: note, position: position || "top" }, (props) => {
+const Tooltip = ({ note, position, children, forceOpen }) => {
+	return BdApi.React.createElement(Common.Tooltip, { text: note, forceOpen, position: position || "top" }, (props) => {
 		children.props = {
 			...props,
 			...children.props
@@ -5213,7 +5227,7 @@ function SectionHeader({ label }) {
 }
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
-const css$1 = `
+const css$2 = `
 .quickLauncher__1ffe5 {
 		display: block;
 }
@@ -5304,7 +5318,7 @@ const css$1 = `
 				border-radius: var(--radius-sm);
 		}
 }`;
-_loadStyle("QuickLauncher.module.css", css$1);
+_loadStyle("QuickLauncher.module.css", css$2);
 const modules_1116a9ae = {
 	"quickLauncher": "quickLauncher__1ffe5",
 	"dock": "dock__1ffe5",
@@ -5323,6 +5337,11 @@ function LauncherGameBuilder({ game, runningGames }) {
 	setTimeout(() => setDisable(false), 1e4);
 	const disableCheck = React.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
 	const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
+	const skuViaGame = fullGame.thirdPartySkus;
+	const isSteam = Object.values(skuViaGame).find((x) => x.distributor.toLowerCase().includes("steam"));
+	function openGame() {
+		shell.openExternal(!!isSteam ? `steam://run/${isSteam.id}` : game.exepath);
+	}
 	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + fullGame.id + "/" + fullGame.icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
 		"button",
 		{
@@ -5330,7 +5349,7 @@ function LauncherGameBuilder({ game, runningGames }) {
 			disabled: disableCheck,
 			onClick: () => {
 				setDisable(true);
-				shell.openExternal(game.exePath);
+				openGame();
 			}
 		},
 		BdApi.React.createElement("div", { className: `${Common.ButtonVoidClasses.contents}` }, "Play")
@@ -5347,7 +5366,7 @@ function QuickLauncherBuilder(props) {
 }
 
 // activity_feed/components/now_playing/NowPlaying.module.css
-const css = `
+const css$1 = `
 .nowPlaying__93528 {}
 
 .nowPlayingContainer__93528 {
@@ -6047,7 +6066,7 @@ const css = `
 				text-transform: unset;
 		}
 }`;
-_loadStyle("NowPlaying.module.css", css);
+_loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
 	"nowPlaying": "nowPlaying__93528",
 	"nowPlayingContainer": "nowPlayingContainer__93528",
@@ -6502,7 +6521,7 @@ function StreamPlaceholder() {
 }
 function StreamPreview({ stream }) {
 	const { previewUrl, isLoading } = Common.UseStreamPreviewURL(stream.guildId, stream.channelId, stream.ownerId);
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, isLoading ? BdApi.React.createElement(StreamPlaceholder, null) : !previewUrl ? BdApi.React.createElement(StreamFallback, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, isLoading ? BdApi.React.createElement(StreamFallback, null) : !previewUrl ? BdApi.React.createElement(StreamPlaceholder, null) : BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, style: { position: "relative" } }, BdApi.React.createElement("img", { className: NowPlayingClasses.applicationStreamingPreview, src: previewUrl })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverWrapper, onClick: () => {
 		return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream);
 	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common.intl.intl.formatToPlainString(Common.intl.t["7Xq/nV"]))));
 }
@@ -6869,6 +6888,115 @@ function SettingsPanelBuilder() {
 	}))));
 }
 
+// activity_feed/components/coachmark/IntroCoachmark.module.css
+const css = `
+.coachmark_a64822 {
+		display: flex;
+		flex-direction: column;
+		padding: var(--space-16);
+		text-align: center;
+		position: relative;
+		width: 220px;
+		background-color: var(--background-surface-higher);
+}
+
+.image_a64822 {
+		max-height: 100%;
+		max-width: 100%;
+}
+
+.body_a64822 {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+		margin-bottom: var(--space-20);
+		position: relative;
+		z-index: 1;
+}
+
+.bodyHeader_a64822 {}
+
+.title_a64822 {
+		margin: 0;
+		text-align: center;
+		color: var(--text-strong);
+		font-size: 16px;
+		font-weight: 600;
+		line-height: 1.25;
+}
+
+.bodyContent_a64822 {
+		color: var(--text-subtle);
+		font-size: 14px;
+		font-weight: 400;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin: 0;
+}
+
+.content_a64822 {}
+
+.actions_a64822 {
+		color: var(--text-subtle);
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin: 0; 
+}
+
+.closeButton_a64822 {
+		width: 100%;
+}
+
+.buttonContent_a64822 {}`;
+_loadStyle("IntroCoachmark.module.css", css);
+const modules_95b05254 = {
+	"coachmark": "coachmark_a64822",
+	"image": "image_a64822",
+	"body": "body_a64822",
+	"bodyHeader": "bodyHeader_a64822",
+	"title": "title_a64822",
+	"bodyContent": "bodyContent_a64822",
+	"content": "content_a64822",
+	"actions": "actions_a64822",
+	"closeButton": "closeButton_a64822",
+	"buttonContent": "buttonContent_a64822"
+};
+const CoachmarkClasses = modules_95b05254;
+
+// activity_feed/components/coachmark/IntroCoachmark.tsx
+function IntroCoachmark({ close }) {
+	return BdApi.React.createElement("div", { className: `${CoachmarkClasses.coachmark} ${Common.PopoverClasses.popover}` }, BdApi.React.createElement("div", { className: Common.PopoverClasses.graphic }, BdApi.React.createElement("img", { className: CoachmarkClasses.image, alt: "", draggable: "false", src: "https://static.discord.com/assets/de14fab6de78b0fc2f679eb74b735151.svg" })), BdApi.React.createElement("div", { className: CoachmarkClasses.body }, BdApi.React.createElement("div", { className: CoachmarkClasses.bodyHeader }, BdApi.React.createElement("div", { className: CoachmarkClasses.title }, "Activity Feed")), BdApi.React.createElement("div", { className: CoachmarkClasses.bodyContent }, BdApi.React.createElement("div", { className: CoachmarkClasses.content }, "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!"))), BdApi.React.createElement("div", { className: CoachmarkClasses.actions }, BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.closeButton}`, type: "button", onClick: () => {
+		NewsStore.setHasDismissedSettingsCoachmark(true);
+	} }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildrenWrapper}` }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildren}` }, BdApi.React.createElement("span", { className: CoachmarkClasses.buttonContent }, "Close"))))), BdApi.React.createElement("div", { className: `${Common.CaretClasses.caret} ${Common.CaretClasses["caret--bottom"]} ${Common.CaretClasses["caret--start"]}` }, BdApi.React.createElement("svg", { width: "22", height: "14", viewBox: "0 0 22 14", fill: "none", className: Common.PopoverClasses.caretIcon }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39127C12.4557 11.2796 9.54425 11.2796 7.94646 9.39127L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39127Z" }), BdApi.React.createElement("mask", { id: "mask0_caret", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "22", height: "11", style: { maskType: "alpha" } }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39126C12.4557 11.2796 9.54425 11.2796 7.94646 9.39126L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39126Z" })), BdApi.React.createElement("g", { mask: "url(mask0_caret)" }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretStroke, d: "M13.6572 9.13184C12.2604 10.761 9.73957 10.761 8.34277 9.13184L1.0869141 0.5Q0.0869141 -0.5 1.0869141 -0.5L20.9131 -0.5Q21.9131 -0.5 20.9131 0.5L13.6572 9.13184Z" })))));
+}
+function IntroCoachmarkPopout({ button }) {
+	const [showPopout, setShowPopout] = React.useState(false);
+	const isShouldShow = betterdiscord.Hooks.useStateFromStores(NewsStore, () => NewsStore.hasDismissedSettingsCoachmark);
+	const refDOM = React.useRef(null);
+	React.useEffect(() => {
+		setShowPopout(!isShouldShow);
+	});
+	return BdApi.React.createElement("div", { ref: refDOM }, BdApi.React.createElement(
+		Common.Popout,
+		{
+			shouldShow: showPopout,
+			position: "top",
+			targetElementRef: refDOM,
+			onRequestClose: () => {
+				setShowPopout(false);
+				NewsStore.setHasDismissedSettingsCoachmark(true);
+			},
+			renderPopout: () => {
+				return BdApi.React.createElement(Common.PopoutContainer, null, BdApi.React.createElement(IntroCoachmark, { close: () => setShowPopout(false) }));
+			},
+			children: () => BdApi.React.createElement("div", null, button)
+		}
+	));
+}
+
 // activity_feed/extra.js
 const styles = Object.assign(
 	{
@@ -6890,7 +7018,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
@@ -6916,6 +7044,12 @@ function NavigatorButton() {
 			}
 		}
 	);
+}
+function CoachmarkWrapper({ button }) {
+	if (useSelectedState() && !NewsStore.hasDismissedSettingsCoachmark) {
+		return React.createElement(IntroCoachmarkPopout, { button });
+	}
+	return button;
 }
 const panelObj = layoutUtils.Panel(
 	"activity_feed_panel",
@@ -7000,6 +7134,9 @@ class ActivityFeed {
 				}
 				return res2;
 			});
+		});
+		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
+			return React.createElement(CoachmarkWrapper, { button: res });
 		});
 		function fu() {
 			const appI = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {

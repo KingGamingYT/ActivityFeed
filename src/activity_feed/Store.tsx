@@ -8,7 +8,6 @@ import HtmlSanitizer from "@jitbit/htmlsanitizer";
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
     article = {};
-    articleSet = {};
     dataSet = {};
     displaySet = [];
     blacklist = [];
@@ -19,7 +18,6 @@ class GameNewsStore extends Utils.Store {
     hasDismissedSettingsCoachmark;
     constructor() {
         super();
-        this.articleSet = {};
         this.dataSet = {};
         this.displaySet = [];
         this.article = {}
@@ -27,7 +25,7 @@ class GameNewsStore extends Utils.Store {
         this.whitelist = [];
         this.lastTimeFetched;
         this.idling = true;
-        this.hasDismissedSettingsCoachmark = false;
+        this.hasDismissedSettingsCoachmark = Data.load("hasDismissedSettingsCoachmark") ?? false;
 
         window.addEventListener("resize", this.listener)
     }
@@ -176,6 +174,13 @@ class GameNewsStore extends Utils.Store {
             }
         ]
         this.article = this.displaySet[0]
+    }
+
+    setHasDismissedSettingsCoachmark(v) {
+        this.hasDismissedSettingsCoachmark = v;
+        Data.save("hasDismissedSettingsCoachmark", v);
+        this.emitChange();
+        return;
     }
 
     getFeeds() {

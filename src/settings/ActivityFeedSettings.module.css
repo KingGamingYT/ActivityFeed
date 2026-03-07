@@ -5,7 +5,7 @@
 }
 
 .external {
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-20);
 }
 
 .settingsDivider {
@@ -46,7 +46,7 @@
 
 .search {
     padding: 12px;
-    margin: 12px 0;
+    margin: 20px 0;
     input::placeholder {
         font-weight: 600;
         font-size: 14px;

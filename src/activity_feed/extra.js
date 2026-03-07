@@ -189,7 +189,7 @@ export const extraCSS = webpackify(`
     .blacklist.emptyState {
         border-bottom: 1px solid;
         font-size: 14px;
-        padding: 20px 0;
+        margin-bottom: 20px;
         justify-content: flex-start;
     }
 

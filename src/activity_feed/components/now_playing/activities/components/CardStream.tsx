@@ -28,10 +28,10 @@ function StreamPreview({stream}) {
     return (
         <div className={NowPlayingClasses.applicationStreamingPreviewSize} role="button">
             {isLoading ? 
-                <StreamPlaceholder />
+                <StreamFallback />
             :
             !previewUrl ? 
-                <StreamFallback />
+                <StreamPlaceholder />
             :    
                 <div className={NowPlayingClasses.applicationStreamingPreviewSize} style={{ position: "relative" }}>
                     <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} />

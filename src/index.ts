@@ -1,14 +1,15 @@
 import { Webpack, Data, Patcher, DOM, Utils, Components, ReactUtils } from "betterdiscord";
 import { createElement, useState } from "react";
-import settings from "./settings/settings.js";
 import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, Router } from "./modules/common.js";
 import { NewspaperIcon } from "./settings/components/SidebarItemIcon";
-import NewsStore from "./activity_feed/Store.js";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { SettingsPanelBuilder } from "./settings/builder.js";
-import styleModule, { css } from "./activity_feed/ActivityFeed.module.css"; 
-import styles from "styles";
+import { IntroCoachmarkPopout } from "@activity_feed/components/coachmark/IntroCoachmark";
 import { extraCSS } from "./activity_feed/extra";
+import styles from "styles";
+import settings from "./settings/settings.js";
+import NewsStore from "./activity_feed/Store.js";
+
 
 function useSelectedState() {
     return Router.useLocation().pathname.startsWith("/activity-feed");
@@ -24,6 +25,14 @@ function NavigatorButton() {
             icon: () => { return createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon }) }
         }
     )
+}
+
+function CoachmarkWrapper({button})
+{
+    if (useSelectedState() && !NewsStore.hasDismissedSettingsCoachmark) {
+        return createElement(IntroCoachmarkPopout, {button})
+    }
+    return button;
 }
 
 const panelObj =
@@ -126,6 +135,10 @@ export default class ActivityFeed {
                 }
                 return res;
             })
+        })
+
+        Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
+            return createElement(CoachmarkWrapper, {button: res})
         })
         
         function fu() {

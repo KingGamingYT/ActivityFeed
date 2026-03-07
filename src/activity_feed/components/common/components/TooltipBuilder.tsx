@@ -1,14 +1,15 @@
 import { Common } from '@modules/common';
 
 interface TooltipBuilder {
-    note: string,
+    note: string | React.DetailedReactHTMLElement<any, any>,
     position?: string,
-    children: any
+    children: any;
+    forceOpen?: boolean;
 }
 
-export default ({ note, position, children }: TooltipBuilder) => {
+export default ({ note, position, children, forceOpen }: TooltipBuilder) => {
     return (
-        <Common.Tooltip text={note} position={position || "top"}>
+        <Common.Tooltip text={note} forceOpen={forceOpen} position={position || "top"}>
             {props => {
                 children.props = {
                     ...props,

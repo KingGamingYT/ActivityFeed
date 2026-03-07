@@ -1,4 +1,4 @@
-import { Utils, Data } from 'betterdiscord';
+import { Utils, Data, ContextMenu } from 'betterdiscord';
 import { useState, useMemo } from 'react';
 import { Common, shell } from '@modules/common';
 import { GameStore, RunningGameStore, useStateFromStores } from '@modules/stores';
@@ -12,6 +12,14 @@ export function LauncherGameBuilder({game, runningGames}) {
     const timer = setTimeout(() => setDisable(false), 10000);
     const disableCheck = useMemo(() => ~runningGames.findIndex(m => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
     const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0])
+    const skuViaGame = fullGame.thirdPartySkus
+
+    const isSteam = Object.values(skuViaGame).find(x => x.distributor.toLowerCase().includes('steam'))
+
+    function openGame()
+    {
+        shell.openExternal(!!isSteam ? `steam://run/${isSteam.id}` : game.exepath)
+    }
 
     return (
         <div className={`${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`} style={{ flex: "0 0 auto"}}>
@@ -20,7 +28,7 @@ export function LauncherGameBuilder({game, runningGames}) {
             <button 
                 className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
                 disabled={disableCheck}
-                onClick={() => { setDisable(true); shell.openExternal(game.exePath); timer }}>
+                onClick={() => { setDisable(true); openGame(); timer }}>
                 <div className={`${Common.ButtonVoidClasses.contents}`}>Play</div>
             </button>
         </div>

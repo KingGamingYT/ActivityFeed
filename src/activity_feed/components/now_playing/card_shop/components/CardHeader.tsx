@@ -32,7 +32,7 @@ function HeaderActions({card, user}) {
 
     return (
         <div className={`${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "0" }} aria-expanded={showPopout}>
-            <button type="button" className={`${MainClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`} onClick={() => Common.OpenDM.openPrivateChannel({recipientIds: user.id})}>Message</button>
+            <button type="button" className={`${MainClasses.button} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`} onClick={() => Common.OpenDM.openPrivateChannel({recipientIds: user.id})}>Message</button>
             <Common.Popout
                 targetElementRef={refDOM}
                 clickTrap={true}

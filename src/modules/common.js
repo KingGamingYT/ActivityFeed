@@ -2,6 +2,7 @@ import { Webpack } from "betterdiscord";
 
 const Filters = [
     { name: "ActivityButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'USER_PROFILE_ACTIVITY_BUTTONS') },
+    { name: "ActivitySectionModule", filter: (x=> x.key === "activity_section"), searchExports: true },
     { name: "ActivityTimer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('timestamps', '.TEXT_FEEDBACK_POSITIVE'), searchExports: true },
     { name: "AnchorClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('anchor', 'anchorUnderlineOnHover'), searchExports: true },
     { name: "Animated", filter: x=> x.Easing && x.accelerate },

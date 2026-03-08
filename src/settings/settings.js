@@ -39,6 +39,19 @@ export default {
             type: "button",
             onClick: () => NewsStore.setHasDismissedSettingsCoachmark(false)
         },
+        clearLockedInArticles: {
+            name: "Clear locked in articles",
+            note: "Wipes articles that have been locked in.",
+            innerText: "Wipe",
+            type: "button",
+            onClick: () => NewsStore.clearLockedInArticles()
+        },
+        lockedInArticles: {
+            name: "Lock in articles",
+            note: "Add up to four articles which will always be displayed no matter what. #11p4tw",
+            initial: false,
+            type: "switch"
+        },
         cardTypeDebug: {
             name: "Show both card types at once",
             note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",

@@ -1,15 +1,17 @@
 import { Data, Utils, Net } from "betterdiscord";
 import { parseXML } from "@activity_feed/components/common/methods/common";
-import { Common } from "@modules/common";
+import { Common, ModalSystem } from "@modules/common";
 import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
 import HtmlSanitizer from "@jitbit/htmlsanitizer";
+import MainClasses from "@activity_feed/ActivityFeed.module.css";
 
 class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
     article = {};
     dataSet = {};
     displaySet = [];
+    lockSet = [];
     blacklist = [];
     whitelist = [];
     state = [];
@@ -20,6 +22,7 @@ class GameNewsStore extends Utils.Store {
         super();
         this.dataSet = {};
         this.displaySet = [];
+        this.lockSet = [];
         this.article = {}
         this.blacklist = [];
         this.whitelist = [];
@@ -34,6 +37,8 @@ class GameNewsStore extends Utils.Store {
         this.state = { size: [window.innerWidth, window.innerHeight] };
         this.emitChange();
     }
+
+    // clean all of this shit UP ↓↓↓↓↓↓↓↓↓
 
     /*const [springs, control] = Common.ReactSpring.useSpring(() =>
         (NewsStore.getOrientation() === "horizontal" ? {
@@ -189,6 +194,7 @@ class GameNewsStore extends Utils.Store {
 
     setFeeds() {
         this.dataSet = Data.load('dataSet') ? Object.assign(this.dataSet, Data.load('dataSet')) : {};
+        this.lockSet = Data.load('lockSet') || [];
         this.whitelist = Data.load('whitelist') || [];
         this.blacklist = Data.load('blacklist') || [];
         this.lastTimeFetched = Data.load('lastTimeFetched');
@@ -432,7 +438,7 @@ class GameNewsStore extends Utils.Store {
 
     filterFeeds(f) {
         const oW = new Date(Date.now() - 12096e5);
-        return new Date(f.timestamp) > oW;
+        return new Date(f.news.timestamp) > oW && !this.isArticleLockedIn(f);
     }
 
     getByGameId(id) {
@@ -470,11 +476,13 @@ class GameNewsStore extends Utils.Store {
 
     getRandomFeeds(feeds) {
         let t = [];
+        let s = this.lockSet;
+        t = t.concat(s);
         let keys = Object.keys(feeds);
-        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key].news))
+        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key]))
 
         if (!_keys.length) return; 
-        for (let g = 0; g < 4 ; g++) {
+        for (let g = 0; g < 4 - s.length; g++) {
             if (g > _keys.length) break;
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);
@@ -513,6 +521,68 @@ class GameNewsStore extends Utils.Store {
             this.article = this.displaySet[0];
         }
         this.emitChange();
+    }
+
+    lockInArticle(article) {
+        let l = this.lockSet;
+
+        if (!this.isArticleLockedIn(article) || l.length < 4) {
+            l.push(article)
+            Data.save("lockSet", l);
+            this.emitChange();
+        }
+        else {
+            return (
+                ModalSystem.openModal(props => 
+                    <Common.ModalRoot.Modal 
+                        {...props} 
+                        title="That didn't work"
+                        actions={[
+                            {text: "Ok", variant: "primary", fullWidth: 0, onClick: () => props.onClose()}, 
+                        ]}><>
+                            <div className={MainClasses.emptyText}>{"Article is already locked in, or you've reached the maximum number (4)."}</div>
+                        </>    
+                    </Common.ModalRoot.Modal>
+                )
+            )
+        }
+        return;
+    }
+
+    isArticleLockedIn(article) {
+        let s = this.lockSet;
+        return Boolean(s.find(entry => entry.id === article.id));
+    }
+
+    releaseLockedArticle(article) {
+        let l = this.lockSet;
+
+        if (this.isArticleLockedIn(article)) {
+            l.splice(l.indexOf(article), 1);
+            this.emitChange();
+            Data.save('lockList', l);
+        }
+        else {
+            return (
+                ModalSystem.openModal(props => 
+                    <Common.ModalRoot.Modal 
+                        {...props} 
+                        title="That didn't work"
+                        actions={[
+                            {text: "Ok", variant: "primary", fullWidth: 0, onClick: () => props.onClose()}, 
+                        ]}><>
+                            <div className={MainClasses.emptyText}>{"Article is not locked in."}</div>
+                        </>    
+                    </Common.ModalRoot.Modal>
+                )
+            )
+        }
+        return;
+    }
+
+    clearLockedArticles() {
+        this.lockSet = [];
+        return;
     }
 
     getOrientation() {

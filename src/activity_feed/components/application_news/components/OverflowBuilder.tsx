@@ -1,4 +1,4 @@
-import { ContextMenu } from "betterdiscord";
+import { ContextMenu, Data } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common, ModalSystem } from "@modules/common";
 import NewsStore from "@activity_feed/Store";
@@ -7,6 +7,7 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 import Tooltip from "@activity_feed/components/common/components/TooltipBuilder";
 
 function FeedPopout({applicationId, gameId, articleUrl, close}) {
+    const article = NewsStore.getByGameId(gameId);
     const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
     const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 
@@ -14,6 +15,16 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
         return (
             <ContextMenu.Menu navId="feed=overflow" onClose={close}>
                 <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
+                {!NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
+                    id="lock-in-article" 
+                    label="Lock In Article" 
+                    action={() => NewsStore.lockInArticle(article)}
+                />}
+                {NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
+                    id="unlock-article" 
+                    label="Unlock Article" 
+                    action={() => NewsStore.releaseLockedArticle(article)}
+                />}
             </ContextMenu.Menu>
         )
     }
@@ -32,13 +43,22 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
                         actions={[
                             {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()}, 
                             {text: confirmText, fullWidth: 1, onClick: () => { NewsStore.blacklistGame(applicationId, gameId); props.onClose() }}
-                        ]}>
-                            <>
-                                <div className={MainClasses.emptyText}>Do you want to hide this game from appearing in your Activity Feed? You can re-enable its visibility at any time in settings.</div>
-                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
-                            </>    
+                        ]}><>
+                            <div className={MainClasses.emptyText}>Do you want to hide this game from appearing in your Activity Feed? You can re-enable its visibility at any time in settings.</div>
+                            <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
+                        </>    
                     </Common.ModalRoot.Modal>
-                )} />
+            )} />
+            {!NewsStore.isArticleLockedIn(article) && Data.load('lockedInArticles') && <ContextMenu.Item 
+                id="lock-in-article" 
+                label="Lock In Article" 
+                action={() => NewsStore.lockInArticle(article)}
+            />}
+            {NewsStore.isArticleLockedIn(article) && Data.load('lockedInArticles') && <ContextMenu.Item 
+                id="unlock-article" 
+                label="Unlock Article" 
+                action={() => NewsStore.releaseLockedArticle(article)}
+            />}
         </ContextMenu.Menu>
     )
 }

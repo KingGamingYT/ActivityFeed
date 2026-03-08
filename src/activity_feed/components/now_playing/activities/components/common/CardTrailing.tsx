@@ -60,8 +60,7 @@ function PartyMemberListBuilder({activity, users}) {
 export function RegularCardTrailing({activity, user, server, players, check, v2Enabled}: RegularButtons) {
     const [width, height] = useWindowSize();
 
-    if (width < 1240) return;
-    //console.log(server)
+    if (width <= 1240 && width >= 1200) return;
 
     return (
         <>
@@ -88,7 +87,7 @@ export function RichCardTrailing({activity, user, v2Enabled}: RichButtons) {
     const [width, height] = useWindowSize();
     return (
         <>
-            {width > 1240 && !activity?.name.includes("YouTube Music") && <div 
+            {(width <= 1240 && width >= 1200) && !activity?.name.includes("YouTube Music") && <div 
                 className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
                 style={{ flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}>
                 {v2Enabled && activity?.party && activity?.party?.size ? null : <Common.ActivityButtons user={user} activity={activity} />}
@@ -100,13 +99,13 @@ export function RichCardTrailing({activity, user, v2Enabled}: RichButtons) {
 export function VoiceCardTrailing({members, server, channel}) {
     const [width, height] = useWindowSize();
     
-    if (width <= 1240) return;
+    if (width <= 1240 && width >= 1200) return;
     return (
         <>
             <Common.VoiceList 
                 className={NowPlayingClasses.userList} 
                 users={members} 
-                maxUsers={5} 
+                maxUsers={(width >= 1420 || width < 1200) ? 5 : width >= 1380 ? 4 : width >= 1300 ? 3 : 2} 
                 guildId={server?.id}
                 channelId={channel.id}
                 size="SIZE_32"

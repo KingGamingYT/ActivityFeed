@@ -51,17 +51,16 @@ layoutUtils.Button("activity_feed_sidebar_item",
     {
         buildLayout: () => [panelObj],
         icon: () => createElement(NewspaperIcon),
-        key: "activity_feed_sidebar_item",
-        legacySearchKey: "ACTIVITY_FEED",
-        type: 2,
-        useTitle: () => "Activity Feed"
+        key: "activity_feed_sidebarItem",
+        getLegacySearchKey: () => "ACTIVITY_FEED",
+        useTitle: () => "Activity Feed",
+        type: 2
     }
 );
 
 export default class ActivityFeed {
-    GameNewsStore = NewsStore
+    GameNewsStore = NewsStore;
     async start() {
-        //Patcher.after("ActivityFeed", FluxDispatcher, "dispatch", (that, props, res) => console.log(props))
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
         if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
@@ -92,7 +91,6 @@ export default class ActivityFeed {
             return ret;
         }
 
-        //console.log(activityPanelCSS)
         DOM.addStyle('activityPanelCSS', styles());
         DOM.addStyle('activityPanelSupplementalCSS', extraCSS)
 
@@ -119,7 +117,6 @@ export default class ActivityFeed {
 
         Patcher.after(Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {
             const channelRouteProps = Utils.findInTree(res, (node) => node && node.path?.length > 5, { walkable: [ "children", "props" ] });
-            //console.log(res)
 
             channelRouteProps.path = [
                 ...channelRouteProps.path.filter(m => m !== "/activity-feed"),
@@ -127,14 +124,12 @@ export default class ActivityFeed {
             ]
         });
 
-        Patcher.after(Common.RootSectionModule, "buildLayout", (that, [props], res) => {
-            const section = Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_section'), { walkable: ['props', 'children'] })
-            Patcher.after(section, "buildLayout", (that, [props], res) => {
-                if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
-                    res.push(sidebarItem);
-                }
-                return res;
-            })
+        Patcher.after(Common.ActivitySectionModule, "buildLayout", (that, [props], res) => {
+            if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
+                res.push(sidebarItem);
+            }
+            console.log(res)
+            return res;
         })
 
         Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {

@@ -38,6 +38,7 @@ const ReactDOM = BdApi.ReactDOM;
 // modules/common.js
 const Filters = [
 	{ name: "ActivityButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "USER_PROFILE_ACTIVITY_BUTTONS") },
+	{ name: "ActivitySectionModule", filter: (x) => x.key === "activity_section", searchExports: true },
 	{ name: "ActivityTimer", filter: betterdiscord.Webpack.Filters.byStrings("timestamps", ".TEXT_FEEDBACK_POSITIVE"), searchExports: true },
 	{ name: "AnchorClasses", filter: betterdiscord.Webpack.Filters.byKeys("anchor", "anchorUnderlineOnHover"), searchExports: true },
 	{ name: "Animated", filter: (x) => x.Easing && x.accelerate },
@@ -1989,6 +1990,19 @@ const settings = {
 			type: "button",
 			onClick: () => NewsStore.setHasDismissedSettingsCoachmark(false)
 		},
+		clearLockedInArticles: {
+			name: "Clear locked in articles",
+			note: "Wipes articles that have been locked in.",
+			innerText: "Wipe",
+			type: "button",
+			onClick: () => NewsStore.clearLockedInArticles()
+		},
+		lockedInArticles: {
+			name: "Lock in articles",
+			note: "Add up to four articles which will always be displayed no matter what. #11p4tw",
+			initial: false,
+			type: "switch"
+		},
 		cardTypeDebug: {
 			name: "Show both card types at once",
 			note: "Show both types of activity cards under each other in the same list. Only enable if Activity Cards V2 is also enabled.",
@@ -2169,12 +2183,173 @@ function requireHtmlSanitizer () {
 var HtmlSanitizerExports = /*@__PURE__*/ requireHtmlSanitizer();
 const HtmlSanitizer = /*@__PURE__*/getDefaultExportFromCjs(HtmlSanitizerExports);
 
+// activity_feed/ActivityFeed.module.css
+const css$4 = `
+.activityFeed__2cbe2 {
+		background: var(--background-gradient-chat, var(--background-base-lower));
+		border-top: 1px solid var(--app-frame-border);
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		overflow: hidden;
+}
+
+.scrollerBase__2cbe2 {
+		contain: layout size;
+		height: 100%;
+		background: no-repeat bottom;
+		background-size: 100%;
+		background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
+		&::-webkit-scrollbar {
+		background: none;
+		border-radius: 8px;
+		width: 16px;
+		}
+		&::-webkit-scrollbar-thumb {
+				background-clip: padding-box;
+				border: solid 4px #0000;
+				border-radius: 8px;
+		}
+		&:hover::-webkit-scrollbar-thumb {
+				background-color: var(--scrollbar-auto-thumb);
+		}
+}
+
+.centerContainer__2cbe2 {
+		display: flex;
+		flex-direction: column;
+		width: 1280px;
+		max-width: 100%;
+		min-width: 245px;
+		margin: 0 auto;
+}
+
+.title__2cbe2 {
+		align-items: center;
+		display: flex;
+		justify-content: flex-start;
+		overflow: hidden;
+		white-space: nowrap;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.25;
+		color: var(--text-strong);
+}
+
+.titleWrapper__2cbe2 {
+		flex: 0 0 auto;
+		margin: 0 8px 0 0;
+		min-width: auto;
+}
+
+.iconWrapper__2cbe2 {
+		align-items: center;
+		display: flex;
+		flex: 0 0 auto;
+		height: var(--space-32);
+		justify-content: center;
+		margin: 0;
+		position: relative;
+		width: var(--space-32);
+		path {
+				fill: currentColor;
+		}
+}
+
+.headerBar__2cbe2 {
+		height: var(--custom-channel-header-height);
+		min-height: var(--custom-channel-header-height);
+}
+
+.headerContainer__2cbe2 {
+		flex-direction: row;
+}
+
+.headerText__2cbe2 {
+		display: flex;
+		flex: 1;
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 22px;
+		margin-top: 20px;
+		width: 100%;
+		color: var(--text-default);
+}
+
+.button__2cbe2 {
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		align-items: center;
+		background: none;
+		border: none;
+		display: flex;
+		font-size: 14px;
+		font-weight: 500;
+		justify-content: center;
+		line-height: 16px;
+		position: relative;
+		user-select: none;
+}
+
+.sectionDivider__2cbe2 {
+		display: flex;
+		width: 100%;
+		border-bottom: 2px solid;
+		margin: 20px 0 20px 0;
+}
+
+.emptyState__2cbe2 {
+		position: relative;
+}
+
+.emptyText__2cbe2 {}
+
+.emptyTitle__2cbe2 {
+		font-size: 16px;
+		line-height: 20px;
+		color: var(--text-default);
+}
+
+.emptySubtitle__2cbe2 {
+		font-size: 14px;
+		color: var(--text-muted);
+}
+
+.activityFeedV2__2cbe2 {
+		.headerText__2cbe2 {
+				font-size: 24px;
+				font-weight: 400;
+				line-height: 1.25;
+		}
+}`;
+_loadStyle("ActivityFeed.module.css", css$4);
+const modules_7e65654a = {
+	"activityFeed": "activityFeed__2cbe2",
+	"scrollerBase": "scrollerBase__2cbe2",
+	"centerContainer": "centerContainer__2cbe2",
+	"title": "title__2cbe2",
+	"titleWrapper": "titleWrapper__2cbe2",
+	"iconWrapper": "iconWrapper__2cbe2",
+	"headerBar": "headerBar__2cbe2",
+	"headerContainer": "headerContainer__2cbe2",
+	"headerText": "headerText__2cbe2",
+	"button": "button__2cbe2",
+	"sectionDivider": "sectionDivider__2cbe2",
+	"emptyState": "emptyState__2cbe2",
+	"emptyText": "emptyText__2cbe2",
+	"emptyTitle": "emptyTitle__2cbe2",
+	"emptySubtitle": "emptySubtitle__2cbe2",
+	"activityFeedV2": "activityFeedV2__2cbe2"
+};
+const MainClasses = modules_7e65654a;
+
 // activity_feed/Store.tsx
 class GameNewsStore extends betterdiscord.Utils.Store {
 	static displayName = "GameNewsStore";
 	article = {};
 	dataSet = {};
 	displaySet = [];
+	lockSet = [];
 	blacklist = [];
 	whitelist = [];
 	state = [];
@@ -2185,6 +2360,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		super();
 		this.dataSet = {};
 		this.displaySet = [];
+		this.lockSet = [];
 		this.article = {};
 		this.blacklist = [];
 		this.whitelist = [];
@@ -2286,6 +2462,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	setFeeds() {
 		this.dataSet = betterdiscord.Data.load("dataSet") ? Object.assign(this.dataSet, betterdiscord.Data.load("dataSet")) : {};
+		this.lockSet = betterdiscord.Data.load("lockSet") || [];
 		this.whitelist = betterdiscord.Data.load("whitelist") || [];
 		this.blacklist = betterdiscord.Data.load("blacklist") || [];
 		this.lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
@@ -2511,7 +2688,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	filterFeeds(f) {
 		const oW = new Date(Date.now() - 12096e5);
-		return new Date(f.timestamp) > oW;
+		return new Date(f.news.timestamp) > oW && !this.isArticleLockedIn(f);
 	}
 	getByGameId(id) {
 		let d = this.dataSet;
@@ -2546,10 +2723,12 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	getRandomFeeds(feeds) {
 		let t = [];
+		let s = this.lockSet;
+		t = t.concat(s);
 		let keys = Object.keys(feeds);
-		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key].news));
+		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key]));
 		if (!_keys.length) return;
-		for (let g = 0; g < 4; g++) {
+		for (let g = 0; g < 4 - s.length; g++) {
 			if (g > _keys.length) break;
 			let rand = _keys.length * Math.random() << 0;
 			t.push(feeds[_keys[rand]]);
@@ -2583,6 +2762,60 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 		this.emitChange();
 	}
+	lockInArticle(article) {
+		let l = this.lockSet;
+		if (!this.isArticleLockedIn(article) || l.length < 4) {
+			l.push(article);
+			betterdiscord.Data.save("lockSet", l);
+			this.emitChange();
+		} else {
+			return ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common.ModalRoot.Modal,
+					{
+						...props,
+						title: "That didn't work",
+						actions: [
+							{ text: "Ok", variant: "primary", fullWidth: 0, onClick: () => props.onClose() }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Article is already locked in, or you've reached the maximum number (4)."))
+				)
+			);
+		}
+		return;
+	}
+	isArticleLockedIn(article) {
+		let s = this.lockSet;
+		return Boolean(s.find((entry) => entry.id === article.id));
+	}
+	releaseLockedArticle(article) {
+		let l = this.lockSet;
+		if (this.isArticleLockedIn(article)) {
+			l.splice(l.indexOf(article), 1);
+			this.emitChange();
+			betterdiscord.Data.save("lockList", l);
+		} else {
+			return ModalSystem.openModal(
+				(props) => BdApi.React.createElement(
+					Common.ModalRoot.Modal,
+					{
+						...props,
+						title: "That didn't work",
+						actions: [
+							{ text: "Ok", variant: "primary", fullWidth: 0, onClick: () => props.onClose() }
+						]
+					},
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Article is not locked in."))
+				)
+			);
+		}
+		return;
+	}
+	clearLockedArticles() {
+		this.lockSet = [];
+		return;
+	}
 	getOrientation() {
 		const [width, height] = this.state.size?.length ? this.state.size : [WindowStore.windowSize().width, WindowStore.windowSize().height];
 		return (width > 1200 || height < 600) && (width < 1200 || height > 600) ? "vertical" : "horizontal";
@@ -2599,167 +2832,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 }
 const NewsStore = new GameNewsStore();
-
-// activity_feed/ActivityFeed.module.css
-const css$4 = `
-.activityFeed__2cbe2 {
-		background: var(--background-gradient-chat, var(--background-base-lower));
-		border-top: 1px solid var(--app-frame-border);
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		overflow: hidden;
-}
-
-.scrollerBase__2cbe2 {
-		contain: layout size;
-		height: 100%;
-		background: no-repeat bottom;
-		background-size: 100%;
-		background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
-		&::-webkit-scrollbar {
-		background: none;
-		border-radius: 8px;
-		width: 16px;
-		}
-		&::-webkit-scrollbar-thumb {
-				background-clip: padding-box;
-				border: solid 4px #0000;
-				border-radius: 8px;
-		}
-		&:hover::-webkit-scrollbar-thumb {
-				background-color: var(--scrollbar-auto-thumb);
-		}
-}
-
-.centerContainer__2cbe2 {
-		display: flex;
-		flex-direction: column;
-		width: 1280px;
-		max-width: 100%;
-		min-width: 245px;
-		margin: 0 auto;
-}
-
-.title__2cbe2 {
-		align-items: center;
-		display: flex;
-		justify-content: flex-start;
-		overflow: hidden;
-		white-space: nowrap;
-		font-size: 16px;
-		font-weight: 500;
-		line-height: 1.25;
-		color: var(--text-strong);
-}
-
-.titleWrapper__2cbe2 {
-		flex: 0 0 auto;
-		margin: 0 8px 0 0;
-		min-width: auto;
-}
-
-.iconWrapper__2cbe2 {
-		align-items: center;
-		display: flex;
-		flex: 0 0 auto;
-		height: var(--space-32);
-		justify-content: center;
-		margin: 0;
-		position: relative;
-		width: var(--space-32);
-		path {
-				fill: currentColor;
-		}
-}
-
-.headerBar__2cbe2 {
-		height: var(--custom-channel-header-height);
-		min-height: var(--custom-channel-header-height);
-}
-
-.headerContainer__2cbe2 {
-		flex-direction: row;
-}
-
-.headerText__2cbe2 {
-		display: flex;
-		flex: 1;
-		font-size: 18px;
-		font-weight: 500;
-		line-height: 22px;
-		margin-top: 20px;
-		width: 100%;
-		color: var(--text-default);
-}
-
-.button__2cbe2 {
-		-webkit-box-align: center;
-		-webkit-box-pack: center;
-		align-items: center;
-		background: none;
-		border: none;
-		border-radius: 3px;
-		display: flex;
-		font-size: 14px;
-		font-weight: 500;
-		justify-content: center;
-		line-height: 16px;
-		position: relative;
-		user-select: none;
-}
-
-.sectionDivider__2cbe2 {
-		display: flex;
-		width: 100%;
-		border-bottom: 2px solid;
-		margin: 20px 0 20px 0;
-}
-
-.emptyState__2cbe2 {
-		position: relative;
-}
-
-.emptyText__2cbe2 {}
-
-.emptyTitle__2cbe2 {
-		font-size: 16px;
-		line-height: 20px;
-		color: var(--text-default);
-}
-
-.emptySubtitle__2cbe2 {
-		font-size: 14px;
-		color: var(--text-muted);
-}
-
-.activityFeedV2__2cbe2 {
-		.headerText__2cbe2 {
-				font-size: 24px;
-				font-weight: 400;
-				line-height: 1.25;
-		}
-}`;
-_loadStyle("ActivityFeed.module.css", css$4);
-const modules_7e65654a = {
-	"activityFeed": "activityFeed__2cbe2",
-	"scrollerBase": "scrollerBase__2cbe2",
-	"centerContainer": "centerContainer__2cbe2",
-	"title": "title__2cbe2",
-	"titleWrapper": "titleWrapper__2cbe2",
-	"iconWrapper": "iconWrapper__2cbe2",
-	"headerBar": "headerBar__2cbe2",
-	"headerContainer": "headerContainer__2cbe2",
-	"headerText": "headerText__2cbe2",
-	"button": "button__2cbe2",
-	"sectionDivider": "sectionDivider__2cbe2",
-	"emptyState": "emptyState__2cbe2",
-	"emptyText": "emptyText__2cbe2",
-	"emptyTitle": "emptyTitle__2cbe2",
-	"emptySubtitle": "emptySubtitle__2cbe2",
-	"activityFeedV2": "activityFeedV2__2cbe2"
-};
-const MainClasses = modules_7e65654a;
 
 // activity_feed/components/application_news/ApplicationNews.module.css
 const css$3 = `
@@ -3337,10 +3409,25 @@ const Tooltip = ({ note, position, children, forceOpen }) => {
 
 // activity_feed/components/application_news/components/OverflowBuilder.tsx
 function FeedPopout({ applicationId, gameId, articleUrl, close }) {
+	const article = NewsStore.getByGameId(gameId);
 	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
 	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 	if (isNaN(applicationId)) {
-		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }));
+		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), !NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockingInArticles") && BdApi.React.createElement(
+			betterdiscord.ContextMenu.Item,
+			{
+				id: "lock-in-article",
+				label: "Lock In Article",
+				action: () => NewsStore.lockInArticle(article)
+			}
+		), NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockingInArticles") && BdApi.React.createElement(
+			betterdiscord.ContextMenu.Item,
+			{
+				id: "unlock-article",
+				label: "Unlock Article",
+				action: () => NewsStore.releaseLockedArticle(article)
+			}
+		));
 	}
 	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), BdApi.React.createElement(
 		betterdiscord.ContextMenu.Item,
@@ -3364,6 +3451,20 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Do you want to hide this game from appearing in your Activity Feed? You can re-enable its visibility at any time in settings."), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, "This action will require you to restart Discord in order to see changes."))
 				)
 			)
+		}
+	), !NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockedInArticles") && BdApi.React.createElement(
+		betterdiscord.ContextMenu.Item,
+		{
+			id: "lock-in-article",
+			label: "Lock In Article",
+			action: () => NewsStore.lockInArticle(article)
+		}
+	), NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockedInArticles") && BdApi.React.createElement(
+		betterdiscord.ContextMenu.Item,
+		{
+			id: "unlock-article",
+			label: "Unlock Article",
+			action: () => NewsStore.releaseLockedArticle(article)
 		}
 	));
 }
@@ -6246,7 +6347,7 @@ function PartyMemberListBuilder({ activity, users }) {
 }
 function RegularCardTrailing({ activity, user, server, players, check, v2Enabled }) {
 	const [width, height] = useWindowSize();
-	if (width < 1240) return;
+	if (width <= 1240 && width >= 1200) return;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, server && BdApi.React.createElement(
 		Common.VoiceList,
 		{
@@ -6267,7 +6368,7 @@ function RegularCardTrailing({ activity, user, server, players, check, v2Enabled
 }
 function RichCardTrailing({ activity, user, v2Enabled }) {
 	const [width, height] = useWindowSize();
-	return BdApi.React.createElement(BdApi.React.Fragment, null, width > 1240 && !activity?.name.includes("YouTube Music") && BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, width <= 1240 && width >= 1200 && !activity?.name.includes("YouTube Music") && BdApi.React.createElement(
 		"div",
 		{
 			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
@@ -6278,13 +6379,13 @@ function RichCardTrailing({ activity, user, v2Enabled }) {
 }
 function VoiceCardTrailing({ members, server, channel }) {
 	const [width, height] = useWindowSize();
-	if (width <= 1240) return;
+	if (width <= 1240 && width >= 1200) return;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(
 		Common.VoiceList,
 		{
 			className: NowPlayingClasses.userList,
 			users: members,
-			maxUsers: 5,
+			maxUsers: width >= 1420 || width < 1200 ? 5 : width >= 1380 ? 4 : width >= 1300 ? 3 : 2,
 			guildId: server?.id,
 			channelId: channel.id,
 			size: "SIZE_32"
@@ -6590,7 +6691,7 @@ function DiscordTag({ user, voice }) {
 function HeaderActions({ card, user }) {
 	const [showPopout, setShowPopout] = React.useState(false);
 	const refDOM = React.useRef(null);
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`, onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`, onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
 		Common.Popout,
 		{
 			targetElementRef: refDOM,
@@ -7066,10 +7167,10 @@ const sidebarItem = layoutUtils.Button(
 	{
 		buildLayout: () => [panelObj],
 		icon: () => React.createElement(NewspaperIcon),
-		key: "activity_feed_sidebar_item",
-		legacySearchKey: "ACTIVITY_FEED",
-		type: 2,
-		useTitle: () => "Activity Feed"
+		key: "activity_feed_sidebarItem",
+		getLegacySearchKey: () => "ACTIVITY_FEED",
+		useTitle: () => "Activity Feed",
+		type: 2
 	}
 );
 class ActivityFeed {
@@ -7126,14 +7227,12 @@ class ActivityFeed {
 				"/activity-feed"
 			];
 		});
-		betterdiscord.Patcher.after(Common.RootSectionModule, "buildLayout", (that, [props], res) => {
-			const section = betterdiscord.Utils.findInTree(res, (tree) => Object.values(tree).includes("activity_section"), { walkable: ["props", "children"] });
-			betterdiscord.Patcher.after(section, "buildLayout", (that2, [props2], res2) => {
-				if (!betterdiscord.Utils.findInTree(res2, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
-					res2.push(sidebarItem);
-				}
-				return res2;
-			});
+		betterdiscord.Patcher.after(Common.ActivitySectionModule, "buildLayout", (that, [props], res) => {
+			if (!betterdiscord.Utils.findInTree(res, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
+				res.push(sidebarItem);
+			}
+			console.log(res);
+			return res;
 		});
 		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
 			return React.createElement(CoachmarkWrapper, { button: res });

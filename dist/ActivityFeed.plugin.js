@@ -2688,7 +2688,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	filterFeeds(f) {
 		const oW = new Date(Date.now() - 12096e5);
-		return new Date(f.news.timestamp) > oW && !this.isArticleLockedIn(f);
+		return new Date(f.timestamp) > oW;
 	}
 	getByGameId(id) {
 		let d = this.dataSet;
@@ -2726,7 +2726,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		let s = this.lockSet;
 		t = t.concat(s);
 		let keys = Object.keys(feeds);
-		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && this.filterFeeds(feeds[key]));
+		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
 		if (!_keys.length) return;
 		for (let g = 0; g < 4 - s.length; g++) {
 			if (g > _keys.length) break;

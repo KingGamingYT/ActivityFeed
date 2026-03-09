@@ -219,10 +219,19 @@
     top: 0;
 }
 
+:global(.theme-dark) .paginationItem:after {
+    background: linear-gradient(270deg, transparent 0, var(--background-secondary-alt))
+}
+
+:global(.theme-light) .paginationItem:after {
+    background: linear-gradient(270deg, transparent 0, var(--background-secondary-alt))
+}
+
 .paginationSkeleton {}
 
 .splashArt {
     filter: grayscale(100%);
+    transition: all .2s ease;
     height: 100%;
     opacity: .2;
     width: 100%;
@@ -235,6 +244,14 @@
     pointer-events: none;
     position: absolute;
     top: 0;
+}
+
+.paginationItem:not(.selectedPage):hover {
+    background: var(--background-secondary-alt);
+}
+
+.paginationItem:hover .splashArt {
+    filter: grayscale(0);
 }
 
 .paginationSubtitle, .paginationTitle {
@@ -268,7 +285,7 @@
 }
 
 .selectedPage {
-    background: var(--background-surface-higher);
+    background: var(--background-secondary-alt);
     cursor: default;
 }
 
@@ -495,7 +512,16 @@ svg.arrow {
         border: 1px solid var(--border-muted);
         border-radius: var(--radius-md);
         overflow: hidden;
-        }
+    }
+    .paginationItem:after {
+        background: linear-gradient(270deg, transparent 0, var(--background-surface-high)) !important;
+    }
+    .paginationItem:not(.selectedPage):hover {
+        background: var(--background-surface-high);
+    }
+    .selectedPage {
+        background: var(--backgroundsurface-high);
+    }
     .splashArt {
         opacity: .1;
         transition: .5s ease;

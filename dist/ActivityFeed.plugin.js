@@ -3056,10 +3056,19 @@ const css$3 = `
 		top: 0;
 }
 
+.theme-dark .paginationItem__94d97:after {
+		background: linear-gradient(270deg, transparent 0, var(--background-secondary-alt))
+}
+
+.theme-light .paginationItem__94d97:after {
+		background: linear-gradient(270deg, transparent 0, var(--background-secondary-alt))
+}
+
 .paginationSkeleton__94d97 {}
 
 .splashArt__94d97 {
 		filter: grayscale(100%);
+		transition: all .2s ease;
 		height: 100%;
 		opacity: .2;
 		width: 100%;
@@ -3072,6 +3081,14 @@ const css$3 = `
 		pointer-events: none;
 		position: absolute;
 		top: 0;
+}
+
+.paginationItem__94d97:not(.selectedPage__94d97):hover {
+		background: var(--background-secondary-alt);
+}
+
+.paginationItem__94d97:hover .splashArt__94d97 {
+		filter: grayscale(0);
 }
 
 .paginationSubtitle__94d97, .paginationTitle__94d97 {
@@ -3105,7 +3122,7 @@ const css$3 = `
 }
 
 .selectedPage__94d97 {
-		background: var(--background-surface-higher);
+		background: var(--background-secondary-alt);
 		cursor: default;
 }
 
@@ -3332,7 +3349,16 @@ svg.arrow__94d97 {
 				border: 1px solid var(--border-muted);
 				border-radius: var(--radius-md);
 				overflow: hidden;
-				}
+		}
+		.paginationItem__94d97:after {
+				background: linear-gradient(270deg, transparent 0, var(--background-surface-high)) !important;
+		}
+		.paginationItem__94d97:not(.selectedPage__94d97):hover {
+				background: var(--background-surface-high);
+		}
+		.selectedPage__94d97 {
+				background: var(--backgroundsurface-high);
+		}
 		.splashArt__94d97 {
 				opacity: .1;
 				transition: .5s ease;
@@ -3373,11 +3399,11 @@ const modules_98d78101 = {
 	"paginationItem": "paginationItem__94d97",
 	"paginationSkeleton": "paginationSkeleton__94d97",
 	"splashArt": "splashArt__94d97",
+	"selectedPage": "selectedPage__94d97",
 	"paginationSubtitle": "paginationSubtitle__94d97",
 	"paginationTitle": "paginationTitle__94d97",
 	"paginationText": "paginationText__94d97",
 	"paginationContent": "paginationContent__94d97",
-	"selectedPage": "selectedPage__94d97",
 	"smallCarousel": "smallCarousel__94d97",
 	"titleRowSimple": "titleRowSimple__94d97",
 	"paginationSmall": "paginationSmall__94d97",

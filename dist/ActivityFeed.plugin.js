@@ -38,7 +38,7 @@ const ReactDOM = BdApi.ReactDOM;
 // modules/common.js
 const Filters = [
 	{ name: "ActivityButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "USER_PROFILE_ACTIVITY_BUTTONS") },
-	{ name: "ActivitySectionModule", filter: ((x) => x.key === "activity_section"), searchExports: true },
+	{ name: "ActivitySectionModule", filter: (x) => x.key === "activity_section", searchExports: true },
 	{ name: "ActivityTimer", filter: betterdiscord.Webpack.Filters.byStrings("timestamps", ".TEXT_FEEDBACK_POSITIVE"), searchExports: true },
 	{ name: "AnchorClasses", filter: betterdiscord.Webpack.Filters.byKeys("anchor", "anchorUnderlineOnHover"), searchExports: true },
 	{ name: "Animated", filter: (x) => x.Easing && x.accelerate },
@@ -2729,7 +2729,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
 		let total = _keys.length;
 		if (!_keys.length) return;
-		for (let g = 0; g < 3 - s.length; g++) {
+		for (let g = 0; g < 4 - s.length; g++) {
 			if (g > total) break;
 			let rand = _keys.length * Math.random() << 0;
 			t.push(feeds[_keys[rand]]);

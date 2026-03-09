@@ -263,7 +263,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchDiscordFeeds() {
-        const rssFeed = await Promise.all([ Net.fetch(`https://rssjson.vercel.app/api?url=https://discord.com/blog/rss.xml`).then(r => r.ok ? r.text() : null) ]);
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://discord.com/blog/rss.xml`).then(r => r.ok ? r.text() : null)) ]);
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
@@ -412,7 +412,7 @@ class GameNewsStore extends Utils.Store {
             this.whitelist[i] = {applicationId: applicationList[i].id, gameId: feedIds[i]};
         }
 
-        for (let i in (Data.load("external") ?? settings.external)) {
+        for (let i in settings.external) {
             if (((Data.load("external") && (Data.load("external")[i])) || settings.external[i].enabled) === true) {
                 gameData[i] = "External Source";
             }
@@ -480,10 +480,11 @@ class GameNewsStore extends Utils.Store {
         t = t.concat(s);
         let keys = Object.keys(feeds);
         let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news))
+        let total = _keys.length;
 
         if (!_keys.length) return; 
-        for (let g = 0; g < 4 - s.length; g++) {
-            if (g > _keys.length) break;
+        for (let g = 0; g < 3 - s.length; g++) {
+            if (g > total) break;
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);
             _keys.splice(rand, 1)

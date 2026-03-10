@@ -257,8 +257,8 @@ class GameNewsStore extends Utils.Store {
         return this.blacklist;
     }
 
-    async fetchAnyFeed(url) {
-        const rssFeed = await Promise.all([ parseXML(Net.fetch(`${url}`).then(r => r.ok ? r.text() : null)) ]);
+    async fetchAnyFeed(url, options) {
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`${url}`, options).then(r => r.ok ? r.text() : null)) ]);
         return rssFeed;
     }
 
@@ -297,19 +297,20 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchXboxFeeds() {
-        const rssFeed = await Promise.all([ BdApi.Net.fetch(`https://rssjson.vercel.app/api?url=https://news.xbox.com/en-us/feed/`).then(r => r.ok ? r.json() : null) ])
-        const article = this.getRSSItemLegacy(rssFeed);
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://news.xbox.com/en-us/feed/`, {headers: {"User-Agent": "activity"}}).then(r => r.ok ? r.text() : null)) ])
+        const article = this.getRSSItem(rssFeed);
+        console.log(rssFeed)
         return {
             application: {
-                name: rssFeed?.[0]?.rss?.channel?.[0]?.title?.[0],
+                name: rssFeed[0]?.rss?.channel?.title,
                 id: "Xbox"
             },
             appId: "Xbox",
-            description: article?.description?.[0],
-            thumbnail: article?.["content:encoded"]?.[0].match(/\"(https:\/\/xboxwire.thesourcemediaassets.com\/sites\/\d+\/\d+\/\d+\/.*(?=).(jpg|jpeg|png))\"/)[1],
-            timestamp: article?.pubDate?.[0],
-            title: article?.title?.[0],
-            url: article?.link?.[0]
+            description: article?.description,
+            thumbnail: article?.["content:encoded"]?.match(/\"(https:\/\/xboxwire.thesourcemediaassets.com\/sites\/\d+\/\d+\/\d+\/.*(?=).(jpg|jpeg|png))\"/)[1],
+            timestamp: article?.pubDate,
+            title: article?.title,
+            url: article?.link
         }
     }
 
@@ -461,14 +462,6 @@ class GameNewsStore extends Utils.Store {
     getRSSItem(feed, itemIndex = 0) {
         try {
             return feed[0]?.rss?.channel?.item[itemIndex];
-        } catch (e) {
-            return null;
-        }
-    }
-
-    getRSSItemLegacy(feed, itemIndex = 0) {
-        try {
-            return feed?.[0]?.rss?.channel?.[0]?.item?.[itemIndex];
         } catch (e) {
             return null;
         }

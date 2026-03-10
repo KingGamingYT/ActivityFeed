@@ -476,7 +476,7 @@ class GameNewsStore extends Utils.Store {
         let total = _keys.length;
 
         if (!_keys.length) return; 
-        for (let g = 0; g < 3 - s.length; g++) {
+        for (let g = 0; g < 4 - s.length; g++) {
             if (g > total) break;
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);

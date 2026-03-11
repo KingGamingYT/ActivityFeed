@@ -4,7 +4,7 @@ import { StreamCard } from "./CardStream";
 import { FlexInfo } from './common/FlexInfo';
 import { VoiceGuildAsset } from "./common/ActivityAssets";
 import { VoiceCardTrailing } from "./common/CardTrailing";
-import { getVoiceParticipants } from '../methods/getVoiceParticipants';
+import { getVoiceParticipants } from '@common/methods/common';
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 

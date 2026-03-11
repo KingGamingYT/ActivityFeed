@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Common } from "@modules/common";
-import Tooltip from '@activity_feed/components/common/components/TooltipBuilder';
+import Tooltip from '@common/components/TooltipBuilder';
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
 interface RichImageAsset {
     url: string | (() => string),

@@ -8,7 +8,7 @@
         "paths": {
             "@activity_feed/*": ["src/activity_feed/*"],
             "@application_news/*": ["src/activity_feed/components/application_news/*"],
-            "@common/*": ["src/activity_feed/components/common/*"],
+            "@common/*": ["src/activity_feed/common/*"],
             "@now_playing/*": ["src/activity_feed/components/now_playing/*"],
             "@quick_launcher/*": ["src/activity_feed/components/quick_launcher/*"],
             "@whats_new/*": ["src/activity_feed/components/whats_new/*"],

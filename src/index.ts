@@ -35,26 +35,51 @@ function CoachmarkWrapper({button})
     return button;
 }
 
+let LayoutTypes = {
+    SECTION: 1,
+    SIDEBAR_ITEM: 2,
+    PANEL: 3,
+    CATEGORY: 5,
+    CUSTOM: 19,
+};
+
+const customObj =
+layoutUtils.Custom("activity_feed_custom",
+    {
+        Component: () => createElement(SettingsPanelBuilder),
+        key: "activity_feed_custom",
+        type: LayoutTypes.CUSTOM
+    }
+)
+
+const categoryObj = 
+layoutUtils.Category("activity_feed_category",
+    {
+        buildLayout: () => [customObj],
+        key: "activity_feed_sidebar_item",
+        type: LayoutTypes.CATEGORY
+    }
+)
+
 const panelObj =
 layoutUtils.Panel("activity_feed_panel",
     {
-        buildLayout: () => [],
+        buildLayout: () => [categoryObj],
         key: "activity_feed_panel",
-        StronglyDiscouragedCustomComponent: () => createElement(SettingsPanelBuilder),
-        type: 3,
+        type: LayoutTypes.PANEL,
         useTitle: () => "Activity Feed",
     }
 );
 
 const sidebarItem =
-layoutUtils.Button("activity_feed_sidebar_item", 
+layoutUtils.SidebarItem("activity_feed_sidebar_item", 
     {
         buildLayout: () => [panelObj],
         icon: () => createElement(NewspaperIcon),
-        key: "activity_feed_sidebarItem",
+        key: "activity_feed_sidebar_item",
         getLegacySearchKey: () => "ACTIVITY_FEED",
         useTitle: () => "Activity Feed",
-        type: 2
+        type: LayoutTypes.SIDEBAR_ITEM
     }
 );
 
@@ -128,7 +153,6 @@ export default class ActivityFeed {
             if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
                 res.push(sidebarItem);
             }
-            console.log(res)
             return res;
         })
 

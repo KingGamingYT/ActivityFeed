@@ -4,9 +4,7 @@ import { Common } from "@modules/common";
 import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./followed_games";
 import { ButtonItem, RadioItem } from './components';
 import settings from "./settings"; 
-import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
-import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "../settings/ActivityFeedSettings.module.css";
 
 export function SettingsPanelBuilder() {

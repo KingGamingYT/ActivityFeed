@@ -1,8 +1,8 @@
-import { Utils, Data, ContextMenu } from 'betterdiscord';
+import { Utils, Data } from 'betterdiscord';
 import { useState, useMemo } from 'react';
 import { Common, shell } from '@modules/common';
 import { GameStore, RunningGameStore, useStateFromStores } from '@modules/stores';
-import { SectionHeader } from '../common/components/SectionHeader';
+import SectionHeader from '@activity_feed/common/components/SectionHeader';
 import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import QuickLauncherClasses from "./QuickLauncher.module.css";

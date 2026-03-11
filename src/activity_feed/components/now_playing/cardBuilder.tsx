@@ -1,6 +1,4 @@
-import { useEffect } from "react";
-import { activityCheck, GradGen, SplashGen } from "../common/methods/common";
-import { Common } from "@modules/common";
+import { activityCheck, GradGen, SplashGen } from "@common/methods/common";
 import { ApplicationStore, NewGameStore, GameStore } from "@modules/stores";
 import { CardHeader, CardBody } from "./card_shop/index";
 import NowPlayingClasses from "./NowPlaying.module.css";

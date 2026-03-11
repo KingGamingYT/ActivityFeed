@@ -1,13 +1,13 @@
 import { Components } from "betterdiscord";
 import { useState, useMemo } from "react";
 import { Common, ModalSystem } from "@modules/common";
-import { ApplicationStore, GameStore } from "@modules/stores";
+import { GameStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "../ActivityFeedSettings.module.css";
 
-function FollowedGameItemBuilder({game, whitelist, blacklist, updateBlacklist, key}) {
+function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
     const application = GameStore.getDetectableGame(game.applicationId == "356875570916753438" ? "1402418491272986635" : game.applicationId);
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 
@@ -77,7 +77,7 @@ export function FollowedGameListBuilder() {
             {filtered?.length ? <div className={SettingsClasses.blacklist}>{
                 filtered.map(game => 
                     <>
-                        <FollowedGameItemBuilder game={game} whitelist={whitelist} blacklist={blacklist} updateBlacklist={updateBlacklist} key={game.applicationId} />
+                        <FollowedGameItemBuilder game={game} blacklist={blacklist} updateBlacklist={updateBlacklist} />
                         <div className={MainClasses.sectionDivider} />
                     </>
                 )

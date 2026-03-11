@@ -1,5 +1,5 @@
 import { Data, Utils, Net } from "betterdiscord";
-import { parseXML } from "@activity_feed/components/common/methods/common";
+import { parseXML } from "@activity_feed/common/methods/common";
 import { Common, ModalSystem } from "@modules/common";
 import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
@@ -118,67 +118,30 @@ class GameNewsStore extends Utils.Store {
     componentDidMount() { window.addEventListener("resize", this.listener); }
     componentWillUnmount() { window.removeEventListener("resize", this.listener); }
 
-    setDebugFeeds() {
-        const application = ApplicationStore.getApplicationByName('Minecraft');
-        this.displaySet = [
-            {
-                index: 0,
-                id: "TEST",
-                application: application,
+    setDebugFeed(num) {
+        if (num < 1) { console.warn("Invalid article input."); return; }
+        const testImages = ["https://files.catbox.moe/mfrfxj.png", "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png", "https://github.com/Moder112/HWCInternalDatabase/blob/master/static/img/Main.jpg?raw=true", "https://github.com/Moder112/HWCInternalDatabase/blob/master/static/img/him.jpg?raw=true"];
+        this.displaySet = [];
+        for (let i = 0; i < num; i++) {
+            this.displaySet.push({
+                index: i,
+                id: "discord",
+                application: {
+                    name: "Test Article",
+                    id: "Discord"
+                },
                 news: {
-                    application_id: application.id,
+                    application_id: "Discord",
                     description: "this is a test article! For more information, visit https://example.com.",
-                    thumbnail: "https://files.catbox.moe/mfrfxj.png",
+                    thumbnail: `${testImages[Math.floor(Math.random() * testImages.length)]}`,
                     timestamp: Date.now(),
-                    title: "Test Article 1",
+                    title: `Test Article ${i+1}`,
                     url: "https://example.com"
                 },
                 type: "application_news"
-            },
-            {
-                index: 1,
-                id: "TEST",
-                application: application,
-                news: {
-                    application_id: application.id,
-                    description: "this is a test article! For more information, visit https://example.com.",
-                    thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-                    timestamp: Date.now(),
-                    title: "Test Article 2",
-                    url: "https://example.com"
-                },
-                type: "application_news"
-            },
-            {
-                index: 2,
-                id: "TEST",
-                application: application,
-                news: {
-                    application_id: application.id,
-                    description: "this is a test article! For more information, visit https://example.com.",
-                    thumbnail: "https://files.catbox.moe/mfrfxj.png",
-                    timestamp: Date.now(),
-                    title: "Test Article 3",
-                    url: "https://example.com"
-                },
-                type: "application_news"
-            },
-            {
-            index: 3,
-            id: "TEST",
-            application: application,
-            news: {
-                application_id: application.id,
-                description: "this is a test article! For more information, visit https://example.com.",
-                thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-                timestamp: Date.now(),
-                title: "Test Article 4",
-                url: "https://example.com"
-            },
-            type: "application_news"
-            }
-        ]
-        this.article = this.displaySet[0]
+            })
+        }
+        this.article = this.displaySet[0];
     }
 
     setHasDismissedSettingsCoachmark(v) {
@@ -299,7 +262,6 @@ class GameNewsStore extends Utils.Store {
     async #fetchXboxFeeds() {
         const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://news.xbox.com/en-us/feed/`, {headers: {"User-Agent": "activity"}}).then(r => r.ok ? r.text() : null)) ])
         const article = this.getRSSItem(rssFeed);
-        console.log(rssFeed)
         return {
             application: {
                 name: rssFeed[0]?.rss?.channel?.title,

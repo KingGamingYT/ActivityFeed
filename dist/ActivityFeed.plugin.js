@@ -1,7 +1,7 @@
 /**
  * @name ActivityFeed
  * @author KingGamingYT
- * @description rewrite
+ * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
  * @version 1.0.0-dev
  */
 
@@ -71,6 +71,7 @@ const Filters = [
 	{ name: "OpenVoiceChannel", filter: (x) => x.selectVoiceChannel, searchExports: true },
 	{ name: "OpenSpotifyAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
 	{ name: "OpenStream", filter: betterdiscord.Webpack.Filters.byStrings("guildId", "getWindowOpen", "CHANNEL_CALL_POPOUT"), searchExports: true },
+	{ name: "OpenUserSettings", filter: (x) => x.openUserSettings },
 	{ name: "Popout", filter: betterdiscord.Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
 	{ name: "PopoutContainer", filter: betterdiscord.Webpack.Filters.byStrings("type", "position", "data-popout-animating"), searchExports: true },
 	{ name: "PopoverClasses", filter: (x) => x.graphic && x.closeButton },
@@ -101,7 +102,10 @@ const layoutUtils = betterdiscord.Webpack.getMangled(
 	betterdiscord.Webpack.Filters.bySource("$Root", ".ACCORDION"),
 	{
 		Panel: (x) => String(x).includes(".PANEL,"),
-		Button: (x) => String(x).includes(".BUTTON,")
+		Button: (x) => String(x).includes(".BUTTON,"),
+		SidebarItem: (x) => String(x).includes(".SIDEBAR_ITEM,"),
+		Category: (x) => String(x).includes(".CATEGORY,"),
+		Custom: (x) => String(x).includes(".CUSTOM,")
 	}
 );
 const Router = betterdiscord.Webpack.getMangled("Router-History", {
@@ -1801,7 +1805,7 @@ class XMLParser{
 		}
 }
 
-// activity_feed/components/common/methods/common.js
+// activity_feed/common/methods/common.js
 function chunkArray(cards, num) {
 	let chunkLength = Math.max(cards.length / num, 1);
 	const chunks = [];
@@ -1809,6 +1813,14 @@ function chunkArray(cards, num) {
 		if (chunkLength * (i + 1) <= cards.length) chunks.push(cards.slice(Math.ceil(chunkLength * i), Math.ceil(chunkLength * (i + 1))));
 	}
 	return chunks;
+}
+function getVoiceParticipants({ voice }) {
+	let participants = [];
+	const channelParticipants = Object.keys(VoiceStateStore.getVoiceStatesForChannel(voice));
+	for (let i = 0; i < channelParticipants.length; i++) {
+		participants.push(UserStore.getUser(channelParticipants[i]));
+	}
+	return participants;
 }
 function TimeClock({ timestamp }) {
 	const time = Math.floor((Date.now() - new Date(parseInt(timestamp))) / 1e3);
@@ -2199,7 +2211,7 @@ const css$4 = `
 		height: 100%;
 		background: no-repeat bottom;
 		background-size: 100%;
-		background-image: url(/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
+		background-image: url(https://discord.com/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
 		&::-webkit-scrollbar {
 		background: none;
 		border-radius: 8px;
@@ -2389,66 +2401,32 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	componentWillUnmount() {
 		window.removeEventListener("resize", this.listener);
 	}
-	setDebugFeeds() {
-		const application = ApplicationStore.getApplicationByName("Minecraft");
-		this.displaySet = [
-			{
-				index: 0,
-				id: "TEST",
-				application,
+	setDebugFeed(num) {
+		if (num < 1) {
+			console.warn("Invalid article input.");
+			return;
+		}
+		const testImages = ["https://files.catbox.moe/mfrfxj.png", "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png", "https://github.com/Moder112/HWCInternalDatabase/blob/master/static/img/Main.jpg?raw=true", "https://github.com/Moder112/HWCInternalDatabase/blob/master/static/img/him.jpg?raw=true"];
+		this.displaySet = [];
+		for (let i = 0; i < num; i++) {
+			this.displaySet.push({
+				index: i,
+				id: "discord",
+				application: {
+					name: "Test Article",
+					id: "Discord"
+				},
 				news: {
-					application_id: application.id,
+					application_id: "Discord",
 					description: "this is a test article! For more information, visit https://example.com.",
-					thumbnail: "https://files.catbox.moe/mfrfxj.png",
+					thumbnail: `${testImages[Math.floor(Math.random() * testImages.length)]}`,
 					timestamp: Date.now(),
-					title: "Test Article 1",
+					title: `Test Article ${i + 1}`,
 					url: "https://example.com"
 				},
 				type: "application_news"
-			},
-			{
-				index: 1,
-				id: "TEST",
-				application,
-				news: {
-					application_id: application.id,
-					description: "this is a test article! For more information, visit https://example.com.",
-					thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-					timestamp: Date.now(),
-					title: "Test Article 2",
-					url: "https://example.com"
-				},
-				type: "application_news"
-			},
-			{
-				index: 2,
-				id: "TEST",
-				application,
-				news: {
-					application_id: application.id,
-					description: "this is a test article! For more information, visit https://example.com.",
-					thumbnail: "https://files.catbox.moe/mfrfxj.png",
-					timestamp: Date.now(),
-					title: "Test Article 3",
-					url: "https://example.com"
-				},
-				type: "application_news"
-			},
-			{
-				index: 3,
-				id: "TEST",
-				application,
-				news: {
-					application_id: application.id,
-					description: "this is a test article! For more information, visit https://example.com.",
-					thumbnail: "https://static.wikia.nocookie.net/silly-cat/images/4/4f/Wire_Cat.png",
-					timestamp: Date.now(),
-					title: "Test Article 4",
-					url: "https://example.com"
-				},
-				type: "application_news"
-			}
-		];
+			});
+		}
 		this.article = this.displaySet[0];
 	}
 	setHasDismissedSettingsCoachmark(v) {
@@ -2551,7 +2529,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	async #fetchXboxFeeds() {
 		const rssFeed = await Promise.all([parseXML(betterdiscord.Net.fetch(`https://news.xbox.com/en-us/feed/`, { headers: { "User-Agent": "activity" } }).then((r) => r.ok ? r.text() : null))]);
 		const article = this.getRSSItem(rssFeed);
-		console.log(rssFeed);
 		return {
 			application: {
 				name: rssFeed[0]?.rss?.channel?.title,
@@ -3417,7 +3394,7 @@ const modules_98d78101 = {
 };
 const FeedClasses = modules_98d78101;
 
-// activity_feed/components/common/components/TooltipBuilder.tsx
+// activity_feed/common/components/TooltipBuilder.tsx
 const Tooltip = ({ note, position, children, forceOpen }) => {
 	return BdApi.React.createElement(Common.Tooltip, { text: note, forceOpen, position: position || "top" }, (props) => {
 		children.props = {
@@ -5343,10 +5320,10 @@ function NewsFeedBuilder() {
 	);
 }
 
-// activity_feed/components/common/components/SectionHeader.jsx
-function SectionHeader({ label }) {
+// activity_feed/common/components/SectionHeader.tsx
+const SectionHeader = ({ label }) => {
 	return BdApi.React.createElement("div", { className: `${MainClasses.headerContainer} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: MainClasses.headerText }, label));
-}
+};
 
 // activity_feed/components/quick_launcher/QuickLauncher.module.css
 const css$2 = `
@@ -6651,16 +6628,6 @@ function StreamCard({ stream, streamUser, streamActivity }) {
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
 }
 
-// activity_feed/components/now_playing/activities/methods/getVoiceParticipants.js
-function getVoiceParticipants({ voice }) {
-	let participants = [];
-	const channelParticipants = Object.keys(VoiceStateStore.getVoiceStatesForChannel(voice));
-	for (let i = 0; i < channelParticipants.length; i++) {
-		participants.push(UserStore.getUser(channelParticipants[i]));
-	}
-	return participants;
-}
-
 // activity_feed/components/now_playing/activities/components/CardVoice.tsx
 function VoiceCard({ activities, voice, streams }) {
 	if (!voice.length && !streams.length) return;
@@ -6846,7 +6813,7 @@ function ExternalSourcesListBuilder() {
 }
 
 // settings/followed_games/FollowedGames.tsx
-function FollowedGameItemBuilder({ game, whitelist, blacklist, updateBlacklist, key }) {
+function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 	const application = GameStore.getDetectableGame(game.applicationId == "356875570916753438" ? "1402418491272986635" : game.applicationId);
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(
@@ -6915,7 +6882,7 @@ function FollowedGameListBuilder() {
 		return whitelist?.filter((item) => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map(
-		(game) => BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FollowedGameItemBuilder, { game, whitelist, blacklist, updateBlacklist, key: game.applicationId }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }))
+		(game) => BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FollowedGameItemBuilder, { game, blacklist, updateBlacklist }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }))
 	)) : BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "No results.")));
 }
 
@@ -7064,11 +7031,11 @@ const css = `
 		color: var(--text-subtle);
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 8px;
 		margin: 0; 
 }
 
-.closeButton_a64822 {
+.closeButton_a64822, .primaryButton_a64822 {
 		width: 100%;
 }
 
@@ -7084,13 +7051,17 @@ const modules_95b05254 = {
 	"content": "content_a64822",
 	"actions": "actions_a64822",
 	"closeButton": "closeButton_a64822",
+	"primaryButton": "primaryButton_a64822",
 	"buttonContent": "buttonContent_a64822"
 };
 const CoachmarkClasses = modules_95b05254;
 
 // activity_feed/components/coachmark/IntroCoachmark.tsx
 function IntroCoachmark({ close }) {
-	return BdApi.React.createElement("div", { className: `${CoachmarkClasses.coachmark} ${Common.PopoverClasses.popover}` }, BdApi.React.createElement("div", { className: Common.PopoverClasses.graphic }, BdApi.React.createElement("img", { className: CoachmarkClasses.image, alt: "", draggable: "false", src: "https://static.discord.com/assets/de14fab6de78b0fc2f679eb74b735151.svg" })), BdApi.React.createElement("div", { className: CoachmarkClasses.body }, BdApi.React.createElement("div", { className: CoachmarkClasses.bodyHeader }, BdApi.React.createElement("div", { className: CoachmarkClasses.title }, "Activity Feed")), BdApi.React.createElement("div", { className: CoachmarkClasses.bodyContent }, BdApi.React.createElement("div", { className: CoachmarkClasses.content }, "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!"))), BdApi.React.createElement("div", { className: CoachmarkClasses.actions }, BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.closeButton}`, type: "button", onClick: () => {
+	return BdApi.React.createElement("div", { className: `${CoachmarkClasses.coachmark} ${Common.PopoverClasses.popover}` }, BdApi.React.createElement("div", { className: Common.PopoverClasses.graphic }, BdApi.React.createElement("img", { className: CoachmarkClasses.image, alt: "", draggable: "false", src: "https://static.discord.com/assets/de14fab6de78b0fc2f679eb74b735151.svg" })), BdApi.React.createElement("div", { className: CoachmarkClasses.body }, BdApi.React.createElement("div", { className: CoachmarkClasses.bodyHeader }, BdApi.React.createElement("div", { className: CoachmarkClasses.title }, "Activity Feed")), BdApi.React.createElement("div", { className: CoachmarkClasses.bodyContent }, BdApi.React.createElement("div", { className: CoachmarkClasses.content }, "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!"))), BdApi.React.createElement("div", { className: CoachmarkClasses.actions }, BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`, type: "button", onClick: () => {
+		NewsStore.setHasDismissedSettingsCoachmark(true);
+		Common.OpenUserSettings.openUserSettings("activity_feed_panel", { section: "activity_feed_sidebar_item" });
+	} }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildrenWrapper}` }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildren}` }, BdApi.React.createElement("span", { className: CoachmarkClasses.buttonContent }, "Take me there!")))), BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.secondary} ${CoachmarkClasses.closeButton}`, type: "button", onClick: () => {
 		NewsStore.setHasDismissedSettingsCoachmark(true);
 	} }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildrenWrapper}` }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildren}` }, BdApi.React.createElement("span", { className: CoachmarkClasses.buttonContent }, "Close"))))), BdApi.React.createElement("div", { className: `${Common.CaretClasses.caret} ${Common.CaretClasses["caret--bottom"]} ${Common.CaretClasses["caret--start"]}` }, BdApi.React.createElement("svg", { width: "22", height: "14", viewBox: "0 0 22 14", fill: "none", className: Common.PopoverClasses.caretIcon }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39127C12.4557 11.2796 9.54425 11.2796 7.94646 9.39127L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39127Z" }), BdApi.React.createElement("mask", { id: "mask0_caret", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "22", height: "11", style: { maskType: "alpha" } }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39126C12.4557 11.2796 9.54425 11.2796 7.94646 9.39126L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39126Z" })), BdApi.React.createElement("g", { mask: "url(mask0_caret)" }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretStroke, d: "M13.6572 9.13184C12.2604 10.761 9.73957 10.761 8.34277 9.13184L1.0869141 0.5Q0.0869141 -0.5 1.0869141 -0.5L20.9131 -0.5Q21.9131 -0.5 20.9131 0.5L13.6572 9.13184Z" })))));
 }
@@ -7173,25 +7144,47 @@ function CoachmarkWrapper({ button }) {
 	}
 	return button;
 }
+let LayoutTypes = {
+	SECTION: 1,
+	SIDEBAR_ITEM: 2,
+	PANEL: 3,
+	CATEGORY: 5,
+	CUSTOM: 19
+};
+const customObj = layoutUtils.Custom(
+	"activity_feed_custom",
+	{
+		Component: () => React.createElement(SettingsPanelBuilder),
+		key: "activity_feed_custom",
+		type: LayoutTypes.CUSTOM
+	}
+);
+const categoryObj = layoutUtils.Category(
+	"activity_feed_category",
+	{
+		buildLayout: () => [customObj],
+		key: "activity_feed_sidebar_item",
+		type: LayoutTypes.CATEGORY
+	}
+);
 const panelObj = layoutUtils.Panel(
 	"activity_feed_panel",
 	{
-		buildLayout: () => [],
+		buildLayout: () => [categoryObj],
 		key: "activity_feed_panel",
-		StronglyDiscouragedCustomComponent: () => React.createElement(SettingsPanelBuilder),
-		type: 3,
+		type: LayoutTypes.PANEL,
 		useTitle: () => "Activity Feed"
 	}
 );
-const sidebarItem = layoutUtils.Button(
+const sidebarItem = layoutUtils.SidebarItem(
 	"activity_feed_sidebar_item",
 	{
 		buildLayout: () => [panelObj],
 		icon: () => React.createElement(NewspaperIcon),
-		key: "activity_feed_sidebarItem",
+		key: "activity_feed_sidebar_item",
 		getLegacySearchKey: () => "ACTIVITY_FEED",
 		useTitle: () => "Activity Feed",
-		type: 2
+		type: LayoutTypes.SIDEBAR_ITEM
 	}
 );
 class ActivityFeed {
@@ -7252,7 +7245,6 @@ class ActivityFeed {
 			if (!betterdiscord.Utils.findInTree(res, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
 				res.push(sidebarItem);
 			}
-			console.log(res);
 			return res;
 		});
 		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {

@@ -1,9 +1,9 @@
 import { Data } from 'betterdiscord';
 import { Common } from "@modules/common";
 import { NowPlayingViewStore, useStateFromStores } from "@modules/stores";
-import { chunkArray, useWindowSize } from "../common/methods/common";
-import { SectionHeader } from "../common/components/SectionHeader";
+import { chunkArray, useWindowSize } from "@common/methods/common";
 import { NowPlayingCardBuilder } from "./CardBuilder";
+import SectionHeader from "@activity_feed/common/components/SectionHeader";
 import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "./NowPlaying.module.css";

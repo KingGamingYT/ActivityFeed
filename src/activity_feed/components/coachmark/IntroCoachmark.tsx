@@ -19,7 +19,14 @@ export function IntroCoachmark({close}) {
                 </div>
             </div>
             <div className={CoachmarkClasses.actions}>
-                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.closeButton}`} type={"button"} onClick={() => {NewsStore.setHasDismissedSettingsCoachmark(true); close}}>
+                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`} type={"button"} onClick={() => {NewsStore.setHasDismissedSettingsCoachmark(true); Common.OpenUserSettings.openUserSettings('activity_feed_panel', {section: 'activity_feed_sidebar_item'}); close}}>
+                    <div className={`${Common.ButtonManaClasses.buttonChildrenWrapper}`}>
+                        <div className={`${Common.ButtonManaClasses.buttonChildren}`}>
+                            <span className={CoachmarkClasses.buttonContent}>Take me there!</span>
+                        </div>
+                    </div>
+                </button>
+                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.secondary} ${CoachmarkClasses.closeButton}`} type={"button"} onClick={() => {NewsStore.setHasDismissedSettingsCoachmark(true); close}}>
                     <div className={`${Common.ButtonManaClasses.buttonChildrenWrapper}`}>
                         <div className={`${Common.ButtonManaClasses.buttonChildren}`}>
                             <span className={CoachmarkClasses.buttonContent}>Close</span>

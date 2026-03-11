@@ -9,7 +9,7 @@ import MainClasses from "./ActivityFeed.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css"
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css"
 
-function Scroller({ children, padding }) {
+function Scroller({ children, padding }: {children: any, padding?: number}) {
     return <div className={MainClasses.scrollerBase}style={{ overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" }}>{children}</div>
 }
 

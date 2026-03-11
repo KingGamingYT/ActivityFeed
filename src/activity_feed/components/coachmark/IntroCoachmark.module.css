@@ -50,11 +50,11 @@
     color: var(--text-subtle);
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 8px;
     margin: 0; 
 }
 
-.closeButton {
+.closeButton, .primaryButton {
     width: 100%;
 }
 

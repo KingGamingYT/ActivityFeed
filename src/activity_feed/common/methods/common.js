@@ -2,7 +2,7 @@ import { Net } from 'betterdiscord';
 import { useState, useLayoutEffect } from "react";
 import { XMLParser } from "fast-xml-parser";
 import { Common } from '@modules/common';
-import { ChannelStore } from "@modules/stores";
+import { ChannelStore, UserStore, VoiceStateStore } from "@modules/stores";
 
 function checkImage(url) {
     let image = new Image();
@@ -24,6 +24,15 @@ export function chunkArray(cards, num) {
         if(chunkLength*(i+1) <= cards.length) chunks.push(cards.slice(Math.ceil(chunkLength*i), Math.ceil(chunkLength*(i+1))));
     }
     return chunks; 
+}
+
+export function getVoiceParticipants({voice}) {
+    let participants = [];
+    const channelParticipants = Object.keys(VoiceStateStore.getVoiceStatesForChannel(voice));
+    for (let i = 0; i < channelParticipants.length; i++) {
+        participants.push(UserStore.getUser(channelParticipants[i]))
+    }
+    return participants;
 }
 
 export function TimeClock({timestamp}) {

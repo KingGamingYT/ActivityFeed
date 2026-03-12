@@ -38,7 +38,7 @@ const ReactDOM = BdApi.ReactDOM;
 // modules/common.js
 const Filters = [
 	{ name: "ActivityButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "USER_PROFILE_ACTIVITY_BUTTONS") },
-	{ name: "ActivitySectionModule", filter: ((x) => x.key === "activity_section"), searchExports: true },
+	{ name: "ActivitySectionModule", filter: (x) => x.key === "activity_section", searchExports: true },
 	{ name: "ActivityTimer", filter: betterdiscord.Webpack.Filters.byStrings("timestamps", ".TEXT_FEEDBACK_POSITIVE"), searchExports: true },
 	{ name: "AnchorClasses", filter: betterdiscord.Webpack.Filters.byKeys("anchor", "anchorUnderlineOnHover"), searchExports: true },
 	{ name: "Animated", filter: (x) => x.Easing && x.accelerate },
@@ -2670,12 +2670,12 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	sortFeeds(f) {
 		let a = this.getFeeds();
-		let da = f.map((k) => a[k].news.timestamp).sort((n, o) => n - o).reverse();
+		let da = f.map((k) => a[k].news.timestamp).sort((n, o) => new Date(n) - new Date(o)).reverse();
 		let d = new Set();
 		for (let k in da) {
-			d.add(da[k]);
+			d.add(new Date(da[k]).toDateString());
 		}
-		console.log(d);
+		return Array.from(d);
 	}
 	getByGameId(id) {
 		let d = this.dataSet;
@@ -2709,13 +2709,16 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
 		let total = _keys.length;
 		let sorted = this.sortFeeds(_keys);
-		console.log(sorted);
 		if (!_keys.length) return;
-		for (let g = 0; g < 4 - s.length; g++) {
-			if (g > total - 1) break;
-			let rand = _keys.length * Math.random() << 0;
-			t.push(feeds[_keys[rand]]);
-			_keys.splice(rand, 1);
+		ld: for (let d in sorted) {
+			let f = _keys.filter((k) => new Date(feeds[k].news.timestamp).toDateString() === sorted[d]);
+			for (let g = 0; g < 4 - s.length; g++) {
+				if (g > f.length) break;
+				if (g > total - 1 || t.length > 3) break ld;
+				let rand = f.length * Math.random() << 0;
+				t.push(feeds[f[rand]]);
+				f.splice(rand, 1);
+			}
 		}
 		return t;
 	}
@@ -7128,7 +7131,6 @@ function webpackify(css) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
 		css = styles[key]?.value ? css.replace(regex, `.${styles[key].value}$1`) : css.replace(regex, `.${styles[key]}$1`);
 	}
-	console.log(css);
 	return css;
 }
 

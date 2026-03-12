@@ -2,10 +2,10 @@ import { Webpack } from "betterdiscord";
 
 const Filters = [
     { name: "ActivityButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'USER_PROFILE_ACTIVITY_BUTTONS') },
-    { name: "ActivitySectionModule", filter: (x=> x.key === "activity_section"), searchExports: true },
+    { name: "ActivitySectionModule", filter: x => x.key === "activity_section", searchExports: true },
     { name: "ActivityTimer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('timestamps', '.TEXT_FEEDBACK_POSITIVE'), searchExports: true },
     { name: "AnchorClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('anchor', 'anchorUnderlineOnHover'), searchExports: true },
-    { name: "Animated", filter: x=> x.Easing && x.accelerate },
+    { name: "Animated", filter: x => x.Easing && x.accelerate },
     { name: "AvatarFetch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('src', 'statusColor', 'size', 'isMobile'), searchExports: true },
     { name: "ButtonVoidClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('lookFilled', 'button') },
     { name: "ButtonManaClasses", filter: x => x.primary && x.hasText && !x.hasTrailing },

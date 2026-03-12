@@ -406,13 +406,12 @@ class GameNewsStore extends Utils.Store {
 
     sortFeeds(f) {
         let a = this.getFeeds();
-        let da = f.map(k => a[k].news.timestamp).sort((n, o) => n - o).reverse();
+        let da = f.map(k => a[k].news.timestamp).sort((n, o) => new Date(n) - new Date(o)).reverse();
         let d = new Set();
         for (let k in da) {
-            d.add(da[k]);
+            d.add(new Date(da[k]).toDateString());
         }
-        console.log(d)
-        //return f.sort((n, o) => a[n].news.timestamp - a[o].news.timestamp);
+        return Array.from(d);
     }
 
     getByGameId(id) {
@@ -448,14 +447,17 @@ class GameNewsStore extends Utils.Store {
         let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
         let total = _keys.length;
         let sorted = this.sortFeeds(_keys);
-        console.log(sorted)
 
         if (!_keys.length) return; 
-        for (let g = 0; g < 4 - s.length; g++) {
-            if (g > (total - 1)) break;
-            let rand = _keys.length * Math.random() << 0;
-            t.push(feeds[_keys[rand]]);
-            _keys.splice(rand, 1)
+        ld: for (let d in sorted) {
+            let f = _keys.filter(k => new Date(feeds[k].news.timestamp).toDateString() === sorted[d])
+            for (let g = 0; g < 4 - s.length; g++) {
+                if (g > f.length) break;
+                if (g > (total - 1) || (t.length > 3)) break ld;
+                let rand = f.length * Math.random() << 0;
+                t.push(feeds[f[rand]]);
+                f.splice(rand, 1)
+            }
         }
         return t;
     }

@@ -230,6 +230,5 @@ function webpackify(css) {
         let regex = new RegExp(`\\.${key}([\\s,.):>])`, 'g');
         css = styles[key]?.value ? css.replace(regex, `.${styles[key].value}$1`) : css.replace(regex, `.${styles[key]}$1`);
     }
-    console.log(css)
     return css;
 }

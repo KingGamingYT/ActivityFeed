@@ -19,7 +19,7 @@ function Subpagination({article}) {
             />
             <div className={FeedClasses.paginationText}>
                 <div className={`${FeedClasses.paginationTitle} ${FeedClasses.paginationContent}`}>{article.news?.title || "No Title"}</div>
-                <div className={`${FeedClasses.paginationSubtitle} ${FeedClasses.paginationContent}`}>{article.application.name || "Unknown Game"}</div>
+                <div className={`${FeedClasses.paginationSubtitle} ${FeedClasses.paginationContent}`}>{article.application?.name || "Unknown Game"}</div>
             </div>
         </div>
     )

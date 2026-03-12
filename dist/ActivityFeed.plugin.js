@@ -38,7 +38,7 @@ const ReactDOM = BdApi.ReactDOM;
 // modules/common.js
 const Filters = [
 	{ name: "ActivityButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "USER_PROFILE_ACTIVITY_BUTTONS") },
-	{ name: "ActivitySectionModule", filter: (x) => x.key === "activity_section", searchExports: true },
+	{ name: "ActivitySectionModule", filter: ((x) => x.key === "activity_section"), searchExports: true },
 	{ name: "ActivityTimer", filter: betterdiscord.Webpack.Filters.byStrings("timestamps", ".TEXT_FEEDBACK_POSITIVE"), searchExports: true },
 	{ name: "AnchorClasses", filter: betterdiscord.Webpack.Filters.byKeys("anchor", "anchorUnderlineOnHover"), searchExports: true },
 	{ name: "Animated", filter: (x) => x.Easing && x.accelerate },
@@ -2668,6 +2668,15 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		const oW = new Date(Date.now() - 12096e5);
 		return new Date(f.timestamp) > oW;
 	}
+	sortFeeds(f) {
+		let a = this.getFeeds();
+		let da = f.map((k) => a[k].news.timestamp).sort((n, o) => n - o).reverse();
+		let d = new Set();
+		for (let k in da) {
+			d.add(da[k]);
+		}
+		console.log(d);
+	}
 	getByGameId(id) {
 		let d = this.dataSet;
 		for (let k = 0; k < Object.keys(d).length; k++) {
@@ -2699,9 +2708,11 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		let keys = Object.keys(feeds);
 		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
 		let total = _keys.length;
+		let sorted = this.sortFeeds(_keys);
+		console.log(sorted);
 		if (!_keys.length) return;
 		for (let g = 0; g < 4 - s.length; g++) {
-			if (g > total) break;
+			if (g > total - 1) break;
 			let rand = _keys.length * Math.random() << 0;
 			t.push(feeds[_keys[rand]]);
 			_keys.splice(rand, 1);
@@ -5216,7 +5227,7 @@ function Subpagination({ article }) {
 				}
 			}
 		),
-		BdApi.React.createElement("div", { className: FeedClasses.paginationText }, BdApi.React.createElement("div", { className: `${FeedClasses.paginationTitle} ${FeedClasses.paginationContent}` }, article.news?.title || "No Title"), BdApi.React.createElement("div", { className: `${FeedClasses.paginationSubtitle} ${FeedClasses.paginationContent}` }, article.application.name || "Unknown Game"))
+		BdApi.React.createElement("div", { className: FeedClasses.paginationText }, BdApi.React.createElement("div", { className: `${FeedClasses.paginationTitle} ${FeedClasses.paginationContent}` }, article.news?.title || "No Title"), BdApi.React.createElement("div", { className: `${FeedClasses.paginationSubtitle} ${FeedClasses.paginationContent}` }, article.application?.name || "Unknown Game"))
 	);
 }
 function FeedPaginationBuilder({ articleSet }) {

@@ -404,6 +404,17 @@ class GameNewsStore extends Utils.Store {
         return new Date(f.timestamp) > oW;
     }
 
+    sortFeeds(f) {
+        let a = this.getFeeds();
+        let da = f.map(k => a[k].news.timestamp).sort((n, o) => n - o).reverse();
+        let d = new Set();
+        for (let k in da) {
+            d.add(da[k]);
+        }
+        console.log(d)
+        //return f.sort((n, o) => a[n].news.timestamp - a[o].news.timestamp);
+    }
+
     getByGameId(id) {
         let d = this.dataSet;
 
@@ -434,12 +445,14 @@ class GameNewsStore extends Utils.Store {
         let s = this.lockSet;
         t = t.concat(s);
         let keys = Object.keys(feeds);
-        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news))
+        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
         let total = _keys.length;
+        let sorted = this.sortFeeds(_keys);
+        console.log(sorted)
 
         if (!_keys.length) return; 
         for (let g = 0; g < 4 - s.length; g++) {
-            if (g > total) break;
+            if (g > (total - 1)) break;
             let rand = _keys.length * Math.random() << 0;
             t.push(feeds[_keys[rand]]);
             _keys.splice(rand, 1)

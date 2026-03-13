@@ -2007,7 +2007,7 @@ const settings = {
 			note: "Wipes articles that have been locked in.",
 			innerText: "Wipe",
 			type: "button",
-			onClick: () => NewsStore.clearLockedInArticles()
+			onClick: () => NewsStore.clearLockedArticles()
 		},
 		lockedInArticles: {
 			name: "Lock in articles",
@@ -2266,6 +2266,11 @@ const css$4 = `
 		path {
 				fill: currentColor;
 		}
+		svg {
+				color: var(--channel-icon);
+				height: var(--chat-input-icon-size);
+				width: var(--chat-input-icon-size);
+		}
 }
 
 .headerBar__2cbe2 {
@@ -2332,6 +2337,11 @@ const css$4 = `
 				font-size: 24px;
 				font-weight: 400;
 				line-height: 1.25;
+		}
+		.emptyState__2cbe2.emptyState__2cbe2 {
+				margin-top: var(--space-lg);
+				border-radius: var(--radius-sm);
+				flex-wrap: unset;
 		}
 }`;
 _loadStyle("ActivityFeed.module.css", css$4);
@@ -2833,10 +2843,13 @@ const css$3 = `
 		border-radius: 5px;
 		flex: 1 1 75%;
 		min-height: 388px;
-		margin-right: 20px;
 		overflow: hidden;
 		position: relative;
 		transform: translateZ(0);
+}
+
+.carousel__94d97:not(:only-child) {
+		margin-right: 20px;
 }
 
 .article__94d97 {
@@ -2862,7 +2875,9 @@ const css$3 = `
 
 .articleSimple__94d97 {}
 
-.unavailable__94d97 {}
+.unavailable__94d97 {
+		padding: 20px;
+}
 
 .background__94d97 {
 		background-repeat: no-repeat;
@@ -3261,6 +3276,12 @@ svg.arrow__94d97 {
 				background-color: var(--background-surface-high);
 				border-radius: var(--radius-md);
 		}
+
+		.smallCarousel__94d97 {
+				background-color: var(--background-surface-high);
+				border-radius: var(--radius-md);
+		}
+
 		.article__94d97 {
 				background-color: var(--background-surface-high);
 				border-radius: var(--radius-md);
@@ -3269,12 +3290,19 @@ svg.arrow__94d97 {
 				overflow: hidden;
 				padding: var(--space-lg);
 		}
+
 		.background__94d97 {
 				z-index: -1;
 		}
+
 		.applicationArea__94d97 {
 				gap: var(--space-xs);
 		}
+
+		.titleStandard__94d97 {
+				margin: unset;
+		}
+
 		.details__94d97 {
 				display: flex;
 				flex-direction: column;
@@ -3283,21 +3311,25 @@ svg.arrow__94d97 {
 						margin: unset;
 				}
 		}
+
 		.gameIcon__94d97 {
 				border-radius: var(--radius-sm);
 		}
+
 		.description__94d97 {
 				color: var(--text-subtle);
 				font-size: 14px;
 				font-weight: 400;
 				line-height: 1.2857142857142858;
 		}
+
 		.timestamp__94d97 {
 				color: var(--text-muted);
 				font-size: 12px;
 				font-weight: 400;
 				text-transform: unset;
 		}
+
 		.feedOverflowMenu__94d97 {
 				/* Mimic Mana Button */
 				top: var(--space-lg);
@@ -3310,8 +3342,8 @@ svg.arrow__94d97 {
 				cursor: pointer;
 				display: flex;
 				justify-content: center;
-				min-height: 40px;
-				min-width: 40px;
+				min-height: 38px;
+				min-width: 38px;
 				padding: 0;
 				transition: background .2s ease, border .2s ease, color .2s ease;
 				&:hover {
@@ -3336,27 +3368,94 @@ svg.arrow__94d97 {
 				border-radius: var(--radius-md);
 				overflow: hidden;
 		}
+
 		.paginationItem__94d97:after {
 				background: linear-gradient(270deg, transparent 0, var(--background-surface-high)) !important;
 		}
+
 		.paginationItem__94d97:not(.selectedPage__94d97):hover {
 				background: var(--background-surface-high);
 		}
-		.selectedPage__94d97 {
-				background: var(--backgroundsurface-high);
-		}
-		.splashArt__94d97 {
-				opacity: .1;
-				transition: .5s ease;
-		}
-		.selectedPage__94d97 .splashArt__94d97 {
-				opacity: .2;
-		}
+
 		.paginationSubtitle__94d97 {
 				color: var(--text-subtle);
 				font-weight: 400;
 		}
 
+		.paginationSmall__94d97 {
+				align-items: center;
+				height: unset;
+				margin-inline: var(--space-lg);
+				margin-bottom: var(--space-lg);
+		}
+
+		.horizontalPaginationItemContainer__94d97 {
+				gap: 8px;
+		}
+
+		.selectedPage__94d97 {
+				background: var(--background-surface-high);
+		}
+
+		.splashArt__94d97 {
+				opacity: .1;
+				transition: .5s ease;
+		}
+
+		.selectedPage__94d97 .splashArt__94d97 {
+				opacity: .2;
+		}
+
+		.dot__94d97 {
+				background-color: var(--icon-strong);
+				border-radius: var(--radius-round);
+				margin: unset;
+				transition: opacity 0.2s ease, width 0.2s ease;
+		}
+
+		.dotNormal__94d97 {
+				opacity: 0.6;
+		}
+
+		.dotSelected__94d97 {
+				opacity: 1;
+				width: 32px;
+		}
+
+		.arrowContainer__94d97 {
+				position: unset;
+				background-color: transparent;
+				border: 1px solid transparent;
+				border-radius: var(--radius-sm);
+				color: var(--control-icon-only-icon-default);
+				cursor: pointer;
+				display: flex;
+				justify-content: center;
+				min-height: 40px;
+				min-width: 40px;
+				height: 40px;
+				width: 40px;
+				padding: 0;
+				transform: unset;
+				transition: background .2s ease, border .2s ease, color .2s ease;
+				&:hover {
+						background-color: var(--control-icon-only-background-hover);
+						border-color: var(--control-icon-only-border-hover);
+						color: var(--control-icon-only-icon-hover);
+				}
+				&:active {
+						background-color: var(--control-icon-only-background-active);
+						border-color: var(--control-icon-only-border-active);
+						color: var(--control-icon-only-icon-active);
+				}
+		}
+		
+		svg.arrow__94d97 {
+				transform-origin: center;
+				width: 24px;
+				height: 24px;
+				scale: 0.833333333;
+		}
 }`;
 _loadStyle("ApplicationNews.module.css", css$3);
 const modules_98d78101 = {
@@ -5172,6 +5271,16 @@ function FeedMiniCarouselBuilder({ currentArticle }) {
 }
 
 // activity_feed/components/application_news/components/MiniPaginationBuilder.tsx
+function ArrowIcon({ type }) {
+	return BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses[type]}` }, BdApi.React.createElement(
+		"path",
+		{
+			fill: "currentColor",
+			fillRule: "nonzero",
+			d: betterdiscord.Data.load("v2News") ?? settings.default.v2News ? "M12.7004 3.30002C12.5135 3.11679 12.2621 3.01416 12.0004 3.01416C11.7386 3.01416 11.4873 3.11679 11.3004 3.30002L3.30039 11.3C3.18577 11.386 3.09097 11.4956 3.02239 11.6214C2.95381 11.7472 2.91306 11.8862 2.90291 12.0291C2.89275 12.172 2.91342 12.3155 2.96352 12.4497C3.01362 12.5839 3.09198 12.7058 3.19328 12.8071C3.29459 12.9084 3.41649 12.9868 3.55072 13.0369C3.68494 13.087 3.82837 13.1077 3.97128 13.0975C4.11419 13.0873 4.25325 13.0466 4.37905 12.978C4.50484 12.9094 4.61443 12.8146 4.70039 12.7L11.0004 6.42002V20C11.0004 20.2652 11.1057 20.5196 11.2933 20.7071C11.4808 20.8947 11.7352 21 12.0004 21C12.2656 21 12.52 20.8947 12.7075 20.7071C12.895 20.5196 13.0004 20.2652 13.0004 20V6.41002L19.3004 12.71C19.4928 12.8726 19.7396 12.9565 19.9912 12.9451C20.2429 12.9336 20.4809 12.8276 20.6578 12.6482C20.8347 12.4688 20.9373 12.2292 20.9452 11.9774C20.9531 11.7256 20.8657 11.4801 20.7004 11.29L12.7004 3.29002V3.30002Z" : "M13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8"
+		}
+	));
+}
 function MiniSubpagination({ article, currentArticle }) {
 	return BdApi.React.createElement(
 		"div",
@@ -5186,11 +5295,10 @@ function FeedMiniPaginationBuilder({ articleSet, currentArticle }) {
 		"button",
 		{
 			type: "button",
-			className: `${FeedClasses.prevButtonContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
-			onClick: () => NewsStore.setCurrentArticle(currentArticle.index - 1),
-			disabled: currentArticle.index === 0 && true
+			className: `${FeedClasses.prevButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
+			onClick: () => NewsStore.setCurrentArticle(currentArticle.index === 0 ? 3 : currentArticle.index - 1)
 		},
-		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses.left}` }, BdApi.React.createElement("polygon", { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8" })))
+		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement(ArrowIcon, { type: "left" }))
 	), BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.horizontalPaginationItemContainer} ${Common.PositionClasses.alignCenter}` }, articleSet.map((article) => {
 		if (!article) return;
 		return BdApi.React.createElement(MiniSubpagination, { article, currentArticle });
@@ -5198,11 +5306,10 @@ function FeedMiniPaginationBuilder({ articleSet, currentArticle }) {
 		"button",
 		{
 			type: "button",
-			className: `${FeedClasses.nextButtonContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
-			onClick: () => NewsStore.setCurrentArticle(currentArticle.index + 1),
-			disabled: currentArticle.index === 3 && true
+			className: `${FeedClasses.nextButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
+			onClick: () => NewsStore.setCurrentArticle(currentArticle.index === 3 ? 0 : currentArticle.index + 1)
 		},
-		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses.right}` }, BdApi.React.createElement("polygon", { fill: "currentColor", fillRule: "nonzero", points: "13 20 11 20 11 8 5.5 13.5 4.08 12.08 12 4.16 19.92 12.08 18.5 13.5 13 8" })))
+		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement(ArrowIcon, { type: "right" }))
 	));
 }
 
@@ -5263,7 +5370,7 @@ function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 			}
 		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer }, BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, errorText), errorDescription && BdApi.React.createElement("div", { className: FeedClasses.description }, errorDescription)))));
 	} else if (type === "horizontal") {
-		return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement("div", { className: `${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+		return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement("div", { className: `${FeedClasses.unavailable} ${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}` }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,
@@ -5430,6 +5537,10 @@ const css$2 = `
 		.dockIcon__1ffe5 {
 				border-radius: var(--radius-sm);
 		}
+		.emptyIcon__1ffe5 {
+				margin-right: 10px;
+				flex-shrink: 0;
+		}
 }`;
 _loadStyle("QuickLauncher.module.css", css$2);
 const modules_1116a9ae = {
@@ -5469,7 +5580,7 @@ function LauncherGameBuilder({ game, runningGames }) {
 	));
 }
 function LauncherEmptyBuilder() {
-	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dock} ${MainClasses.emptyState}` }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!"));
+	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Dock") ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock, MainClasses.emptyState) }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!"));
 }
 function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
@@ -7113,7 +7224,8 @@ const styles = Object.assign(
 		sm: betterdiscord.Webpack.getModule((x) => x.primary && x.hasText && !x.hasTrailing).sm,
 		interactiveSelected: betterdiscord.Webpack.getByKeys("icon", "upperContainer").interactiveSelected,
 		lookFilled: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").lookFilled,
-		colorPrimary: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").colorPrimary
+		colorPrimary: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").colorPrimary,
+		contents: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").contents
 	},
 	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("itemCard")),
 	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("tabularNumbers")),
@@ -7125,7 +7237,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > .wrapper {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");

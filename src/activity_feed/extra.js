@@ -12,7 +12,8 @@ const styles = Object.assign({
         sm: Webpack.getModule(x=>x.primary && x.hasText && !x.hasTrailing).sm,
         interactiveSelected: Webpack.getByKeys('icon', 'upperContainer').interactiveSelected,
         lookFilled: Webpack.getByKeys('colorPrimary', 'grow').lookFilled,
-        colorPrimary: Webpack.getByKeys('colorPrimary', 'grow').colorPrimary
+        colorPrimary: Webpack.getByKeys('colorPrimary', 'grow').colorPrimary,
+        contents: Webpack.getByKeys('colorPrimary', 'grow').contents
     },
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('itemCard')),
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('tabularNumbers')),
@@ -131,6 +132,30 @@ export const extraCSS = webpackify(`
             border-width: 1px;
             margin: 12px 0 12px 0;
         } 
+    }
+
+    .activityFeedV2 {
+        .nowPlaying .emptyState {
+            background-color: var(--background-mod-normal) !important;
+            border-color: var(--border-normal) !important;
+        }
+    }
+
+    .dockV2 {
+        &:is(.emptyState) {
+            background: var(--background-feedback-info);
+            border: 1px solid var(--icon-feedback-info) !important;
+            border-radius: var(--radius-sm);
+            color: var(--text-feedback-info) !important;
+            padding: 8px !important;
+            margin-bottom: var(--space-lg);
+        }
+    }
+
+    .feedCarouselV2 {
+        .arrowContainer .contents {
+            display: contents;
+        }
     }
 
     .nowPlaying .emptyState {

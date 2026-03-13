@@ -67,6 +67,11 @@
     path {
         fill: currentColor;
     }
+    svg {
+        color: var(--channel-icon);
+        height: var(--chat-input-icon-size);
+        width: var(--chat-input-icon-size);
+    }
 }
 
 .headerBar {
@@ -133,5 +138,10 @@
         font-size: 24px;
         font-weight: 400;
         line-height: 1.25;
+    }
+    .emptyState.emptyState {
+        margin-top: var(--space-lg);
+        border-radius: var(--radius-sm);
+        flex-wrap: unset;
     }
 }

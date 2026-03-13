@@ -29,7 +29,7 @@ export function FeedSkeletonErrorBuilder({errorText, errorDescription}) {
 	else if (type === "horizontal") {
 		return (
 			<span className={FeedClasses.smallCarousel}>
-				<div className={`${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}`}>
+				<div className={`${FeedClasses.unavailable} ${FeedClasses.articleSkeleton} ${FeedClasses.articleSimple} ${FeedClasses.article}`}>
 					<div className={FeedClasses.background}>
 						<div
 							className={FeedClasses.backgroundImage}

@@ -87,4 +87,8 @@
     .dockIcon {
         border-radius: var(--radius-sm);
     }
+    .emptyIcon {
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
 }

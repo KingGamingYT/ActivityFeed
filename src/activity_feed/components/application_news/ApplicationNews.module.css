@@ -10,10 +10,13 @@
     border-radius: 5px;
     flex: 1 1 75%;
     min-height: 388px;
-    margin-right: 20px;
     overflow: hidden;
     position: relative;
     transform: translateZ(0);
+}
+
+.carousel:not(:only-child) {
+    margin-right: 20px;
 }
 
 .article {
@@ -39,7 +42,9 @@
 
 .articleSimple {}
 
-.unavailable {}
+.unavailable {
+    padding: 20px;
+}
 
 .background {
     background-repeat: no-repeat;
@@ -438,6 +443,12 @@ svg.arrow {
         background-color: var(--background-surface-high);
         border-radius: var(--radius-md);
     }
+
+    .smallCarousel {
+        background-color: var(--background-surface-high);
+        border-radius: var(--radius-md);
+    }
+
     .article {
         background-color: var(--background-surface-high);
         border-radius: var(--radius-md);
@@ -446,12 +457,19 @@ svg.arrow {
         overflow: hidden;
         padding: var(--space-lg);
     }
+
     .background {
         z-index: -1;
     }
+
     .applicationArea {
         gap: var(--space-xs);
     }
+
+    .titleStandard {
+        margin: unset;
+    }
+
     .details {
         display: flex;
         flex-direction: column;
@@ -460,21 +478,25 @@ svg.arrow {
             margin: unset;
         }
     }
+
     .gameIcon {
         border-radius: var(--radius-sm);
     }
+
     .description {
         color: var(--text-subtle);
         font-size: 14px;
         font-weight: 400;
         line-height: 1.2857142857142858;
     }
+
     .timestamp {
         color: var(--text-muted);
         font-size: 12px;
         font-weight: 400;
         text-transform: unset;
     }
+
     .feedOverflowMenu {
         /* Mimic Mana Button */
         top: var(--space-lg);
@@ -487,8 +509,8 @@ svg.arrow {
         cursor: pointer;
         display: flex;
         justify-content: center;
-        min-height: 40px;
-        min-width: 40px;
+        min-height: 38px;
+        min-width: 38px;
         padding: 0;
         transition: background .2s ease, border .2s ease, color .2s ease;
         &:hover {
@@ -513,25 +535,92 @@ svg.arrow {
         border-radius: var(--radius-md);
         overflow: hidden;
     }
+
     .paginationItem:after {
         background: linear-gradient(270deg, transparent 0, var(--background-surface-high)) !important;
     }
+
     .paginationItem:not(.selectedPage):hover {
         background: var(--background-surface-high);
     }
-    .selectedPage {
-        background: var(--backgroundsurface-high);
-    }
-    .splashArt {
-        opacity: .1;
-        transition: .5s ease;
-    }
-    .selectedPage .splashArt {
-        opacity: .2;
-    }
+
     .paginationSubtitle {
         color: var(--text-subtle);
         font-weight: 400;
     }
 
+    .paginationSmall {
+        align-items: center;
+        height: unset;
+        margin-inline: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    .horizontalPaginationItemContainer {
+        gap: 8px;
+    }
+
+    .selectedPage {
+        background: var(--background-surface-high);
+    }
+
+    .splashArt {
+        opacity: .1;
+        transition: .5s ease;
+    }
+
+    .selectedPage .splashArt {
+        opacity: .2;
+    }
+
+    .dot {
+        background-color: var(--icon-strong);
+        border-radius: var(--radius-round);
+        margin: unset;
+        transition: opacity 0.2s ease, width 0.2s ease;
+    }
+
+    .dotNormal {
+        opacity: 0.6;
+    }
+
+    .dotSelected {
+        opacity: 1;
+        width: 32px;
+    }
+
+    .arrowContainer {
+        position: unset;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: var(--radius-sm);
+        color: var(--control-icon-only-icon-default);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        min-height: 40px;
+        min-width: 40px;
+        height: 40px;
+        width: 40px;
+        padding: 0;
+        transform: unset;
+        transition: background .2s ease, border .2s ease, color .2s ease;
+        &:hover {
+            background-color: var(--control-icon-only-background-hover);
+            border-color: var(--control-icon-only-border-hover);
+            color: var(--control-icon-only-icon-hover);
+        }
+        &:active {
+            background-color: var(--control-icon-only-background-active);
+            border-color: var(--control-icon-only-border-active);
+            color: var(--control-icon-only-icon-active);
+        }
+    }
+    
+    svg.arrow {
+        transform-origin: center;
+        width: 24px;
+        height: 24px;
+        scale: 0.833333333;
+    }
 }

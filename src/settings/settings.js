@@ -44,7 +44,7 @@ export default {
             note: "Wipes articles that have been locked in.",
             innerText: "Wipe",
             type: "button",
-            onClick: () => NewsStore.clearLockedInArticles()
+            onClick: () => NewsStore.clearLockedArticles()
         },
         lockedInArticles: {
             name: "Lock in articles",

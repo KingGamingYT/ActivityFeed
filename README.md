@@ -1,7 +1,7 @@
 # ActivityFeed
 A from-the-ground-up recreation of version one of Discord's Activity Feed tab circa late 2018-to-early 2019, featuring game news, a recently played quick launcher, and friend activity with modern touches.
 
-Taking all of nine months to develop from concept to release, this has been by far the most widely-scoped plugin I have made to-date, and it will likely stay that way. Originally being closely entwined with Discord's ill-fated game store, the activity tab was removed in 2020. Today, I'm of the opinion that it would compliment Discord's new "gaming" push well, compared to all of the bloat they keep adding to make more money. Ironic, the activity tab was itself deemed as bloat in Discord's blog post from the time announcing its removal.
+Taking all of nine months to develop from concept to release, this has been by far the most widely-scoped plugin I have made to-date, and it will likely stay that way. Originally being closely entwined with Discord's ill-fated game store, the activity tab was removed in 2020. Today, I'm of the opinion that it would compliment Discord's new "gaming" push well, compared to all of the bloat they keep adding to make more money. Ironic, considering the activity tab was itself deemed as bloat in Discord's blog post from the time announcing its removal.
 
 I wasn't the only one who thought the idea of bringing back the activity feed had potential and, with that being said, here's everyone who had a hand in "getting it real":
 

@@ -85,15 +85,15 @@ layoutUtils.SidebarItem("activity_feed_sidebar_item",
 
 export default class ActivityFeed {
     GameNewsStore = NewsStore;
+    load () {
+        NavigationUtils.transitionTo('/activity-feed');
+    }
     async start() {
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
         if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
 
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
-        if (performance.getEntriesByType('navigation')[0]?.type === 'reload') {
-            NavigationUtils.transitionTo('/channels/@me')
-        }
 
         function NewType(props) {
             const ret = NewType._(props);
@@ -107,7 +107,7 @@ export default class ActivityFeed {
                 createElement(Route, {
                     disableTrack: true,
                     path: "/activity-feed",
-                    render: () => TabBaseBuilder(),
+                    render: () => createElement(TabBaseBuilder),
                     exact: true,
                     key: "activity-feed"
                 })
@@ -147,6 +147,7 @@ export default class ActivityFeed {
                 ...channelRouteProps.path.filter(m => m !== "/activity-feed"),
                 "/activity-feed"
             ]
+            return res;
         });
 
         Patcher.after(Common.ActivitySectionModule, "buildLayout", (that, [props], res) => {

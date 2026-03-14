@@ -1,7 +1,7 @@
-import { Utils, Data } from 'betterdiscord';
-import { useState, useMemo } from 'react';
+import { Utils, Data, ContextMenu } from 'betterdiscord';
+import { useState, useRef, useMemo } from 'react';
 import { Common, shell } from '@modules/common';
-import { GameStore, RunningGameStore, useStateFromStores } from '@modules/stores';
+import { GameStore, RunningGameStore, UserSettingsProtoStore, useStateFromStores } from '@modules/stores';
 import SectionHeader from '@activity_feed/common/components/SectionHeader';
 import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -13,8 +13,19 @@ export function LauncherGameBuilder({game, runningGames}) {
     const disableCheck = useMemo(() => ~runningGames.findIndex(m => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
     const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0])
     const skuViaGame = fullGame.thirdPartySkus
+    const refDOM = useRef(null)
+    const [showPopout, setShowPopout] = useState(false);
 
     const isSteam = Object.values(skuViaGame).find(x => x.distributor.toLowerCase().includes('steam'))
+
+    function PlayPopout({close}) {
+        return (
+            <ContextMenu.Menu navId="launcher-context-menu" onClose={close}>
+                <ContextMenu.Item id="play-game" label="Play Game" action={() => { setDisable(true); openGame(); timer }} />
+                {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(fullGame.id)} />}
+            </ContextMenu.Menu>
+        )
+    }
 
     function openGame()
     {
@@ -22,16 +33,32 @@ export function LauncherGameBuilder({game, runningGames}) {
     }
 
     return (
-        <div className={`${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`} style={{ flex: "0 0 auto"}}>
-            <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} />
-            <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
-            <button 
-                className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
-                disabled={disableCheck}
-                onClick={() => { setDisable(true); openGame(); timer }}>
-                <div className={`${Common.ButtonVoidClasses.contents}`}>Play</div>
-            </button>
-        </div>
+        <Common.Popout 
+            targetElementRef={refDOM}
+            clickTrap={true}
+            onRequestClose={() => setShowPopout(false)}
+            renderPopout={() => <Common.PopoutContainer position={"right"}>
+                <PlayPopout close={() => setShowPopout(false) } />
+            </Common.PopoutContainer>}
+            position={"right"}
+            shouldShow={showPopout}
+        >{(props) => <div
+            {...props}
+            ref={refDOM}
+            onClick={(e) => e.shiftKey && !disableCheck && setShowPopout(true)}
+            >
+                <div className={`${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`} style={{ flex: "0 0 auto"}}>
+                    <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} />
+                    <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
+                    <button 
+                        className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
+                        disabled={disableCheck}
+                        onClick={() => { setDisable(true); openGame(); timer }}>
+                        <div className={`${Common.ButtonVoidClasses.contents}`}>Play</div>
+                    </button>
+                </div>
+            </div>
+        }</Common.Popout>
     )
 }
 

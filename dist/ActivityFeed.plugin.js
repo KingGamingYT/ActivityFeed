@@ -270,6 +270,7 @@ const NewGameStore = betterdiscord.Webpack.getStore("NewGameStore");
 const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
 const RunningGameStore = betterdiscord.Webpack.getStore("RunningGameStore");
 const ThemeStore = betterdiscord.Webpack.getStore("ThemeStore");
+const UserSettingsProtoStore = betterdiscord.Webpack.getStore("UserSettingsProtoStore");
 const UserStore = betterdiscord.Webpack.getStore("UserStore");
 const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, { useStateFromStores: betterdiscord.Webpack.Filters.byStrings("useStateFromStores") }, { raw: true });
 const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
@@ -3524,7 +3525,7 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
 	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 	if (isNaN(applicationId)) {
-		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), !NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockingInArticles") && BdApi.React.createElement(
+		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed-overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), !NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockingInArticles") && BdApi.React.createElement(
 			betterdiscord.ContextMenu.Item,
 			{
 				id: "lock-in-article",
@@ -3540,7 +3541,7 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 			}
 		));
 	}
-	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed=overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), BdApi.React.createElement(
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed-overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), BdApi.React.createElement(
 		betterdiscord.ContextMenu.Item,
 		{
 			id: "unfollow-game",
@@ -5562,22 +5563,49 @@ function LauncherGameBuilder({ game, runningGames }) {
 	const disableCheck = React.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
 	const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
 	const skuViaGame = fullGame.thirdPartySkus;
+	const refDOM = React.useRef(null);
+	const [showPopout, setShowPopout] = React.useState(false);
 	const isSteam = Object.values(skuViaGame).find((x) => x.distributor.toLowerCase().includes("steam"));
+	function PlayPopout({ close }) {
+		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "launcher-context-menu", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "play-game", label: "Play Game", action: () => {
+			setDisable(true);
+			openGame();
+		} }), UserSettingsProtoStore.settings.appearance.developerMode && BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(fullGame.id) }));
+	}
 	function openGame() {
 		shell.openExternal(!!isSteam ? `steam://run/${isSteam.id}` : game.exepath);
 	}
-	return BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + fullGame.id + "/" + fullGame.icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
-		"button",
+	return BdApi.React.createElement(
+		Common.Popout,
 		{
-			className: `${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`,
-			disabled: disableCheck,
-			onClick: () => {
-				setDisable(true);
-				openGame();
-			}
+			targetElementRef: refDOM,
+			clickTrap: true,
+			onRequestClose: () => setShowPopout(false),
+			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position: "right" }, BdApi.React.createElement(PlayPopout, { close: () => setShowPopout(false) })),
+			position: "right",
+			shouldShow: showPopout
 		},
-		BdApi.React.createElement("div", { className: `${Common.ButtonVoidClasses.contents}` }, "Play")
-	));
+		(props) => BdApi.React.createElement(
+			"div",
+			{
+				...props,
+				ref: refDOM,
+				onClick: (e) => e.shiftKey && !disableCheck && setShowPopout(true)
+			},
+			BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + fullGame.id + "/" + fullGame.icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
+				"button",
+				{
+					className: `${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`,
+					disabled: disableCheck,
+					onClick: () => {
+						setDisable(true);
+						openGame();
+					}
+				},
+				BdApi.React.createElement("div", { className: `${Common.ButtonVoidClasses.contents}` }, "Play")
+			))
+		)
+	);
 }
 function LauncherEmptyBuilder() {
 	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Dock") ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock, MainClasses.emptyState) }, BdApi.React.createElement("svg", { className: QuickLauncherClasses.emptyIcon, name: "OpenExternal", width: 16, height: 16, viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", transform: "translate(3, 4)", d: "M16 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H2V4h14v10h-4v2h4c1.1 0 2-.9 2-2V2a2 2 0 0 0-2-2zM9 6l-4 4h3v6h2v-6h3L9 6z" })), BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!"));
@@ -6872,6 +6900,15 @@ function Scroller({ children, padding }) {
 	return BdApi.React.createElement("div", { className: MainClasses.scrollerBase, style: { overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" } }, children);
 }
 function TabBaseBuilder() {
+	const recoverOnReload = (e) => {
+		if ((e.key == "r" || e.key == "R") && e.ctrlKey) {
+			NavigationUtils.transitionTo("/channels/@me");
+		}
+	};
+	React.useEffect(() => {
+		window.addEventListener("keydown", recoverOnReload);
+		return () => window.removeEventListener("keydown", recoverOnReload);
+	});
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
 	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
@@ -7314,14 +7351,14 @@ const sidebarItem = layoutUtils.SidebarItem(
 );
 class ActivityFeed {
 	GameNewsStore = NewsStore;
+	load() {
+		NavigationUtils.transitionTo("/activity-feed");
+	}
 	async start() {
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
-		if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
-			NavigationUtils.transitionTo("/channels/@me");
-		}
 		function NewType(props) {
 			const ret = NewType._(props);
 			const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5, { walkable: ["children", "props"] });
@@ -7333,7 +7370,7 @@ class ActivityFeed {
 				React.createElement(Route, {
 					disableTrack: true,
 					path: "/activity-feed",
-					render: () => TabBaseBuilder(),
+					render: () => React.createElement(TabBaseBuilder),
 					exact: true,
 					key: "activity-feed"
 				})
@@ -7365,6 +7402,7 @@ class ActivityFeed {
 				...channelRouteProps.path.filter((m) => m !== "/activity-feed"),
 				"/activity-feed"
 			];
+			return res;
 		});
 		betterdiscord.Patcher.after(Common.ActivitySectionModule, "buildLayout", (that, [props], res) => {
 			if (!betterdiscord.Utils.findInTree(res, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {

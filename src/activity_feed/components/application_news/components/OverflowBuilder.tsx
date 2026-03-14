@@ -13,7 +13,7 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
 
     if (isNaN(applicationId)) {
         return (
-            <ContextMenu.Menu navId="feed=overflow" onClose={close}>
+            <ContextMenu.Menu navId="feed-overflow" onClose={close}>
                 <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
                 {!NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
                     id="lock-in-article" 
@@ -30,7 +30,7 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
     }
 
     return (
-        <ContextMenu.Menu navId="feed=overflow" onClose={close}>
+        <ContextMenu.Menu navId="feed-overflow" onClose={close}>
             <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(applicationId)} />
             <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
             <ContextMenu.Item 
@@ -91,7 +91,6 @@ export function FeedOverflowBuilder({applicationId, gameId, articleUrl, position
                     </div>
                 </Tooltip>
             </div>
-        }</Common.Popout>
-            
+        }</Common.Popout>   
     )
 }

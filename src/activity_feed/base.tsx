@@ -1,4 +1,5 @@
 import { Data, Utils } from "betterdiscord";
+import { useEffect } from "react";
 import { Common, ControllerIcon, NavigationUtils } from "@modules/common";
 import { UserStore } from "@modules/stores";
 import { NewsFeedBuilder } from "./components/application_news/FeedBuilder";
@@ -8,7 +9,6 @@ import settings from "@settings/settings";
 import MainClasses from "./ActivityFeed.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css"
 import NowPlayingClasses from "./components/now_playing/NowPlaying.module.css"
-import { useEffect } from "react";
 
 function Scroller({ children, padding }: {children: any, padding?: number}) {
     return <div className={MainClasses.scrollerBase}style={{ overflow: "hidden scroll", paddingRight: `${padding}px` || "0px" }}>{children}</div>

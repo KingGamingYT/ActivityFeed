@@ -51,9 +51,11 @@ const Filters = [
 	{ name: "Clipboard", filter: betterdiscord.Webpack.Filters.byStrings("navigator.clipboard.write"), searchExports: true },
 	{ name: "DMSidebar", filter: betterdiscord.Webpack.Filters.bySource(".A.CONTACTS_LIST") },
 	{ name: "FetchApplications", filter: betterdiscord.Webpack.Filters.byKeys("fetchApplication") },
+	{ name: "FetchGames", filter: betterdiscord.Webpack.Filters.bySource(".GAME", "fetchMany"), searchExports: true },
 	{ name: "FetchUtils", filter: (x) => typeof x === "object" && x.del && x.put, searchExports: true },
 	{ name: "FluxDispatcher", filter: betterdiscord.Webpack.Filters.byKeys("dispatch", "subscribe", "register"), searchExports: true },
 	{ name: "FormSwitch", filter: betterdiscord.Webpack.Filters.byStrings('"data-toggleable-component":"switch"', 'layout:"horizontal"'), searchExports: true },
+	{ name: "GameFetchModule", filter: betterdiscord.Webpack.Filters.bySource('type:"GAME_FETCH_SUCCESS",gameIds:') },
 	{ name: "GameProfile", filter: (x) => x.openGameProfileModal },
 	{ name: "GameProfileCheck", filter: betterdiscord.Webpack.Filters.byStrings("gameProfileModalChecks", "onOpened") },
 	{ name: "GradientComponent", filter: betterdiscord.Webpack.Filters.byStrings("darken"), searchExports: true },
@@ -1886,8 +1888,11 @@ function SplashGen(isSpotify, activity, game, voice, stream) {
 		case !!(voice && stream):
 			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
 			break;
+		case !!!game?.data?.supplementalData:
+			input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`;
+			break;
 		default:
-			input = game?.supplementalData?.artwork[0];
+			input = game?.data?.supplementalData?.artwork[0];
 	}
 	return input || null;
 }
@@ -1955,7 +1960,11 @@ function useWindowSize() {
 async function parseXML(xml) {
 	let body = await xml;
 	let result;
+	const entities = [{ key: "#8211", value: "\u2013" }, { key: "#8217", value: "'" }];
 	const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
+	for (let e in entities) {
+		parser.addEntity(entities[e].key, entities[e].value);
+	}
 	try {
 		result = await parser.parse(body);
 	} catch (e) {
@@ -2593,7 +2602,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	async fetchFeeds() {
 		const gameData = await this.getFeedGameData();
-		const ignore = ["IMG", "VIDEO", "LI"];
+		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
 		for (let i = 0; i < ignore.length; i++) {
 			delete HtmlSanitizer.AllowedTags[ignore[i]];
 		}
@@ -2980,6 +2989,11 @@ const css$3 = `
 		width: 40px;
 		flex-shrink: 0;
 		border-radius: 3px;
+}
+
+.clickableIcon__94d97 {
+		opacity: 0.8;
+		cursor: pointer;
 }
 
 .pagination__94d97 {
@@ -3478,6 +3492,7 @@ const modules_98d78101 = {
 	"description": "description__94d97",
 	"timestamp": "timestamp__94d97",
 	"gameIcon": "gameIcon__94d97",
+	"clickableIcon": "clickableIcon__94d97",
 	"pagination": "pagination__94d97",
 	"verticalPaginationItemContainer": "verticalPaginationItemContainer__94d97",
 	"scrollerWrap": "scrollerWrap__94d97",
@@ -5198,6 +5213,7 @@ const SwitchTransition$1 = SwitchTransition;
 // activity_feed/components/application_news/components/CarouselBuilder.tsx
 function FeedCarouselBuilder({ currentArticle }) {
 	const External = settings.external[currentArticle.id];
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: currentArticle.application.id });
 	const ref = React.useRef(null);
 	Common.ReactSpring.useSpring(
 		() => NewsStore.getOrientation() === "horizontal" ? {
@@ -5234,6 +5250,9 @@ function FeedCarouselBuilder({ currentArticle }) {
 			"img",
 			{
 				className: FeedClasses.gameIcon,
+				onClick: useGameProfile,
+				onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${FeedClasses.clickableIcon}`),
+				onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${FeedClasses.clickableIcon}`),
 				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
 			}
 		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))))
@@ -5243,6 +5262,7 @@ function FeedCarouselBuilder({ currentArticle }) {
 // activity_feed/components/application_news/components/MiniCarouselBuilder.tsx
 function FeedMiniCarouselBuilder({ currentArticle }) {
 	const External = settings.external[currentArticle.id];
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: currentArticle.application.id });
 	return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 		"a",
 		{
@@ -5265,6 +5285,9 @@ function FeedMiniCarouselBuilder({ currentArticle }) {
 			"img",
 			{
 				className: FeedClasses.gameIcon,
+				onClick: useGameProfile,
+				onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${FeedClasses.clickableIcon}`),
+				onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${FeedClasses.clickableIcon}`),
 				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
 			}
 		), BdApi.React.createElement("div", { className: `${FeedClasses.titleRowSimple}` }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title")))))
@@ -5563,6 +5586,7 @@ function LauncherGameBuilder({ game, runningGames }) {
 	const disableCheck = React.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
 	const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
 	const skuViaGame = fullGame.thirdPartySkus;
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
 	const refDOM = React.useRef(null);
 	const [showPopout, setShowPopout] = React.useState(false);
 	const isSteam = Object.values(skuViaGame).find((x) => x.distributor.toLowerCase().includes("steam"));
@@ -5592,7 +5616,7 @@ function LauncherGameBuilder({ game, runningGames }) {
 				ref: refDOM,
 				onClick: (e) => e.shiftKey && !disableCheck && setShowPopout(true)
 			},
-			BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + fullGame.id + "/" + fullGame.icon + ".webp"})` } }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
+			BdApi.React.createElement("div", { className: `${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`, style: { flex: "0 0 auto" } }, BdApi.React.createElement("div", { className: QuickLauncherClasses.dockIcon, style: { backgroundImage: `url(${"https://cdn.discordapp.com/app-icons/" + fullGame.id + "/" + fullGame.icon + ".webp"})` }, onClick: useGameProfile }), BdApi.React.createElement("div", { className: QuickLauncherClasses.dockItemText }, game.name), BdApi.React.createElement(
 				"button",
 				{
 					className: `${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`,
@@ -6179,9 +6203,12 @@ const css$1 = `
 }
 
 .userOverflow__93528 {
+		display: flex;
+		flex-wrap: wrap;
 		color: var(--app-message-embed-secondary-text);
 		font-size: 12px;
 		align-content: center;
+		justify-content: center;
 		margin-right: 8px;
 }
 
@@ -6197,6 +6224,7 @@ const css$1 = `
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
+		background: var(--experimental-avatar-embed-bg);
 }
 
 .emptyUser__93528 svg {
@@ -6466,23 +6494,23 @@ function FlexInfo(props) {
 function PartyMemberListBuilder({ activity, users }) {
 	const emptyNum = activity?.party?.size[1] - activity?.party?.size[0];
 	const anonNum = activity?.party?.size[0] - 1;
-	const anonUsers = [];
 	const emptyUsers = [];
 	for (let i = 0; i < anonNum; i++) {
-		anonUsers.push("anon");
 		emptyUsers.push("anon");
 	}
 	for (let i = 0; i < emptyNum; i++) {
 		emptyUsers.push(null);
 	}
+	const totalCount = users.length + anonNum;
+	const userOverflowCount = totalCount - 10;
 	const playerFill = users.concat(emptyUsers);
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.partyList }, playerFill.splice(0, 10).map(
 		(player) => {
 			switch (player) {
 				case "anon":
-					return BdApi.React.createElement("div", { className: NowPlayingClasses.emptyUser, style: { background: "var(--experimental-avatar-embed-bg)" } }, BdApi.React.createElement("svg", { width: "10", height: "10" }, BdApi.React.createElement("path", { fill: "rgba(255, 255, 255, 0.7)", d: "M4.99967 4.16671C5.4417 4.16671 5.86563 3.99111 6.17819 3.67855C6.49075 3.36599 6.66634 2.94207 6.66634 2.50004C6.66634 2.05801 6.49075 1.63409 6.17819 1.32153C5.86563 1.00897 5.4417 0.833374 4.99967 0.833374C4.55765 0.833374 4.13372 1.00897 3.82116 1.32153C3.5086 1.63409 3.33301 2.05801 3.33301 2.50004C3.33301 2.94207 3.5086 3.36599 3.82116 3.67855C4.13372 3.99111 4.55765 4.16671 4.99967 4.16671ZM4.80384 4.58337C3.75071 4.58337 2.74071 5.00173 1.99604 5.7464C1.25136 6.49108 0.833008 7.50108 0.833008 8.55421C0.833008 8.89171 1.10801 9.16671 1.44551 9.16671H1.53717C1.63717 9.16671 1.72051 9.09587 1.74551 9.00004C1.86634 8.53337 2.09551 8.09587 2.29551 7.78754C2.35384 7.70004 2.47467 7.74587 2.46217 7.85004L2.35384 8.93754C2.34551 9.06254 2.43717 9.16671 2.56217 9.16671H7.43717C7.46638 9.16685 7.49529 9.16086 7.52202 9.14911C7.54876 9.13736 7.57273 9.12013 7.59237 9.09852C7.61202 9.07691 7.6269 9.05141 7.63605 9.02368C7.64521 8.99595 7.64843 8.9666 7.64551 8.93754L7.53301 7.85421C7.52467 7.74587 7.64551 7.70004 7.70384 7.78754C7.90384 8.09587 8.13301 8.53754 8.25384 8.99587C8.27884 9.09587 8.36217 9.16671 8.46217 9.16671H8.55384C8.89134 9.16671 9.16634 8.89171 9.16634 8.55421C9.16634 7.50108 8.74799 6.49108 8.00331 5.7464C7.25863 5.00173 6.24864 4.58337 5.19551 4.58337H4.80384Z" })));
+					return BdApi.React.createElement("div", { className: NowPlayingClasses.emptyUser }, BdApi.React.createElement("svg", { width: "10", height: "10" }, BdApi.React.createElement("path", { fill: "rgba(255, 255, 255, 0.7)", d: "M4.99967 4.16671C5.4417 4.16671 5.86563 3.99111 6.17819 3.67855C6.49075 3.36599 6.66634 2.94207 6.66634 2.50004C6.66634 2.05801 6.49075 1.63409 6.17819 1.32153C5.86563 1.00897 5.4417 0.833374 4.99967 0.833374C4.55765 0.833374 4.13372 1.00897 3.82116 1.32153C3.5086 1.63409 3.33301 2.05801 3.33301 2.50004C3.33301 2.94207 3.5086 3.36599 3.82116 3.67855C4.13372 3.99111 4.55765 4.16671 4.99967 4.16671ZM4.80384 4.58337C3.75071 4.58337 2.74071 5.00173 1.99604 5.7464C1.25136 6.49108 0.833008 7.50108 0.833008 8.55421C0.833008 8.89171 1.10801 9.16671 1.44551 9.16671H1.53717C1.63717 9.16671 1.72051 9.09587 1.74551 9.00004C1.86634 8.53337 2.09551 8.09587 2.29551 7.78754C2.35384 7.70004 2.47467 7.74587 2.46217 7.85004L2.35384 8.93754C2.34551 9.06254 2.43717 9.16671 2.56217 9.16671H7.43717C7.46638 9.16685 7.49529 9.16086 7.52202 9.14911C7.54876 9.13736 7.57273 9.12013 7.59237 9.09852C7.61202 9.07691 7.6269 9.05141 7.63605 9.02368C7.64521 8.99595 7.64843 8.9666 7.64551 8.93754L7.53301 7.85421C7.52467 7.74587 7.64551 7.70004 7.70384 7.78754C7.90384 8.09587 8.13301 8.53754 8.25384 8.99587C8.27884 9.09587 8.36217 9.16671 8.46217 9.16671H8.55384C8.89134 9.16671 9.16634 8.89171 9.16634 8.55421C9.16634 7.50108 8.74799 6.49108 8.00331 5.7464C7.25863 5.00173 6.24864 4.58337 5.19551 4.58337H4.80384Z" })));
 				case null:
-					return BdApi.React.createElement("div", { className: NowPlayingClasses.emptyUser, style: { background: "var(--experimental-avatar-embed-bg" } });
+					return BdApi.React.createElement("div", { className: NowPlayingClasses.emptyUser });
 				default:
 					return BdApi.React.createElement(
 						Common.AvatarFetch,
@@ -6494,7 +6522,7 @@ function PartyMemberListBuilder({ activity, users }) {
 					);
 			}
 		}
-	), users.length + anonUsers.length > 10 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}` }, `+${users.length + anonNum - 10}`));
+	), totalCount > 10 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}`, style: { width: userOverflowCount > 9 ? "22px" : "19px", borderRadius: userOverflowCount > 9 && "16px" } }, `+${userOverflowCount}`));
 }
 function RegularCardTrailing({ activity, user, server, players, check, v2Enabled }) {
 	const [width, height] = useWindowSize();
@@ -7352,7 +7380,9 @@ const sidebarItem = layoutUtils.SidebarItem(
 class ActivityFeed {
 	GameNewsStore = NewsStore;
 	load() {
-		NavigationUtils.transitionTo("/activity-feed");
+		if (window.location.href.endsWith("/channels/@me")) {
+			NavigationUtils.transitionTo("/activity-feed");
+		}
 	}
 	async start() {
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
@@ -7395,6 +7425,11 @@ class ActivityFeed {
 			panel.children.unshift(
 				React.createElement(NavigatorButton, { key: "activityFeed_button" })
 			);
+		});
+		betterdiscord.Patcher.before(Common.GameFetchModule, "E", (thisObj, args) => {
+			const filtered = args[0].filter((x) => !isNaN(x));
+			args[0] = filtered;
+			return args;
 		});
 		betterdiscord.Patcher.after(betterdiscord.Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {
 			const channelRouteProps = betterdiscord.Utils.findInTree(res, (node) => node && node.path?.length > 5, { walkable: ["children", "props"] });

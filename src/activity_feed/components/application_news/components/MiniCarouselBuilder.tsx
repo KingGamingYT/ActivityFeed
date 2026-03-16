@@ -5,7 +5,8 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function FeedMiniCarouselBuilder({currentArticle}) {
     const External = settings.external[currentArticle.id];
-    
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: currentArticle.application.id});
+
     return (
         <span className={FeedClasses.smallCarousel}>
             <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
@@ -34,6 +35,9 @@ export function FeedMiniCarouselBuilder({currentArticle}) {
                                 :
                                 <img
                                     className={FeedClasses.gameIcon}
+                                    onClick={useGameProfile}
+                                    onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${FeedClasses.clickableIcon}`)}
+                                    onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${FeedClasses.clickableIcon}`)}
                                     src={currentArticle.news?.application_id && currentArticle.application?.icon
                                         ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false`
                                         : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`

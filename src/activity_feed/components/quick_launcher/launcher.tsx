@@ -11,8 +11,9 @@ export function LauncherGameBuilder({game, runningGames}) {
     const [shouldDisable, setDisable] = useState(false);
     const timer = setTimeout(() => setDisable(false), 10000);
     const disableCheck = useMemo(() => ~runningGames.findIndex(m => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
-    const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0])
-    const skuViaGame = fullGame.thirdPartySkus
+    const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
+    const skuViaGame = fullGame.thirdPartySkus;
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
     const refDOM = useRef(null)
     const [showPopout, setShowPopout] = useState(false);
 
@@ -48,7 +49,7 @@ export function LauncherGameBuilder({game, runningGames}) {
             onClick={(e) => e.shiftKey && !disableCheck && setShowPopout(true)}
             >
                 <div className={`${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`} style={{ flex: "0 0 auto"}}>
-                    <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} />
+                    <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} onClick={useGameProfile} />
                     <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
                     <button 
                         className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 

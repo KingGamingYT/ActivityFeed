@@ -86,7 +86,9 @@ layoutUtils.SidebarItem("activity_feed_sidebar_item",
 export default class ActivityFeed {
     GameNewsStore = NewsStore;
     load () {
-        NavigationUtils.transitionTo('/activity-feed');
+        if (window.location.href.endsWith('/channels/@me')) {
+            NavigationUtils.transitionTo('/activity-feed');
+        }
     }
     async start() {
         NewsStore.whitelist = Data.load('whitelist');
@@ -139,6 +141,12 @@ export default class ActivityFeed {
                 createElement(NavigatorButton, {key: "activityFeed_button"})
             );
         });
+
+        Patcher.before(Common.GameFetchModule,'E', (thisObj, args) => {
+            const filtered = args[0].filter(x => !isNaN(x))
+            args[0] = filtered
+            return args
+        })
 
         Patcher.after(Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {
             const channelRouteProps = Utils.findInTree(res, (node) => node && node.path?.length > 5, { walkable: [ "children", "props" ] });

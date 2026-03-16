@@ -558,9 +558,12 @@
 }
 
 .userOverflow {
+    display: flex;
+    flex-wrap: wrap;
     color: var(--app-message-embed-secondary-text);
     font-size: 12px;
     align-content: center;
+    justify-content: center;
     margin-right: 8px;
 }
 
@@ -576,6 +579,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
+    background: var(--experimental-avatar-embed-bg);
 }
 
 .emptyUser svg {

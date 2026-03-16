@@ -77,7 +77,8 @@ export function SplashGen(isSpotify, activity, game, voice, stream) {
         case !! ["YouTube Music", "Crunchyroll"].includes(activity?.name): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! (voice && !activity): input = 'https://cdn.discordapp.com/banners/' + voice[0]?.guild?.id + '/' + voice[0]?.guild?.banner + '.webp?size=1024&keep_aspect_ratio=true'; break;
         case !! (voice && stream): input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
-        default: input = game?.supplementalData?.artwork[0];
+        case !! (!game?.data?.supplementalData): input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
+        default: input = game?.data?.supplementalData?.artwork[0];
     }
     return input || null;
 }
@@ -136,7 +137,9 @@ export function useWindowSize() {
 export async function parseXML(xml) {
     let body = await xml;
     let result;
+    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}];
     const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
+    for (let e in entities) { parser.addEntity(entities[e].key, entities[e].value) };
     try {
         result = await parser.parse(body);
     } catch (e) {

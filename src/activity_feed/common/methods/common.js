@@ -69,14 +69,16 @@ export function GradGen(check, isSpotify, activity, game, voice, stream) {
     return Common.GradientComponent(input || null);
 }
 
-export function SplashGen(isSpotify, activity, game, voice, stream) {
+export function SplashGen(isSpotify, activity, game, voice, stream, check) {
     let input;
     switch (true) {
         case !! game?.currentGame?.splash?.length: input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.currentGame?.splash}.png?size=1024&keep_aspect_ratio=true`; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
         case !! ["YouTube Music", "Crunchyroll"].includes(activity?.name): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
-        case !! (voice && !activity): input = 'https://cdn.discordapp.com/banners/' + voice[0]?.guild?.id + '/' + voice[0]?.guild?.banner + '.webp?size=1024&keep_aspect_ratio=true'; break;
-        case !! (voice && stream): input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
+        case !! (voice && voice[0]?.guild?.banner && !activity): input = 'https://cdn.discordapp.com/banners/' + voice[0]?.guild?.id + '/' + voice[0]?.guild?.banner + '.webp?size=1024&keep_aspect_ratio=true'; break;
+        case !! (voice && stream): stream.guildId ? input = `https://cdn.discordapp.com/icons/${stream.guildId}/${voice[0]?.guild?.icon}.png?size=1024` : input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
+        case !! (voice && !activity): input = `https://cdn.discordapp.com/icons/${voice[0]?.guild?.id}/${voice[0]?.guild?.icon}.png?size=1024`; break;
+        case !! check?.streaming: activity.name.toLowerCase().endsWith('youtube') ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`; break;
         case !! (!game?.data?.supplementalData): input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
         default: input = game?.data?.supplementalData?.artwork[0];
     }

@@ -1,6 +1,7 @@
 import { ContextMenu, Data } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common, ModalSystem } from "@modules/common";
+import { UserSettingsProtoStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
@@ -31,7 +32,7 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
 
     return (
         <ContextMenu.Menu navId="feed-overflow" onClose={close}>
-            <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(applicationId)} />
+            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(applicationId)} />}
             <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
             <ContextMenu.Item 
                 id="unfollow-game" 
@@ -81,7 +82,7 @@ export function FeedOverflowBuilder({applicationId, gameId, articleUrl, position
             {...props}
             ref={refDOM}
             onClick={() => setShowPopout(true)}
-            style={{ position: "absolute", zIndex: 2, top: "0", right: "0" }}
+            style={{ position: "absolute", zIndex: 3, top: "0", right: "0" }}
             >
                 <Tooltip note="More">
                     <div className={FeedClasses.feedOverflowMenu}>

@@ -23,7 +23,7 @@ export function MiniSubpagination({article, currentArticle}) {
     return (
         <div
             className={article.index === currentArticle.index ? `${FeedClasses.dotSelected} ${FeedClasses.dot}` : `${FeedClasses.dotNormal} ${FeedClasses.dot}`}
-            onClick={() => NewsStore.setCurrentArticle(article.index)}
+            onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false); NewsStore.setDirection(article.index - currentArticle.index) }}
         />
     )
 }
@@ -34,7 +34,7 @@ export function FeedMiniPaginationBuilder({articleSet, currentArticle}) {
             <button 
                 type="button"
                 className={`${FeedClasses.prevButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`}
-                onClick={() => NewsStore.setCurrentArticle(currentArticle.index === 0 ? 3 : currentArticle.index - 1)}
+                onClick={() => { NewsStore.setCurrentArticle(currentArticle.index === 0 ? 3 : currentArticle.index - 1); NewsStore.setIdling(false); NewsStore.setDirection(-1) }}
             >
                 <div className={Common.ButtonVoidClasses.contents}>
                     <ArrowIcon type={"left"} />
@@ -52,7 +52,7 @@ export function FeedMiniPaginationBuilder({articleSet, currentArticle}) {
             <button 
                 type="button"
             className={`${FeedClasses.nextButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`}
-                onClick={() => NewsStore.setCurrentArticle(currentArticle.index === 3 ? 0 : currentArticle.index + 1)}
+                onClick={() => { NewsStore.setCurrentArticle(currentArticle.index === 3 ? 0 : currentArticle.index + 1); NewsStore.setIdling(false); NewsStore.setDirection(1) }}
             >
                 <div className={Common.ButtonVoidClasses.contents}>
                     <ArrowIcon type={"right"} />

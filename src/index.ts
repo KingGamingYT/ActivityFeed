@@ -9,6 +9,7 @@ import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
 import settings from "./settings/settings.js";
 import NewsStore from "./activity_feed/Store.js";
+import NewsArticle from "@activity_feed/components/application_news/Article";
 
 
 function useSelectedState() {
@@ -85,6 +86,7 @@ layoutUtils.SidebarItem("activity_feed_sidebar_item",
 
 export default class ActivityFeed {
     GameNewsStore = NewsStore;
+    NewsArticle = NewsArticle;
     load () {
         if (window.location.href.endsWith('/channels/@me')) {
             NavigationUtils.transitionTo('/activity-feed');
@@ -96,26 +98,35 @@ export default class ActivityFeed {
         if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
 
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
-
-        function NewType(props) {
-            const ret = NewType._(props);
-
-            const { children } = Utils.findInTree(ret, (node) => node && node.children?.length > 5, { walkable: [ "children", "props" ] });
-            
-            const index = children.findIndex(m => m.key === "activity-feed");
-            if (~index) { children.splice(index, 1); }            
-
-            children.push(
-                createElement(Route, {
-                    disableTrack: true,
-                    path: "/activity-feed",
-                    render: () => createElement(TabBaseBuilder),
-                    exact: true,
-                    key: "activity-feed"
-                })
-            )
-            
-            return ret;
+        const [appContentModule, appContentKey] = Webpack.getWithKey(Webpack.Filters.byStrings("hasNotice", "AppView"));
+        if (appContentModule) {
+            Patcher.after(appContentModule, appContentKey, (that, args, ret) => {
+                const { children } = Utils.findInTree(ret, (node) => node && node.children?.length > 5 && node.children.some(c => c?.props?.path), { walkable: ["children", "props"] }) ?? {};
+                if (!children) return;
+                const index = children.findIndex((m) => m.key === "activity-feed");
+                if (~index) {
+                    children.splice(index, 1);
+                }
+                children.push(
+                    createElement(Route, {
+                        disableTrack: true,
+                        path: "/activity-feed",
+                        render: () => createElement(TabBaseBuilder),
+                        exact: true,
+                        key: "activity-feed"
+                    })
+                );
+            });
+            const patchedFn = appContentModule[appContentKey];
+            const inst = ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
+            if (inst) {
+                Patcher.after(inst, "render", (that, args, res) => {
+                    if (res?.props?.children) {
+                        res.props.children = { ...res.props.children, type: patchedFn };
+                    }
+                });
+                inst.forceUpdate();
+            }
         }
 
         DOM.addStyle('activityPanelCSS', styles());
@@ -168,59 +179,6 @@ export default class ActivityFeed {
         Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
             return createElement(CoachmarkWrapper, {button: res})
         })
-        
-        function fu() {
-            const appI = ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {
-                filter: m => typeof m.ensureChannelMatchesGuild === "function"
-            });
-            
-            console.log("fu()");
-            if (appI) {
-                appI.forceUpdate(() => {
-                    const inst = ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
-
-                    Patcher.after(inst, "render", (that, args, res) => {
-                        NewType._ ??= res.props.children.type;
-
-                        res.props.children.type = NewType;
-                    });
-
-                    inst?.forceUpdate(() => {
-                        console.log("inst.forceUpdate");
-                        
-                        appI.forceUpdate();
-                        inst.forceUpdate();
-                    });
-                });
-            };
-        }
-
-        fu();
-
-        {
-            const appMount = document.getElementById("app-mount");
-
-            const reactContainerKey = Object.keys(appMount).find(m => m.startsWith("__reactContainer$"));
-
-            let container = appMount[reactContainerKey];
-
-            while (!container.stateNode?.isReactComponent) {
-                container = container.child;
-            }
-
-            container = container.child;
-
-            while (!container.stateNode?.isReactComponent) {
-                container = container.child;
-            }
-
-            Patcher.after(container.stateNode, "render", fu);
-
-            const undo = Patcher.after(container.stateNode, "render", () => {
-                undo();
-                fu();
-            });
-        }
     }
     stop() {
         Patcher.unpatchAll('ActivityFeed');

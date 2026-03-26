@@ -8,7 +8,7 @@ function Subpagination({article}) {
     return (
         <div 
             className={article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
-            onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false); console.log(NewsStore.getDirection(article.index - currentArticle.index))}}
+            onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false); NewsStore.setDirection(article.index - currentArticle.index) }}
             key={article}>
             <div 
                 className={FeedClasses.splashArt}

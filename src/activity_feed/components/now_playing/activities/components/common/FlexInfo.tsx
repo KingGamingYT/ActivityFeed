@@ -18,7 +18,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
                     >{game?.name}</div>
                 </div>
                 {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
-                    <TimeClock timestamp={ activity.created_at } />
+                    <TimeClock timestamp={ activity?.timestamps.start || activity.created_at } />
                 </div>}
             </>
         )

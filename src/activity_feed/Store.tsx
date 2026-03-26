@@ -17,6 +17,7 @@ class GameNewsStore extends Utils.Store {
     state = [];
     lastTimeFetched;
     idling;
+    direction;
     hasDismissedSettingsCoachmark;
     constructor() {
         super();
@@ -27,6 +28,7 @@ class GameNewsStore extends Utils.Store {
         this.blacklist = [];
         this.whitelist = [];
         this.lastTimeFetched;
+        this.direction = 1;
         this.idling = true;
         this.hasDismissedSettingsCoachmark = Data.load("hasDismissedSettingsCoachmark") ?? false;
 
@@ -37,83 +39,6 @@ class GameNewsStore extends Utils.Store {
         this.state = { size: [window.innerWidth, window.innerHeight] };
         this.emitChange();
     }
-
-    // clean all of this shit UP ↓↓↓↓↓↓↓↓↓
-
-    /*const [springs, control] = Common.ReactSpring.useSpring(() =>
-        (NewsStore.getOrientation() === "horizontal" ? {
-            from: { x: 0, y: 0 },
-            to: { x: 15, y: 15 },
-        }
-        : {
-            from: { x: 0, y: 0 },
-            to: { x: 15, y: 15 },
-        })
-    )*/
-
-    getRootStyle = (props) => {
-        let anim = this.getOrientation() === "horizontal" ?
-            props.x
-            .to([0, 1], ["0px", "-15px"])
-            .to(value => `translateX(${value})`)
-        : 
-            props.y
-            .to([0, 1], ["0px", "15px"])
-            .to(value => `translateY(${value})`)
-        
-        return Common.ReactSpring.useSpring({
-            transform: [
-                props.scale
-                .to([-1, 0, 1], [1.015, 1, 1.015])
-                .to(value => `scale(${value})`),
-                anim
-            ],
-            opacity: props.opacity
-            .to([-1, 0, 1], [0, 1, 0])
-            .to(value => value)
-        })
-    }
-
-    /*oldgetRootStyle = () => {
-        var e = this.getOrientation() === "horizontal" ? {
-          translateX: value.interpolate({
-            inputRange: [0, 1],
-            outputRange: ["0px", "-15px"]
-          })
-        } : {
-          translateY: value.interpolate({
-            inputRange: [0, 1],
-            outputRange: ["0px", "15px"]
-          })
-        };
-        console.log(Animated.accelerate({     
-        transform: [{
-            scale: value.interpolate({
-                inputRange: [-1, 0, 1],
-                outputRange: [1.015, 1, 1.015]
-            })
-        }, e],
-            opacity: value.interpolate({
-                inputRange: [-1, 0, 1],
-                outputRange: [0, 1, 0],
-                easing: Animated.Easing.out(Animated.Easing.ease)
-            }),
-        }))
-        return Animated.accelerate({     
-            transform: [{
-                scale: value.interpolate({
-                    inputRange: [-1, 0, 1],
-                    outputRange: [1.015, 1, 1.015]
-                })
-            }, e],
-            opacity: value.interpolate({
-                inputRange: [-1, 0, 1],
-                outputRange: [0, 1, 0],
-                easing: Animated.Easing.out(Animated.Easing.ease)
-            }),
-            zIndex: 1
-        })
-    }*/
 
     componentDidMount() { window.addEventListener("resize", this.listener); }
     componentWillUnmount() { window.removeEventListener("resize", this.listener); }
@@ -562,8 +487,13 @@ class GameNewsStore extends Utils.Store {
         return ((width > 1200 || height < 600) && (width < 1200 || height > 600)) ? "vertical" : "horizontal";
     }
 
-    getDirection(e) {
-        return e >= 0 ? 1 : -1;
+    setDirection(e) {
+        this.direction = e >= 0 ? 1 : -1;
+        this.emitChange();
+    }
+
+    getDirection() {
+        return this.direction;
     }
 
     setIdling(e) {

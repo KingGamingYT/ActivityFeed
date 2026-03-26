@@ -692,6 +692,7 @@
     }
     .applicationStreamingPreviewWrapper {
         background-color: var(--opacity-white-12);
+        border-radius: var(--radius-sm);
         img {
             border-radius: var(--radius-sm);
         }

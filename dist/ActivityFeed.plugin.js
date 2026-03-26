@@ -32,8 +32,7 @@
 'use strict';
 
 const betterdiscord = new BdApi("ActivityFeed");
-const React = BdApi.React;
-const ReactDOM = BdApi.ReactDOM;
+const react = BdApi.React;
 
 // modules/common.js
 const Filters = [
@@ -84,9 +83,10 @@ const Filters = [
 	{ name: "Spinner", filter: betterdiscord.Webpack.Filters.byStrings('="wanderingCubes'), searchExports: true },
 	{ name: "SpotifyButtons", filter: betterdiscord.Webpack.Filters.byStrings("activity", "PRESS_PLAY_ON_SPOTIFY_BUTTON") },
 	{ name: "Tooltip", filter: betterdiscord.Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
+	{ name: "TransitionGroup", filter: betterdiscord.Webpack.Filters.byStrings("transitionAppear"), searchExports: true },
 	{ name: "UpperIconClasses", filter: betterdiscord.Webpack.Filters.byKeys("icon", "upperContainer") },
 	{ name: "UseStreamPreviewURL", filter: betterdiscord.Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
-	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId") },
+	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId", "getNickname") },
 	{ name: "ManaSwitch", filter: betterdiscord.Webpack.Filters.byStrings("SWITCH_BACKGROUND_DEFAULT"), searchExports: true }
 ];
 const bulkData = betterdiscord.Webpack.getBulk(...Filters);
@@ -1870,7 +1870,7 @@ function GradGen(check, isSpotify, activity, game, voice, stream) {
 	}
 	return Common.GradientComponent(input || null);
 }
-function SplashGen(isSpotify, activity, game, voice, stream) {
+function SplashGen(isSpotify, activity, game, voice, stream, check) {
 	let input;
 	switch (true) {
 		case !!game?.currentGame?.splash?.length:
@@ -1882,11 +1882,17 @@ function SplashGen(isSpotify, activity, game, voice, stream) {
 		case !!["YouTube Music", "Crunchyroll"].includes(activity?.name):
 			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
 			break;
-		case !!(voice && !activity):
+		case !!(voice && voice[0]?.guild?.banner && !activity):
 			input = "https://cdn.discordapp.com/banners/" + voice[0]?.guild?.id + "/" + voice[0]?.guild?.banner + ".webp?size=1024&keep_aspect_ratio=true";
 			break;
 		case !!(voice && stream):
-			input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
+			stream.guildId ? input = `https://cdn.discordapp.com/icons/${stream.guildId}/${voice[0]?.guild?.icon}.png?size=1024` : input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`;
+			break;
+		case !!(voice && !activity):
+			input = `https://cdn.discordapp.com/icons/${voice[0]?.guild?.id}/${voice[0]?.guild?.icon}.png?size=1024`;
+			break;
+		case !!check?.streaming:
+			activity.name.toLowerCase().endsWith("youtube") ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`;
 			break;
 		case !!!game?.data?.supplementalData:
 			input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`;
@@ -1946,8 +1952,8 @@ function activityCheck(activities, isSpotify) {
 	return pass;
 }
 function useWindowSize() {
-	const [size, setSize] = React.useState([0, 0]);
-	React.useLayoutEffect(() => {
+	const [size, setSize] = react.useState([0, 0]);
+	react.useLayoutEffect(() => {
 		function updateSize() {
 			setSize([window.innerWidth, window.innerHeight]);
 		}
@@ -2387,6 +2393,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	state = [];
 	lastTimeFetched;
 	idling;
+	direction;
 	hasDismissedSettingsCoachmark;
 	constructor() {
 		super();
@@ -2397,6 +2404,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.blacklist = [];
 		this.whitelist = [];
 		this.lastTimeFetched;
+		this.direction = 1;
 		this.idling = true;
 		this.hasDismissedSettingsCoachmark = betterdiscord.Data.load("hasDismissedSettingsCoachmark") ?? false;
 		window.addEventListener("resize", this.listener);
@@ -2404,16 +2412,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	listener = () => {
 		this.state = { size: [window.innerWidth, window.innerHeight] };
 		this.emitChange();
-	};
-	getRootStyle = (props) => {
-		let anim = this.getOrientation() === "horizontal" ? props.x.to([0, 1], ["0px", "-15px"]).to((value) => `translateX(${value})`) : props.y.to([0, 1], ["0px", "15px"]).to((value) => `translateY(${value})`);
-		return Common.ReactSpring.useSpring({
-			transform: [
-				props.scale.to([-1, 0, 1], [1.015, 1, 1.015]).to((value) => `scale(${value})`),
-				anim
-			],
-			opacity: props.opacity.to([-1, 0, 1], [0, 1, 0]).to((value) => value)
-		});
 	};
 	componentDidMount() {
 		window.addEventListener("resize", this.listener);
@@ -2826,8 +2824,12 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		const [width, height] = this.state.size?.length ? this.state.size : [WindowStore.windowSize().width, WindowStore.windowSize().height];
 		return (width > 1200 || height < 600) && (width < 1200 || height > 600) ? "vertical" : "horizontal";
 	}
-	getDirection(e) {
-		return e >= 0 ? 1 : -1;
+	setDirection(e) {
+		this.direction = e >= 0 ? 1 : -1;
+		this.emitChange();
+	}
+	getDirection() {
+		return this.direction;
 	}
 	setIdling(e) {
 		this.idling = e;
@@ -3556,7 +3558,7 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 			}
 		));
 	}
-	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed-overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), BdApi.React.createElement(
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed-overflow", onClose: close }, UserSettingsProtoStore.settings.appearance.developerMode && BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(applicationId) }), BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), BdApi.React.createElement(
 		betterdiscord.ContextMenu.Item,
 		{
 			id: "unfollow-game",
@@ -3596,8 +3598,8 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 	));
 }
 function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
-	const [showPopout, setShowPopout] = React.useState(false);
-	const refDOM = React.useRef(null);
+	const [showPopout, setShowPopout] = react.useState(false);
+	const refDOM = react.useRef(null);
 	return BdApi.React.createElement(
 		Common.Popout,
 		{
@@ -3614,1684 +3616,11 @@ function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
 				...props,
 				ref: refDOM,
 				onClick: () => setShowPopout(true),
-				style: { position: "absolute", zIndex: 2, top: "0", right: "0" }
+				style: { position: "absolute", zIndex: 3, top: "0", right: "0" }
 			},
 			BdApi.React.createElement(Tooltip, { note: "More" }, BdApi.React.createElement("div", { className: FeedClasses.feedOverflowMenu }, BdApi.React.createElement("svg", { width: "24", height: "24" }, BdApi.React.createElement("path", { d: "M4 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10-2a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z", fill: "white" }))))
 		)
 	);
-}
-
-// @babel
-function _extends() {
-	return _extends = Object.assign ? Object.assign.bind() : function (n) {
-		for (var e = 1; e < arguments.length; e++) {
-			var t = arguments[e];
-			for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
-		}
-		return n;
-	}, _extends.apply(null, arguments);
-}
-
-// @babel
-function _objectWithoutPropertiesLoose(r, e) {
-	if (null == r) return {};
-	var t = {};
-	for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
-		if (-1 !== e.indexOf(n)) continue;
-		t[n] = r[n];
-	}
-	return t;
-}
-
-// @babel
-function _setPrototypeOf(t, e) {
-	return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
-		return t.__proto__ = e, t;
-	}, _setPrototypeOf(t, e);
-}
-
-// @babel
-function _inheritsLoose(t, o) {
-	t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o);
-}
-
-// prop-types
-var propTypes = {exports: {}};
-
-// react-is
-var reactIs = {exports: {}};
-
-// react-is
-var reactIs_production_min = {};
-
-// react-is
-var hasRequiredReactIs_production_min;
-function requireReactIs_production_min () {
-	if (hasRequiredReactIs_production_min) return reactIs_production_min;
-	hasRequiredReactIs_production_min = 1;
-var b="function"===typeof Symbol&&Symbol.for,c=b?Symbol.for("react.element"):60103,d=b?Symbol.for("react.portal"):60106,e=b?Symbol.for("react.fragment"):60107,f=b?Symbol.for("react.strict_mode"):60108,g=b?Symbol.for("react.profiler"):60114,h=b?Symbol.for("react.provider"):60109,k=b?Symbol.for("react.context"):60110,l=b?Symbol.for("react.async_mode"):60111,m=b?Symbol.for("react.concurrent_mode"):60111,n=b?Symbol.for("react.forward_ref"):60112,p=b?Symbol.for("react.suspense"):60113,q=b?
-	Symbol.for("react.suspense_list"):60120,r=b?Symbol.for("react.memo"):60115,t=b?Symbol.for("react.lazy"):60116,v=b?Symbol.for("react.block"):60121,w=b?Symbol.for("react.fundamental"):60117,x=b?Symbol.for("react.responder"):60118,y=b?Symbol.for("react.scope"):60119;
-	function z(a){if("object"===typeof a&&null!==a){var u=a.$$typeof;switch(u){case c:switch(a=a.type,a){case l:case m:case e:case g:case f:case p:return a;default:switch(a=a&&a.$$typeof,a){case k:case n:case t:case r:case h:return a;default:return u}}case d:return u}}}function A(a){return z(a)===m}reactIs_production_min.AsyncMode=l;reactIs_production_min.ConcurrentMode=m;reactIs_production_min.ContextConsumer=k;reactIs_production_min.ContextProvider=h;reactIs_production_min.Element=c;reactIs_production_min.ForwardRef=n;reactIs_production_min.Fragment=e;reactIs_production_min.Lazy=t;reactIs_production_min.Memo=r;reactIs_production_min.Portal=d;
-	reactIs_production_min.Profiler=g;reactIs_production_min.StrictMode=f;reactIs_production_min.Suspense=p;reactIs_production_min.isAsyncMode=function(a){return A(a)||z(a)===l};reactIs_production_min.isConcurrentMode=A;reactIs_production_min.isContextConsumer=function(a){return z(a)===k};reactIs_production_min.isContextProvider=function(a){return z(a)===h};reactIs_production_min.isElement=function(a){return "object"===typeof a&&null!==a&&a.$$typeof===c};reactIs_production_min.isForwardRef=function(a){return z(a)===n};reactIs_production_min.isFragment=function(a){return z(a)===e};reactIs_production_min.isLazy=function(a){return z(a)===t};
-	reactIs_production_min.isMemo=function(a){return z(a)===r};reactIs_production_min.isPortal=function(a){return z(a)===d};reactIs_production_min.isProfiler=function(a){return z(a)===g};reactIs_production_min.isStrictMode=function(a){return z(a)===f};reactIs_production_min.isSuspense=function(a){return z(a)===p};
-	reactIs_production_min.isValidElementType=function(a){return "string"===typeof a||"function"===typeof a||a===e||a===m||a===g||a===f||a===p||a===q||"object"===typeof a&&null!==a&&(a.$$typeof===t||a.$$typeof===r||a.$$typeof===h||a.$$typeof===k||a.$$typeof===n||a.$$typeof===w||a.$$typeof===x||a.$$typeof===y||a.$$typeof===v)};reactIs_production_min.typeOf=z;
-	return reactIs_production_min;
-}
-
-// react-is
-var reactIs_development = {};
-
-// react-is
-var hasRequiredReactIs_development;
-function requireReactIs_development () {
-	if (hasRequiredReactIs_development) return reactIs_development;
-	hasRequiredReactIs_development = 1;
-	if (process.env.NODE_ENV !== "production") {
-		(function() {
-	var hasSymbol = typeof Symbol === 'function' && Symbol.for;
-	var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
-	var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
-	var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
-	var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
-	var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
-	var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
-	var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace;
-	var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
-	var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
-	var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
-	var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
-	var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
-	var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
-	var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
-	var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
-	var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
-	var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
-	var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
-	function isValidElementType(type) {
-		return typeof type === 'string' || typeof type === 'function' ||
-		type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE || type.$$typeof === REACT_BLOCK_TYPE);
-	}
-	function typeOf(object) {
-		if (typeof object === 'object' && object !== null) {
-			var $$typeof = object.$$typeof;
-			switch ($$typeof) {
-				case REACT_ELEMENT_TYPE:
-					var type = object.type;
-					switch (type) {
-						case REACT_ASYNC_MODE_TYPE:
-						case REACT_CONCURRENT_MODE_TYPE:
-						case REACT_FRAGMENT_TYPE:
-						case REACT_PROFILER_TYPE:
-						case REACT_STRICT_MODE_TYPE:
-						case REACT_SUSPENSE_TYPE:
-							return type;
-						default:
-							var $$typeofType = type && type.$$typeof;
-							switch ($$typeofType) {
-								case REACT_CONTEXT_TYPE:
-								case REACT_FORWARD_REF_TYPE:
-								case REACT_LAZY_TYPE:
-								case REACT_MEMO_TYPE:
-								case REACT_PROVIDER_TYPE:
-									return $$typeofType;
-								default:
-									return $$typeof;
-							}
-					}
-				case REACT_PORTAL_TYPE:
-					return $$typeof;
-			}
-		}
-		return undefined;
-	}
-	var AsyncMode = REACT_ASYNC_MODE_TYPE;
-	var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
-	var ContextConsumer = REACT_CONTEXT_TYPE;
-	var ContextProvider = REACT_PROVIDER_TYPE;
-	var Element = REACT_ELEMENT_TYPE;
-	var ForwardRef = REACT_FORWARD_REF_TYPE;
-	var Fragment = REACT_FRAGMENT_TYPE;
-	var Lazy = REACT_LAZY_TYPE;
-	var Memo = REACT_MEMO_TYPE;
-	var Portal = REACT_PORTAL_TYPE;
-	var Profiler = REACT_PROFILER_TYPE;
-	var StrictMode = REACT_STRICT_MODE_TYPE;
-	var Suspense = REACT_SUSPENSE_TYPE;
-	var hasWarnedAboutDeprecatedIsAsyncMode = false;
-	function isAsyncMode(object) {
-		{
-			if (!hasWarnedAboutDeprecatedIsAsyncMode) {
-				hasWarnedAboutDeprecatedIsAsyncMode = true;
-				console['warn']('The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
-			}
-		}
-		return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
-	}
-	function isConcurrentMode(object) {
-		return typeOf(object) === REACT_CONCURRENT_MODE_TYPE;
-	}
-	function isContextConsumer(object) {
-		return typeOf(object) === REACT_CONTEXT_TYPE;
-	}
-	function isContextProvider(object) {
-		return typeOf(object) === REACT_PROVIDER_TYPE;
-	}
-	function isElement(object) {
-		return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
-	}
-	function isForwardRef(object) {
-		return typeOf(object) === REACT_FORWARD_REF_TYPE;
-	}
-	function isFragment(object) {
-		return typeOf(object) === REACT_FRAGMENT_TYPE;
-	}
-	function isLazy(object) {
-		return typeOf(object) === REACT_LAZY_TYPE;
-	}
-	function isMemo(object) {
-		return typeOf(object) === REACT_MEMO_TYPE;
-	}
-	function isPortal(object) {
-		return typeOf(object) === REACT_PORTAL_TYPE;
-	}
-	function isProfiler(object) {
-		return typeOf(object) === REACT_PROFILER_TYPE;
-	}
-	function isStrictMode(object) {
-		return typeOf(object) === REACT_STRICT_MODE_TYPE;
-	}
-	function isSuspense(object) {
-		return typeOf(object) === REACT_SUSPENSE_TYPE;
-	}
-	reactIs_development.AsyncMode = AsyncMode;
-	reactIs_development.ConcurrentMode = ConcurrentMode;
-	reactIs_development.ContextConsumer = ContextConsumer;
-	reactIs_development.ContextProvider = ContextProvider;
-	reactIs_development.Element = Element;
-	reactIs_development.ForwardRef = ForwardRef;
-	reactIs_development.Fragment = Fragment;
-	reactIs_development.Lazy = Lazy;
-	reactIs_development.Memo = Memo;
-	reactIs_development.Portal = Portal;
-	reactIs_development.Profiler = Profiler;
-	reactIs_development.StrictMode = StrictMode;
-	reactIs_development.Suspense = Suspense;
-	reactIs_development.isAsyncMode = isAsyncMode;
-	reactIs_development.isConcurrentMode = isConcurrentMode;
-	reactIs_development.isContextConsumer = isContextConsumer;
-	reactIs_development.isContextProvider = isContextProvider;
-	reactIs_development.isElement = isElement;
-	reactIs_development.isForwardRef = isForwardRef;
-	reactIs_development.isFragment = isFragment;
-	reactIs_development.isLazy = isLazy;
-	reactIs_development.isMemo = isMemo;
-	reactIs_development.isPortal = isPortal;
-	reactIs_development.isProfiler = isProfiler;
-	reactIs_development.isStrictMode = isStrictMode;
-	reactIs_development.isSuspense = isSuspense;
-	reactIs_development.isValidElementType = isValidElementType;
-	reactIs_development.typeOf = typeOf;
-		})();
-	}
-	return reactIs_development;
-}
-
-// react-is
-reactIs.exports;
-var hasRequiredReactIs;
-function requireReactIs () {
-	if (hasRequiredReactIs) return reactIs.exports;
-	hasRequiredReactIs = 1;
-	if (process.env.NODE_ENV === 'production') {
-		reactIs.exports = /*@__PURE__*/ requireReactIs_production_min();
-	} else {
-		reactIs.exports = /*@__PURE__*/ requireReactIs_development();
-	}
-	return reactIs.exports;
-}
-
-// object-assign
-var objectAssign;
-var hasRequiredObjectAssign;
-function requireObjectAssign () {
-	if (hasRequiredObjectAssign) return objectAssign;
-	hasRequiredObjectAssign = 1;
-	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-	function toObject(val) {
-		if (val === null || val === undefined) {
-			throw new TypeError('Object.assign cannot be called with null or undefined');
-		}
-		return Object(val);
-	}
-	function shouldUseNative() {
-		try {
-			if (!Object.assign) {
-				return false;
-			}
-			var test1 = new String('abc');
-			test1[5] = 'de';
-			if (Object.getOwnPropertyNames(test1)[0] === '5') {
-				return false;
-			}
-			var test2 = {};
-			for (var i = 0; i < 10; i++) {
-				test2['_' + String.fromCharCode(i)] = i;
-			}
-			var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-				return test2[n];
-			});
-			if (order2.join('') !== '0123456789') {
-				return false;
-			}
-			var test3 = {};
-			'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-				test3[letter] = letter;
-			});
-			if (Object.keys(Object.assign({}, test3)).join('') !==
-					'abcdefghijklmnopqrst') {
-				return false;
-			}
-			return true;
-		} catch (err) {
-			return false;
-		}
-	}
-	objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
-		var from;
-		var to = toObject(target);
-		var symbols;
-		for (var s = 1; s < arguments.length; s++) {
-			from = Object(arguments[s]);
-			for (var key in from) {
-				if (hasOwnProperty.call(from, key)) {
-					to[key] = from[key];
-				}
-			}
-			if (getOwnPropertySymbols) {
-				symbols = getOwnPropertySymbols(from);
-				for (var i = 0; i < symbols.length; i++) {
-					if (propIsEnumerable.call(from, symbols[i])) {
-						to[symbols[i]] = from[symbols[i]];
-					}
-				}
-			}
-		}
-		return to;
-	};
-	return objectAssign;
-}
-
-// prop-types
-var ReactPropTypesSecret_1;
-var hasRequiredReactPropTypesSecret;
-function requireReactPropTypesSecret () {
-	if (hasRequiredReactPropTypesSecret) return ReactPropTypesSecret_1;
-	hasRequiredReactPropTypesSecret = 1;
-	var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
-	ReactPropTypesSecret_1 = ReactPropTypesSecret;
-	return ReactPropTypesSecret_1;
-}
-
-// prop-types
-var has;
-var hasRequiredHas;
-function requireHas () {
-	if (hasRequiredHas) return has;
-	hasRequiredHas = 1;
-	has = Function.call.bind(Object.prototype.hasOwnProperty);
-	return has;
-}
-
-// prop-types
-var checkPropTypes_1;
-var hasRequiredCheckPropTypes;
-function requireCheckPropTypes () {
-	if (hasRequiredCheckPropTypes) return checkPropTypes_1;
-	hasRequiredCheckPropTypes = 1;
-	var printWarning = function() {};
-	if (process.env.NODE_ENV !== 'production') {
-		var ReactPropTypesSecret = /*@__PURE__*/ requireReactPropTypesSecret();
-		var loggedTypeFailures = {};
-		var has = /*@__PURE__*/ requireHas();
-		printWarning = function(text) {
-			var message = 'Warning: ' + text;
-			if (typeof console !== 'undefined') {
-				console.error(message);
-			}
-			try {
-				throw new Error(message);
-			} catch (x) {  }
-		};
-	}
-	function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-		if (process.env.NODE_ENV !== 'production') {
-			for (var typeSpecName in typeSpecs) {
-				if (has(typeSpecs, typeSpecName)) {
-					var error;
-					try {
-						if (typeof typeSpecs[typeSpecName] !== 'function') {
-							var err = Error(
-								(componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' +
-								'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.' +
-								'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.'
-							);
-							err.name = 'Invariant Violation';
-							throw err;
-						}
-						error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
-					} catch (ex) {
-						error = ex;
-					}
-					if (error && !(error instanceof Error)) {
-						printWarning(
-							(componentName || 'React class') + ': type specification of ' +
-							location + ' `' + typeSpecName + '` is invalid; the type checker ' +
-							'function must return `null` or an `Error` but returned a ' + typeof error + '. ' +
-							'You may have forgotten to pass an argument to the type checker ' +
-							'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
-							'shape all require an argument).'
-						);
-					}
-					if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-						loggedTypeFailures[error.message] = true;
-						var stack = getStack ? getStack() : '';
-						printWarning(
-							'Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
-						);
-					}
-				}
-			}
-		}
-	}
-	checkPropTypes.resetWarningCache = function() {
-		if (process.env.NODE_ENV !== 'production') {
-			loggedTypeFailures = {};
-		}
-	};
-	checkPropTypes_1 = checkPropTypes;
-	return checkPropTypes_1;
-}
-
-// prop-types
-var factoryWithTypeCheckers;
-var hasRequiredFactoryWithTypeCheckers;
-function requireFactoryWithTypeCheckers () {
-	if (hasRequiredFactoryWithTypeCheckers) return factoryWithTypeCheckers;
-	hasRequiredFactoryWithTypeCheckers = 1;
-	var ReactIs = /*@__PURE__*/ requireReactIs();
-	var assign = /*@__PURE__*/ requireObjectAssign();
-	var ReactPropTypesSecret = /*@__PURE__*/ requireReactPropTypesSecret();
-	var has = /*@__PURE__*/ requireHas();
-	var checkPropTypes = /*@__PURE__*/ requireCheckPropTypes();
-	var printWarning = function() {};
-	if (process.env.NODE_ENV !== 'production') {
-		printWarning = function(text) {
-			var message = 'Warning: ' + text;
-			if (typeof console !== 'undefined') {
-				console.error(message);
-			}
-			try {
-				throw new Error(message);
-			} catch (x) {}
-		};
-	}
-	function emptyFunctionThatReturnsNull() {
-		return null;
-	}
-	factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
-		var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-		var FAUX_ITERATOR_SYMBOL = '@@iterator';
-		function getIteratorFn(maybeIterable) {
-			var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-			if (typeof iteratorFn === 'function') {
-				return iteratorFn;
-			}
-		}
-		var ANONYMOUS = '<<anonymous>>';
-		var ReactPropTypes = {
-			array: createPrimitiveTypeChecker('array'),
-			bigint: createPrimitiveTypeChecker('bigint'),
-			bool: createPrimitiveTypeChecker('boolean'),
-			func: createPrimitiveTypeChecker('function'),
-			number: createPrimitiveTypeChecker('number'),
-			object: createPrimitiveTypeChecker('object'),
-			string: createPrimitiveTypeChecker('string'),
-			symbol: createPrimitiveTypeChecker('symbol'),
-			any: createAnyTypeChecker(),
-			arrayOf: createArrayOfTypeChecker,
-			element: createElementTypeChecker(),
-			elementType: createElementTypeTypeChecker(),
-			instanceOf: createInstanceTypeChecker,
-			node: createNodeChecker(),
-			objectOf: createObjectOfTypeChecker,
-			oneOf: createEnumTypeChecker,
-			oneOfType: createUnionTypeChecker,
-			shape: createShapeTypeChecker,
-			exact: createStrictShapeTypeChecker,
-		};
-		function is(x, y) {
-			if (x === y) {
-				return x !== 0 || 1 / x === 1 / y;
-			} else {
-				return x !== x && y !== y;
-			}
-		}
-		function PropTypeError(message, data) {
-			this.message = message;
-			this.data = data && typeof data === 'object' ? data: {};
-			this.stack = '';
-		}
-		PropTypeError.prototype = Error.prototype;
-		function createChainableTypeChecker(validate) {
-			if (process.env.NODE_ENV !== 'production') {
-				var manualPropTypeCallCache = {};
-				var manualPropTypeWarningCount = 0;
-			}
-			function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
-				componentName = componentName || ANONYMOUS;
-				propFullName = propFullName || propName;
-				if (secret !== ReactPropTypesSecret) {
-					if (throwOnDirectAccess) {
-						var err = new Error(
-							'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-							'Use `PropTypes.checkPropTypes()` to call them. ' +
-							'Read more at http://fb.me/use-check-prop-types'
-						);
-						err.name = 'Invariant Violation';
-						throw err;
-					} else if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined') {
-						var cacheKey = componentName + ':' + propName;
-						if (
-							!manualPropTypeCallCache[cacheKey] &&
-							manualPropTypeWarningCount < 3
-						) {
-							printWarning(
-								'You are manually calling a React.PropTypes validation ' +
-								'function for the `' + propFullName + '` prop on `' + componentName + '`. This is deprecated ' +
-								'and will throw in the standalone `prop-types` package. ' +
-								'You may be seeing this warning due to a third-party PropTypes ' +
-								'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.'
-							);
-							manualPropTypeCallCache[cacheKey] = true;
-							manualPropTypeWarningCount++;
-						}
-					}
-				}
-				if (props[propName] == null) {
-					if (isRequired) {
-						if (props[propName] === null) {
-							return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
-						}
-						return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
-					}
-					return null;
-				} else {
-					return validate(props, propName, componentName, location, propFullName);
-				}
-			}
-			var chainedCheckType = checkType.bind(null, false);
-			chainedCheckType.isRequired = checkType.bind(null, true);
-			return chainedCheckType;
-		}
-		function createPrimitiveTypeChecker(expectedType) {
-			function validate(props, propName, componentName, location, propFullName, secret) {
-				var propValue = props[propName];
-				var propType = getPropType(propValue);
-				if (propType !== expectedType) {
-					var preciseType = getPreciseType(propValue);
-					return new PropTypeError(
-						'Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'),
-						{expectedType: expectedType}
-					);
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createAnyTypeChecker() {
-			return createChainableTypeChecker(emptyFunctionThatReturnsNull);
-		}
-		function createArrayOfTypeChecker(typeChecker) {
-			function validate(props, propName, componentName, location, propFullName) {
-				if (typeof typeChecker !== 'function') {
-					return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
-				}
-				var propValue = props[propName];
-				if (!Array.isArray(propValue)) {
-					var propType = getPropType(propValue);
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
-				}
-				for (var i = 0; i < propValue.length; i++) {
-					var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
-					if (error instanceof Error) {
-						return error;
-					}
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createElementTypeChecker() {
-			function validate(props, propName, componentName, location, propFullName) {
-				var propValue = props[propName];
-				if (!isValidElement(propValue)) {
-					var propType = getPropType(propValue);
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createElementTypeTypeChecker() {
-			function validate(props, propName, componentName, location, propFullName) {
-				var propValue = props[propName];
-				if (!ReactIs.isValidElementType(propValue)) {
-					var propType = getPropType(propValue);
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement type.'));
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createInstanceTypeChecker(expectedClass) {
-			function validate(props, propName, componentName, location, propFullName) {
-				if (!(props[propName] instanceof expectedClass)) {
-					var expectedClassName = expectedClass.name || ANONYMOUS;
-					var actualClassName = getClassName(props[propName]);
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createEnumTypeChecker(expectedValues) {
-			if (!Array.isArray(expectedValues)) {
-				if (process.env.NODE_ENV !== 'production') {
-					if (arguments.length > 1) {
-						printWarning(
-							'Invalid arguments supplied to oneOf, expected an array, got ' + arguments.length + ' arguments. ' +
-							'A common mistake is to write oneOf(x, y, z) instead of oneOf([x, y, z]).'
-						);
-					} else {
-						printWarning('Invalid argument supplied to oneOf, expected an array.');
-					}
-				}
-				return emptyFunctionThatReturnsNull;
-			}
-			function validate(props, propName, componentName, location, propFullName) {
-				var propValue = props[propName];
-				for (var i = 0; i < expectedValues.length; i++) {
-					if (is(propValue, expectedValues[i])) {
-						return null;
-					}
-				}
-				var valuesString = JSON.stringify(expectedValues, function replacer(key, value) {
-					var type = getPreciseType(value);
-					if (type === 'symbol') {
-						return String(value);
-					}
-					return value;
-				});
-				return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + String(propValue) + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createObjectOfTypeChecker(typeChecker) {
-			function validate(props, propName, componentName, location, propFullName) {
-				if (typeof typeChecker !== 'function') {
-					return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
-				}
-				var propValue = props[propName];
-				var propType = getPropType(propValue);
-				if (propType !== 'object') {
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
-				}
-				for (var key in propValue) {
-					if (has(propValue, key)) {
-						var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-						if (error instanceof Error) {
-							return error;
-						}
-					}
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createUnionTypeChecker(arrayOfTypeCheckers) {
-			if (!Array.isArray(arrayOfTypeCheckers)) {
-				process.env.NODE_ENV !== 'production' ? printWarning('Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
-				return emptyFunctionThatReturnsNull;
-			}
-			for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-				var checker = arrayOfTypeCheckers[i];
-				if (typeof checker !== 'function') {
-					printWarning(
-						'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
-						'received ' + getPostfixForTypeWarning(checker) + ' at index ' + i + '.'
-					);
-					return emptyFunctionThatReturnsNull;
-				}
-			}
-			function validate(props, propName, componentName, location, propFullName) {
-				var expectedTypes = [];
-				for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-					var checker = arrayOfTypeCheckers[i];
-					var checkerResult = checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret);
-					if (checkerResult == null) {
-						return null;
-					}
-					if (checkerResult.data && has(checkerResult.data, 'expectedType')) {
-						expectedTypes.push(checkerResult.data.expectedType);
-					}
-				}
-				var expectedTypesMessage = (expectedTypes.length > 0) ? ', expected one of type [' + expectedTypes.join(', ') + ']': '';
-				return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`' + expectedTypesMessage + '.'));
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createNodeChecker() {
-			function validate(props, propName, componentName, location, propFullName) {
-				if (!isNode(props[propName])) {
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function invalidValidatorError(componentName, location, propFullName, key, type) {
-			return new PropTypeError(
-				(componentName || 'React class') + ': ' + location + ' type `' + propFullName + '.' + key + '` is invalid; ' +
-				'it must be a function, usually from the `prop-types` package, but received `' + type + '`.'
-			);
-		}
-		function createShapeTypeChecker(shapeTypes) {
-			function validate(props, propName, componentName, location, propFullName) {
-				var propValue = props[propName];
-				var propType = getPropType(propValue);
-				if (propType !== 'object') {
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-				}
-				for (var key in shapeTypes) {
-					var checker = shapeTypes[key];
-					if (typeof checker !== 'function') {
-						return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
-					}
-					var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-					if (error) {
-						return error;
-					}
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function createStrictShapeTypeChecker(shapeTypes) {
-			function validate(props, propName, componentName, location, propFullName) {
-				var propValue = props[propName];
-				var propType = getPropType(propValue);
-				if (propType !== 'object') {
-					return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-				}
-				var allKeys = assign({}, props[propName], shapeTypes);
-				for (var key in allKeys) {
-					var checker = shapeTypes[key];
-					if (has(shapeTypes, key) && typeof checker !== 'function') {
-						return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
-					}
-					if (!checker) {
-						return new PropTypeError(
-							'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
-							'\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
-							'\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
-						);
-					}
-					var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-					if (error) {
-						return error;
-					}
-				}
-				return null;
-			}
-			return createChainableTypeChecker(validate);
-		}
-		function isNode(propValue) {
-			switch (typeof propValue) {
-				case 'number':
-				case 'string':
-				case 'undefined':
-					return true;
-				case 'boolean':
-					return !propValue;
-				case 'object':
-					if (Array.isArray(propValue)) {
-						return propValue.every(isNode);
-					}
-					if (propValue === null || isValidElement(propValue)) {
-						return true;
-					}
-					var iteratorFn = getIteratorFn(propValue);
-					if (iteratorFn) {
-						var iterator = iteratorFn.call(propValue);
-						var step;
-						if (iteratorFn !== propValue.entries) {
-							while (!(step = iterator.next()).done) {
-								if (!isNode(step.value)) {
-									return false;
-								}
-							}
-						} else {
-							while (!(step = iterator.next()).done) {
-								var entry = step.value;
-								if (entry) {
-									if (!isNode(entry[1])) {
-										return false;
-									}
-								}
-							}
-						}
-					} else {
-						return false;
-					}
-					return true;
-				default:
-					return false;
-			}
-		}
-		function isSymbol(propType, propValue) {
-			if (propType === 'symbol') {
-				return true;
-			}
-			if (!propValue) {
-				return false;
-			}
-			if (propValue['@@toStringTag'] === 'Symbol') {
-				return true;
-			}
-			if (typeof Symbol === 'function' && propValue instanceof Symbol) {
-				return true;
-			}
-			return false;
-		}
-		function getPropType(propValue) {
-			var propType = typeof propValue;
-			if (Array.isArray(propValue)) {
-				return 'array';
-			}
-			if (propValue instanceof RegExp) {
-				return 'object';
-			}
-			if (isSymbol(propType, propValue)) {
-				return 'symbol';
-			}
-			return propType;
-		}
-		function getPreciseType(propValue) {
-			if (typeof propValue === 'undefined' || propValue === null) {
-				return '' + propValue;
-			}
-			var propType = getPropType(propValue);
-			if (propType === 'object') {
-				if (propValue instanceof Date) {
-					return 'date';
-				} else if (propValue instanceof RegExp) {
-					return 'regexp';
-				}
-			}
-			return propType;
-		}
-		function getPostfixForTypeWarning(value) {
-			var type = getPreciseType(value);
-			switch (type) {
-				case 'array':
-				case 'object':
-					return 'an ' + type;
-				case 'boolean':
-				case 'date':
-				case 'regexp':
-					return 'a ' + type;
-				default:
-					return type;
-			}
-		}
-		function getClassName(propValue) {
-			if (!propValue.constructor || !propValue.constructor.name) {
-				return ANONYMOUS;
-			}
-			return propValue.constructor.name;
-		}
-		ReactPropTypes.checkPropTypes = checkPropTypes;
-		ReactPropTypes.resetWarningCache = checkPropTypes.resetWarningCache;
-		ReactPropTypes.PropTypes = ReactPropTypes;
-		return ReactPropTypes;
-	};
-	return factoryWithTypeCheckers;
-}
-
-// prop-types
-var factoryWithThrowingShims;
-var hasRequiredFactoryWithThrowingShims;
-function requireFactoryWithThrowingShims () {
-	if (hasRequiredFactoryWithThrowingShims) return factoryWithThrowingShims;
-	hasRequiredFactoryWithThrowingShims = 1;
-	var ReactPropTypesSecret = /*@__PURE__*/ requireReactPropTypesSecret();
-	function emptyFunction() {}
-	function emptyFunctionWithReset() {}
-	emptyFunctionWithReset.resetWarningCache = emptyFunction;
-	factoryWithThrowingShims = function() {
-		function shim(props, propName, componentName, location, propFullName, secret) {
-			if (secret === ReactPropTypesSecret) {
-				return;
-			}
-			var err = new Error(
-				'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-				'Use PropTypes.checkPropTypes() to call them. ' +
-				'Read more at http://fb.me/use-check-prop-types'
-			);
-			err.name = 'Invariant Violation';
-			throw err;
-		}		shim.isRequired = shim;
-		function getShim() {
-			return shim;
-		}		var ReactPropTypes = {
-			array: shim,
-			bigint: shim,
-			bool: shim,
-			func: shim,
-			number: shim,
-			object: shim,
-			string: shim,
-			symbol: shim,
-			any: shim,
-			arrayOf: getShim,
-			element: shim,
-			elementType: shim,
-			instanceOf: getShim,
-			node: shim,
-			objectOf: getShim,
-			oneOf: getShim,
-			oneOfType: getShim,
-			shape: getShim,
-			exact: getShim,
-			checkPropTypes: emptyFunctionWithReset,
-			resetWarningCache: emptyFunction
-		};
-		ReactPropTypes.PropTypes = ReactPropTypes;
-		return ReactPropTypes;
-	};
-	return factoryWithThrowingShims;
-}
-
-// prop-types
-propTypes.exports;
-var hasRequiredPropTypes;
-function requirePropTypes () {
-	if (hasRequiredPropTypes) return propTypes.exports;
-	hasRequiredPropTypes = 1;
-	if (process.env.NODE_ENV !== 'production') {
-		var ReactIs = /*@__PURE__*/ requireReactIs();
-		var throwOnDirectAccess = true;
-		propTypes.exports = /*@__PURE__*/ requireFactoryWithTypeCheckers()(ReactIs.isElement, throwOnDirectAccess);
-	} else {
-		propTypes.exports = /*@__PURE__*/ requireFactoryWithThrowingShims()();
-	}
-	return propTypes.exports;
-}
-
-// prop-types
-var propTypesExports = /*@__PURE__*/ requirePropTypes();
-const PropTypes = /*@__PURE__*/getDefaultExportFromCjs(propTypesExports);
-
-// dom-helpers
-function hasClass(element, className) {
-	if (element.classList) return !!className && element.classList.contains(className);
-	return (" " + (element.className.baseVal || element.className) + " ").indexOf(" " + className + " ") !== -1;
-}
-
-// dom-helpers
-function addClass(element, className) {
-	if (element.classList) element.classList.add(className);else if (!hasClass(element, className)) if (typeof element.className === 'string') element.className = element.className + " " + className;else element.setAttribute('class', (element.className && element.className.baseVal || '') + " " + className);
-}
-
-// dom-helpers
-function replaceClassName(origClass, classToRemove) {
-	return origClass.replace(new RegExp("(^|\\s)" + classToRemove + "(?:\\s|$)", 'g'), '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '');
-}
-function removeClass$1(element, className) {
-	if (element.classList) {
-		element.classList.remove(className);
-	} else if (typeof element.className === 'string') {
-		element.className = replaceClassName(element.className, className);
-	} else {
-		element.setAttribute('class', replaceClassName(element.className && element.className.baseVal || '', className));
-	}
-}
-
-// react-transition-group
-const config = {
-	disabled: false
-};
-
-// react-transition-group
-var timeoutsShape = process.env.NODE_ENV !== 'production' ? PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-	enter: PropTypes.number,
-	exit: PropTypes.number,
-	appear: PropTypes.number
-}).isRequired]) : null;
-var classNamesShape = process.env.NODE_ENV !== 'production' ? PropTypes.oneOfType([PropTypes.string, PropTypes.shape({
-	enter: PropTypes.string,
-	exit: PropTypes.string,
-	active: PropTypes.string
-}), PropTypes.shape({
-	enter: PropTypes.string,
-	enterDone: PropTypes.string,
-	enterActive: PropTypes.string,
-	exit: PropTypes.string,
-	exitDone: PropTypes.string,
-	exitActive: PropTypes.string
-})]) : null;
-
-// react-transition-group
-const TransitionGroupContext = React.createContext(null);
-
-// react-transition-group
-var forceReflow = function forceReflow(node) {
-	return node.scrollTop;
-};
-
-// react-transition-group
-var UNMOUNTED = 'unmounted';
-var EXITED = 'exited';
-var ENTERING = 'entering';
-var ENTERED = 'entered';
-var EXITING = 'exiting';
-var Transition = /*#__PURE__*/function (_React$Component) {
-	_inheritsLoose(Transition, _React$Component);
-	function Transition(props, context) {
-		var _this;
-		_this = _React$Component.call(this, props, context) || this;
-		var parentGroup = context;
-		var appear = parentGroup && !parentGroup.isMounting ? props.enter : props.appear;
-		var initialStatus;
-		_this.appearStatus = null;
-		if (props.in) {
-			if (appear) {
-				initialStatus = EXITED;
-				_this.appearStatus = ENTERING;
-			} else {
-				initialStatus = ENTERED;
-			}
-		} else {
-			if (props.unmountOnExit || props.mountOnEnter) {
-				initialStatus = UNMOUNTED;
-			} else {
-				initialStatus = EXITED;
-			}
-		}
-		_this.state = {
-			status: initialStatus
-		};
-		_this.nextCallback = null;
-		return _this;
-	}
-	Transition.getDerivedStateFromProps = function getDerivedStateFromProps(_ref, prevState) {
-		var nextIn = _ref.in;
-		if (nextIn && prevState.status === UNMOUNTED) {
-			return {
-				status: EXITED
-			};
-		}
-		return null;
-	}
-	;
-	var _proto = Transition.prototype;
-	_proto.componentDidMount = function componentDidMount() {
-		this.updateStatus(true, this.appearStatus);
-	};
-	_proto.componentDidUpdate = function componentDidUpdate(prevProps) {
-		var nextStatus = null;
-		if (prevProps !== this.props) {
-			var status = this.state.status;
-			if (this.props.in) {
-				if (status !== ENTERING && status !== ENTERED) {
-					nextStatus = ENTERING;
-				}
-			} else {
-				if (status === ENTERING || status === ENTERED) {
-					nextStatus = EXITING;
-				}
-			}
-		}
-		this.updateStatus(false, nextStatus);
-	};
-	_proto.componentWillUnmount = function componentWillUnmount() {
-		this.cancelNextCallback();
-	};
-	_proto.getTimeouts = function getTimeouts() {
-		var timeout = this.props.timeout;
-		var exit, enter, appear;
-		exit = enter = appear = timeout;
-		if (timeout != null && typeof timeout !== 'number') {
-			exit = timeout.exit;
-			enter = timeout.enter;
-			appear = timeout.appear !== undefined ? timeout.appear : enter;
-		}
-		return {
-			exit: exit,
-			enter: enter,
-			appear: appear
-		};
-	};
-	_proto.updateStatus = function updateStatus(mounting, nextStatus) {
-		if (mounting === void 0) {
-			mounting = false;
-		}
-		if (nextStatus !== null) {
-			this.cancelNextCallback();
-			if (nextStatus === ENTERING) {
-				if (this.props.unmountOnExit || this.props.mountOnEnter) {
-					var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
-					if (node) forceReflow(node);
-				}
-				this.performEnter(mounting);
-			} else {
-				this.performExit();
-			}
-		} else if (this.props.unmountOnExit && this.state.status === EXITED) {
-			this.setState({
-				status: UNMOUNTED
-			});
-		}
-	};
-	_proto.performEnter = function performEnter(mounting) {
-		var _this2 = this;
-		var enter = this.props.enter;
-		var appearing = this.context ? this.context.isMounting : mounting;
-		var _ref2 = this.props.nodeRef ? [appearing] : [ReactDOM.findDOMNode(this), appearing],
-				maybeNode = _ref2[0],
-				maybeAppearing = _ref2[1];
-		var timeouts = this.getTimeouts();
-		var enterTimeout = appearing ? timeouts.appear : timeouts.enter;
-		if (!mounting && !enter || config.disabled) {
-			this.safeSetState({
-				status: ENTERED
-			}, function () {
-				_this2.props.onEntered(maybeNode);
-			});
-			return;
-		}
-		this.props.onEnter(maybeNode, maybeAppearing);
-		this.safeSetState({
-			status: ENTERING
-		}, function () {
-			_this2.props.onEntering(maybeNode, maybeAppearing);
-			_this2.onTransitionEnd(enterTimeout, function () {
-				_this2.safeSetState({
-					status: ENTERED
-				}, function () {
-					_this2.props.onEntered(maybeNode, maybeAppearing);
-				});
-			});
-		});
-	};
-	_proto.performExit = function performExit() {
-		var _this3 = this;
-		var exit = this.props.exit;
-		var timeouts = this.getTimeouts();
-		var maybeNode = this.props.nodeRef ? undefined : ReactDOM.findDOMNode(this);
-		if (!exit || config.disabled) {
-			this.safeSetState({
-				status: EXITED
-			}, function () {
-				_this3.props.onExited(maybeNode);
-			});
-			return;
-		}
-		this.props.onExit(maybeNode);
-		this.safeSetState({
-			status: EXITING
-		}, function () {
-			_this3.props.onExiting(maybeNode);
-			_this3.onTransitionEnd(timeouts.exit, function () {
-				_this3.safeSetState({
-					status: EXITED
-				}, function () {
-					_this3.props.onExited(maybeNode);
-				});
-			});
-		});
-	};
-	_proto.cancelNextCallback = function cancelNextCallback() {
-		if (this.nextCallback !== null) {
-			this.nextCallback.cancel();
-			this.nextCallback = null;
-		}
-	};
-	_proto.safeSetState = function safeSetState(nextState, callback) {
-		callback = this.setNextCallback(callback);
-		this.setState(nextState, callback);
-	};
-	_proto.setNextCallback = function setNextCallback(callback) {
-		var _this4 = this;
-		var active = true;
-		this.nextCallback = function (event) {
-			if (active) {
-				active = false;
-				_this4.nextCallback = null;
-				callback(event);
-			}
-		};
-		this.nextCallback.cancel = function () {
-			active = false;
-		};
-		return this.nextCallback;
-	};
-	_proto.onTransitionEnd = function onTransitionEnd(timeout, handler) {
-		this.setNextCallback(handler);
-		var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
-		var doesNotHaveTimeoutOrListener = timeout == null && !this.props.addEndListener;
-		if (!node || doesNotHaveTimeoutOrListener) {
-			setTimeout(this.nextCallback, 0);
-			return;
-		}
-		if (this.props.addEndListener) {
-			var _ref3 = this.props.nodeRef ? [this.nextCallback] : [node, this.nextCallback],
-					maybeNode = _ref3[0],
-					maybeNextCallback = _ref3[1];
-			this.props.addEndListener(maybeNode, maybeNextCallback);
-		}
-		if (timeout != null) {
-			setTimeout(this.nextCallback, timeout);
-		}
-	};
-	_proto.render = function render() {
-		var status = this.state.status;
-		if (status === UNMOUNTED) {
-			return null;
-		}
-		var _this$props = this.props,
-				children = _this$props.children;
-				_this$props.in;
-				_this$props.mountOnEnter;
-				_this$props.unmountOnExit;
-				_this$props.appear;
-				_this$props.enter;
-				_this$props.exit;
-				_this$props.timeout;
-				_this$props.addEndListener;
-				_this$props.onEnter;
-				_this$props.onEntering;
-				_this$props.onEntered;
-				_this$props.onExit;
-				_this$props.onExiting;
-				_this$props.onExited;
-				_this$props.nodeRef;
-				var childProps = _objectWithoutPropertiesLoose(_this$props, ["children", "in", "mountOnEnter", "unmountOnExit", "appear", "enter", "exit", "timeout", "addEndListener", "onEnter", "onEntering", "onEntered", "onExit", "onExiting", "onExited", "nodeRef"]);
-		return (
-			/*#__PURE__*/
-			React.createElement(TransitionGroupContext.Provider, {
-				value: null
-			}, typeof children === 'function' ? children(status, childProps) : React.cloneElement(React.Children.only(children), childProps))
-		);
-	};
-	return Transition;
-}(React.Component);
-Transition.contextType = TransitionGroupContext;
-Transition.propTypes = process.env.NODE_ENV !== "production" ? {
-	nodeRef: PropTypes.shape({
-		current: typeof Element === 'undefined' ? PropTypes.any : function (propValue, key, componentName, location, propFullName, secret) {
-			var value = propValue[key];
-			return PropTypes.instanceOf(value && 'ownerDocument' in value ? value.ownerDocument.defaultView.Element : Element)(propValue, key, componentName, location, propFullName, secret);
-		}
-	}),
-	children: PropTypes.oneOfType([PropTypes.func.isRequired, PropTypes.element.isRequired]).isRequired,
-	in: PropTypes.bool,
-	mountOnEnter: PropTypes.bool,
-	unmountOnExit: PropTypes.bool,
-	appear: PropTypes.bool,
-	enter: PropTypes.bool,
-	exit: PropTypes.bool,
-	timeout: function timeout(props) {
-		var pt = timeoutsShape;
-		if (!props.addEndListener) pt = pt.isRequired;
-		for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-			args[_key - 1] = arguments[_key];
-		}
-		return pt.apply(void 0, [props].concat(args));
-	},
-	addEndListener: PropTypes.func,
-	onEnter: PropTypes.func,
-	onEntering: PropTypes.func,
-	onEntered: PropTypes.func,
-	onExit: PropTypes.func,
-	onExiting: PropTypes.func,
-	onExited: PropTypes.func
-} : {};
-function noop() {}
-Transition.defaultProps = {
-	in: false,
-	mountOnEnter: false,
-	unmountOnExit: false,
-	appear: false,
-	enter: true,
-	exit: true,
-	onEnter: noop,
-	onEntering: noop,
-	onEntered: noop,
-	onExit: noop,
-	onExiting: noop,
-	onExited: noop
-};
-Transition.UNMOUNTED = UNMOUNTED;
-Transition.EXITED = EXITED;
-Transition.ENTERING = ENTERING;
-Transition.ENTERED = ENTERED;
-Transition.EXITING = EXITING;
-const Transition$1 = Transition;
-
-// react-transition-group
-var _addClass = function addClass$1(node, classes) {
-	return node && classes && classes.split(' ').forEach(function (c) {
-		return addClass(node, c);
-	});
-};
-var removeClass = function removeClass(node, classes) {
-	return node && classes && classes.split(' ').forEach(function (c) {
-		return removeClass$1(node, c);
-	});
-};
-var CSSTransition = /*#__PURE__*/function (_React$Component) {
-	_inheritsLoose(CSSTransition, _React$Component);
-	function CSSTransition() {
-		var _this;
-		for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-		_this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-		_this.appliedClasses = {
-			appear: {},
-			enter: {},
-			exit: {}
-		};
-		_this.onEnter = function (maybeNode, maybeAppearing) {
-			var _this$resolveArgument = _this.resolveArguments(maybeNode, maybeAppearing),
-					node = _this$resolveArgument[0],
-					appearing = _this$resolveArgument[1];
-			_this.removeClasses(node, 'exit');
-			_this.addClass(node, appearing ? 'appear' : 'enter', 'base');
-			if (_this.props.onEnter) {
-				_this.props.onEnter(maybeNode, maybeAppearing);
-			}
-		};
-		_this.onEntering = function (maybeNode, maybeAppearing) {
-			var _this$resolveArgument2 = _this.resolveArguments(maybeNode, maybeAppearing),
-					node = _this$resolveArgument2[0],
-					appearing = _this$resolveArgument2[1];
-			var type = appearing ? 'appear' : 'enter';
-			_this.addClass(node, type, 'active');
-			if (_this.props.onEntering) {
-				_this.props.onEntering(maybeNode, maybeAppearing);
-			}
-		};
-		_this.onEntered = function (maybeNode, maybeAppearing) {
-			var _this$resolveArgument3 = _this.resolveArguments(maybeNode, maybeAppearing),
-					node = _this$resolveArgument3[0],
-					appearing = _this$resolveArgument3[1];
-			var type = appearing ? 'appear' : 'enter';
-			_this.removeClasses(node, type);
-			_this.addClass(node, type, 'done');
-			if (_this.props.onEntered) {
-				_this.props.onEntered(maybeNode, maybeAppearing);
-			}
-		};
-		_this.onExit = function (maybeNode) {
-			var _this$resolveArgument4 = _this.resolveArguments(maybeNode),
-					node = _this$resolveArgument4[0];
-			_this.removeClasses(node, 'appear');
-			_this.removeClasses(node, 'enter');
-			_this.addClass(node, 'exit', 'base');
-			if (_this.props.onExit) {
-				_this.props.onExit(maybeNode);
-			}
-		};
-		_this.onExiting = function (maybeNode) {
-			var _this$resolveArgument5 = _this.resolveArguments(maybeNode),
-					node = _this$resolveArgument5[0];
-			_this.addClass(node, 'exit', 'active');
-			if (_this.props.onExiting) {
-				_this.props.onExiting(maybeNode);
-			}
-		};
-		_this.onExited = function (maybeNode) {
-			var _this$resolveArgument6 = _this.resolveArguments(maybeNode),
-					node = _this$resolveArgument6[0];
-			_this.removeClasses(node, 'exit');
-			_this.addClass(node, 'exit', 'done');
-			if (_this.props.onExited) {
-				_this.props.onExited(maybeNode);
-			}
-		};
-		_this.resolveArguments = function (maybeNode, maybeAppearing) {
-			return _this.props.nodeRef ? [_this.props.nodeRef.current, maybeNode]
-			: [maybeNode, maybeAppearing];
-		};
-		_this.getClassNames = function (type) {
-			var classNames = _this.props.classNames;
-			var isStringClassNames = typeof classNames === 'string';
-			var prefix = isStringClassNames && classNames ? classNames + "-" : '';
-			var baseClassName = isStringClassNames ? "" + prefix + type : classNames[type];
-			var activeClassName = isStringClassNames ? baseClassName + "-active" : classNames[type + "Active"];
-			var doneClassName = isStringClassNames ? baseClassName + "-done" : classNames[type + "Done"];
-			return {
-				baseClassName: baseClassName,
-				activeClassName: activeClassName,
-				doneClassName: doneClassName
-			};
-		};
-		return _this;
-	}
-	var _proto = CSSTransition.prototype;
-	_proto.addClass = function addClass(node, type, phase) {
-		var className = this.getClassNames(type)[phase + "ClassName"];
-		var _this$getClassNames = this.getClassNames('enter'),
-				doneClassName = _this$getClassNames.doneClassName;
-		if (type === 'appear' && phase === 'done' && doneClassName) {
-			className += " " + doneClassName;
-		}
-		if (phase === 'active') {
-			if (node) forceReflow(node);
-		}
-		if (className) {
-			this.appliedClasses[type][phase] = className;
-			_addClass(node, className);
-		}
-	};
-	_proto.removeClasses = function removeClasses(node, type) {
-		var _this$appliedClasses$ = this.appliedClasses[type],
-				baseClassName = _this$appliedClasses$.base,
-				activeClassName = _this$appliedClasses$.active,
-				doneClassName = _this$appliedClasses$.done;
-		this.appliedClasses[type] = {};
-		if (baseClassName) {
-			removeClass(node, baseClassName);
-		}
-		if (activeClassName) {
-			removeClass(node, activeClassName);
-		}
-		if (doneClassName) {
-			removeClass(node, doneClassName);
-		}
-	};
-	_proto.render = function render() {
-		var _this$props = this.props;
-				_this$props.classNames;
-				var props = _objectWithoutPropertiesLoose(_this$props, ["classNames"]);
-		return /*#__PURE__*/React.createElement(Transition$1, _extends({}, props, {
-			onEnter: this.onEnter,
-			onEntered: this.onEntered,
-			onEntering: this.onEntering,
-			onExit: this.onExit,
-			onExiting: this.onExiting,
-			onExited: this.onExited
-		}));
-	};
-	return CSSTransition;
-}(React.Component);
-CSSTransition.defaultProps = {
-	classNames: ''
-};
-CSSTransition.propTypes = process.env.NODE_ENV !== "production" ? _extends({}, Transition$1.propTypes, {
-	classNames: classNamesShape,
-	onEnter: PropTypes.func,
-	onEntering: PropTypes.func,
-	onEntered: PropTypes.func,
-	onExit: PropTypes.func,
-	onExiting: PropTypes.func,
-	onExited: PropTypes.func
-}) : {};
-const CSSTransition$1 = CSSTransition;
-
-// react-transition-group
-var _leaveRenders, _enterRenders;
-function areChildrenDifferent(oldChildren, newChildren) {
-	if (oldChildren === newChildren) return false;
-	if (React.isValidElement(oldChildren) && React.isValidElement(newChildren) && oldChildren.key != null && oldChildren.key === newChildren.key) {
-		return false;
-	}
-	return true;
-}
-var modes = {
-	out: 'out-in',
-	in: 'in-out'
-};
-var callHook = function callHook(element, name, cb) {
-	return function () {
-		var _element$props;
-		element.props[name] && (_element$props = element.props)[name].apply(_element$props, arguments);
-		cb();
-	};
-};
-var leaveRenders = (_leaveRenders = {}, _leaveRenders[modes.out] = function (_ref) {
-	var current = _ref.current,
-			changeState = _ref.changeState;
-	return React.cloneElement(current, {
-		in: false,
-		onExited: callHook(current, 'onExited', function () {
-			changeState(ENTERING, null);
-		})
-	});
-}, _leaveRenders[modes.in] = function (_ref2) {
-	var current = _ref2.current,
-			changeState = _ref2.changeState,
-			children = _ref2.children;
-	return [current, React.cloneElement(children, {
-		in: true,
-		onEntered: callHook(children, 'onEntered', function () {
-			changeState(ENTERING);
-		})
-	})];
-}, _leaveRenders);
-var enterRenders = (_enterRenders = {}, _enterRenders[modes.out] = function (_ref3) {
-	var children = _ref3.children,
-			changeState = _ref3.changeState;
-	return React.cloneElement(children, {
-		in: true,
-		onEntered: callHook(children, 'onEntered', function () {
-			changeState(ENTERED, React.cloneElement(children, {
-				in: true
-			}));
-		})
-	});
-}, _enterRenders[modes.in] = function (_ref4) {
-	var current = _ref4.current,
-			children = _ref4.children,
-			changeState = _ref4.changeState;
-	return [React.cloneElement(current, {
-		in: false,
-		onExited: callHook(current, 'onExited', function () {
-			changeState(ENTERED, React.cloneElement(children, {
-				in: true
-			}));
-		})
-	}), React.cloneElement(children, {
-		in: true
-	})];
-}, _enterRenders);
-var SwitchTransition = /*#__PURE__*/function (_React$Component) {
-	_inheritsLoose(SwitchTransition, _React$Component);
-	function SwitchTransition() {
-		var _this;
-		for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-		_this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-		_this.state = {
-			status: ENTERED,
-			current: null
-		};
-		_this.appeared = false;
-		_this.changeState = function (status, current) {
-			if (current === void 0) {
-				current = _this.state.current;
-			}
-			_this.setState({
-				status: status,
-				current: current
-			});
-		};
-		return _this;
-	}
-	var _proto = SwitchTransition.prototype;
-	_proto.componentDidMount = function componentDidMount() {
-		this.appeared = true;
-	};
-	SwitchTransition.getDerivedStateFromProps = function getDerivedStateFromProps(props, state) {
-		if (props.children == null) {
-			return {
-				current: null
-			};
-		}
-		if (state.status === ENTERING && props.mode === modes.in) {
-			return {
-				status: ENTERING
-			};
-		}
-		if (state.current && areChildrenDifferent(state.current, props.children)) {
-			return {
-				status: EXITING
-			};
-		}
-		return {
-			current: React.cloneElement(props.children, {
-				in: true
-			})
-		};
-	};
-	_proto.render = function render() {
-		var _this$props = this.props,
-				children = _this$props.children,
-				mode = _this$props.mode,
-				_this$state = this.state,
-				status = _this$state.status,
-				current = _this$state.current;
-		var data = {
-			children: children,
-			current: current,
-			changeState: this.changeState,
-			status: status
-		};
-		var component;
-		switch (status) {
-			case ENTERING:
-				component = enterRenders[mode](data);
-				break;
-			case EXITING:
-				component = leaveRenders[mode](data);
-				break;
-			case ENTERED:
-				component = current;
-		}
-		return /*#__PURE__*/React.createElement(TransitionGroupContext.Provider, {
-			value: {
-				isMounting: !this.appeared
-			}
-		}, component);
-	};
-	return SwitchTransition;
-}(React.Component);
-SwitchTransition.propTypes = process.env.NODE_ENV !== "production" ? {
-	mode: PropTypes.oneOf([modes.in, modes.out]),
-	children: PropTypes.oneOfType([PropTypes.element.isRequired])
-} : {};
-SwitchTransition.defaultProps = {
-	mode: modes.out
-};
-const SwitchTransition$1 = SwitchTransition;
-
-// activity_feed/components/application_news/components/CarouselBuilder.tsx
-function FeedCarouselBuilder({ currentArticle }) {
-	const External = settings.external[currentArticle.id];
-	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: currentArticle.application.id });
-	const ref = React.useRef(null);
-	Common.ReactSpring.useSpring(
-		() => NewsStore.getOrientation() === "horizontal" ? {
-			from: { x: 0, y: 0 },
-			to: { x: 15, y: 15 }
-		} : {
-			from: { x: 0, y: 0 },
-			to: { x: 15, y: 15 }
-		}
-	);
-	Common.ReactSpring.useSpring({
-		from: { x: 0, y: 0, scale: 0, opacity: 0 },
-		to: { x: 1, y: 1, scale: 1, opacity: 1, config: Common.ReactSpring.config.gentle }
-	});
-	return BdApi.React.createElement("span", { className: FeedClasses.carousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
-		"a",
-		{
-			tabindex: currentArticle.index,
-			className: `${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`,
-			href: currentArticle.news?.url || "#",
-			rel: "noreferrer nopener",
-			target: "_blank",
-			role: "button"
-		},
-		BdApi.React.createElement(SwitchTransition$1, null, BdApi.React.createElement(CSSTransition$1, { classNames: "slide", nodeRef: ref, timeout: 350 }, BdApi.React.createElement("div", { className: `${FeedClasses.articleStandard} ${FeedClasses.article}`, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
-			"div",
-			{
-				className: FeedClasses.backgroundImage,
-				style: {
-					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
-				}
-			}
-		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, isNaN(currentArticle.news?.application_id) ? BdApi.React.createElement(External.icon, { className: FeedClasses.gameIcon, color: "WHITE", style: { backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" } }) : BdApi.React.createElement(
-			"img",
-			{
-				className: FeedClasses.gameIcon,
-				onClick: useGameProfile,
-				onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${FeedClasses.clickableIcon}`),
-				onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${FeedClasses.clickableIcon}`),
-				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
-			}
-		), BdApi.React.createElement("div", { className: FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" }))))))))
-	));
-}
-
-// activity_feed/components/application_news/components/MiniCarouselBuilder.tsx
-function FeedMiniCarouselBuilder({ currentArticle }) {
-	const External = settings.external[currentArticle.id];
-	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: currentArticle.application.id });
-	return BdApi.React.createElement("span", { className: FeedClasses.smallCarousel }, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
-		"a",
-		{
-			tabindex: currentArticle.index,
-			className: `${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`,
-			href: currentArticle.news?.url || "#",
-			rel: "noreferrer nopener",
-			target: "_blank",
-			role: "button"
-		},
-		BdApi.React.createElement("div", { className: `${FeedClasses.articleSimple} ${FeedClasses.article}`, style: { opacity: 1, zIndex: 1 } }, BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
-			"div",
-			{
-				className: FeedClasses.backgroundImage,
-				style: {
-					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
-				}
-			}
-		)), BdApi.React.createElement("div", { className: FeedClasses.detailsContainer, style: { opacity: 1, zIndex: 1, marginBottom: "40px" } }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, isNaN(currentArticle.news?.application_id) ? BdApi.React.createElement(External.icon, { className: FeedClasses.gameIcon, color: "WHITE", style: { backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" } }) : BdApi.React.createElement(
-			"img",
-			{
-				className: FeedClasses.gameIcon,
-				onClick: useGameProfile,
-				onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${FeedClasses.clickableIcon}`),
-				onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${FeedClasses.clickableIcon}`),
-				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
-			}
-		), BdApi.React.createElement("div", { className: `${FeedClasses.titleRowSimple}` }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title")))))
-	));
 }
 
 // activity_feed/components/application_news/components/MiniPaginationBuilder.tsx
@@ -5310,7 +3639,11 @@ function MiniSubpagination({ article, currentArticle }) {
 		"div",
 		{
 			className: article.index === currentArticle.index ? `${FeedClasses.dotSelected} ${FeedClasses.dot}` : `${FeedClasses.dotNormal} ${FeedClasses.dot}`,
-			onClick: () => NewsStore.setCurrentArticle(article.index)
+			onClick: () => {
+				NewsStore.setCurrentArticle(article.index);
+				NewsStore.setIdling(false);
+				NewsStore.setDirection(article.index - currentArticle.index);
+			}
 		}
 	);
 }
@@ -5320,7 +3653,11 @@ function FeedMiniPaginationBuilder({ articleSet, currentArticle }) {
 		{
 			type: "button",
 			className: `${FeedClasses.prevButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
-			onClick: () => NewsStore.setCurrentArticle(currentArticle.index === 0 ? 3 : currentArticle.index - 1)
+			onClick: () => {
+				NewsStore.setCurrentArticle(currentArticle.index === 0 ? 3 : currentArticle.index - 1);
+				NewsStore.setIdling(false);
+				NewsStore.setDirection(-1);
+			}
 		},
 		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement(ArrowIcon, { type: "left" }))
 	), BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.horizontalPaginationItemContainer} ${Common.PositionClasses.alignCenter}` }, articleSet.map((article) => {
@@ -5331,7 +3668,11 @@ function FeedMiniPaginationBuilder({ articleSet, currentArticle }) {
 		{
 			type: "button",
 			className: `${FeedClasses.nextButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`,
-			onClick: () => NewsStore.setCurrentArticle(currentArticle.index === 3 ? 0 : currentArticle.index + 1)
+			onClick: () => {
+				NewsStore.setCurrentArticle(currentArticle.index === 3 ? 0 : currentArticle.index + 1);
+				NewsStore.setIdling(false);
+				NewsStore.setDirection(1);
+			}
 		},
 		BdApi.React.createElement("div", { className: Common.ButtonVoidClasses.contents }, BdApi.React.createElement(ArrowIcon, { type: "right" }))
 	));
@@ -5348,7 +3689,7 @@ function Subpagination({ article }) {
 			onClick: () => {
 				NewsStore.setCurrentArticle(article.index);
 				NewsStore.setIdling(false);
-				console.log(NewsStore.getDirection(article.index - currentArticle.index));
+				NewsStore.setDirection(article.index - currentArticle.index);
 			},
 			key: article
 		},
@@ -5405,19 +3746,145 @@ function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 	return;
 }
 
+// activity_feed/components/application_news/Article.tsx
+function FeedArticle(Article2) {
+	return function WrappedComponent(props) {
+		const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: props.article.application.id });
+		const orientation = betterdiscord.Hooks.useStateFromStores(NewsStore, () => NewsStore.getOrientation());
+		return BdApi.React.createElement(Article2, { ...props, useGameProfile, orientation });
+	};
+}
+class Article extends betterdiscord.React.PureComponent {
+	static displayName = "FeedArticle";
+	state;
+	_animatedBackground = new Common.Animated.Value(0);
+	_animatedText = new Common.Animated.Value(0);
+	_zIndex = new Common.Animated.Value(1);
+	constructor(article) {
+		super(article);
+		this.state = {
+			getDirection: () => NewsStore.getDirection()
+		};
+	}
+	componentWillEnter(e) {
+		let direction = this.state.getDirection();
+		this._zIndex.setValue(direction === 1 ? 2 : 1), direction === 1 && (this._animatedBackground.setValue(-1), Common.Animated.timing(this._animatedBackground, {
+			toValue: 0,
+			duration: 250,
+			delay: 100
+		}).start()), this._animatedText.setValue(-direction), Common.Animated.timing(this._animatedText, {
+			toValue: 0,
+			duration: 200,
+			delay: 300
+		}).start(e);
+	}
+	componentWillLeave(e) {
+		let direction = this.state.getDirection();
+		this._zIndex.setValue(direction === 1 ? 1 : 2), Common.Animated.timing(this._animatedText, {
+			toValue: direction,
+			duration: 200
+		}).start(), direction === 1 ? setTimeout(e, 350) : Common.Animated.timing(this._animatedBackground, {
+			toValue: -1,
+			delay: 200,
+			duration: 200
+		}).start(e);
+	}
+	getRootStyle() {
+		let anim = this.props.orientation === "horizontal" ? {
+			translateX: this._animatedBackground.interpolate({
+				inputRange: [0, 1],
+				outputRange: ["0px", "-15px"]
+			})
+		} : {
+			translateY: this._animatedBackground.interpolate({
+				inputRange: [0, 1],
+				outputRange: ["0px", "15px"]
+			})
+		};
+		return Common.Animated.accelerate({
+			transform: [{ scale: this._animatedBackground.interpolate({ inputRange: [-1, 0, 1], outputRange: [1.015, 1, 1.015] }) }, anim],
+			opacity: this._animatedBackground.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0], easing: Common.Animated.Easing.in(Common.Animated.Easing.ease) }),
+			zIndex: this._zIndex
+		});
+	}
+	getTextStyle() {
+		let anim = this.props.orientation === "horizontal" ? {
+			translateX: this._animatedText.interpolate({
+				inputRange: [0, 1],
+				outputRange: ["0px", "-15px"]
+			})
+		} : {
+			translateY: this._animatedText.interpolate({
+				inputRange: [0, 1],
+				outputRange: ["0px", "15px"]
+			})
+		};
+		return {
+			transform: [anim],
+			opacity: this._animatedText.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0], easing: Common.Animated.Easing.in(Common.Animated.Easing.ease) }),
+			zIndex: 1,
+			marginBottom: this.props.orientation === "horizontal" ? "40px" : "0px"
+		};
+	}
+	renderBackground() {
+		let currentArticle = this.props.article;
+		return BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
+			"div",
+			{
+				className: FeedClasses.backgroundImage,
+				style: {
+					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
+				}
+			}
+		));
+	}
+	renderApplicationIcon() {
+		let currentArticle = this.props.article;
+		const External = settings.external[currentArticle.id];
+		const useGameProfile = this.props.useGameProfile;
+		return isNaN(currentArticle.news?.application_id) ? BdApi.React.createElement(External.icon, { className: FeedClasses.gameIcon, color: "WHITE", style: { backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" } }) : BdApi.React.createElement(
+			"img",
+			{
+				className: FeedClasses.gameIcon,
+				onClick: useGameProfile,
+				onMouseOver: (e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${FeedClasses.clickableIcon}`),
+				onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${FeedClasses.clickableIcon}`),
+				src: currentArticle.news?.application_id && currentArticle.application?.icon ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false` : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
+			}
+		);
+	}
+	render() {
+		if (!this) return;
+		let currentArticle = this.props.article;
+		const simple = this.props.orientation === "horizontal";
+		return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
+			"a",
+			{
+				tabindex: currentArticle.index,
+				className: `${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`,
+				href: currentArticle.news?.url || "#",
+				rel: "noreferrer nopener",
+				target: "_blank",
+				role: "button"
+			},
+			BdApi.React.createElement(Common.Animated.div, { className: betterdiscord.Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article), style: this.getRootStyle() }, this.renderBackground(), BdApi.React.createElement(Common.Animated.div, { className: FeedClasses.detailsContainer, style: this.getTextStyle() }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, this.renderApplicationIcon(), BdApi.React.createElement("div", { className: simple ? FeedClasses.titleRowSimple : FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), !simple && BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" })))))))
+		));
+	}
+}
+const NewsArticle = FeedArticle(Article);
+
 // activity_feed/components/application_news/FeedBuilder.tsx
 function NewsFeedBuilder() {
 	const articles = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getFeedsForDisplay());
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
 	const orientation = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	const isIdling = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
-	const [time, setTime] = React.useState(new Date());
-	const [waitTime, setWaitTime] = React.useState(true);
-	React.useEffect(() => {
+	const [time, setTime] = react.useState(new Date());
+	const [waitTime, setWaitTime] = react.useState(true);
+	react.useEffect(() => {
 		const inv = setInterval(() => {
 			const newTime = Math.floor((Math.floor((new Date()).getTime()) - Math.floor(time.getTime())) / 1e3);
 			if (newTime > 0 && articles) {
-				console.log(newTime);
 				if (Math.floor(newTime) % 8 == 0 && isIdling) {
 					NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
 				}
@@ -5439,19 +3906,19 @@ function NewsFeedBuilder() {
 		case 2:
 			return BdApi.React.createElement(FeedSkeletonBuilder, null);
 	}
-	if (Object.keys(articles).length) return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2News") ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel), onMouseOver: () => {
+	if (Object.keys(articles).length) return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2News") ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel), onMouseOver: () => {
 		NewsStore.setIdling(false);
 		setTime(new Date());
 	}, onMouseLeave: () => {
 		NewsStore.setIdling(true);
 		setTime(new Date());
-	} }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedMiniCarouselBuilder, { currentArticle }), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, currentArticle })) : BdApi.React.createElement(
+	} }, orientation === "vertical" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(Common.TransitionGroup, { component: "span", className: FeedClasses.carousel, transitionEnter: true, transitionAppear: true, transitionLeave: true }, BdApi.React.createElement(NewsArticle, { article: currentArticle, key: `${currentArticle.index}` })), BdApi.React.createElement(FeedPaginationBuilder, { articleSet: articles })) : orientation === "horizontal" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(Common.TransitionGroup, { component: "span", className: FeedClasses.smallCarousel, transitionEnter: true, transitionAppear: true, transitionLeave: true }, BdApi.React.createElement(NewsArticle, { article: currentArticle, key: `${currentArticle.index}` })), BdApi.React.createElement(FeedMiniPaginationBuilder, { articleSet: articles, currentArticle })) : BdApi.React.createElement(
 		FeedSkeletonErrorBuilder,
 		{
 			errorText: "Activity Feed Unavailable",
 			errorDescription: "You've reached an ultra rare error! Reload Discord to try again. Error: orientation-match-failed"
 		}
-	));
+	)));
 	setTimeout(() => setWaitTime(false), 1e4);
 	if (waitTime) {
 		return BdApi.React.createElement(FeedSkeletonBuilder, null);
@@ -5581,14 +4048,14 @@ const QuickLauncherClasses = modules_1116a9ae;
 
 // activity_feed/components/quick_launcher/launcher.tsx
 function LauncherGameBuilder({ game, runningGames }) {
-	const [shouldDisable, setDisable] = React.useState(false);
+	const [shouldDisable, setDisable] = react.useState(false);
 	setTimeout(() => setDisable(false), 1e4);
-	const disableCheck = React.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
+	const disableCheck = react.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
 	const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
 	const skuViaGame = fullGame.thirdPartySkus;
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
-	const refDOM = React.useRef(null);
-	const [showPopout, setShowPopout] = React.useState(false);
+	const refDOM = react.useRef(null);
+	const [showPopout, setShowPopout] = react.useState(false);
 	const isSteam = Object.values(skuViaGame).find((x) => x.distributor.toLowerCase().includes("steam"));
 	function PlayPopout({ close }) {
 		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "launcher-context-menu", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "play-game", label: "Play Game", action: () => {
@@ -6337,6 +4804,7 @@ const css$1 = `
 		}
 		.applicationStreamingPreviewWrapper__93528 {
 				background-color: var(--opacity-white-12);
+				border-radius: var(--radius-sm);
 				img {
 						border-radius: var(--radius-sm);
 				}
@@ -6451,7 +4919,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
 					onMouseLeave: (e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
 				},
 				game?.name
-			)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity.created_at })));
+			)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity?.timestamps.start || activity.created_at })));
 		case "RICH":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity.details || activity?.state), activity?.details && BdApi.React.createElement("div", { className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity?.state), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common.ActivityTimer, { activity }));
 		case "TWITCH":
@@ -6606,7 +5074,7 @@ function FallbackAsset(props) {
 	));
 }
 function SpotifyAsset({ activity, user }) {
-	const [shouldFallback, setShouldFallback] = React.useState(false);
+	const [shouldFallback, setShouldFallback] = react.useState(false);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.smallEmptyIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"svg",
 		{
@@ -6628,7 +5096,7 @@ function SpotifyAsset({ activity, user }) {
 	));
 }
 function GameIconAsset({ url, id, name }) {
-	const [shouldFallback, setShouldFallback] = React.useState(false);
+	const [shouldFallback, setShouldFallback] = react.useState(false);
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.gameIcon, style: { width: "40px", height: "40px" }, transform: "scale(1.65)" }) : BdApi.React.createElement(
 		"img",
@@ -6645,7 +5113,7 @@ function GameIconAsset({ url, id, name }) {
 	));
 }
 function RichImageAsset({ url, tooltipText, onClick, type }) {
-	const [shouldFallback, setShouldFallback] = React.useState(false);
+	const [shouldFallback, setShouldFallback] = react.useState(false);
 	return BdApi.React.createElement(Tooltip, { note: tooltipText }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`, transform: type === "Large" ? "scale(3.65)" : "scale(1.30)" }) : BdApi.React.createElement(
 		"img",
 		{
@@ -6858,8 +5326,8 @@ function DiscordTag({ user, voice }) {
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
 }
 function HeaderActions({ card, user }) {
-	const [showPopout, setShowPopout] = React.useState(false);
-	const refDOM = React.useRef(null);
+	const [showPopout, setShowPopout] = react.useState(false);
+	const refDOM = react.useRef(null);
 	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`, onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
 		Common.Popout,
 		{
@@ -6902,7 +5370,7 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const filterCheck = activityCheck(activities, isSpotify);
 	const cardGrad = GradGen(filterCheck, isSpotify, activities[0]?.activity, currentGame, voice, streams[0]?.stream);
 	const game = NewGameStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
-	const splash = SplashGen(isSpotify, activities[0]?.activity, { currentGame, data: game }, voice, streams[0]?.stream);
+	const splash = SplashGen(isSpotify, activities[0]?.activity, { currentGame, data: game }, voice, streams[0]?.stream, filterCheck);
 	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(CardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(CardBody, { activities, user, voice, streams, check: filterCheck, isSpotify, v2Enabled }));
 }
 
@@ -6933,7 +5401,7 @@ function TabBaseBuilder() {
 			NavigationUtils.transitionTo("/channels/@me");
 		}
 	};
-	React.useEffect(() => {
+	react.useEffect(() => {
 		window.addEventListener("keydown", recoverOnReload);
 		return () => window.removeEventListener("keydown", recoverOnReload);
 	});
@@ -6945,7 +5413,7 @@ function TabBaseBuilder() {
 // settings/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
-	const [state, setState] = React.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
+	const [state, setState] = react.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
 		"button",
 		{
@@ -7065,9 +5533,9 @@ function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 }
 function FollowedGameListBuilder() {
 	const whitelist = NewsStore.getWhitelist();
-	const [blacklist, updateBlacklist] = React.useState(NewsStore.getBlacklist());
-	const [query, setQuery] = React.useState("");
-	const filtered = React.useMemo(() => {
+	const [blacklist, updateBlacklist] = react.useState(NewsStore.getBlacklist());
+	const [query, setQuery] = react.useState("");
+	const filtered = react.useMemo(() => {
 		const _query = query.toLowerCase();
 		return whitelist?.filter((item) => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
@@ -7107,7 +5575,7 @@ function RadioItem({ optionKey, label, description, options, setting, setState }
 function SettingsPanelBuilder() {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(Common.ManaSwitch, { checked: false }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Visual Refresh", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Modern styling toggles for each part of the Activity Feed.")), BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
 		const { name, note, initial, changed } = settings.main[key];
-		const [state, setState] = React.useState(betterdiscord.Data.load(key));
+		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		return BdApi.React.createElement(
 			Common.FormSwitch,
 			{
@@ -7123,7 +5591,7 @@ function SettingsPanelBuilder() {
 		);
 	}))), BdApi.React.createElement("div", { className: `${SettingsClasses.settingsDivider} ${MainClasses.sectionDivider}` }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Games You Follow", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.")), BdApi.React.createElement(FollowedGameListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "External News", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.external} ${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "News from external sources outside of your game library.")), BdApi.React.createElement(ExternalSourcesListBuilder, null)), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Advanced/Debug", collapsible: true, shown: false }, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
 		const { name, note, innerText, initial, type, changed, options, onClick } = settings.debug[key];
-		const [state, setState] = React.useState(betterdiscord.Data.load(key));
+		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		switch (type) {
 			case "switch":
 				return BdApi.React.createElement(
@@ -7256,10 +5724,10 @@ function IntroCoachmark({ close }) {
 	} }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildrenWrapper}` }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildren}` }, BdApi.React.createElement("span", { className: CoachmarkClasses.buttonContent }, "Close"))))), BdApi.React.createElement("div", { className: `${Common.CaretClasses.caret} ${Common.CaretClasses["caret--bottom"]} ${Common.CaretClasses["caret--start"]}` }, BdApi.React.createElement("svg", { width: "22", height: "14", viewBox: "0 0 22 14", fill: "none", className: Common.PopoverClasses.caretIcon }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39127C12.4557 11.2796 9.54425 11.2796 7.94646 9.39127L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39127Z" }), BdApi.React.createElement("mask", { id: "mask0_caret", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "22", height: "11", style: { maskType: "alpha" } }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39126C12.4557 11.2796 9.54425 11.2796 7.94646 9.39126L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39126Z" })), BdApi.React.createElement("g", { mask: "url(mask0_caret)" }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretStroke, d: "M13.6572 9.13184C12.2604 10.761 9.73957 10.761 8.34277 9.13184L1.0869141 0.5Q0.0869141 -0.5 1.0869141 -0.5L20.9131 -0.5Q21.9131 -0.5 20.9131 0.5L13.6572 9.13184Z" })))));
 }
 function IntroCoachmarkPopout({ button }) {
-	const [showPopout, setShowPopout] = React.useState(false);
+	const [showPopout, setShowPopout] = react.useState(false);
 	const isShouldShow = betterdiscord.Hooks.useStateFromStores(NewsStore, () => NewsStore.hasDismissedSettingsCoachmark);
-	const refDOM = React.useRef(null);
-	React.useEffect(() => {
+	const refDOM = react.useRef(null);
+	react.useEffect(() => {
 		setShowPopout(!isShouldShow);
 	});
 	return BdApi.React.createElement("div", { ref: refDOM }, BdApi.React.createElement(
@@ -7316,21 +5784,21 @@ function useSelectedState() {
 	return Router.useLocation().pathname.startsWith("/activity-feed");
 }
 function NavigatorButton() {
-	return React.createElement(
+	return react.createElement(
 		Common.LinkButton,
 		{
 			selected: useSelectedState(),
 			route: "/activity-feed",
 			text: "Activity",
 			icon: () => {
-				return React.createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
+				return react.createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
 			}
 		}
 	);
 }
 function CoachmarkWrapper({ button }) {
 	if (useSelectedState() && !NewsStore.hasDismissedSettingsCoachmark) {
-		return React.createElement(IntroCoachmarkPopout, { button });
+		return react.createElement(IntroCoachmarkPopout, { button });
 	}
 	return button;
 }
@@ -7344,7 +5812,7 @@ let LayoutTypes = {
 const customObj = layoutUtils.Custom(
 	"activity_feed_custom",
 	{
-		Component: () => React.createElement(SettingsPanelBuilder),
+		Component: () => react.createElement(SettingsPanelBuilder),
 		key: "activity_feed_custom",
 		type: LayoutTypes.CUSTOM
 	}
@@ -7370,7 +5838,7 @@ const sidebarItem = layoutUtils.SidebarItem(
 	"activity_feed_sidebar_item",
 	{
 		buildLayout: () => [panelObj],
-		icon: () => React.createElement(NewspaperIcon),
+		icon: () => react.createElement(NewspaperIcon),
 		key: "activity_feed_sidebar_item",
 		getLegacySearchKey: () => "ACTIVITY_FEED",
 		useTitle: () => "Activity Feed",
@@ -7379,6 +5847,7 @@ const sidebarItem = layoutUtils.SidebarItem(
 );
 class ActivityFeed {
 	GameNewsStore = NewsStore;
+	NewsArticle = NewsArticle;
 	load() {
 		if (window.location.href.endsWith("/channels/@me")) {
 			NavigationUtils.transitionTo("/activity-feed");
@@ -7389,23 +5858,35 @@ class ActivityFeed {
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
-		function NewType(props) {
-			const ret = NewType._(props);
-			const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5, { walkable: ["children", "props"] });
-			const index = children.findIndex((m) => m.key === "activity-feed");
-			if (~index) {
-				children.splice(index, 1);
+		const [appContentModule, appContentKey] = betterdiscord.Webpack.getWithKey(betterdiscord.Webpack.Filters.byStrings("hasNotice", "AppView"));
+		if (appContentModule) {
+			betterdiscord.Patcher.after(appContentModule, appContentKey, (that, args, ret) => {
+				const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5 && node.children.some((c) => c?.props?.path), { walkable: ["children", "props"] }) ?? {};
+				if (!children) return;
+				const index = children.findIndex((m) => m.key === "activity-feed");
+				if (~index) {
+					children.splice(index, 1);
+				}
+				children.push(
+					react.createElement(Route, {
+						disableTrack: true,
+						path: "/activity-feed",
+						render: () => react.createElement(TabBaseBuilder),
+						exact: true,
+						key: "activity-feed"
+					})
+				);
+			});
+			const patchedFn = appContentModule[appContentKey];
+			const inst = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
+			if (inst) {
+				betterdiscord.Patcher.after(inst, "render", (that, args, res) => {
+					if (res?.props?.children) {
+						res.props.children = { ...res.props.children, type: patchedFn };
+					}
+				});
+				inst.forceUpdate();
 			}
-			children.push(
-				React.createElement(Route, {
-					disableTrack: true,
-					path: "/activity-feed",
-					render: () => React.createElement(TabBaseBuilder),
-					exact: true,
-					key: "activity-feed"
-				})
-			);
-			return ret;
 		}
 		betterdiscord.DOM.addStyle("activityPanelCSS", styles$1());
 		betterdiscord.DOM.addStyle("activityPanelSupplementalCSS", extraCSS);
@@ -7423,7 +5904,7 @@ class ActivityFeed {
 			const index = panel.children.findIndex((m) => m?.key === "activityFeed_button");
 			if (index !== -1) return;
 			panel.children.unshift(
-				React.createElement(NavigatorButton, { key: "activityFeed_button" })
+				react.createElement(NavigatorButton, { key: "activityFeed_button" })
 			);
 		});
 		betterdiscord.Patcher.before(Common.GameFetchModule, "E", (thisObj, args) => {
@@ -7446,46 +5927,8 @@ class ActivityFeed {
 			return res;
 		});
 		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
-			return React.createElement(CoachmarkWrapper, { button: res });
+			return react.createElement(CoachmarkWrapper, { button: res });
 		});
-		function fu() {
-			const appI = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {
-				filter: (m) => typeof m.ensureChannelMatchesGuild === "function"
-			});
-			console.log("fu()");
-			if (appI) {
-				appI.forceUpdate(() => {
-					const inst = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
-					betterdiscord.Patcher.after(inst, "render", (that, args, res) => {
-						NewType._ ??= res.props.children.type;
-						res.props.children.type = NewType;
-					});
-					inst?.forceUpdate(() => {
-						console.log("inst.forceUpdate");
-						appI.forceUpdate();
-						inst.forceUpdate();
-					});
-				});
-			}
-		}
-		fu();
-		{
-			const appMount = document.getElementById("app-mount");
-			const reactContainerKey = Object.keys(appMount).find((m) => m.startsWith("__reactContainer$"));
-			let container2 = appMount[reactContainerKey];
-			while (!container2.stateNode?.isReactComponent) {
-				container2 = container2.child;
-			}
-			container2 = container2.child;
-			while (!container2.stateNode?.isReactComponent) {
-				container2 = container2.child;
-			}
-			betterdiscord.Patcher.after(container2.stateNode, "render", fu);
-			const undo = betterdiscord.Patcher.after(container2.stateNode, "render", () => {
-				undo();
-				fu();
-			});
-		}
 	}
 	stop() {
 		betterdiscord.Patcher.unpatchAll("ActivityFeed");
@@ -7494,11 +5937,11 @@ class ActivityFeed {
 	}
 	getSettingsPanel() {
 		return [
-			React.createElement(() => Object.keys(settings.main).map(
+			react.createElement(() => Object.keys(settings.main).map(
 				(key) => {
 					const { name, note, initial, changed } = settings.main[key];
-					const [state, setState] = React.useState(betterdiscord.Data.load(key));
-					return React.createElement(Common.FormSwitch, {
+					const [state, setState] = react.useState(betterdiscord.Data.load(key));
+					return react.createElement(Common.FormSwitch, {
 						label: name,
 						description: note,
 						checked: state ?? initial,
@@ -7511,31 +5954,31 @@ class ActivityFeed {
 					});
 				}
 			)),
-			React.createElement(betterdiscord.Components.Text, { size: betterdiscord.Components.Text.Sizes.SIZE_16, strong: true, style: { borderTop: "thin solid var(--border-subtle)", paddingTop: "var(--space-12)", paddingBottom: "var(--space-12)" } }, "Activity Feed"),
-			React.createElement(betterdiscord.Components.SettingGroup, {
+			react.createElement(betterdiscord.Components.Text, { size: betterdiscord.Components.Text.Sizes.SIZE_16, strong: true, style: { borderTop: "thin solid var(--border-subtle)", paddingTop: "var(--space-12)", paddingBottom: "var(--space-12)" } }, "Activity Feed"),
+			react.createElement(betterdiscord.Components.SettingGroup, {
 				name: "Games You've Hidden",
 				collapsible: true,
 				shown: false,
 				children: [
-					React.createElement(
+					react.createElement(
 						"div",
 						{ className: "blacklist_267ac emptyState_267ac", style: { padding: 0, borderBottom: "unset" } },
-						React.createElement("div", { className: "emptyText_267ac" }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Below are the games you have hidden.")
+						react.createElement("div", { className: "emptyText_267ac" }, "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Below are the games you have hidden.")
 					)
 				]
 			}),
-			React.createElement(betterdiscord.Components.SettingGroup, {
+			react.createElement(betterdiscord.Components.SettingGroup, {
 				name: "Advanced/Debug",
 				collapsible: true,
 				shown: false,
-				children: React.createElement(
+				children: react.createElement(
 					"div",
 					{ className: "toggleStack_267ac", style: { padding: "var(--space-16) 0 var(--space-16) 0" } },
-					React.createElement(() => Object.keys(settings.debug).map((key) => {
+					react.createElement(() => Object.keys(settings.debug).map((key) => {
 						const { name, note, initial, type, changed } = settings.debug[key];
-						const [state, setState] = React.useState(betterdiscord.Data.load(key));
+						const [state, setState] = react.useState(betterdiscord.Data.load(key));
 						if (type === "switch") {
-							return React.createElement(Common.FormSwitch, {
+							return react.createElement(Common.FormSwitch, {
 								label: name,
 								description: note,
 								checked: state ?? initial,
@@ -7547,12 +5990,12 @@ class ActivityFeed {
 								}
 							});
 						}
-						return React.createElement("div", { className: "buttonItem_267ac", style: { display: "flex" } }, [
-							React.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, [
-								React.createElement("div", { className: "blacklistItemName_267ac textRow_267ac", style: { fontWeight: 500, fontSize: "16px", color: "var(--text-primary)" } }, name),
-								React.createElement("div", { className: "textRow_267ac" }, note)
+						return react.createElement("div", { className: "buttonItem_267ac", style: { display: "flex" } }, [
+							react.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, [
+								react.createElement("div", { className: "blacklistItemName_267ac textRow_267ac", style: { fontWeight: 500, fontSize: "16px", color: "var(--text-primary)" } }, name),
+								react.createElement("div", { className: "textRow_267ac" }, note)
 							]),
-							React.createElement(
+							react.createElement(
 								"button",
 								{
 									className: `button_267ac unhideBlacklisted_267ac ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,

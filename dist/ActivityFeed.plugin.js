@@ -1827,14 +1827,15 @@ function getVoiceParticipants({ voice }) {
 }
 function TimeClock({ timestamp }) {
 	const time = Math.floor((Date.now() - new Date(parseInt(timestamp))) / 1e3);
-	if (time / 86400 > 1) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["2rUo/p"], { time: Math.floor(time / 86400) });
-	} else if (time / 3600 > 1) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["eNoooU"], { time: Math.floor(time / 3600) });
-	} else if (time / 60 > 1) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["03mIHW"], { time: Math.floor(time / 60) });
-	} else if (time % 60 < 60) {
-		return Common.intl.intl.formatToPlainString(Common.intl.t["ahzZr+"]);
+	switch (true) {
+		case !!(time / 86400 > 1):
+			return Common.intl.intl.formatToPlainString(Common.intl.t["2rUo/p"], { time: Math.floor(time / 86400) });
+		case !!(time / 3600 > 1):
+			return Common.intl.intl.formatToPlainString(Common.intl.t["eNoooU"], { time: Math.floor(time / 3600) });
+		case !!(time / 60 > 1):
+			return Common.intl.intl.formatToPlainString(Common.intl.t["03mIHW"], { time: Math.floor(time / 60) });
+		case !!(time % 60 < 60):
+			return Common.intl.intl.formatToPlainString(Common.intl.t["ahzZr+"]);
 	}
 }
 function GradGen(check, isSpotify, activity, game, voice, stream) {
@@ -4064,7 +4065,8 @@ function LauncherGameBuilder({ game, runningGames }) {
 		} }), UserSettingsProtoStore.settings.appearance.developerMode && BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-app-id", label: "Copy Application ID", action: () => Common.Clipboard(fullGame.id) }));
 	}
 	function openGame() {
-		shell.openExternal(!!isSteam ? `steam://run/${isSteam.id}` : game.exepath);
+		const items = game.exePath.split("/");
+		shell.openExternal(!!isSteam && ["steamapps", "steamlibrary"].some((item) => items.includes(item)) ? `steam://run/${isSteam.id}` : game.exePath);
 	}
 	return BdApi.React.createElement(
 		Common.Popout,

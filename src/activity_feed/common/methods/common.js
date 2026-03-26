@@ -4,19 +4,6 @@ import { XMLParser } from "fast-xml-parser";
 import { Common } from '@modules/common';
 import { ChannelStore, UserStore, VoiceStateStore } from "@modules/stores";
 
-function checkImage(url) {
-    let image = new Image();
-    image.onload = function() {
-        if (this.width > 0) {
-            return true;
-        }
-    }
-    image.onerror = function() {
-        return false;
-    }
-    image.src = url;
-}
-
 export function chunkArray(cards, num) {
     let chunkLength = Math.max(cards.length / num, 1);
     const chunks = [];
@@ -38,17 +25,11 @@ export function getVoiceParticipants({voice}) {
 export function TimeClock({timestamp}) {
     const time = Math.floor((Date.now() - new Date(parseInt(timestamp)))/1000)
 
-    if ( (time / 86400) > 1 ) {
-        return Common.intl.intl.formatToPlainString(Common.intl.t['2rUo/p'], { time: Math.floor(time / 86400) });
-    }
-    else if ( (time / 3600) > 1 ) {
-        return Common.intl.intl.formatToPlainString(Common.intl.t['eNoooU'], { time: Math.floor(time / 3600) });
-    }
-    else if ( (time / 60) > 1 ) {
-        return Common.intl.intl.formatToPlainString(Common.intl.t['03mIHW'], { time: Math.floor(time / 60) });
-    }
-    else if ( (time % 60) < 60 ) {
-        return Common.intl.intl.formatToPlainString(Common.intl.t['ahzZr+']);
+    switch(true) {
+        case !! ((time / 86400) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['2rUo/p'], { time: Math.floor(time / 86400) });
+        case !! ((time / 3600) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['eNoooU'], { time: Math.floor(time / 3600) });
+        case !! ((time / 60) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['03mIHW'], { time: Math.floor(time / 60) });
+        case !! ((time % 60 ) < 60): return Common.intl.intl.formatToPlainString(Common.intl.t['ahzZr+']);
     }
 }
 
@@ -65,7 +46,6 @@ export function GradGen(check, isSpotify, activity, game, voice, stream) {
         case !! voice[0]?.guild: input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`; break; 
         case !! voice && stream: input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
     }
-    //if (!checkImage(input)) console.warn("[GradientComponent] Failed to load gradient for card", activity, game);
     return Common.GradientComponent(input || null);
 }
 

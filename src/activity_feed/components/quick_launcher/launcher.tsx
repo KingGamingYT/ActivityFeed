@@ -30,7 +30,8 @@ export function LauncherGameBuilder({game, runningGames}) {
 
     function openGame()
     {
-        shell.openExternal(!!isSteam ? `steam://run/${isSteam.id}` : game.exepath)
+        const items = game.exePath.split('/');
+        shell.openExternal(!!isSteam && ["steamapps", "steamlibrary"].some(item => items.includes(item)) ? `steam://run/${isSteam.id}` : game.exePath)
     }
 
     return (

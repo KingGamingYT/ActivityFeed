@@ -1,4 +1,4 @@
-.nowPlaying {}
+.nowPlaying, .whatsNew {}
 
 .nowPlayingContainer {
     display: flex;
@@ -49,14 +49,14 @@
     color: var(--text-default);
 }
 
-.username {
+.username, .headerTitle {
     cursor: pointer;
     font-size: 16px;
     font-weight: 500;
     line-height: 20px;
 }
 
-.username:hover {
+.username:hover, .headerTitle:hover {
     text-decoration: underline;
 }
 

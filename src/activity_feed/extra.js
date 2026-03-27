@@ -35,7 +35,7 @@ export const extraCSS = webpackify(`
         gap: 8px;
     }
 
-    .nowPlayingColumn .header > .wrapper {
+    .nowPlayingColumn .header > :is(.wrapper, .gameIcon) {
         display: flex;
         margin-right: 20px;
         transition: opacity .2s ease;

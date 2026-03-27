@@ -2,14 +2,9 @@ import { Utils } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common } from "@modules/common";
 import Tooltip from "@common/components/TooltipBuilder";
+import Splash from "@now_playing/activities/components/common/Splash";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-
-function Splash({splash, className}) {
-    if (!splash) return;
-
-    return <div className={className} style={{ backgroundImage: `url(${splash})` }} />
-}
 
 function DiscordTag({user, voice}) {
     let outputtedUsername;
@@ -74,7 +69,7 @@ function HeaderIcon({activities, isSpotify, currentGame}) {
     )
 }
 
-export function CardHeader({card, activities, game, splash, user, voice, isSpotify}) {
+export function NowPlayingCardHeader({card, activities, game, splash, user, voice, isSpotify}) {
     const status = card.party.priorityMembers[0].status;
 
     return (

@@ -4,7 +4,7 @@ import { Common, ControllerIcon, NavigationUtils } from "@modules/common";
 import { UserStore } from "@modules/stores";
 import { NewsFeedBuilder } from "./components/application_news/FeedBuilder";
 import { QuickLauncherBuilder } from "./components/quick_launcher/launcher";
-import { NowPlayingBuilder } from "./components/now_playing/BaseBuilder";
+import { NowPlayingBuilder, WhatsNewBuilder } from "./components/now_playing/BaseBuilder";
 import settings from "@settings/settings";
 import MainClasses from "./ActivityFeed.module.css";
 import QuickLauncherClasses from "./components/quick_launcher/QuickLauncher.module.css"
@@ -45,6 +45,7 @@ export function TabBaseBuilder() {
                     <NewsFeedBuilder />
                     <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" }} />
                     <NowPlayingBuilder className={NowPlayingClasses.nowPlaying} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
+                    <WhatsNewBuilder className={NowPlayingClasses.whatsNew} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
                     <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>
                 </div>
             </Scroller>

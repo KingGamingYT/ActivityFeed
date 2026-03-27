@@ -85,7 +85,7 @@ export const extraCSS = webpackify(`
         display: none;
     }
 
-    .sectionDivider:last-child {
+    .nowPlaying .sectionDivider:last-child {
         display: none;
     }
 

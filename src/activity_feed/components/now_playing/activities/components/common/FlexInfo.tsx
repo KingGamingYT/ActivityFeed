@@ -1,6 +1,7 @@
 import { Common } from '@modules/common';
 import { GuildStore, useStateFromStores } from '@modules/stores';
-import { TimeClock } from '@common/methods/common';
+import { TimeClock, InactiveTimeClock } from '@common/methods/common';
+import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
@@ -66,9 +67,20 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
                     <Common.LiveBadge style={{ marginLeft: "5px" }} />
                 </div>
                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{
-                    activity ? Common.intl.intl.format(Common.intl.t['0wJXSh'],  {name: <strong>{stream.name}</strong>}) 
+                    activity ? Common.intl.intl.format(Common.intl.t['0wJXSh'], {name: <strong>{stream.name}</strong>}) 
                     : Common.intl.intl.formatToPlainString(Common.intl.t['KDdjou'])
                 }</div>
+            </>
+        )
+        case "LAST_PLAYED": return (
+            <>
+                <DiscordTag user={streamUser} />
+                <div className={NowPlayingClasses.playTime}>
+                    {
+                        activity.content?.ended_at ? <InactiveTimeClock timestamp={ activity.content?.ended_at } />
+                        : Common.intl.intl.formatToPlainString(Common.intl.t['3elwAB'])
+                    }
+                </div>
             </>
         )
     }

@@ -9,6 +9,7 @@ export const GameStore = /* @__PURE__ */ Webpack.getStore("GameStore");
 export const GuildStore = /* @__PURE__ */ Webpack.getStore("GuildStore");
 export const NewGameStore = /* @__PURE__ */ Webpack.getStore("NewGameStore");
 export const NowPlayingViewStore = /* @__PURE__ */ Webpack.getStore("NowPlayingViewStore");
+export const PresenceStore = /* @__PURE__ */ Webpack.getStore("PresenceStore");
 export const RunningGameStore = /* @__PURE__ */ Webpack.getStore("RunningGameStore");
 export const ThemeStore = /* @__PURE__ */ Webpack.getStore("ThemeStore");
 export const UserSettingsProtoStore = /* @__PURE__ */ Webpack.getStore("UserSettingsProtoStore");

@@ -12,7 +12,11 @@ export function WhatsNewCardHeader({game, splash}) {
             <div className={NowPlayingClasses.header}>
                 <GameIconAsset url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon}.webp?size=64&keep_aspect_ratio=false`} id={game?.id} name={game?.name} />
                 <div className={NowPlayingClasses.nameTag} style={{ flex: 1 }}>
-                    <div className={NowPlayingClasses.headerTitle} onClick={useGameProfile}>{game?.name}</div>
+                    <div className={NowPlayingClasses.headerTitle} 
+                        onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                        onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                        onClick={useGameProfile}>{game?.name}
+                    </div>
                 </div>
             </div>
         </div>

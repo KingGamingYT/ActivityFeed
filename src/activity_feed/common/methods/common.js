@@ -33,7 +33,18 @@ export function TimeClock({timestamp}) {
     }
 }
 
-export function GradGen({check, isSpotify, activity, game, voice, stream}) {
+export function InactiveTimeClock({timestamp}) {
+    const time = Math.floor((Date.now() - new Date(timestamp).getTime())/1000)
+
+    switch(true) {
+        case !! ((time / 86400) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['yP1T84'], { time: Math.floor(time / 86400) });
+        case !! ((time / 3600) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['cRMUpw'], { time: Math.floor(time / 3600) });
+        case !! ((time / 60) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['BZxG8Z'], { time: Math.floor(time / 60) });
+        case !! (isNaN(time)): return TimeClock({timestamp});
+    }
+}
+
+export function GradGen(game, check, isSpotify, activity, voice, stream) {
     let input;
     switch (true) {
         case !! check?.streaming: activity.name.toLowerCase().includes("youtube") ? input = 'https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
@@ -49,7 +60,7 @@ export function GradGen({check, isSpotify, activity, game, voice, stream}) {
     return Common.GradientComponent(input || null);
 }
 
-export function SplashGen({isSpotify, activity, game, voice, stream, check}) {
+export function SplashGen(game, isSpotify, activity, voice, stream, check) {
     let input;
     switch (true) {
         case !! game?.currentGame?.splash?.length: input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.currentGame?.splash}.png?size=1024&keep_aspect_ratio=true`; break;

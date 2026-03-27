@@ -13,7 +13,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const streams = card.party.applicationStreams;
     const isSpotify = card.party.isSpotifyActivity;
     const filterCheck = activityCheck(activities, isSpotify);
-    const cardGrad = GradGen({check: filterCheck, isSpotify, activity: activities[0]?.activity, game: currentGame, voice, stream: streams[0]?.stream});
+    const cardGrad = GradGen(currentGame, filterCheck, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
 
     (async () => {
         if (!NewGameStore.getGame(currentGame?.id)) {
@@ -22,7 +22,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     })
     
     const game = NewGameStore.getGame(currentGame?.id) || (ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id));
-    const splash = SplashGen({isSpotify, activity: activities[0]?.activity, game: {currentGame: currentGame, data: game}, voice, stream: streams[0]?.stream, check: filterCheck});
+    const splash = SplashGen({currentGame: currentGame, data: game}, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, filterCheck);
 
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
@@ -35,20 +35,23 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
 export function WhatsNewCardBuilder({card, v2Enabled}) {
     const players = useStateFromStores([ContentInventoryStore], () => ContentInventoryStore.getFeeds()).get("global feed").unranked_game_entries.filter(entry => entry.content?.extra?.application_id?.includes(card));
 
+    if (!players.length) return;
+
     if (!NewGameStore.getGame(card)) {
         Common.FetchGames?.k(card)
     }
 
-    if (!NewGameStore.getGame(card) || !ApplicationStore.getApplication(card)) return;
+    if (!ApplicationStore.getApplication(card)) return;
 
     const game = NewGameStore.getGame(card);
     const currentGame = NewGameStore.getGame(card) ? GameStore.getGameByApplication(ApplicationStore.getApplication(card)) : null;
-    const cardGrad = GradGen({game: currentGame});
-    const splash = SplashGen({game: {currentGame: currentGame, data: game}});
+    const cardGrad = GradGen(currentGame);
+    const splash = SplashGen({currentGame: currentGame, data: game});
 
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
             <WhatsNewCardHeader game={currentGame} splash={splash} />
+            <WhatsNewCardBody game={currentGame} players={players} v2Enabled={v2Enabled} />
         </div>
     )
 }

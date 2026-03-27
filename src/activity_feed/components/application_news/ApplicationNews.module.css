@@ -443,6 +443,21 @@ svg.arrow {
     animation-delay: 1.2s;
 }
 
+.news {
+    align-items: flex-end;
+    background-color: var(--background-secondary-alt);
+    border-radius: 3px;
+    box-sizing: border-box;
+    display: flex;
+    overflow: hidden;
+    padding: 20px;
+    position: relative;
+    height: 270px;
+    margin-top: 20px;
+}
+
+.newsLink {}
+
 .feedCarouselV2 {
     .carousel {
         background-color: var(--background-surface-high);

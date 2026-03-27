@@ -349,6 +349,16 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
+    getByApplicationId(id) {
+        let d = this.dataSet;
+
+        for (let k of Object.keys(d)) {
+            if (d[k].news.application_id === id) {
+                return d[k];
+            }
+        }
+    }
+
     getApplicationByGameId(id, applicationList) {
         let r;
         if (isNaN(id)) { r = applicationList.find(game => game.name === id) }

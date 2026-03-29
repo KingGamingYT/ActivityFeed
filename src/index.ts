@@ -4,12 +4,13 @@ import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, Router
 import { NewspaperIcon } from "./settings/components/SidebarItemIcon";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { SettingsPanelBuilder } from "./settings/builder.js";
-import { IntroCoachmarkPopout } from "@activity_feed/components/coachmark/IntroCoachmark";
+import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
 import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
 import settings from "./settings/settings.js";
-import NewsStore from "./activity_feed/Store.js";
-import NewsArticle from "@activity_feed/components/application_news/Article";
+import NewsStore from "./activity_feed/Store";
+import NewsArticle from "@application_news/Article";
+import LastPlayedStore from "@now_playing/LastPlayedStore";
 
 
 function useSelectedState() {
@@ -87,6 +88,7 @@ layoutUtils.SidebarItem("activity_feed_sidebar_item",
 export default class ActivityFeed {
     GameNewsStore = NewsStore;
     NewsArticle = NewsArticle;
+    LastPlayedStore = LastPlayedStore;
     load () {
         if (window.location.href.endsWith('/channels/@me')) {
             NavigationUtils.transitionTo('/activity-feed');

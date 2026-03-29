@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Common } from "@modules/common";
 import { activityCheck, GradGen, SplashGen } from "@common/methods/common";
-import { ApplicationStore, ContentInventoryStore, NewGameStore, GameStore, useStateFromStores } from "@modules/stores";
+import { ApplicationStore, NewGameStore, GameStore } from "@modules/stores";
 import { NowPlayingCardHeader, NowPlayingCardBody, WhatsNewCardHeader, WhatsNewCardBody } from "./card_shop/index";
 import NowPlayingClasses from "./NowPlaying.module.css";
 
@@ -33,25 +33,17 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
 }
 
 export function WhatsNewCardBuilder({card, v2Enabled}) {
-    const players = useStateFromStores([ContentInventoryStore], () => ContentInventoryStore.getFeeds()).get("global feed").unranked_game_entries.filter(entry => entry.content?.extra?.application_id?.includes(card));
-
-    if (!players.length) return;
-
-    if (!NewGameStore.getGame(card)) {
-        Common.FetchGames?.k(card)
-    }
-
-    if (!ApplicationStore.getApplication(card)) return;
-
-    const game = NewGameStore.getGame(card);
-    const currentGame = NewGameStore.getGame(card) ? GameStore.getGameByApplication(ApplicationStore.getApplication(card)) : null;
-    const cardGrad = GradGen(currentGame);
+    const players = card.players;
+    const game = card.application;
+    const titleNews = card.titleNews;
+    const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application.id) ?? card.application.id);
+    const cardGrad = GradGen(currentGame ?? game);
     const splash = SplashGen({currentGame: currentGame, data: game});
 
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
-            <WhatsNewCardHeader game={currentGame} splash={splash} />
-            <WhatsNewCardBody game={currentGame} players={players} v2Enabled={v2Enabled} />
+            <WhatsNewCardHeader game={game} splash={splash} />
+            <WhatsNewCardBody players={players} news={titleNews} v2Enabled={v2Enabled} />
         </div>
     )
 }

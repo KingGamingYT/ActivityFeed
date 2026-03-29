@@ -1,4 +1,4 @@
-import { Data } from 'betterdiscord';
+import { Data, Hooks } from 'betterdiscord';
 import { useState, useEffect } from 'react';
 import { Common } from "@modules/common";
 import { NowPlayingViewStore, useStateFromStores } from "@modules/stores";
@@ -6,6 +6,7 @@ import { chunkArray, useWindowSize } from "@common/methods/common";
 import { NowPlayingCardBuilder, WhatsNewCardBuilder } from "./CardBuilder";
 import SectionHeader from "@activity_feed/common/components/SectionHeader";
 import settings from "@settings/settings";
+import LastPlayedStore from './LastPlayedStore';
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "./NowPlaying.module.css";
 
@@ -53,32 +54,21 @@ export function NowPlayingBuilder(props) {
 }
 
 export function WhatsNewBuilder(props) {
+    Common.FluxDispatcher.dispatch({type: 'LAST_PLAYED_MOUNTED'});
     const [width, height] = useWindowSize();
-    const [recentlySeenGameIds, setRecentlySeenGameIds] = useState([]);
-    
-    useEffect(() => {
-        (async () => {
-            let seenGames = await Common.RestAPI.get(Common.Endpoints.ACTIVITIES);
-            let idSet = new Set();
-            const recentlySeenGames = seenGames.body.filter(activity => new Date(activity.updated_at) > new Date(Date.now() - 8.64e7))
-            const recentlySeenGameIds = recentlySeenGames.map(activity => activity.application_id);
-            for (let x in recentlySeenGameIds) {
-                idSet.add(recentlySeenGameIds[x]);
-            }
-            setRecentlySeenGameIds(Array.from(idSet));
-        })()
-    }, [recentlySeenGameIds])
+    const lastPlayedCards = useStateFromStores([ LastPlayedStore ], () => LastPlayedStore.lastPlayedCards);
+    console.log(lastPlayedCards)
+    const _lastPlayedCards = lastPlayedCards.filter(card => card.players.length > 0)
     
     const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);
-    const cardColumns = chunkArray(recentlySeenGameIds, numColumns);
+    const cardColumns = chunkArray(_lastPlayedCards, numColumns);
     const spacer = 20 - 20 / cardColumns.length;
 
-    if (!recentlySeenGameIds.length) return;
     return (
         <div {...props}>
             <SectionHeader label="What's New" />
             <div className={NowPlayingClasses.nowPlayingContainer}>
-                {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: recentlySeenGameIds.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
+                {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: _lastPlayedCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
                     <NowPlayingColumnBuilder nowPlayingCards={column} type="WHATS_NEW" />
                 </div>)}
             </div>

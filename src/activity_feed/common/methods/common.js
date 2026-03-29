@@ -53,7 +53,7 @@ export function GradGen(game, check, isSpotify, activity, voice, stream) {
         case !! activity?.platform?.includes("xbox"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
         case !! (activity?.assets && activity?.assets.large_image?.includes('external')): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! (activity?.assets && activity?.assets.large_image): input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`; break;
-        case !! game?.icon: input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
+        case !! (game?.icon || game?.supplementalData?.iconHash): input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon || game?.supplementalData?.iconHash}.png?size=1024&keep_aspect_ratio=true`; break;
         case !! (voice && voice[0]?.guild): input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`; break; 
         case !! voice && stream: input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
     }

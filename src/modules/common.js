@@ -19,6 +19,7 @@ const Filters = [
     { name: "FetchGames", filter: /* @__PURE__ */ Webpack.Filters.bySource('.GAME', 'fetchMany'), searchExports: true },
     { name: "FetchUtils", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "FluxDispatcher", filter: /* @__PURE__ */ Webpack.Filters.byKeys('dispatch', 'subscribe', 'register'), searchExports: true },
+    { name: "FluxStore", filter: x => typeof x.Ay?.Store === 'function', searchExports: false, searchDefault: false },
     { name: "FormSwitch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"data-toggleable-component":"switch"', 'layout:"horizontal"'), searchExports: true },
     { name: "GameFetchModule", filter: /* @__PURE__ */ Webpack.Filters.bySource("type:\"GAME_FETCH_SUCCESS\",gameIds:") },
     { name: "GameProfile", filter: x => x.openGameProfileModal },
@@ -98,3 +99,7 @@ export const ModalSystem = /* @__PURE__ */ Webpack.getMangled(".modalKey?", {
     closeModal: /* @__PURE__ */ Webpack.Filters.byStrings(".onCloseCallback()"),
     closeAllModals: /* @__PURE__ */ Webpack.Filters.byStrings(".getState();for")
 });
+
+export const FetchGameUtils = Webpack.getMangled('Error("Failed to fetch game data")', {
+    fetchMultipleGames: BdApi.Webpack.Filters.byStrings('isLoading', 'Array.isArray')
+})

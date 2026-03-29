@@ -131,6 +131,41 @@ export const extraCSS = webpackify(`
             border-color: var(--opacity-white-12) !important;
             border-width: 1px;
             margin: 12px 0 12px 0;
+        }
+        .news {
+            background-color: hsl(var(--black-hsl) / .7);
+            border-radius: var(--radius-sm);
+            margin-top: var(--space-sm);
+            outline: 1px solid var(--border-muted);
+            outline-offset: -1px;
+            padding: var(--space-lg);
+            z-index: 0;
+            .background {
+                mask: linear-gradient(0deg, transparent 10%, #000);
+                z-index: -1;
+            }
+            .${FeedClasses.details} {
+                display: flex;
+                flex-direction: column;
+                gap: var(--space-xs);
+            }
+            .title {
+                color: var(--white);
+            }
+            .description {
+                color: var(--white);
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 1.2857142857142858;
+                margin: 0;
+            }
+            .timestamp {
+                color: var(--app-message-embed-secondary-text);
+                font-size: 12px;
+                font-weight: 400;
+                margin: 0;
+                text-transform: unset;
+            }
         } 
     }
 

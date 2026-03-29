@@ -19,7 +19,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
                     >{game?.name}</div>
                 </div>
                 {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
-                    <TimeClock timestamp={ activity?.timestamps.start || activity.created_at } />
+                    <TimeClock timestamp={ activity?.timestamps?.start || activity.created_at } />
                 </div>}
             </>
         )
@@ -77,7 +77,7 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
                 <DiscordTag user={streamUser} />
                 <div className={NowPlayingClasses.playTime}>
                     {
-                        activity.content?.ended_at ? <InactiveTimeClock timestamp={ activity.content?.ended_at } />
+                        activity.endedAt ? <InactiveTimeClock timestamp={ activity?.endedAt } />
                         : Common.intl.intl.formatToPlainString(Common.intl.t['3elwAB'])
                     }
                 </div>

@@ -1,4 +1,4 @@
-import { Data, Utils } from "betterdiscord";
+import { Data, Plugins, Utils } from "betterdiscord";
 import { useEffect } from "react";
 import { Common, ControllerIcon, NavigationUtils } from "@modules/common";
 import { UserStore } from "@modules/stores";
@@ -45,8 +45,8 @@ export function TabBaseBuilder() {
                     <NewsFeedBuilder />
                     <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" }} />
                     <NowPlayingBuilder className={NowPlayingClasses.nowPlaying} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
-                    <WhatsNewBuilder className={NowPlayingClasses.whatsNew} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
-                    <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>
+                    {/*<WhatsNewBuilder className={NowPlayingClasses.whatsNew} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />*/}
+                    {Plugins.get("ActivityFeed").version.includes("dev") && <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>}
                 </div>
             </Scroller>
         </div>

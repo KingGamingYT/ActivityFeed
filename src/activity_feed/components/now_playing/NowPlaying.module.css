@@ -100,6 +100,19 @@
     width: 30px;
 }
 
+.gameIcon {
+    border-radius: 4px;
+}
+
+.clickableIcon {
+    opacity: 0.8;
+    cursor: pointer;
+}
+.clickableText {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .splashArt {
     filter: grayscale(100%);
     mask: radial-gradient(100% 100% at top left, hsla(0, 0%, 100%, .6) 0, hsla(0, 0%, 100%, 0) 100%);
@@ -129,12 +142,16 @@
     background: var(--background-mod-strong);
 }
 
+.whatsNew .cardBody {
+    padding: 20px 20px 0;
+}
+
 .section {
     -webkit-box-flex: 1;
     flex: 1 0 calc(50% - 20px);
 }
 
-.section:last-child {
+.section:last-child:not(:only-child) {
     padding-bottom: 20px;
 }
 
@@ -639,9 +656,6 @@
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
-}
-
-.lastPlayedPlayer:not(:only-child, :last-child) {
     padding-bottom: 20px;
 }
 
@@ -717,14 +731,6 @@
     .headerIcon, .gameIcon, .assetsLargeImage.assetsLargeImage {
         border-radius: var(--radius-sm);
     }
-    .clickableIcon {
-        opacity: 0.8;
-        cursor: pointer;
-    }
-    .clickableText {
-        text-decoration: underline;
-        cursor: pointer;
-    }
     .gameInfo {
         color: var(--white);
     }
@@ -760,5 +766,35 @@
     .streamGame {
         font-weight: 400;
         text-transform: unset;
+    }
+
+    .lastPlayedSection {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
+    .lastPlayedPlayer {
+        padding: 0 !important;
+        border: 0 !important;
+    }
+
+    .section:last-child:not(:only-child) {
+        padding-bottom: var(--space-sm);
+    }
+
+    .sectionTitleWrapper {
+        color: var(--white);
+    }
+
+    .sectionTitle {
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.3333333333333333;
+        text-transform: unset;
+    }
+
+    .lastPlayedPlayer:is(:only-child, :last-child) {
+        padding-bottom: 0;
     }
 }

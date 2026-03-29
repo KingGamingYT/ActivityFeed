@@ -1,6 +1,5 @@
 import { Common } from "@modules/common";
 import { ActivityCardWrapper, VoiceCard, TwitchCard } from "@now_playing/activities/index";
-
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function NowPlayingCardBody({activities, user, voice, streams, check, isSpotify, v2Enabled}) {

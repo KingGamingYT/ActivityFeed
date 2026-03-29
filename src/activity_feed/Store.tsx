@@ -325,6 +325,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     filterFeeds(f) {
+        if (!f) return;
         const oW = new Date(Date.now() - 12096e5);
         return new Date(f.timestamp) > oW;
     }
@@ -364,6 +365,43 @@ class GameNewsStore extends Utils.Store {
         if (isNaN(id)) { r = applicationList.find(game => game.name === id) }
         else { r = applicationList.find(game => game.thirdPartySkus.find(sku => sku.sku === id)) }
         return r;
+    }
+
+    async getDirectByApplicationId(id, shouldSave) {
+        let article;
+        const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A']
+        for (let i = 0; i < ignore.length; i++) {
+            delete HtmlSanitizer.AllowedTags[ignore[i]];
+        }
+        const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
+        const articleId = game.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
+        switch (true) {
+            case !! (articleId === "Minecraft"): article = await this.#fetchMinecraftFeeds(game); break;
+            case !! (articleId === "Fortnite"): article = await this.#fetchFortniteFeeds(game); break;
+            case !isNaN(parseInt(articleId)): article = await this.#fetchSteamFeeds(articleId, game);
+        }
+        if (!article) return;
+        const news = {
+            id: articleId,
+                application: article.application,
+            news: {
+                application_id: article.appId,
+                description: HtmlSanitizer.SanitizeHtml(article.description),
+                thumbnail: article.thumbnail,
+                timestamp: article.timestamp,
+                title: article.title,
+                url: article?.url
+            },
+            type: "application_news"
+        }
+        if (this.filterFeeds(article) && shouldSave) {
+            Object.assign(this.dataSet[articleId], news)
+            this.whitelist.push({applicationId: article.appId, gameId: articleId})
+            Data.save('whitelist', this.whitelist);
+            Data.save('dataSet', this.dataSet);
+        }
+        return news;
+
     }
 
     getRSSItem(feed, itemIndex = 0) {

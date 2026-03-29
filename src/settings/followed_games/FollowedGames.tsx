@@ -27,7 +27,7 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); updateBlacklist(blacklist.filter(item => item.gameId !== game.gameId)); console.log(blacklist); props.onClose(); }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); updateBlacklist(blacklist.filter(item => item.gameId !== game.gameId)); props.onClose(); }}
                             ]}
                         >
                             <>

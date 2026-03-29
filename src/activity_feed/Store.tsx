@@ -136,11 +136,8 @@ class GameNewsStore extends Utils.Store {
     whitelistGame(gameId) {
         let b = this.blacklist;
         const g = this.getBlacklistedGame(gameId);
-
-        console.log(b)
         b.splice(b.indexOf(g), 1);
         this.emitChange();
-        console.log(b)
         Data.save('blacklist', this.blacklist);
         return this.blacklist;
     }

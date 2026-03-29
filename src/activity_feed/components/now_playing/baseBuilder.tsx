@@ -57,7 +57,6 @@ export function WhatsNewBuilder(props) {
     Common.FluxDispatcher.dispatch({type: 'LAST_PLAYED_MOUNTED'});
     const [width, height] = useWindowSize();
     const lastPlayedCards = useStateFromStores([ LastPlayedStore ], () => LastPlayedStore.lastPlayedCards);
-    console.log(lastPlayedCards)
     const _lastPlayedCards = lastPlayedCards.filter(card => card.players.length > 0)
     
     const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);

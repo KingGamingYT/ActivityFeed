@@ -2526,10 +2526,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	whitelistGame(gameId) {
 		let b = this.blacklist;
 		const g = this.getBlacklistedGame(gameId);
-		console.log(b);
 		b.splice(b.indexOf(g), 1);
 		this.emitChange();
-		console.log(b);
 		betterdiscord.Data.save("blacklist", this.blacklist);
 		return this.blacklist;
 	}
@@ -5668,7 +5666,6 @@ const LastPlayedStore = () => {
 		return;
 	}
 	async function setLastPlayed(g) {
-		console.log("setting?");
 		let titleNews = [];
 		let playerList = [];
 		for (let id of g) {
@@ -5854,7 +5851,6 @@ function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 							{ text: "Yes", fullWidth: 1, onClick: () => {
 								NewsStore.whitelistGame(game.gameId);
 								updateBlacklist(blacklist.filter((item) => item.gameId !== game.gameId));
-								console.log(blacklist);
 								props.onClose();
 							} }
 						]

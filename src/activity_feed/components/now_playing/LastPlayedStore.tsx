@@ -35,7 +35,6 @@ const LastPlayedStore = (() => {
     }
 
     async function setLastPlayed(g) {
-        console.log("setting?")
         let titleNews = [];
         let playerList = [];
         for (let id of g) {

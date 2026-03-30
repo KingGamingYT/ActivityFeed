@@ -63,14 +63,17 @@ export function WhatsNewBuilder(props) {
     const cardColumns = chunkArray(_lastPlayedCards, numColumns);
     const spacer = 20 - 20 / cardColumns.length;
 
-    return (
-        <div {...props}>
-            <SectionHeader label="What's New" />
-            <div className={NowPlayingClasses.nowPlayingContainer}>
-                {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: _lastPlayedCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
-                    <NowPlayingColumnBuilder nowPlayingCards={column} type="WHATS_NEW" />
-                </div>)}
+    if (lastPlayedCards.length) {
+        return (
+            <div {...props}>
+                <SectionHeader label="What's New" />
+                <div className={NowPlayingClasses.nowPlayingContainer}>
+                    {cardColumns.map((column, index) => <div className={NowPlayingClasses.nowPlayingColumn} style={{ width: _lastPlayedCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)`}}>
+                        <NowPlayingColumnBuilder nowPlayingCards={column} type="WHATS_NEW" />
+                    </div>)}
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
+    return;
 }

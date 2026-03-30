@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Common } from "@modules/common";
-import { FlexInfo } from './common/FlexInfo';
+import { FlexInfo } from "./common/FlexInfo";
+import AvatarWithPopoutWrapper from "./common/AvatarWithPopoutWrapper";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 function StreamFallback() {
@@ -48,7 +49,7 @@ export function StreamCard({stream, streamUser, streamActivity}) {
     return (
         <div className={NowPlayingClasses.streamSection}>
             <div className={NowPlayingClasses.applicationStreamingSection}>
-                <Common.AvatarFetch imageClassName="applicationStreamingAvatar" src={`https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`} size="SIZE_40" />
+                <AvatarWithPopoutWrapper className="applicationStreamingAvatar" user={streamUser} size="SIZE_40" />
                 <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`} type="STREAM" stream={streamActivity} streamUser={streamUser} />
             </div>
             <div className={NowPlayingClasses.applicationStreamingPreviewWrapper} style={{ paddingTop: "54.25%" }}>

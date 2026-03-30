@@ -4,6 +4,7 @@ import { Common } from "@modules/common";
 import Tooltip from "@common/components/TooltipBuilder";
 import DiscordTag from "@now_playing/activities/components/common/DiscordTag";
 import Splash from "@now_playing/activities/components/common/Splash";
+import AvatarWithPopoutWrapper from "@now_playing/activities/components/common/AvatarWithPopoutWrapper";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
@@ -62,7 +63,7 @@ export function NowPlayingCardHeader({card, activities, game, splash, user, voic
         <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
-                <Common.AvatarFetch imageClassName="avatar" src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} status={status} size="SIZE_40" />
+                <AvatarWithPopoutWrapper className="avatar" user={user} status={status} size="SIZE_40" />
                 <DiscordTag user={user} voice={voice} />
                 <HeaderActions card={card} user={user} />
                 <HeaderIcon activities={activities} isSpotify={isSpotify} currentGame={game} />

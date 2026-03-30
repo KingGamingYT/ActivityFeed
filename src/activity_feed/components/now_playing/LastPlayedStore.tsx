@@ -1,4 +1,5 @@
 import { Data, Utils } from "betterdiscord";
+import { useEffect } from "react";
 import { Common, FetchGameUtils } from "@modules/common";
 import { ApplicationStore, ContentInventoryStore, PresenceStore, NewGameStore, UserStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
@@ -9,6 +10,22 @@ const LastPlayedStore = (() => {
     let gameIds = [];
     let lastFetched;
     let shouldPersistentlyFetch = false;
+
+    function newFetchLastPlayed() {
+        let seenGames = ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries;
+        const recentlySeenGames = seenGames.filter(entry => new Date(entry.content?.started_at) > new Date(Date.now() - 4.32e8)).map(item => item.content);
+        const recentlySeenGameIds = recentlySeenGames.map(entry => entry?.extra?.application_id);
+        const _recentlySeenGameIds = Array.from(new Set(recentlySeenGameIds.map(id => id)));
+
+
+        FetchGameUtils.fetchMultipleGames.fetchMany(_recentlySeenGameIds);
+
+        Data.save('gameIds', gameIds);
+        lastFetched = Date.now();
+        Data.save('lastFetched', lastFetched);
+        setLastPlayed(_recentlySeenGameIds);
+        return;
+    }
 
     async function fetchLastPlayed() {
         let seenGames = await Common.RestAPI.get(Common.Endpoints.ACTIVITIES);
@@ -25,16 +42,16 @@ const LastPlayedStore = (() => {
 
         FetchGameUtils.fetchMultipleGames.fetchMany([_recentlySeenGameIds]);
 
-        const ___recentlySeenGameIds = __recentlySeenGameIds.filter(item => NewGameStore.getGame(item));
         Data.save('gameIds', gameIds);
         lastFetched = Date.now();
         Data.save('lastFetched', lastFetched);
-        setLastPlayed(___recentlySeenGameIds);
+        setLastPlayed(__recentlySeenGameIds);
         Data.save('lastPlayedCards', lastPlayedCards);
         return;
     }
 
     async function setLastPlayed(g) {
+        await Common.FetchApplications.fetchApplications(g);
         let titleNews = [];
         let playerList = [];
         for (let id of g) {
@@ -44,7 +61,7 @@ const LastPlayedStore = (() => {
             playerList.push(ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries.filter(entry => entry.content?.extra?.application_id?.includes(id)).map(item => item.content));
         }
         lastPlayedCards = g.map((id, index) => { return {
-            application: NewGameStore.getGame(id),
+            application: ApplicationStore.getApplication(id),
             players: playerList[index].map(player => { return {
                 user: UserStore.getUser(player.author_id),
                 endedAt: player.ended_at ? player.ended_at : player.traits.find(trait => trait?.is_live === true) ? undefined : player.expires_at,
@@ -53,6 +70,7 @@ const LastPlayedStore = (() => {
             }}),
             titleNews: titleNews[index]
         }})
+        Data.save('lastPlayedCards', lastPlayedCards);
     }
 
     function initialize() {
@@ -63,10 +81,8 @@ const LastPlayedStore = (() => {
 
     function handleMount() {
         shouldPersistentlyFetch = true,
-        Common.Lodash().throttle( async () => {
-            await fetchLastPlayed(),
-            dispatchMethods.emitChange();  
-        }, 1e3)
+        newFetchLastPlayed();
+        dispatchMethods.emitChange(); 
     }
 
     function handleUnmount() {
@@ -79,6 +95,10 @@ const LastPlayedStore = (() => {
 
         initialize() {
             initialize();
+        }
+
+        testNewFetch() {
+            newFetchLastPlayed();
         }
 
         get lastPlayedCards() {

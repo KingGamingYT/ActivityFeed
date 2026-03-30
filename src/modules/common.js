@@ -55,6 +55,7 @@ const Filters = [
     { name: "TransitionGroup", filter: /* @__PURE__ */ Webpack.Filters.byStrings("transitionAppear"), searchExports: true },
     { name: "UpperIconClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('icon', 'upperContainer') },
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
+    { name: "UserProfileWrapperComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('onClickContainer:', 'user:', '.isNonUserBot()?') },
     { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId', 'getNickname') },
     { name: "ManaSwitch", filter: Webpack.Filters.byStrings('SWITCH_BACKGROUND_DEFAULT'), searchExports: true }
 ]

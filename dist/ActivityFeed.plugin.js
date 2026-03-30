@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.0
+ * @version 1.0.0-dev
  */
 
 /*@cc_on
@@ -90,6 +90,7 @@ const Filters = [
 	{ name: "TransitionGroup", filter: betterdiscord.Webpack.Filters.byStrings("transitionAppear"), searchExports: true },
 	{ name: "UpperIconClasses", filter: betterdiscord.Webpack.Filters.byKeys("icon", "upperContainer") },
 	{ name: "UseStreamPreviewURL", filter: betterdiscord.Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
+	{ name: "UserProfileWrapperComponent", filter: betterdiscord.Webpack.Filters.byStrings("onClickContainer:", "user:", ".isNonUserBot()?") },
 	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId", "getNickname") },
 	{ name: "ManaSwitch", filter: betterdiscord.Webpack.Filters.byStrings("SWITCH_BACKGROUND_DEFAULT"), searchExports: true }
 ];
@@ -5211,6 +5212,36 @@ function FlexInfo(props) {
 	));
 }
 
+// activity_feed/components/now_playing/activities/components/common/AvatarWithPopoutWrapper.tsx
+function AvatarWithPopoutWrapper({ className, user, status, size }) {
+	const [showPopout, setShowPopout] = react.useState(false);
+	const refDOM = react.useRef(null);
+	return BdApi.React.createElement(
+		Common.Popout,
+		{
+			targetElementRef: refDOM,
+			clickTrap: true,
+			onRequestClose: () => setShowPopout(false),
+			renderPopout: () => BdApi.React.createElement(Common.UserProfileWrapperComponent, { currentUser: UserStore.getCurrentUser(), user }),
+			position: "left",
+			shouldShow: showPopout
+		},
+		(props) => BdApi.React.createElement(
+			"div",
+			{
+				...props,
+				ref: refDOM,
+				onClick: () => {
+					setShowPopout(true);
+					console.log(user);
+				},
+				className
+			},
+			BdApi.React.createElement(Common.AvatarFetch, { imageClassName: className, src: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`, status, size })
+		)
+	);
+}
+
 // activity_feed/components/now_playing/activities/components/common/CardTrailing.tsx
 function PartyMemberListBuilder({ activity, users }) {
 	const emptyNum = activity?.party?.size[1] - activity?.party?.size[0];
@@ -5234,11 +5265,11 @@ function PartyMemberListBuilder({ activity, users }) {
 					return BdApi.React.createElement("div", { className: NowPlayingClasses.emptyUser });
 				default:
 					return BdApi.React.createElement(
-						Common.AvatarFetch,
+						AvatarWithPopoutWrapper,
 						{
-							src: `https://cdn.discordapp.com/avatars/${player?.id}/${player?.avatar}.webp?size=16`,
-							size: "SIZE_16",
-							className: NowPlayingClasses.player
+							className: NowPlayingClasses.player,
+							user: player,
+							size: "SIZE_16"
 						}
 					);
 			}
@@ -5527,7 +5558,7 @@ function StreamPreview({ stream }) {
 	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common.intl.intl.formatToPlainString(Common.intl.t["7Xq/nV"]))));
 }
 function StreamCard({ stream, streamUser, streamActivity }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: "applicationStreamingAvatar", src: `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=48`, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: "applicationStreamingAvatar", user: streamUser, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
 }
 
 // activity_feed/components/now_playing/activities/components/CardVoice.tsx
@@ -5597,7 +5628,7 @@ function HeaderIcon({ activities, isSpotify, currentGame }) {
 }
 function NowPlayingCardHeader({ card, activities, game, splash, user, voice, isSpotify }) {
 	const status = card.party.priorityMembers[0].status;
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: "avatar", src: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: "avatar", user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
 }
 
 // activity_feed/components/now_playing/activities/components/WhatsNewListItem.tsx
@@ -5606,7 +5637,7 @@ function WhatsNewOverflowUserTooltip({ player }) {
 }
 function WhatsNewOverflowUser({ player }) {
 	const user = player.user;
-	return BdApi.React.createElement(Tooltip, { note: BdApi.React.createElement(WhatsNewOverflowUserTooltip, { player }) }, BdApi.React.createElement("div", { className: NowPlayingClasses.overflowUserOverflow }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: NowPlayingClasses.soloAvatar, src: `https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`, size: "SIZE_32" })));
+	return BdApi.React.createElement(Tooltip, { note: BdApi.React.createElement(WhatsNewOverflowUserTooltip, { player }) }, BdApi.React.createElement("div", { className: NowPlayingClasses.overflowUserOverflow }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.soloAvatar, user, size: "SIZE_32" })));
 }
 function WhatsNewListOverflow({ players, v2Enabled }) {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitleWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitle }, `+${players.length} more recent players`), !v2Enabled && BdApi.React.createElement("div", { className: `${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}` })), BdApi.React.createElement("div", { className: NowPlayingClasses.overflownPlayers }, players.map((player) => {
@@ -5616,7 +5647,7 @@ function WhatsNewListOverflow({ players, v2Enabled }) {
 function WhatsNewListItem({ player }) {
 	const user = player.user;
 	const status = player.status;
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: NowPlayingClasses.lastPlayedAvatar, src: `https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.lastPlayedAvatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardMiniNews.tsx
@@ -5698,11 +5729,23 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let gameIds = [];
 	let lastFetched;
 	let shouldPersistentlyFetch = false;
+	function newFetchLastPlayed() {
+		let seenGames = ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries;
+		const recentlySeenGames = seenGames.filter((entry) => new Date(entry.content?.started_at) > new Date(Date.now() - 432e6)).map((item) => item.content);
+		const recentlySeenGameIds = recentlySeenGames.map((entry) => entry?.extra?.application_id);
+		const _recentlySeenGameIds = Array.from(new Set(recentlySeenGameIds.map((id) => id)));
+		FetchGameUtils.fetchMultipleGames.fetchMany(_recentlySeenGameIds);
+		betterdiscord.Data.save("gameIds", gameIds);
+		lastFetched = Date.now();
+		betterdiscord.Data.save("lastFetched", lastFetched);
+		setLastPlayed(_recentlySeenGameIds);
+		return;
+	}
 	async function fetchLastPlayed() {
 		let seenGames = await Common.RestAPI.get(Common.Endpoints.ACTIVITIES);
 		const recentlySeenGames = seenGames.body.filter((activity) => new Date(activity.updated_at) > new Date(Date.now() - 432e6));
@@ -5715,15 +5758,15 @@ const LastPlayedStore = () => {
 		}
 		const __recentlySeenGameIds = _recentlySeenGameIds.filter((item) => ApplicationStore.getApplication(item));
 		FetchGameUtils.fetchMultipleGames.fetchMany([_recentlySeenGameIds]);
-		const ___recentlySeenGameIds = __recentlySeenGameIds.filter((item) => NewGameStore.getGame(item));
 		betterdiscord.Data.save("gameIds", gameIds);
 		lastFetched = Date.now();
 		betterdiscord.Data.save("lastFetched", lastFetched);
-		setLastPlayed(___recentlySeenGameIds);
+		setLastPlayed(__recentlySeenGameIds);
 		betterdiscord.Data.save("lastPlayedCards", lastPlayedCards);
 		return;
 	}
 	async function setLastPlayed(g) {
+		await Common.FetchApplications.fetchApplications(g);
 		let titleNews = [];
 		let playerList = [];
 		for (let id of g) {
@@ -5734,7 +5777,7 @@ const LastPlayedStore = () => {
 		}
 		lastPlayedCards = g.map((id, index) => {
 			return {
-				application: NewGameStore.getGame(id),
+				application: ApplicationStore.getApplication(id),
 				players: playerList[index].map((player) => {
 					return {
 						user: UserStore.getUser(player.author_id),
@@ -5746,6 +5789,7 @@ const LastPlayedStore = () => {
 				titleNews: titleNews[index]
 			};
 		});
+		betterdiscord.Data.save("lastPlayedCards", lastPlayedCards);
 	}
 	function initialize() {
 		lastPlayedCards = betterdiscord.Data.load("lastPlayedCards") ?? [];
@@ -5753,9 +5797,8 @@ const LastPlayedStore = () => {
 		lastFetched = betterdiscord.Data.load("lastFetched");
 	}
 	function handleMount() {
-		shouldPersistentlyFetch = true, Common.Lodash().throttle(async () => {
-			await fetchLastPlayed(), dispatchMethods.emitChange();
-		}, 1e3);
+		shouldPersistentlyFetch = true, newFetchLastPlayed();
+		dispatchMethods.emitChange();
 	}
 	function handleUnmount() {
 		shouldPersistentlyFetch = false;
@@ -5765,6 +5808,9 @@ const LastPlayedStore = () => {
 		gameIds = [];
 		initialize() {
 			initialize();
+		}
+		testNewFetch() {
+			newFetchLastPlayed();
 		}
 		get lastPlayedCards() {
 			return lastPlayedCards;
@@ -5785,7 +5831,7 @@ const LastPlayedStore = () => {
 		"LAST_PLAYED_UNMOUNTED": handleUnmount
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -5807,6 +5853,19 @@ function NowPlayingBuilder(props) {
 	const spacer = 20 - 20 / cardColumns.length;
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 || (betterdiscord.Data.load("freezeCards") ?? settings.default.freezeCards) ? BdApi.React.createElement("div", { className: MainClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn, style: { width: nowPlayingCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)` } }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column, type: "NOW_PLAYING" })))));
 }
+function WhatsNewBuilder(props) {
+	Common.FluxDispatcher.dispatch({ type: "LAST_PLAYED_MOUNTED" });
+	const [width, height] = useWindowSize();
+	const lastPlayedCards = useStateFromStores([LastPlayedStore$1], () => LastPlayedStore$1.lastPlayedCards);
+	const _lastPlayedCards = lastPlayedCards.filter((card) => card.players.length > 0);
+	const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);
+	const cardColumns = chunkArray(_lastPlayedCards, numColumns);
+	const spacer = 20 - 20 / cardColumns.length;
+	if (lastPlayedCards.length) {
+		return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "What's New" }), BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn, style: { width: _lastPlayedCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)` } }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column, type: "WHATS_NEW" })))));
+	}
+	return;
+}
 
 // activity_feed/base.tsx
 function Scroller({ children, padding }) {
@@ -5824,7 +5883,7 @@ function TabBaseBuilder() {
 	});
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement(WhatsNewBuilder, { className: NowPlayingClasses.whatsNew, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/followed_games/ExternalSources.tsx
@@ -6186,7 +6245,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > :is(.wrapper, .gameIcon) {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.details} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.overflowUserOverflow .wrapper {\n  			width: 30px !important;\n  			height: 30px !important;\n  	}\n`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > :is(.avatar, .gameIcon) {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  			cursor: pointer;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.details} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.overflowUserOverflow .wrapper {\n  			width: 30px !important;\n  			height: 30px !important;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");

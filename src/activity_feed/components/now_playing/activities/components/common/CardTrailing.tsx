@@ -1,5 +1,6 @@
 import { useWindowSize } from "@common/methods/common";
 import { Common } from "@modules/common";
+import AvatarWithPopoutWrapper from "./AvatarWithPopoutWrapper";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
@@ -46,10 +47,10 @@ function PartyMemberListBuilder({activity, users}) {
                             </svg>
                         </div>
                         case null: return <div className={NowPlayingClasses.emptyUser} />
-                        default: return <Common.AvatarFetch 
-                            src={`https://cdn.discordapp.com/avatars/${player?.id}/${player?.avatar}.webp?size=16`}
-                            size="SIZE_16"
-                            className={NowPlayingClasses.player}
+                        default: return <AvatarWithPopoutWrapper 
+                            className={NowPlayingClasses.player} 
+                            user={player} 
+                            size="SIZE_16" 
                         />
                     }
                 }

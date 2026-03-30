@@ -1,6 +1,7 @@
 import { Common } from "@modules/common";
 import { FlexInfo } from "@now_playing/activities/components/common/FlexInfo";
 import { InactiveTimeClock } from "@common/methods/common";
+import AvatarWithPopoutWrapper from "./common/AvatarWithPopoutWrapper";
 import Tooltip from "@common/components/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
@@ -22,7 +23,7 @@ function WhatsNewOverflowUser({player}) {
 	return (
 		<Tooltip note={<WhatsNewOverflowUserTooltip player={player} />}>
 			<div className={NowPlayingClasses.overflowUserOverflow}>
-				<Common.AvatarFetch imageClassName={NowPlayingClasses.soloAvatar} src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`} size="SIZE_32" />
+				<AvatarWithPopoutWrapper className={NowPlayingClasses.soloAvatar} user={user} size="SIZE_32" />
 			</div>
 		</Tooltip>
 	)
@@ -47,7 +48,7 @@ export function WhatsNewListItem({player}) {
 	const status = player.status;
 	return (
 		<div className={NowPlayingClasses.lastPlayedPlayer}>
-            <Common.AvatarFetch imageClassName={NowPlayingClasses.lastPlayedAvatar} src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`} status={status} size="SIZE_40" />
+            <AvatarWithPopoutWrapper className={NowPlayingClasses.lastPlayedAvatar} user={user} status={status} size="SIZE_40" />
             <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
         </div>
 	)

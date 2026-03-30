@@ -40,6 +40,7 @@ export function InactiveTimeClock({timestamp}) {
         case !! ((time / 86400) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['yP1T84'], { time: Math.floor(time / 86400) });
         case !! ((time / 3600) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['cRMUpw'], { time: Math.floor(time / 3600) });
         case !! ((time / 60) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['BZxG8Z'], { time: Math.floor(time / 60) });
+        case !! ((time % 60 ) < 60): return Common.intl.intl.formatToPlainString(Common.intl.t['EluAd9']);
         case !! (isNaN(time)): return TimeClock({timestamp});
     }
 }

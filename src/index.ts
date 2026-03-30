@@ -89,12 +89,10 @@ export default class ActivityFeed {
     GameNewsStore = NewsStore;
     NewsArticle = NewsArticle;
     LastPlayedStore = LastPlayedStore;
-    load () {
-        if (window.location.href.endsWith('/channels/@me')) {
-            NavigationUtils.transitionTo('/activity-feed');
-        }
-    }
     async start() {
+        if (window.location.href.endsWith('/channels/@me')) {
+            requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
+        }
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
         if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
@@ -183,6 +181,8 @@ export default class ActivityFeed {
         })
     }
     stop() {
+        Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_UNMOUNTED'});
+        Common.FluxDispatcher.dispatch({type: 'LAST_PLAYED_UNMOUNTED'});
         Patcher.unpatchAll('ActivityFeed');
         DOM.removeStyle('activityFeedCSS');
         ReactUtils.getOwnerInstance(document.querySelector(`.${container}`)).forceUpdate();

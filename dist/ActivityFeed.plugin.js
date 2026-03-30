@@ -67,6 +67,7 @@ const Filters = [
 	{ name: "LinkButton", filter: betterdiscord.Webpack.Filters.byStrings("route", "iconClassName"), searchExports: true },
 	{ name: "LinkButtonClasses", filter: betterdiscord.Webpack.Filters.byKeys("linkButtonIcon") },
 	{ name: "LiveBadge", filter: betterdiscord.Webpack.Filters.byStrings("shape", ".ROUND") },
+	{ name: "Lodash", filter: betterdiscord.Webpack.Filters.byKeys("throttle") },
 	{ name: "MediaProgressBar", filter: betterdiscord.Webpack.Filters.byStrings("start", "end", "duration", "percentage"), searchExports: true },
 	{ name: "ModalAccessUtils", filter: (x) => x.openUserProfileModal },
 	{ name: "ModalRoot", filter: (x) => x.Modal },
@@ -1855,6 +1856,8 @@ function InactiveTimeClock({ timestamp }) {
 			return Common.intl.intl.formatToPlainString(Common.intl.t["cRMUpw"], { time: Math.floor(time / 3600) });
 		case !!(time / 60 > 1):
 			return Common.intl.intl.formatToPlainString(Common.intl.t["BZxG8Z"], { time: Math.floor(time / 60) });
+		case !!(time % 60 < 60):
+			return Common.intl.intl.formatToPlainString(Common.intl.t["EluAd9"]);
 		case !!isNaN(time):
 			return TimeClock({ timestamp });
 	}
@@ -2768,7 +2771,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			application: article.application,
 			news: {
 				application_id: article.appId,
-				description: HtmlSanitizer.SanitizeHtml(article.description),
+				description: article.description && HtmlSanitizer.SanitizeHtml(article.description),
 				thumbnail: article.thumbnail,
 				timestamp: article.timestamp,
 				title: article.title,
@@ -4687,10 +4690,6 @@ const css$1 = `
 		gap: 12px 12px;
 }
 
-.applicationStreamingAvatar__93528 {
-		cursor: pointer;
-}
-
 .applicationStreamingDetails__93528 {
 		margin-left: 16px;
 		min-width: 0;
@@ -4860,6 +4859,15 @@ const css$1 = `
 		flex-wrap: nowrap;
 		justify-content: flex-start;
 		padding-bottom: 20px;
+		border-bottom-color: var(--background-mod-strong);
+}
+
+.lastPlayedPlayer__93528:last-child {
+		border-bottom: none;
+}
+
+.lastPlayedPlayer__93528+.lastPlayedPlayer__93528 {
+		padding-top: 20px;
 }
 
 .lastPlayedDetails__93528 {
@@ -4869,6 +4877,29 @@ const css$1 = `
 		justify-content: center;
 		margin-left: 20px;
 		min-width: 0;
+}
+
+.overflownPlayers__93528 {
+		display: flex;
+		flex-direction: row;
+		margin-top: 20px;
+		gap: 8px;
+		padding-bottom: 20px;
+}
+
+.overflowUserOverflow__93528 {}
+
+.soloAvatar__93528 {
+		height: 30px;
+		width: 30px;
+}
+
+.soloAvatarTooltip__93528 {
+		text-align: center;
+}
+
+.soloAvatarTooltipTimestamp__93528 {
+		opacity: 0.6;
 }
 
 .cardV2__93528 {
@@ -5000,6 +5031,11 @@ const css$1 = `
 		.lastPlayedPlayer__93528:is(:only-child, :last-child) {
 				padding-bottom: 0;
 		}
+
+		.overflownPlayers__93528 {
+				margin-top: 0;
+				padding-bottom: 0;
+		}
 }`;
 _loadStyle("NowPlaying.module.css", css$1);
 const modules_7260a078 = {
@@ -5072,7 +5108,6 @@ const modules_7260a078 = {
 	"userList": "userList__93528",
 	"streamSection": "streamSection__93528",
 	"applicationStreamingSection": "applicationStreamingSection__93528",
-	"applicationStreamingAvatar": "applicationStreamingAvatar__93528",
 	"applicationStreamingDetails": "applicationStreamingDetails__93528",
 	"applicationStreamingPreviewWrapper": "applicationStreamingPreviewWrapper__93528",
 	"applicationStreamingPreviewSize": "applicationStreamingPreviewSize__93528",
@@ -5094,6 +5129,11 @@ const modules_7260a078 = {
 	"lastPlayedSection": "lastPlayedSection__93528",
 	"lastPlayedPlayer": "lastPlayedPlayer__93528",
 	"lastPlayedDetails": "lastPlayedDetails__93528",
+	"overflownPlayers": "overflownPlayers__93528",
+	"overflowUserOverflow": "overflowUserOverflow__93528",
+	"soloAvatar": "soloAvatar__93528",
+	"soloAvatarTooltip": "soloAvatarTooltip__93528",
+	"soloAvatarTooltipTimestamp": "soloAvatarTooltipTimestamp__93528",
 	"cardV2": "cardV2__93528",
 	"state": "state__93528"
 };
@@ -5561,10 +5601,22 @@ function NowPlayingCardHeader({ card, activities, game, splash, user, voice, isS
 }
 
 // activity_feed/components/now_playing/activities/components/WhatsNewListItem.tsx
-function WhatsNewListItemBuilder({ player }) {
+function WhatsNewOverflowUserTooltip({ player }) {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.soloAvatarTooltip }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, player.user.globalName || player.user.username), BdApi.React.createElement("div", { className: NowPlayingClasses.soloAvatarTooltipTimestamp }, player.endedAt ? BdApi.React.createElement(InactiveTimeClock, { timestamp: player?.endedAt }) : Common.intl.intl.formatToPlainString(Common.intl.t["3elwAB"])));
+}
+function WhatsNewOverflowUser({ player }) {
+	const user = player.user;
+	return BdApi.React.createElement(Tooltip, { note: BdApi.React.createElement(WhatsNewOverflowUserTooltip, { player }) }, BdApi.React.createElement("div", { className: NowPlayingClasses.overflowUserOverflow }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: NowPlayingClasses.soloAvatar, src: `https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`, size: "SIZE_32" })));
+}
+function WhatsNewListOverflow({ players, v2Enabled }) {
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitleWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitle }, `+${players.length} more recent players`), !v2Enabled && BdApi.React.createElement("div", { className: `${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}` })), BdApi.React.createElement("div", { className: NowPlayingClasses.overflownPlayers }, players.map((player) => {
+		return BdApi.React.createElement(WhatsNewOverflowUser, { player });
+	})));
+}
+function WhatsNewListItem({ player }) {
 	const user = player.user;
 	const status = player.status;
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: "lastPlayedAvatar", src: `https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer }, BdApi.React.createElement(Common.AvatarFetch, { imageClassName: NowPlayingClasses.lastPlayedAvatar, src: `https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}.webp?size=48`, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardMiniNews.tsx
@@ -5594,10 +5646,16 @@ function CardMiniNews({ currentArticle }) {
 
 // activity_feed/components/now_playing/card_shop/whats_new/CardBody.tsx
 function WhatsNewCardBody({ players, news, v2Enabled }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedSection }, players.map((player) => {
+	let slicedPlayers = players;
+	let overflowPlayers = [];
+	if (players.length > 4) {
+		slicedPlayers = players.slice(0, 3);
+		overflowPlayers = players.slice(3);
+	}
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedSection }, slicedPlayers.map((player) => {
 		if (!player) return;
-		return BdApi.React.createElement(WhatsNewListItemBuilder, { player });
-	}))), news && BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitleWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitle }, "News"), !v2Enabled && BdApi.React.createElement("div", { className: `${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}` })), BdApi.React.createElement(CardMiniNews, { currentArticle: news })));
+		return BdApi.React.createElement(WhatsNewListItem, { player });
+	}), overflowPlayers.length > 1 && BdApi.React.createElement(WhatsNewListOverflow, { players: overflowPlayers, v2Enabled }))), news && BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitleWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitle }, "News"), !v2Enabled && BdApi.React.createElement("div", { className: `${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}` })), BdApi.React.createElement(CardMiniNews, { currentArticle: news })));
 }
 
 // activity_feed/components/now_playing/card_shop/whats_new/CardHeader.tsx
@@ -5694,14 +5752,15 @@ const LastPlayedStore = () => {
 		gameIds = betterdiscord.Data.load("gameIds") ?? [];
 		lastFetched = betterdiscord.Data.load("lastFetched");
 	}
-	async function handleMount() {
-		shouldPersistentlyFetch = true, await fetchLastPlayed();
-		LastPlayedStore.emitChange();
+	function handleMount() {
+		shouldPersistentlyFetch = true, Common.Lodash().throttle(async () => {
+			await fetchLastPlayed(), dispatchMethods.emitChange();
+		}, 1e3);
 	}
 	function handleUnmount() {
 		shouldPersistentlyFetch = false;
 	}
-	return new class LastPlayedStore extends Common.FluxStore.Ay.Store {
+	class LastPlayedStore2 extends Common.FluxStore.Ay.Store {
 		static displayName = "LastPlayedStore";
 		gameIds = [];
 		initialize() {
@@ -5720,10 +5779,12 @@ const LastPlayedStore = () => {
 		get lastFetched() {
 			return lastFetched;
 		}
-	}(Common.FluxDispatcher, {
+	}
+	let dispatchMethods = new LastPlayedStore2(Common.FluxDispatcher, {
 		"LAST_PLAYED_MOUNTED": handleMount,
 		"LAST_PLAYED_UNMOUNTED": handleUnmount
 	});
+	return dispatchMethods;
 };
 const LastPlayedStore$1 = LastPlayedStore();
 
@@ -6125,7 +6186,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > :is(.wrapper, .gameIcon) {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.details} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	// news feed transitions\n\n  	.slide-up-enter  { transform: translateY(100%); opacity: 0; }\n  	.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-up-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }\n\n  	.slide-down-enter  { transform: translateY(-100%); opacity: 0; }\n  	.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }\n  	.slide-down-exit  { transform: translateY(0); opacity: 1; }\n  	.slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }\n`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > :is(.wrapper, .gameIcon) {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.details} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.overflowUserOverflow .wrapper {\n  			width: 30px !important;\n  			height: 30px !important;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
@@ -6204,12 +6265,10 @@ class ActivityFeed {
 	GameNewsStore = NewsStore;
 	NewsArticle = NewsArticle;
 	LastPlayedStore = LastPlayedStore$1;
-	load() {
-		if (window.location.href.endsWith("/channels/@me")) {
-			NavigationUtils.transitionTo("/activity-feed");
-		}
-	}
 	async start() {
+		if (window.location.href.endsWith("/channels/@me")) {
+			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
+		}
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
@@ -6287,6 +6346,8 @@ class ActivityFeed {
 		});
 	}
 	stop() {
+		Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_UNMOUNTED" });
+		Common.FluxDispatcher.dispatch({ type: "LAST_PLAYED_UNMOUNTED" });
 		betterdiscord.Patcher.unpatchAll("ActivityFeed");
 		betterdiscord.DOM.removeStyle("activityFeedCSS");
 		betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`)).forceUpdate();

@@ -61,17 +61,19 @@ const LastPlayedStore = (() => {
         lastFetched = Data.load('lastFetched');
     }
 
-    async function handleMount() {
+    function handleMount() {
         shouldPersistentlyFetch = true,
-        await fetchLastPlayed();
-        LastPlayedStore.emitChange();  
+        Common.Lodash().throttle( async () => {
+            await fetchLastPlayed(),
+            dispatchMethods.emitChange();  
+        }, 1e3)
     }
 
     function handleUnmount() {
         shouldPersistentlyFetch = false;
     }
 
-    return new class LastPlayedStore extends Common.FluxStore.Ay.Store {
+    class LastPlayedStore extends Common.FluxStore.Ay.Store {
         static displayName = "LastPlayedStore";
         gameIds = [];
 
@@ -96,9 +98,11 @@ const LastPlayedStore = (() => {
             return lastFetched;
         }
 
-    }(Common.FluxDispatcher, {
+    }
+    let dispatchMethods = new LastPlayedStore(Common.FluxDispatcher, {
         "LAST_PLAYED_MOUNTED": handleMount,
         "LAST_PLAYED_UNMOUNTED": handleUnmount
     })
+    return dispatchMethods;
 })
 export default LastPlayedStore();

@@ -272,17 +272,10 @@ export const extraCSS = webpackify(`
         display: none;
     }
 
-    // news feed transitions
-
-    .slide-up-enter  { transform: translateY(100%); opacity: 0; }
-    .slide-up-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }
-    .slide-up-exit  { transform: translateY(0); opacity: 1; }
-    .slide-up-exit-active { transform: translateY(-100%); opacity: 0; transition: all 350ms ease; }
-
-    .slide-down-enter  { transform: translateY(-100%); opacity: 0; }
-    .slide-down-enter-active { transform: translateY(0); opacity: 1; transition: all 350ms ease; }
-    .slide-down-exit  { transform: translateY(0); opacity: 1; }
-    .slide-down-exit-active { transform: translateY(100%); opacity: 0; transition: all 350ms ease; }
+    .overflowUserOverflow .wrapper {
+        width: 30px !important;
+        height: 30px !important;
+    }
 `);
 
 function webpackify(css) {

@@ -383,7 +383,7 @@ class GameNewsStore extends Utils.Store {
                 application: article.application,
             news: {
                 application_id: article.appId,
-                description: HtmlSanitizer.SanitizeHtml(article.description),
+                description: article.description && HtmlSanitizer.SanitizeHtml(article.description),
                 thumbnail: article.thumbnail,
                 timestamp: article.timestamp,
                 title: article.title,

@@ -484,10 +484,6 @@
     gap: 12px 12px;
 }
 
-.applicationStreamingAvatar {
-    cursor: pointer;
-}
-
 .applicationStreamingDetails {
     margin-left: 16px;
     min-width: 0;
@@ -657,6 +653,15 @@
     flex-wrap: nowrap;
     justify-content: flex-start;
     padding-bottom: 20px;
+    border-bottom-color: var(--background-mod-strong);
+}
+
+.lastPlayedPlayer:last-child {
+    border-bottom: none;
+}
+
+.lastPlayedPlayer+.lastPlayedPlayer {
+    padding-top: 20px;
 }
 
 .lastPlayedDetails {
@@ -666,6 +671,29 @@
     justify-content: center;
     margin-left: 20px;
     min-width: 0;
+}
+
+.overflownPlayers {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    gap: 8px;
+    padding-bottom: 20px;
+}
+
+.overflowUserOverflow {}
+
+.soloAvatar {
+    height: 30px;
+    width: 30px;
+}
+
+.soloAvatarTooltip {
+    text-align: center;
+}
+
+.soloAvatarTooltipTimestamp {
+    opacity: 0.6;
 }
 
 .cardV2 {
@@ -795,6 +823,11 @@
     }
 
     .lastPlayedPlayer:is(:only-child, :last-child) {
+        padding-bottom: 0;
+    }
+
+    .overflownPlayers {
+        margin-top: 0;
         padding-bottom: 0;
     }
 }

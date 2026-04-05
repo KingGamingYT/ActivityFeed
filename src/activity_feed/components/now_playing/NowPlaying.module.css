@@ -187,6 +187,8 @@
     flex-direction: column;
 }
 
+.activityContainer {}
+
 .activity {
     flex-direction: row;
 }

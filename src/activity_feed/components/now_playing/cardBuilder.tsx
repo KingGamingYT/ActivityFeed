@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Common } from "@modules/common";
 import { activityCheck, GradGen, SplashGen } from "@common/methods/common";
 import { ApplicationStore, NewGameStore, GameStore } from "@modules/stores";
@@ -36,7 +35,7 @@ export function WhatsNewCardBuilder({card, v2Enabled}) {
     const players = card.players;
     const game = card.application;
     const titleNews = card.titleNews;
-    const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application.id) ?? card.application.id);
+    const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application?.id) ?? card.application.id);
     const cardGrad = GradGen(currentGame ?? game);
     const splash = SplashGen({currentGame: currentGame, data: game});
 

@@ -1,6 +1,8 @@
-import { Common } from "@modules/common";
+import { ContextMenu } from "betterdiscord";
+import { Common, ContextMenus } from "@modules/common";
 import { FlexInfo } from "@now_playing/activities/components/common/FlexInfo";
 import { InactiveTimeClock } from "@common/methods/common";
+import MessageButton from "@now_playing/activities/components/common/MessageButton";
 import AvatarWithPopoutWrapper from "./common/AvatarWithPopoutWrapper";
 import Tooltip from "@common/components/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -46,10 +48,13 @@ export function WhatsNewListOverflow({players, v2Enabled}) {
 export function WhatsNewListItem({player}) {
 	const user = player.user;
 	const status = player.status;
+	const Menus = ContextMenus();
+
 	return (
-		<div className={NowPlayingClasses.lastPlayedPlayer}>
+		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuUser.default {...props} user={user} />)}>
             <AvatarWithPopoutWrapper className={NowPlayingClasses.lastPlayedAvatar} user={user} status={status} size="SIZE_40" />
             <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
+			<MessageButton user={user} />
         </div>
 	)
 }

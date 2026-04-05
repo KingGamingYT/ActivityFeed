@@ -75,6 +75,16 @@ export const Common = CommonExport();
 export const { shell } = require('electron');
 export const { container } = /* @__PURE__ */ Webpack.getModule(m => m.container && m.panels);
 
+export const ContextMenus = () => {
+    let ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');
+    let ContextMenuVoice = Webpack.getBySource('channel', 'channel-context');
+    if (!ContextMenuUser) {
+        ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');
+        ContextMenuVoice = Webpack.getBySource('channel', 'channel-context');
+    }
+    return {ContextMenuUser, ContextMenuVoice};
+}
+
 export const layoutUtils = /* @__PURE__ */ Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),
     {
         Panel: x => String(x).includes('.PANEL,'),

@@ -15,8 +15,9 @@ export function CardMiniNews({currentArticle}) {
                 <div 
                     className={FeedClasses.backgroundImage}
                     style={{ 
-                        backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})`
-                        : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
+                        backgroundImage: `url(${currentArticle.news?.thumbnail}), 
+                        url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg),
+                        url(https://static.discord.com/assets/6a0d045ec452de05f71ee63fece2327f.svg)`
                     }}
                 />
             </div>

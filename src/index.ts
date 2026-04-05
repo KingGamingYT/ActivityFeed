@@ -90,9 +90,10 @@ export default class ActivityFeed {
     NewsArticle = NewsArticle;
     LastPlayedStore = LastPlayedStore;
     async start() {
-        if (window.location.href.endsWith('/channels/@me')) {
+        if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
         }
+        await Utils.forceLoad(Webpack.getBySource('OPEN_DIRECT_MESSAGE', 'friends-popout', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
         if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();

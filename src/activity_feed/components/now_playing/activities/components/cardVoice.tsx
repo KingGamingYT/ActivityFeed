@@ -1,10 +1,11 @@
-import { Common } from '@modules/common';
-import { ChannelStore } from '@modules/stores';
+import { ContextMenu } from "betterdiscord";
+import { Common, ContextMenus } from "@modules/common";
+import { ChannelStore } from "@modules/stores";
 import { StreamCard } from "./CardStream";
-import { FlexInfo } from './common/FlexInfo';
+import { FlexInfo } from "./common/FlexInfo";
 import { VoiceGuildAsset } from "./common/ActivityAssets";
 import { VoiceCardTrailing } from "./common/CardTrailing";
-import { getVoiceParticipants } from '@common/methods/common';
+import { getVoiceParticipants } from "@common/methods/common";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
@@ -17,10 +18,11 @@ export function VoiceCard({activities, voice, streams}) {
     const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
     const members = stream ? getVoiceParticipants({voice: stream.channelId}) : voice[0]?.members;
     const server = voice[0]?.guild;
+    const Menus = ContextMenus();
 
     return (
             <>
-                <div className={NowPlayingClasses.voiceSection}>
+                <div className={NowPlayingClasses.voiceSection} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuVoice.default {...props} channel={channel} />)}>
                     <div className={NowPlayingClasses.voiceSectionAssets}>
                         <VoiceGuildAsset channel={channel} streamUser={streamUsers[0]} server={server} />
                     </div>

@@ -9,7 +9,7 @@ export default function ({user, voice}) {
     }
 
     return (
-        <div className={NowPlayingClasses.nameTag} style={{ flex: 1 }}>
+        <div className={NowPlayingClasses.nameTag} style={{ display: "flex", flex: 1 }}>
             <span className={`${NowPlayingClasses.username} username`} onClick={() => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id })}>{outputtedUsername}</span>
         </div>
     )

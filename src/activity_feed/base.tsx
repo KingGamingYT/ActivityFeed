@@ -45,7 +45,7 @@ export function TabBaseBuilder() {
                     <NewsFeedBuilder />
                     <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" }} />
                     <NowPlayingBuilder className={NowPlayingClasses.nowPlaying} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
-                    {<WhatsNewBuilder className={NowPlayingClasses.whatsNew} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />}
+                    {/*<WhatsNewBuilder className={NowPlayingClasses.whatsNew} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />*/}
                     {Plugins.get("ActivityFeed").version.includes("dev") && <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>}
                 </div>
             </Scroller>

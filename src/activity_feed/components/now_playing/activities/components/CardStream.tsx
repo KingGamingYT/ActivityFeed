@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { ContextMenu } from "betterdiscord";
 import { Common } from "@modules/common";
 import { FlexInfo } from "./common/FlexInfo";
 import AvatarWithPopoutWrapper from "./common/AvatarWithPopoutWrapper";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
+
+function StreamContextMenu({stream}) {
+    return (
+        <ContextMenu.Menu navId="watch-stream-context" onClose={(e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e)}>
+            <ContextMenu.Item id="watch-stream" label={Common.intl.intl.formatToPlainString(Common.intl.t["7Xq/nV"])} action={() => {return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }} />
+        </ContextMenu.Menu>
+    )
+}
 
 function StreamFallback() {
     return (
@@ -47,7 +55,7 @@ function StreamPreview({stream}) {
 
 export function StreamCard({stream, streamUser, streamActivity}) {
     return (
-        <div className={NowPlayingClasses.streamSection}>
+        <div className={NowPlayingClasses.streamSection} onContextMenu={e => ContextMenu.open(e, (props) => <StreamContextMenu {...props} stream={stream} />)}>
             <div className={NowPlayingClasses.applicationStreamingSection}>
                 <AvatarWithPopoutWrapper className="applicationStreamingAvatar" user={streamUser} size="SIZE_40" />
                 <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`} type="STREAM" stream={streamActivity} streamUser={streamUser} />

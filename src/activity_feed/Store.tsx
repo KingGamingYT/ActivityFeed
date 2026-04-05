@@ -122,11 +122,11 @@ class GameNewsStore extends Utils.Store {
         return;
     }
 
-    blacklistGame(applicationId, gameId) {
+    blacklistGame(application, gameId) {
         let b = this.blacklist;
 
         if (!this.getBlacklistedGame(gameId)) {
-            b.push({applicationId: applicationId, gameId: gameId});
+            b.push({applicationId: application.id, gameId: gameId, name: application.name});
             this.emitChange();
             Data.save('blacklist', this.blacklist);
         }
@@ -294,8 +294,10 @@ class GameNewsStore extends Utils.Store {
 
         for (let i = 0; i < feedIds.length; i++) {
             gameData[feedIds[i]] = applicationList[i];
-            this.whitelist[i] = {applicationId: applicationList[i].id, gameId: feedIds[i]};
+            this.whitelist[i] = {applicationId: applicationList[i].id, gameId: feedIds[i], name: applicationList[i].name};
         }
+
+        this.whitelist = this.whitelist.filter((item, index, array) => { return array.findIndex(x => x?.gameId === item.gameId) === index; });
 
         for (let i in settings.external) {
             if (((Data.load("external") && (Data.load("external")[i])) || settings.external[i].enabled) === true) {
@@ -371,7 +373,7 @@ class GameNewsStore extends Utils.Store {
             delete HtmlSanitizer.AllowedTags[ignore[i]];
         }
         const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
-        const articleId = game.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
+        const articleId = game?.thirdPartySkus?.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
         switch (true) {
             case !! (articleId === "Minecraft"): article = await this.#fetchMinecraftFeeds(game); break;
             case !! (articleId === "Fortnite"): article = await this.#fetchFortniteFeeds(game); break;

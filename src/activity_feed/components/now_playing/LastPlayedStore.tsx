@@ -4,11 +4,10 @@ import { Common, FetchGameUtils } from "@modules/common";
 import { ApplicationStore, ContentInventoryStore, PresenceStore, NewGameStore, UserStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 
-
 const LastPlayedStore = (() => {
-    let lastPlayedCards = [];
-    let gameIds = [];
-    let lastFetched;
+    let lastPlayedCards = Data.load('lastPlayedCards') ?? [];
+    let gameIds = Data.load('gameIds') ?? [];
+    let lastFetched = Data.load('lastFetched') ?? undefined;
     let shouldPersistentlyFetch = false;
 
     function newFetchLastPlayed() {
@@ -61,7 +60,7 @@ const LastPlayedStore = (() => {
             playerList.push(ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries.filter(entry => entry.content?.extra?.application_id?.includes(id)).map(item => item.content));
         }
         lastPlayedCards = g.map((id, index) => { return {
-            application: ApplicationStore.getApplication(id),
+            application: NewGameStore.getGame(id) ?? ApplicationStore.getApplication(id),
             players: playerList[index].map(player => { return {
                 user: UserStore.getUser(player.author_id),
                 endedAt: player.ended_at ? player.ended_at : player.traits.find(trait => trait?.is_live === true) ? undefined : player.expires_at,
@@ -71,12 +70,6 @@ const LastPlayedStore = (() => {
             titleNews: titleNews[index]
         }})
         Data.save('lastPlayedCards', lastPlayedCards);
-    }
-
-    function initialize() {
-        lastPlayedCards = Data.load('lastPlayedCards') ?? [];
-        gameIds = Data.load('gameIds') ?? [];
-        lastFetched = Data.load('lastFetched');
     }
 
     function handleMount() {
@@ -91,11 +84,6 @@ const LastPlayedStore = (() => {
 
     class LastPlayedStore extends Common.FluxStore.Ay.Store {
         static displayName = "LastPlayedStore";
-        gameIds = [];
-
-        initialize() {
-            initialize();
-        }
 
         testNewFetch() {
             newFetchLastPlayed();
@@ -122,7 +110,8 @@ const LastPlayedStore = (() => {
     let dispatchMethods = new LastPlayedStore(Common.FluxDispatcher, {
         "LAST_PLAYED_MOUNTED": handleMount,
         "LAST_PLAYED_UNMOUNTED": handleUnmount
-    })
+    });
+
     return dispatchMethods;
 })
 export default LastPlayedStore();

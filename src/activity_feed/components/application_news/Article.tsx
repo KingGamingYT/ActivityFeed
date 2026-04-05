@@ -1,7 +1,7 @@
 
 import { Hooks, Utils, React } from 'betterdiscord';
 import { Common } from "@modules/common";
-import { FeedOverflowBuilder } from "@application_news/components/OverflowBuilder";
+import { FeedOverflowBuilder } from "@application_news/components";
 import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 import NewsStore from "@activity_feed/Store";
@@ -141,7 +141,7 @@ class Article extends React.PureComponent {
         
         return (
             <>
-                <FeedOverflowBuilder applicationId={currentArticle.application.id} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
+                <FeedOverflowBuilder application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
                 <a
                     tabindex={currentArticle.index}
                     className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}

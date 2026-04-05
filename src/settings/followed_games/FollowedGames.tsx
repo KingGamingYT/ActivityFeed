@@ -2,22 +2,31 @@ import { Components } from "betterdiscord";
 import { useState, useMemo } from "react";
 import { Common, ModalSystem } from "@modules/common";
 import { GameStore } from "@modules/stores";
+import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "../ActivityFeedSettings.module.css";
 
 function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
-    const application = GameStore.getDetectableGame(game.applicationId == "356875570916753438" ? "1402418491272986635" : game.applicationId);
+    const [shouldFallback, setShouldFallback] = useState(false);
+    const application = GameStore.getDetectableGame((() => {
+        switch(game.applicationId) {
+            case "356875570916753438": return "1402418491272986635"; // Minecraft
+            case "454814894596816907": return "1402416901551816837"; // Celeste
+            default: return game.applicationId;
+        }
+    })());
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 
     return (
         <div className={SettingsClasses.blacklistItem} style={{ display: "flex" }}>
-            <img 
+            { shouldFallback ? ( <FallbackAsset className={SettingsClasses.blacklistItemIcon} transform="scale(1.35)" /> ) : <img 
                 className={SettingsClasses.blacklistItemIcon} 
-                src={`https://cdn.discordapp.com/app-icons/${application?.id}/${application.icon}.webp?size=32&keep_aspect_ratio=false`}
-            />
-            <div className={`${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}`}>{application.name || "Unknown Game"}</div>
+                src={`https://cdn.discordapp.com/app-icons/${application?.id}/${application?.icon}.webp?size=32&keep_aspect_ratio=false`}
+                onError={() => setShouldFallback(true)}
+            />}
+            <div className={`${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}`}>{application?.name || "Unknown Game"}</div>
             {isUnfollowed ? 
                 <button
                     className={`${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
@@ -46,7 +55,7 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application.id, game.gameId); updateBlacklist(blacklist.filter(item => item.gameId !== game.gameId)); props.onClose() }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, game.gameId); updateBlacklist(blacklist.filter(item => item.gameId !== game.gameId)); props.onClose() }}
                             ]}
                         >
                             <>
@@ -68,14 +77,14 @@ export function FollowedGameListBuilder() {
 
     const filtered = useMemo(() => {
         const _query = query.toLowerCase();
-        return whitelist?.filter(item => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
+        return whitelist?.filter(item => item?.name.toLowerCase().includes(_query));
     }, [whitelist, query]);
 
     return (
         <>
             <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.target.value.toLowerCase())} placeholder="Search for Games" />
             {filtered?.length ? <div className={SettingsClasses.blacklist}>{
-                filtered.map(game => 
+                filtered.sort((a, b) => a.name.localeCompare(b.name)).map(game => 
                     <>
                         <FollowedGameItemBuilder game={game} blacklist={blacklist} updateBlacklist={updateBlacklist} />
                         <div className={MainClasses.sectionDivider} />

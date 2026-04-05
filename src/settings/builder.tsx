@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Components, Data } from "betterdiscord";
+import { Components, Data, Plugins } from "betterdiscord";
 import { Common } from "@modules/common";
 import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./followed_games";
 import { ButtonItem, RadioItem } from './components';
@@ -10,7 +10,7 @@ import SettingsClasses from "../settings/ActivityFeedSettings.module.css";
 export function SettingsPanelBuilder() {
     return (
         <>
-            <Common.ManaSwitch checked={false} />
+            {Plugins.get("ActivityFeed").version.includes("dev") && <Common.ManaSwitch checked={false} />}
             <Components.SettingGroup name="Visual Refresh" collapsible={false} shown={true}>
                 <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
                     <div className={MainClasses.emptyText}>Modern styling toggles for each part of the Activity Feed.</div>

@@ -20,7 +20,7 @@ export default function ({className, user, status, size}: AvatarWithPopoutWrappe
     		clickTrap={true}
     		onRequestClose={() => setShowPopout(false)}
     		renderPopout={() => <Common.UserProfileWrapperComponent currentUser={UserStore.getCurrentUser()} user={user} />}
-    		position="left"
+    		position="right"
     		shouldShow={showPopout}>
     		{(props) => <div
     			{...props}

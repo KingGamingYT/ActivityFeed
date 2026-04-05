@@ -7,12 +7,12 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 import Tooltip from "@common/components/TooltipBuilder";
 
-function FeedPopout({applicationId, gameId, articleUrl, close}) {
+function FeedPopout({application, gameId, articleUrl, close}) {
     const article = NewsStore.getByGameId(gameId);
     const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
     const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 
-    if (isNaN(applicationId)) {
+    if (isNaN(application.id)) {
         return (
             <ContextMenu.Menu navId="feed-overflow" onClose={close}>
                 <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
@@ -43,7 +43,7 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
                         title="Are you sure?"
                         actions={[
                             {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()}, 
-                            {text: confirmText, fullWidth: 1, onClick: () => { NewsStore.blacklistGame(applicationId, gameId); props.onClose() }}
+                            {text: confirmText, fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, gameId); props.onClose() }}
                         ]}><>
                             <div className={MainClasses.emptyText}>Do you want to hide this game from appearing in your Activity Feed? You can re-enable its visibility at any time in settings.</div>
                             <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
@@ -64,7 +64,7 @@ function FeedPopout({applicationId, gameId, articleUrl, close}) {
     )
 }
 
-export function FeedOverflowBuilder({applicationId, gameId, articleUrl, position}) {
+export function FeedOverflowBuilder({application, gameId, articleUrl, position}) {
     const [showPopout, setShowPopout] = useState(false);
     const refDOM = useRef(null);
 
@@ -74,7 +74,7 @@ export function FeedOverflowBuilder({applicationId, gameId, articleUrl, position
             clickTrap={true}
             onRequestClose={() => setShowPopout(false)}
             renderPopout={() => <Common.PopoutContainer position={position}>
-                <FeedPopout applicationId={applicationId} gameId={gameId} articleUrl={articleUrl} close={() => setShowPopout(false) } />
+                <FeedPopout application={application} gameId={gameId} articleUrl={articleUrl} close={() => setShowPopout(false) } />
             </Common.PopoutContainer>}
             position={position}
             shouldShow={showPopout}

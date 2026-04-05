@@ -1,8 +1,9 @@
-import { Utils } from "betterdiscord";
+import { Utils, ContextMenu } from "betterdiscord";
 import { useState, useRef } from "react";
-import { Common } from "@modules/common";
+import { Common, ContextMenus } from "@modules/common";
 import Tooltip from "@common/components/TooltipBuilder";
 import DiscordTag from "@now_playing/activities/components/common/DiscordTag";
+import MessageButton from "@now_playing/activities/components/common/MessageButton";
 import Splash from "@now_playing/activities/components/common/Splash";
 import AvatarWithPopoutWrapper from "@now_playing/activities/components/common/AvatarWithPopoutWrapper";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -14,7 +15,7 @@ function HeaderActions({card, user}) {
 
     return (
         <div className={`${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "0" }} aria-expanded={showPopout}>
-            <button type="button" className={`${MainClasses.button} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`} onClick={() => Common.OpenDM.openPrivateChannel({recipientIds: user.id})}>Message</button>
+            <MessageButton user={user} />
             <Common.Popout
                 targetElementRef={refDOM}
                 clickTrap={true}
@@ -58,9 +59,10 @@ function HeaderIcon({activities, isSpotify, currentGame}) {
 
 export function NowPlayingCardHeader({card, activities, game, splash, user, voice, isSpotify}) {
     const status = card.party.priorityMembers[0].status;
+    const Menus = ContextMenus();
 
     return (
-        <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}}>
+        <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuUser.default {...props} user={user} />)}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
                 <AvatarWithPopoutWrapper className="avatar" user={user} status={status} size="SIZE_40" />

@@ -108,6 +108,16 @@ export const extraCSS = webpackify(`
         width: 100%;
     }
 
+    .lastPlayedPlayer .button {
+        display: none;
+        width: unset;
+        align-self: center;
+    }
+
+    .lastPlayedPlayer:hover .button {
+        display: block;
+    }
+
     .cardV2 {
         .headerActions .button.lookFilled, .cardBody button {
             color: var(--white);

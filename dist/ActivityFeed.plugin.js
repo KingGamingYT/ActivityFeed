@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.0-dev
+ * @version 1.0.0
  */
 
 /*@cc_on
@@ -90,6 +90,7 @@ const Filters = [
 	{ name: "TransitionGroup", filter: betterdiscord.Webpack.Filters.byStrings("transitionAppear"), searchExports: true },
 	{ name: "UpperIconClasses", filter: betterdiscord.Webpack.Filters.byKeys("icon", "upperContainer") },
 	{ name: "UseStreamPreviewURL", filter: betterdiscord.Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
+	{ name: "UserContextMenu", filter: betterdiscord.Webpack.Filters.bySource("data-menu-migrated", "user-context") },
 	{ name: "UserProfileWrapperComponent", filter: betterdiscord.Webpack.Filters.byStrings("onClickContainer:", "user:", ".isNonUserBot()?") },
 	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId", "getNickname") },
 	{ name: "ManaSwitch", filter: betterdiscord.Webpack.Filters.byStrings("SWITCH_BACKGROUND_DEFAULT"), searchExports: true }
@@ -105,6 +106,15 @@ const CommonExport = () => {
 const Common = CommonExport();
 const { shell } = require("electron");
 const { container } = betterdiscord.Webpack.getModule((m) => m.container && m.panels);
+const ContextMenus = () => {
+	let ContextMenuUser = betterdiscord.Webpack.getBySource("data-menu-migrated", "user-context", "appContext");
+	let ContextMenuVoice = betterdiscord.Webpack.getBySource("channel", "channel-context");
+	if (!ContextMenuUser) {
+		ContextMenuUser = betterdiscord.Webpack.getBySource("data-menu-migrated", "user-context", "appContext");
+		ContextMenuVoice = betterdiscord.Webpack.getBySource("channel", "channel-context");
+	}
+	return { ContextMenuUser, ContextMenuVoice };
+};
 const layoutUtils = betterdiscord.Webpack.getMangled(
 	betterdiscord.Webpack.Filters.bySource("$Root", ".ACCORDION"),
 	{
@@ -2518,10 +2528,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.emitChange();
 		return;
 	}
-	blacklistGame(applicationId, gameId) {
+	blacklistGame(application, gameId) {
 		let b = this.blacklist;
 		if (!this.getBlacklistedGame(gameId)) {
-			b.push({ applicationId, gameId });
+			b.push({ applicationId: application.id, gameId, name: application.name });
 			this.emitChange();
 			betterdiscord.Data.save("blacklist", this.blacklist);
 		}
@@ -2687,8 +2697,11 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		});
 		for (let i = 0; i < feedIds.length; i++) {
 			gameData[feedIds[i]] = applicationList[i];
-			this.whitelist[i] = { applicationId: applicationList[i].id, gameId: feedIds[i] };
+			this.whitelist[i] = { applicationId: applicationList[i].id, gameId: feedIds[i], name: applicationList[i].name };
 		}
+		this.whitelist = this.whitelist.filter((item, index, array) => {
+			return array.findIndex((x) => x?.gameId === item.gameId) === index;
+		});
 		for (let i in settings.external) {
 			if ((betterdiscord.Data.load("external") && betterdiscord.Data.load("external")[i] || settings.external[i].enabled) === true) {
 				gameData[i] = "External Source";
@@ -2755,7 +2768,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			delete HtmlSanitizer.AllowedTags[ignore[i]];
 		}
 		const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
-		const articleId = game.thirdPartySkus.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
+		const articleId = game?.thirdPartySkus?.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
 		switch (true) {
 			case !!(articleId === "Minecraft"):
 				article = await this.#fetchMinecraftFeeds(game);
@@ -3631,11 +3644,11 @@ const Tooltip = ({ note, position, children, forceOpen }) => {
 };
 
 // activity_feed/components/application_news/components/OverflowBuilder.tsx
-function FeedPopout({ applicationId, gameId, articleUrl, close }) {
+function FeedPopout({ application, gameId, articleUrl, close }) {
 	const article = NewsStore.getByGameId(gameId);
 	const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
 	const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
-	if (isNaN(applicationId)) {
+	if (isNaN(application.id)) {
 		return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "feed-overflow", onClose: close }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "copy-article-link", label: "Copy Article Link", action: () => Common.Clipboard(articleUrl) }), !NewsStore.isArticleLockedIn(article) && betterdiscord.Data.load("lockingInArticles") && BdApi.React.createElement(
 			betterdiscord.ContextMenu.Item,
 			{
@@ -3666,7 +3679,7 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 						actions: [
 							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
 							{ text: confirmText, fullWidth: 1, onClick: () => {
-								NewsStore.blacklistGame(applicationId, gameId);
+								NewsStore.blacklistGame(application, gameId);
 								props.onClose();
 							} }
 						]
@@ -3691,7 +3704,7 @@ function FeedPopout({ applicationId, gameId, articleUrl, close }) {
 		}
 	));
 }
-function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
+function FeedOverflowBuilder({ application, gameId, articleUrl, position }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
 	return BdApi.React.createElement(
@@ -3700,7 +3713,7 @@ function FeedOverflowBuilder({ applicationId, gameId, articleUrl, position }) {
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { applicationId, gameId, articleUrl, close: () => setShowPopout(false) })),
+			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { application, gameId, articleUrl, close: () => setShowPopout(false) })),
 			position,
 			shouldShow: showPopout
 		},
@@ -3951,7 +3964,7 @@ class Article extends betterdiscord.React.PureComponent {
 		if (!this) return;
 		let currentArticle = this.props.article;
 		const simple = this.props.orientation === "horizontal";
-		return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedOverflowBuilder, { applicationId: currentArticle.application.id, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
+		return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FeedOverflowBuilder, { application: currentArticle.application, gameId: currentArticle.id, articleUrl: currentArticle.news?.url, position: "right" }), BdApi.React.createElement(
 			"a",
 			{
 				tabindex: currentArticle.index,
@@ -4393,6 +4406,8 @@ const css$1 = `
 .gameBody__93528 {
 		flex-direction: column;
 }
+
+.activityContainer__93528 {}
 
 .activity__93528 {
 		flex-direction: row;
@@ -5066,6 +5081,7 @@ const modules_7260a078 = {
 	"sectionLine": "sectionLine__93528",
 	"game": "game__93528",
 	"gameBody": "gameBody__93528",
+	"activityContainer": "activityContainer__93528",
 	"activity": "activity__93528",
 	"serviceButtonWrapper": "serviceButtonWrapper__93528",
 	"richActivity": "richActivity__93528",
@@ -5142,6 +5158,8 @@ const NowPlayingClasses = modules_7260a078;
 
 // activity_feed/components/now_playing/activities/components/common/DiscordTag.tsx
 function DiscordTag({ user, voice }) {
+	react.useRef(null);
+	react.useState(false);
 	let outputtedUsername;
 	switch (true) {
 		case !!(voice && voice[0]?.members.length > 2):
@@ -5153,7 +5171,7 @@ function DiscordTag({ user, voice }) {
 		default:
 			outputtedUsername = user.globalName || user.username;
 	}
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { display: "flex", flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
 }
 
 // activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
@@ -5223,7 +5241,7 @@ function AvatarWithPopoutWrapper({ className, user, status, size }) {
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
 			renderPopout: () => BdApi.React.createElement(Common.UserProfileWrapperComponent, { currentUser: UserStore.getCurrentUser(), user }),
-			position: "left",
+			position: "right",
 			shouldShow: showPopout
 		},
 		(props) => BdApi.React.createElement(
@@ -5503,10 +5521,13 @@ function RichTwitchActivityBuilder({ activity }) {
 }
 
 // activity_feed/components/now_playing/activities/components/CardActivity.tsx
+function ActivityCardContextMenu({ shouldUseGameProfile }) {
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "activity-context", onClose: (e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e) }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "open-game-profile", label: "Open Game Profile", action: shouldUseGameProfile, disabled: !shouldUseGameProfile }));
+}
 function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
 	if (currentActivity.type == 1) return;
-	currentActivity?.application_id;
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, players, server, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: currentActivity?.application_id });
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(ActivityCardContextMenu, { ...props, shouldUseGameProfile: useGameProfile })) }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, players, server, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardActivityWrapper.tsx
@@ -5530,6 +5551,11 @@ function TwitchCard({ user, activity, check }) {
 }
 
 // activity_feed/components/now_playing/activities/components/CardStream.tsx
+function StreamContextMenu({ stream }) {
+	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "watch-stream-context", onClose: (e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e) }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "watch-stream", label: Common.intl.intl.formatToPlainString(Common.intl.t["7Xq/nV"]), action: () => {
+		return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream);
+	} }));
+}
 function StreamFallback() {
 	return BdApi.React.createElement(
 		"div",
@@ -5558,7 +5584,7 @@ function StreamPreview({ stream }) {
 	} }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingHoverText }, Common.intl.intl.formatToPlainString(Common.intl.t["7Xq/nV"]))));
 }
 function StreamCard({ stream, streamUser, streamActivity }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: "applicationStreamingAvatar", user: streamUser, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(StreamContextMenu, { ...props, stream })) }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: "applicationStreamingAvatar", user: streamUser, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
 }
 
 // activity_feed/components/now_playing/activities/components/CardVoice.tsx
@@ -5570,7 +5596,8 @@ function VoiceCard({ activities, voice, streams }) {
 	const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
 	const members = stream ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
 	const server = voice[0]?.guild;
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser: streamUsers[0], server })), BdApi.React.createElement(
+	const Menus = ContextMenus();
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(Menus.ContextMenuVoice.default, { ...props, channel })) }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser: streamUsers[0], server })), BdApi.React.createElement(
 		FlexInfo,
 		{
 			className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`,
@@ -5590,6 +5617,19 @@ function NowPlayingCardBody({ activities, user, voice, streams, check, isSpotify
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), BdApi.React.createElement(TwitchCard, { user, activity: activities.find((entry) => entry.activity?.type == 1) || streams.find((entry) => entry.activity?.type == 1), check }), BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, check, v2Enabled })))));
 }
 
+// activity_feed/components/now_playing/activities/components/common/MessageButton.tsx
+function MessageButton({ user }) {
+	return BdApi.React.createElement(
+		"button",
+		{
+			type: "button",
+			className: `${MainClasses.button} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`,
+			onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id })
+		},
+		Common.intl.intl.formatToPlainString(Common.intl.t["zROXEV"])
+	);
+}
+
 // activity_feed/components/now_playing/activities/components/common/Splash.tsx
 function Splash({ splash, className }) {
 	if (!splash) return;
@@ -5600,7 +5640,7 @@ function Splash({ splash, className }) {
 function HeaderActions({ card, user }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement("button", { type: "button", className: `${MainClasses.button} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.lookFilled}`, onClick: () => Common.OpenDM.openPrivateChannel({ recipientIds: user.id }) }, "Message"), BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "0" }, "aria-expanded": showPopout }, BdApi.React.createElement(MessageButton, { user }), BdApi.React.createElement(
 		Common.Popout,
 		{
 			targetElementRef: refDOM,
@@ -5628,7 +5668,8 @@ function HeaderIcon({ activities, isSpotify, currentGame }) {
 }
 function NowPlayingCardHeader({ card, activities, game, splash, user, voice, isSpotify }) {
 	const status = card.party.priorityMembers[0].status;
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: "avatar", user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
+	const Menus = ContextMenus();
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" }, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, user })) }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: "avatar", user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
 }
 
 // activity_feed/components/now_playing/activities/components/WhatsNewListItem.tsx
@@ -5647,7 +5688,8 @@ function WhatsNewListOverflow({ players, v2Enabled }) {
 function WhatsNewListItem({ player }) {
 	const user = player.user;
 	const status = player.status;
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.lastPlayedAvatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }));
+	const Menus = ContextMenus();
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, user })) }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.lastPlayedAvatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }), BdApi.React.createElement(MessageButton, { user }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardMiniNews.tsx
@@ -5667,7 +5709,7 @@ function CardMiniNews({ currentArticle }) {
 			{
 				className: FeedClasses.backgroundImage,
 				style: {
-					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
+					backgroundImage: `url(${currentArticle.news?.thumbnail}), \n  											url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg),\n  											url(https://static.discord.com/assets/6a0d045ec452de05f71ee63fece2327f.svg)`
 				}
 			}
 		)),
@@ -5722,17 +5764,17 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 	const players = card.players;
 	const game = card.application;
 	const titleNews = card.titleNews;
-	const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application.id) ?? card.application.id);
+	const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application?.id) ?? card.application.id);
 	const cardGrad = GradGen(currentGame ?? game);
 	const splash = SplashGen({ currentGame, data: game });
 	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(WhatsNewCardHeader, { game, splash }), BdApi.React.createElement(WhatsNewCardBody, { players, news: titleNews, v2Enabled }));
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = (() => {
-	let lastPlayedCards = [];
-	let gameIds = [];
-	let lastFetched;
+const LastPlayedStore = () => {
+	let lastPlayedCards = betterdiscord.Data.load("lastPlayedCards") ?? [];
+	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
+	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
 	let shouldPersistentlyFetch = false;
 	function newFetchLastPlayed() {
 		let seenGames = ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries;
@@ -5777,7 +5819,7 @@ const LastPlayedStore = (() => {
 		}
 		lastPlayedCards = g.map((id, index) => {
 			return {
-				application: ApplicationStore.getApplication(id),
+				application: NewGameStore.getGame(id) ?? ApplicationStore.getApplication(id),
 				players: playerList[index].map((player) => {
 					return {
 						user: UserStore.getUser(player.author_id),
@@ -5791,11 +5833,6 @@ const LastPlayedStore = (() => {
 		});
 		betterdiscord.Data.save("lastPlayedCards", lastPlayedCards);
 	}
-	function initialize() {
-		lastPlayedCards = betterdiscord.Data.load("lastPlayedCards") ?? [];
-		gameIds = betterdiscord.Data.load("gameIds") ?? [];
-		lastFetched = betterdiscord.Data.load("lastFetched");
-	}
 	function handleMount() {
 		shouldPersistentlyFetch = true, newFetchLastPlayed();
 		dispatchMethods.emitChange();
@@ -5805,10 +5842,6 @@ const LastPlayedStore = (() => {
 	}
 	class LastPlayedStore2 extends Common.FluxStore.Ay.Store {
 		static displayName = "LastPlayedStore";
-		gameIds = [];
-		initialize() {
-			initialize();
-		}
 		testNewFetch() {
 			newFetchLastPlayed();
 		}
@@ -5831,7 +5864,7 @@ const LastPlayedStore = (() => {
 		"LAST_PLAYED_UNMOUNTED": handleUnmount
 	});
 	return dispatchMethods;
-});
+};
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -5853,19 +5886,6 @@ function NowPlayingBuilder(props) {
 	const spacer = 20 - 20 / cardColumns.length;
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Now Playing" }), nowPlayingCards.length === 0 || (betterdiscord.Data.load("freezeCards") ?? settings.default.freezeCards) ? BdApi.React.createElement("div", { className: MainClasses.emptyState }, BdApi.React.createElement("div", { className: MainClasses.emptyTitle }, "Nobody is playing anything right now..."), BdApi.React.createElement("div", { className: MainClasses.emptySubtitle }, "When someone starts playing a game we'll show it here!")) : BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn, style: { width: nowPlayingCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)` } }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column, type: "NOW_PLAYING" })))));
 }
-function WhatsNewBuilder(props) {
-	Common.FluxDispatcher.dispatch({ type: "LAST_PLAYED_MOUNTED" });
-	const [width, height] = useWindowSize();
-	const lastPlayedCards = useStateFromStores([LastPlayedStore$1], () => LastPlayedStore$1.lastPlayedCards);
-	const _lastPlayedCards = lastPlayedCards.filter((card) => card.players.length > 0);
-	const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);
-	const cardColumns = chunkArray(_lastPlayedCards, numColumns);
-	const spacer = 20 - 20 / cardColumns.length;
-	if (lastPlayedCards.length) {
-		return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "What's New" }), BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingContainer }, cardColumns.map((column, index) => BdApi.React.createElement("div", { className: NowPlayingClasses.nowPlayingColumn, style: { width: _lastPlayedCards.length !== 1 && `calc(${100 / cardColumns.length}% - ${spacer}px)` } }, BdApi.React.createElement(NowPlayingColumnBuilder, { nowPlayingCards: column, type: "WHATS_NEW" })))));
-	}
-	return;
-}
 
 // activity_feed/base.tsx
 function Scroller({ children, padding }) {
@@ -5883,7 +5903,7 @@ function TabBaseBuilder() {
 	});
 	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement(WhatsNewBuilder, { className: NowPlayingClasses.whatsNew, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
 }
 
 // settings/followed_games/ExternalSources.tsx
@@ -5948,15 +5968,26 @@ function ExternalSourcesListBuilder() {
 
 // settings/followed_games/FollowedGames.tsx
 function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
-	const application = GameStore.getDetectableGame(game.applicationId == "356875570916753438" ? "1402418491272986635" : game.applicationId);
+	const [shouldFallback, setShouldFallback] = react.useState(false);
+	const application = GameStore.getDetectableGame((() => {
+		switch (game.applicationId) {
+			case "356875570916753438":
+				return "1402418491272986635";
+			case "454814894596816907":
+				return "1402416901551816837";
+			default:
+				return game.applicationId;
+		}
+	})());
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
-	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: SettingsClasses.blacklistItemIcon, transform: "scale(1.35)" }) : BdApi.React.createElement(
 		"img",
 		{
 			className: SettingsClasses.blacklistItemIcon,
-			src: `https://cdn.discordapp.com/app-icons/${application?.id}/${application.icon}.webp?size=32&keep_aspect_ratio=false`
+			src: `https://cdn.discordapp.com/app-icons/${application?.id}/${application?.icon}.webp?size=32&keep_aspect_ratio=false`,
+			onError: () => setShouldFallback(true)
 		}
-	), BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, application.name || "Unknown Game"), isUnfollowed ? BdApi.React.createElement(
+	), BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, application?.name || "Unknown Game"), isUnfollowed ? BdApi.React.createElement(
 		"button",
 		{
 			className: `${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
@@ -5993,7 +6024,7 @@ function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 						actions: [
 							{ text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose() },
 							{ text: "Yes", fullWidth: 1, onClick: () => {
-								NewsStore.blacklistGame(application.id, game.gameId);
+								NewsStore.blacklistGame(application, game.gameId);
 								updateBlacklist(blacklist.filter((item) => item.gameId !== game.gameId));
 								props.onClose();
 							} }
@@ -6012,9 +6043,9 @@ function FollowedGameListBuilder() {
 	const [query, setQuery] = react.useState("");
 	const filtered = react.useMemo(() => {
 		const _query = query.toLowerCase();
-		return whitelist?.filter((item) => GameStore.getDetectableGame(item?.applicationId == "356875570916753438" ? "1402418491272986635" : item?.applicationId)?.name.toLowerCase().includes(_query));
+		return whitelist?.filter((item) => item?.name.toLowerCase().includes(_query));
 	}, [whitelist, query]);
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.map(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(betterdiscord.Components.SearchInput, { className: SettingsClasses.search, onChange: (e) => setQuery(e.target.value.toLowerCase()), placeholder: "Search for Games" }), filtered?.length ? BdApi.React.createElement("div", { className: SettingsClasses.blacklist }, filtered.sort((a, b) => a.name.localeCompare(b.name)).map(
 		(game) => BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(FollowedGameItemBuilder, { game, blacklist, updateBlacklist }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }))
 	)) : BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "No results.")));
 }
@@ -6048,7 +6079,7 @@ function RadioItem({ optionKey, label, description, options, setting, setState }
 
 // settings/builder.tsx
 function SettingsPanelBuilder() {
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(Common.ManaSwitch, { checked: false }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Visual Refresh", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Modern styling toggles for each part of the Activity Feed.")), BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
+	return BdApi.React.createElement(BdApi.React.Fragment, null, betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement(Common.ManaSwitch, { checked: false }), BdApi.React.createElement(betterdiscord.Components.SettingGroup, { name: "Visual Refresh", collapsible: false, shown: true }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklist} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, "Modern styling toggles for each part of the Activity Feed.")), BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
 		const { name, note, initial, changed } = settings.main[key];
 		const [state, setState] = react.useState(betterdiscord.Data.load(key));
 		return BdApi.React.createElement(
@@ -6245,7 +6276,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > :is(.avatar, .gameIcon) {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  			cursor: pointer;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.details} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.overflowUserOverflow .wrapper {\n  			width: 30px !important;\n  			height: 30px !important;\n  	}\n`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.nowPlayingColumn .header > :is(.avatar, .gameIcon) {\n  			display: flex;\n  			margin-right: 20px;\n  			transition: opacity .2s ease;\n  			cursor: pointer;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.headerActions {\n  			.button.lookFilled {\n  					background: var(--control-secondary-background-default);\n  					border: unset;\n  					color: var(--white);\n  					padding: 2px 16px;\n  					width: unset;\n  					svg {\n  							display: none;\n  					} \n  			}\n  			.button.lookFilled:hover {\n  					background-color: var(--control-secondary-background-hover) !important;\n  			}\n  			.button.lookFilled:active {\n  					background-color: var(--control-secondary-background-active) !important; \n  			}\n  			.lookFilled.colorPrimary {\n  					background: unset !important;\n  					border: unset !important;\n  			}\n  			.lookFilled.colorPrimary:hover {\n  					color: var(--interactive-background-hover);\n  					svg {\n  							stroke: var(--interactive-background-hover);\n  					}\n  			}\n  			.lookFilled.colorPrimary:active {\n  					color: var(--interactive-background-active);\n  					svg {\n  							stroke: var(--interactive-background-active);\n  					}\n  			}\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content .bar {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.lastPlayedPlayer .button {\n  			display: none;\n  			width: unset;\n  			align-self: center;\n  	}\n\n  	.lastPlayedPlayer:hover .button {\n  			display: block;\n  	}\n\n  	.cardV2 {\n  			.headerActions .button.lookFilled, .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			.bar {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.progress {\n  					background-color: var(--white);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.details} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.blacklist.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.blackList .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.blacklist .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.blacklist .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.overflowUserOverflow .wrapper {\n  			width: 30px !important;\n  			height: 30px !important;\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
@@ -6325,9 +6356,10 @@ class ActivityFeed {
 	NewsArticle = NewsArticle;
 	LastPlayedStore = LastPlayedStore$1;
 	async start() {
-		if (window.location.href.endsWith("/channels/@me")) {
+		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
 		}
+		await betterdiscord.Utils.forceLoad(betterdiscord.Webpack.getBySource("OPEN_DIRECT_MESSAGE", "friends-popout", { raw: true }).id);
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();

@@ -1,6 +1,7 @@
 import { useWindowSize } from "@common/methods/common";
 import { Common } from "@modules/common";
 import AvatarWithPopoutWrapper from "./AvatarWithPopoutWrapper";
+import Tooltip from "@activity_feed/common/components/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
@@ -47,11 +48,15 @@ function PartyMemberListBuilder({activity, users}) {
                             </svg>
                         </div>
                         case null: return <div className={NowPlayingClasses.emptyUser} />
-                        default: return <AvatarWithPopoutWrapper 
-                            className={NowPlayingClasses.player} 
-                            user={player} 
-                            size="SIZE_16" 
-                        />
+                        default: return <Tooltip note={player.globalName || player.username}>
+                            <div>
+                                <AvatarWithPopoutWrapper 
+                                    className={NowPlayingClasses.player} 
+                                    user={player} 
+                                    size="SIZE_16" 
+                                />
+                            </div>
+                        </Tooltip>
                     }
                 }
             )}

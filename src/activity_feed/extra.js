@@ -35,13 +35,6 @@ export const extraCSS = webpackify(`
         gap: 8px;
     }
 
-    .nowPlayingColumn .header > :is(.avatar, .gameIcon) {
-        display: flex;
-        margin-right: 20px;
-        transition: opacity .2s ease;
-        cursor: pointer;
-    }
-
     .customButtons {
         display: flex;
         flex-direction: column;

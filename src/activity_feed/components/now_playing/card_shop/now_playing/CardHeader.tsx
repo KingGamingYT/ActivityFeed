@@ -65,7 +65,7 @@ export function NowPlayingCardHeader({card, activities, game, splash, user, voic
         <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuUser.default {...props} user={user} />)}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
-                <AvatarWithPopoutWrapper className="avatar" user={user} status={status} size="SIZE_40" />
+                <AvatarWithPopoutWrapper className={NowPlayingClasses.avatar} user={user} status={status} size="SIZE_40" />
                 <DiscordTag user={user} voice={voice} />
                 <HeaderActions card={card} user={user} />
                 <HeaderIcon activities={activities} isSpotify={isSpotify} currentGame={game} />

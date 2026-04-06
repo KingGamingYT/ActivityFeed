@@ -77,10 +77,10 @@ export const { container } = /* @__PURE__ */ Webpack.getModule(m => m.container 
 
 export const ContextMenus = () => {
     let ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');
-    let ContextMenuVoice = Webpack.getBySource('channel', 'channel-context');
+    let ContextMenuVoice = Webpack.getBySource('channel', 'channel-context', 'data-menu-migrated');
     if (!ContextMenuUser) {
         ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');
-        ContextMenuVoice = Webpack.getBySource('channel', 'channel-context');
+        ContextMenuVoice = Webpack.getBySource('channel', 'channel-context', 'data-menu-migrated');
     }
     return {ContextMenuUser, ContextMenuVoice};
 }

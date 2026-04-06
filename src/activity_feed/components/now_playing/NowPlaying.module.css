@@ -40,6 +40,20 @@
     height: 40px;
 }
 
+.avatar {
+    margin-right: 20px;
+    transition: opacity .2s ease;
+    cursor: pointer;
+}
+
+.avatar:hover {
+    opacity: 0.8;
+}
+
+.applicationStreamingAvatar {}
+
+.lastPlayedAvatar {}
+
 .nameTag {
     line-height: 17px;
     overflow: hidden;

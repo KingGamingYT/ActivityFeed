@@ -57,7 +57,7 @@ export function StreamCard({stream, streamUser, streamActivity}) {
     return (
         <div className={NowPlayingClasses.streamSection} onContextMenu={e => ContextMenu.open(e, (props) => <StreamContextMenu {...props} stream={stream} />)}>
             <div className={NowPlayingClasses.applicationStreamingSection}>
-                <AvatarWithPopoutWrapper className="applicationStreamingAvatar" user={streamUser} size="SIZE_40" />
+                <AvatarWithPopoutWrapper className={`${NowPlayingClasses.applicationStreamingAvatar} ${NowPlayingClasses.avatar}`} user={streamUser} size="SIZE_40" />
                 <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`} type="STREAM" stream={streamActivity} streamUser={streamUser} />
             </div>
             <div className={NowPlayingClasses.applicationStreamingPreviewWrapper} style={{ paddingTop: "54.25%" }}>

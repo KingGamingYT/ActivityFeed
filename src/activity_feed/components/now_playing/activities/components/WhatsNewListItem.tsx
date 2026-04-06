@@ -52,7 +52,7 @@ export function WhatsNewListItem({player}) {
 
 	return (
 		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuUser.default {...props} user={user} />)}>
-            <AvatarWithPopoutWrapper className={NowPlayingClasses.lastPlayedAvatar} user={user} status={status} size="SIZE_40" />
+            <AvatarWithPopoutWrapper className={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} user={user} status={status} size="SIZE_40" />
             <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
 			<MessageButton user={user} />
         </div>

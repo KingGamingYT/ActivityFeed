@@ -1,7 +1,7 @@
 import { Common } from "@modules/common";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import SettingsClasses from "../ActivityFeedSettings.module.css";
+import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
 export default function ButtonItem({label, description, innerText, onClick}) {
     return (

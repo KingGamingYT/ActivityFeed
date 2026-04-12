@@ -1,13 +1,11 @@
-import { Webpack, Data, Patcher, DOM, Utils, Components, ReactUtils } from "betterdiscord";
-import { createElement, useState } from "react";
-import { container, Common, ControllerIcon, layoutUtils, NavigationUtils, Router } from "./modules/common.js";
-import { NewspaperIcon } from "./settings/components/SidebarItemIcon";
+import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
+import { createElement } from "react";
+import { container, Common, NavigationUtils, Router } from "./modules/common";
 import { TabBaseBuilder } from "./activity_feed/base.js";
-import { SettingsPanelBuilder } from "./settings/builder.js";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
 import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
-import settings from "./settings/settings.js";
+import settingsItem from "@settings/components/PanelBuilder";
 import NewsStore from "./activity_feed/Store";
 import NewsArticle from "@application_news/Article";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
@@ -36,54 +34,6 @@ function CoachmarkWrapper({button})
     }
     return button;
 }
-
-let LayoutTypes = {
-    SECTION: 1,
-    SIDEBAR_ITEM: 2,
-    PANEL: 3,
-    CATEGORY: 5,
-    CUSTOM: 19,
-};
-
-const customObj =
-layoutUtils.Custom("activity_feed_custom",
-    {
-        Component: () => createElement(SettingsPanelBuilder),
-        key: "activity_feed_custom",
-        type: LayoutTypes.CUSTOM
-    }
-)
-
-const categoryObj = 
-layoutUtils.Category("activity_feed_category",
-    {
-        buildLayout: () => [customObj],
-        key: "activity_feed_sidebar_item",
-        type: LayoutTypes.CATEGORY
-    }
-)
-
-const panelObj =
-layoutUtils.Panel("activity_feed_panel",
-    {
-        buildLayout: () => [categoryObj],
-        key: "activity_feed_panel",
-        type: LayoutTypes.PANEL,
-        useTitle: () => "Activity Feed",
-    }
-);
-
-const sidebarItem =
-layoutUtils.SidebarItem("activity_feed_sidebar_item", 
-    {
-        buildLayout: () => [panelObj],
-        icon: () => createElement(NewspaperIcon),
-        key: "activity_feed_sidebar_item",
-        getLegacySearchKey: () => "ACTIVITY_FEED",
-        useTitle: () => "Activity Feed",
-        type: LayoutTypes.SIDEBAR_ITEM
-    }
-);
 
 export default class ActivityFeed {
     GameNewsStore = NewsStore;
@@ -172,7 +122,7 @@ export default class ActivityFeed {
 
         Patcher.after(Common.ActivitySectionModule, "buildLayout", (that, [props], res) => {
             if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
-                res.push(sidebarItem);
+                res.push(settingsItem);
             }
             return res;
         })

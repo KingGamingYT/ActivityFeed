@@ -12,7 +12,6 @@
             "@common/*": ["src/activity_feed/common/*"],
             "@now_playing/*": ["src/activity_feed/components/now_playing/*"],
             "@quick_launcher/*": ["src/activity_feed/components/quick_launcher/*"],
-            "@whats_new/*": ["src/activity_feed/components/whats_new/*"],
             "@modules/*": ["src/modules/*"],
             "@settings/*": ["src/settings/*"]
         }

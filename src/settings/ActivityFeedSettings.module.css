@@ -12,6 +12,11 @@
     margin-bottom: var(--space-12) !important;
 }
 
+.subtitleContainer {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
 .blacklistItem {
     display: flex;
 }

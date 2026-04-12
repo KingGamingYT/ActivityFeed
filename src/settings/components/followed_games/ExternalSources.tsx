@@ -1,10 +1,10 @@
 import { Data } from "betterdiscord";
 import { useState } from "react";
 import { Common, ModalSystem } from "@modules/common";
-import settings from "../settings";
+import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import SettingsClasses from "../ActivityFeedSettings.module.css";
+import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
 // const DataStore = new class DB extends BdApi.Utils.Store {
 

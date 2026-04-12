@@ -6,7 +6,7 @@ import { FallbackAsset } from "@now_playing/activities/components/common/Activit
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import SettingsClasses from "../ActivityFeedSettings.module.css";
+import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
 function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
     const [shouldFallback, setShouldFallback] = useState(false);

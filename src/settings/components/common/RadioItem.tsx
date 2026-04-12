@@ -1,6 +1,6 @@
 import { Components, Data } from "betterdiscord";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import SettingsClasses from "../ActivityFeedSettings.module.css";
+import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
 export default function RadioItem({optionKey, label, description, options, setting, setState}) {
     return (

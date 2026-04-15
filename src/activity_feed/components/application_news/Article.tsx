@@ -106,13 +106,14 @@ class Article extends React.PureComponent {
 
     renderBackground() {
         let currentArticle = this.props.article;
+        const thumbnail = currentArticle.news?.thumbnail?.replace(/\s/g, "%20"); // fix for urls that have spaces in them thanks to lacking URI encoding
         
         return (
             <div className={FeedClasses.background}>
                 <div 
                     className={FeedClasses.backgroundImage}
                     style={{ 
-                        backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})`
+                        backgroundImage: currentArticle.news?.thumbnail ? `url(${thumbnail})`
                         : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
                     }}
                 />

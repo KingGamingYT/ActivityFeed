@@ -1882,7 +1882,7 @@ async function parseXML(xml) {
 	return result;
 }
 
-// settings/settings.js
+// settings/settings.jsx
 const settings = {
 	main: {
 		v2Frame: {
@@ -1907,12 +1907,19 @@ const settings = {
 		}
 	},
 	debug: {
-		forceRefreshFeed: {
-			name: "Force refresh the news article feed",
+		forceRerollFeed: {
+			name: "Re-roll the news article feed",
 			note: "Re-roll currently displayed articles. Will not fetch new ones.",
 			innerText: "Reroll",
 			type: "button",
 			onClick: () => NewsStore.rerollFeeds()
+		},
+		forceRefreshFeed: {
+			name: "Refresh the news article feed",
+			note: BdApi.React.createElement(BdApi.React.Fragment, null, "Re-fetch news. WILL fetch new articles if they are available. ", BdApi.React.createElement("strong", null, "Do NOT spam this! You will likely be rate limited by one of many services if not multiple!")),
+			innerText: "Refresh",
+			type: "button",
+			onClick: () => NewsStore.refreshFeeds()
 		},
 		resetCoachmark: {
 			name: "Reset Settings Coachmark",
@@ -2380,6 +2387,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	rerollFeeds() {
 		this.displaySet = [];
 		this.getFeedsForDisplay();
+		this.emitChange();
+	}
+	refreshFeeds() {
+		this.lastTimeFetched = 0;
 		this.emitChange();
 	}
 	getTime() {
@@ -3673,7 +3684,7 @@ function FeedMiniPaginationBuilder({ articleSet, currentArticle }) {
 // activity_feed/components/application_news/components/PaginationBuilder.tsx
 function Subpagination({ article }) {
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
-	betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling());
+	const thumbnail = article.news?.thumbnail?.replace(/\s/g, "%20");
 	return BdApi.React.createElement(
 		"div",
 		{
@@ -3691,7 +3702,7 @@ function Subpagination({ article }) {
 			{
 				className: FeedClasses.splashArt,
 				style: {
-					backgroundImage: article.news?.thumbnail ? `url(${article.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${article.id}/capsule_616x353.jpg)`
+					backgroundImage: article.news?.thumbnail ? `url(${thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${article.id}/capsule_616x353.jpg)`
 				}
 			}
 		),
@@ -3825,12 +3836,13 @@ class Article extends betterdiscord.React.PureComponent {
 	}
 	renderBackground() {
 		let currentArticle = this.props.article;
+		const thumbnail = currentArticle.news?.thumbnail?.replace(/\s/g, "%20");
 		return BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
 			"div",
 			{
 				className: FeedClasses.backgroundImage,
 				style: {
-					backgroundImage: currentArticle.news?.thumbnail ? `url(${currentArticle.news?.thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
+					backgroundImage: currentArticle.news?.thumbnail ? `url(${thumbnail})` : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg)`
 				}
 			}
 		));
@@ -5676,7 +5688,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = (() => {
+const LastPlayedStore = () => {
 	let lastPlayedCards = betterdiscord.Data.load("lastPlayedCards") ?? [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -5769,7 +5781,7 @@ const LastPlayedStore = (() => {
 		"LAST_PLAYED_UNMOUNTED": handleUnmount
 	});
 	return dispatchMethods;
-});
+};
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -6225,9 +6237,16 @@ function ExternalSourcesListBuilder() {
 // settings/components/followed_games/FollowedGames.tsx
 function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	const application = GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
+	let application;
+	switch (game.applicationId) {
+		case "356875570916753438":
+		case "454814894596816907":
+			application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]);
+			break;
+		default:
+			application = GameStore.getDetectableGame(game.applicationId);
+	}
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
-	console.log(game, application);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: SettingsClasses.blacklistItemIcon, transform: "scale(1.35)" }) : BdApi.React.createElement(
 		"img",
 		{

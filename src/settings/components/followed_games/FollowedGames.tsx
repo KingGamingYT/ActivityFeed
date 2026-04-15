@@ -10,9 +10,12 @@ import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
 function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    const application = GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId))
+    let application: any;
+    switch (game.applicationId) {
+        case "356875570916753438": case "454814894596816907": application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]); break;
+        default: application = GameStore.getDetectableGame(game.applicationId);
+    }
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
-    console.log(game, application)
 
     return (
         <div className={SettingsClasses.blacklistItem} style={{ display: "flex" }}>

@@ -5,7 +5,7 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 function Subpagination({article}) {
     const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle())
-    const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
+    const thumbnail = article.news?.thumbnail?.replace(/\s/g, "%20"); // fix for urls that have spaces in them thanks to lacking URI encoding
     return (
         <div 
             className={article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
@@ -15,7 +15,7 @@ function Subpagination({article}) {
             <div 
                 className={FeedClasses.splashArt}
                 style={{ 
-                    backgroundImage: article.news?.thumbnail ? `url(${article.news?.thumbnail})`
+                    backgroundImage: article.news?.thumbnail ? `url(${thumbnail})`
                     : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${article.id}/capsule_616x353.jpg)`
                 }}
             />

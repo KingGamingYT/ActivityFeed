@@ -1,7 +1,7 @@
 import { Hooks, Utils, Data } from "betterdiscord";
 import { useState, useEffect } from "react";
 import { Common } from "@modules/common";
-import { FeedCarouselBuilder, FeedMiniCarouselBuilder, FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
+import { FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
 import FeedArticle from "./Article";
 import settings from "@settings/settings";
 import NewsStore from "@activity_feed/Store";

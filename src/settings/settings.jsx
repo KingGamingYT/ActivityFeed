@@ -25,12 +25,19 @@ export default {
         }
     },
     debug: {
-        forceRefreshFeed: {
-            name: "Force refresh the news article feed",
+        forceRerollFeed: {
+            name: "Re-roll the news article feed",
             note: "Re-roll currently displayed articles. Will not fetch new ones.",
             innerText: "Reroll",
             type: "button",
             onClick: () => NewsStore.rerollFeeds()
+        },
+        forceRefreshFeed: {
+            name: "Refresh the news article feed",
+            note: <>Re-fetch news. WILL fetch new articles if they are available. <strong>Do NOT spam this! You will likely be rate limited by one of many services if not multiple!</strong></>,
+            innerText: "Refresh",
+            type: "button",
+            onClick: () => NewsStore.refreshFeeds()
         },
         resetCoachmark: {
             name: "Reset Settings Coachmark",

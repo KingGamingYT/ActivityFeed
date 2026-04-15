@@ -96,6 +96,11 @@ class GameNewsStore extends Utils.Store {
         this.emitChange();
     }
 
+    refreshFeeds() {
+        this.lastTimeFetched = 0;
+        this.emitChange();
+    }
+
     getTime() {
         return this.lastTimeFetched;
     }

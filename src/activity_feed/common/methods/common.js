@@ -132,7 +132,7 @@ export function useWindowSize() {
 export async function parseXML(xml) {
     let body = await xml;
     let result;
-    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}];
+    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}, {key: "#8220", value: "“" }, {key: "#8221", value: "”" }];
     const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
     for (let e in entities) { parser.addEntity(entities[e].key, entities[e].value) };
     try {

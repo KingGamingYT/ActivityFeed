@@ -51,7 +51,7 @@
 
 .search {
     padding: 12px;
-    margin: 20px 0;
+    margin: 5px 0 20px 0;
     input::placeholder {
         font-weight: 600;
         font-size: 14px;

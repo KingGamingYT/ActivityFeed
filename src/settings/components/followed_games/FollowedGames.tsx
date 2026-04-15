@@ -1,7 +1,7 @@
 import { Components } from "betterdiscord";
 import { useState, useMemo } from "react";
 import { Common, ModalSystem } from "@modules/common";
-import { GameStore } from "@modules/stores";
+import { ApplicationStore, GameStore } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -10,14 +10,9 @@ import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
 function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    const application = GameStore.getDetectableGame((() => {
-        switch(game.applicationId) {
-            case "356875570916753438": return "1402418491272986635"; // Minecraft
-            case "454814894596816907": return "1402416901551816837"; // Celeste
-            default: return game.applicationId;
-        }
-    })());
+    const application = GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId))
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
+    console.log(game, application)
 
     return (
         <div className={SettingsClasses.blacklistItem} style={{ display: "flex" }}>

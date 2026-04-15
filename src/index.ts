@@ -46,7 +46,9 @@ export default class ActivityFeed {
         await Utils.forceLoad(Webpack.getBySource('OPEN_DIRECT_MESSAGE', 'friends-popout', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
-        if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
+        setInterval(async () => {
+            if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
+        }, 100)
 
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
         const [appContentModule, appContentKey] = Webpack.getWithKey(Webpack.Filters.byStrings("hasNotice", "AppView"));

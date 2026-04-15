@@ -1,7 +1,8 @@
 
-import { Hooks, Utils, React } from 'betterdiscord';
+import { ContextMenu, Hooks, Utils, React } from 'betterdiscord';
 import { Common } from "@modules/common";
 import { FeedOverflowBuilder } from "@application_news/components";
+import { FeedPopout } from "@application_news/components/OverflowBuilder";
 import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 import NewsStore from "@activity_feed/Store";
@@ -97,6 +98,12 @@ class Article extends React.PureComponent {
         }
     }
 
+    handleRightClick(e) {
+        let currentArticle = this.props.article;
+
+        return ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} /> )
+    }
+
     renderBackground() {
         let currentArticle = this.props.article;
         
@@ -150,7 +157,7 @@ class Article extends React.PureComponent {
                     target="_blank"
                     role="button"
                 >
-                    <Common.Animated.div className={Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article)} style={this.getRootStyle()}>
+                    <Common.Animated.div className={Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article)} style={this.getRootStyle()} onContextMenu={e => this.handleRightClick(e)}>
                         {this.renderBackground()}
                         <Common.Animated.div className={FeedClasses.detailsContainer} style={this.getTextStyle()}>
                             <div className={FeedClasses.applicationArea}>

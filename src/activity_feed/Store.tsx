@@ -198,9 +198,23 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
+    async #fetchSubnauticaFeeds(application) {
+        const rssFeed = await Promise.all([ Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=1`).then(r => r.ok ? r.json() : null) ])
+        const article = rssFeed[0].data[0].attributes;
+        return {
+            application,
+            appId: application.id,
+            description: article.summary,
+            thumbnail: article.thumbnail_image.data.attributes.url,
+            timestamp: article.publishedAt,
+            title: article.title,
+            url: `https://unknownworlds.com/en/news/${article.slug}`
+        }
+    }
+
     async #fetchMinecraftFeeds(application) {
         const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])
-        const article = rssFeed[0].result.results[0]
+        const article = rssFeed[0].result.results[0];
         return {
             application, 
             appId: application.id, 
@@ -239,6 +253,20 @@ class GameNewsStore extends Utils.Store {
         }
     }
 
+    async feedSelector(g, s) {
+        let d;
+        switch (g) {
+            case "Minecraft": d = await this.#fetchMinecraftFeeds(s); break;
+            case "Fortnite": d = await this.#fetchFortniteFeeds(s); break;
+            case "264710": case "848450": case "1962700": d = await this.#fetchSubnauticaFeeds(s); break;
+            case "discord": d = await this.#fetchDiscordFeeds(); break;
+            case "nintendo": d = await this.#fetchNintendoFeeds(); break;
+            case "xbox": d = await this.#fetchXboxFeeds(); break;
+            default: d = await this.#fetchSteamFeeds(g, s);
+        }
+        return d;
+    }
+
     async fetchFeeds() {
         const gameData = await this.getFeedGameData();
         const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A']
@@ -247,15 +275,7 @@ class GameNewsStore extends Utils.Store {
         }
         for (const gameId of Object.keys(gameData)) {
             (async (gameId) => {
-                let feeds;
-                switch (gameId) {
-                    case "Minecraft": feeds = await this.#fetchMinecraftFeeds(gameData[gameId]); break;
-                    case "Fortnite": feeds = await this.#fetchFortniteFeeds(gameData[gameId]); break;
-                    case "discord": feeds = await this.#fetchDiscordFeeds(); break;
-                    case "nintendo": feeds = await this.#fetchNintendoFeeds(); break;
-                    case "xbox": feeds = await this.#fetchXboxFeeds(); break;
-                    default: feeds = await this.#fetchSteamFeeds(gameId, gameData[gameId]);
-                }
+                const feeds = await this.feedSelector(gameId, gameData[gameId]);
                 if (this.filterFeeds(feeds)) {
                     this.dataSet[gameId] = {
                         id: gameId,
@@ -367,18 +387,13 @@ class GameNewsStore extends Utils.Store {
     }
 
     async getDirectByApplicationId(id, shouldSave) {
-        let article;
         const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A']
         for (let i = 0; i < ignore.length; i++) {
             delete HtmlSanitizer.AllowedTags[ignore[i]];
         }
         const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
         const articleId = game?.thirdPartySkus?.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
-        switch (true) {
-            case !! (articleId === "Minecraft"): article = await this.#fetchMinecraftFeeds(game); break;
-            case !! (articleId === "Fortnite"): article = await this.#fetchFortniteFeeds(game); break;
-            case !isNaN(parseInt(articleId)): article = await this.#fetchSteamFeeds(articleId, game);
-        }
+        const article = await this.feedSelector(articleId, game);
         if (!article) return;
         const news = {
             id: articleId,

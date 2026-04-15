@@ -1869,7 +1869,7 @@ function useWindowSize() {
 async function parseXML(xml) {
 	let body = await xml;
 	let result;
-	const entities = [{ key: "#8211", value: "\u2013" }, { key: "#8217", value: "'" }];
+	const entities = [{ key: "#8211", value: "\u2013" }, { key: "#8217", value: "'" }, { key: "#8220", value: "\u201C" }, { key: "#8221", value: "\u201D" }];
 	const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
 	for (let e in entities) {
 		parser.addEntity(entities[e].key, entities[e].value);
@@ -2470,6 +2470,19 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			url: article?.link
 		};
 	}
+	async #fetchSubnauticaFeeds(application) {
+		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=1`).then((r) => r.ok ? r.json() : null)]);
+		const article = rssFeed[0].data[0].attributes;
+		return {
+			application,
+			appId: application.id,
+			description: article.summary,
+			thumbnail: article.thumbnail_image.data.attributes.url,
+			timestamp: article.publishedAt,
+			title: article.title,
+			url: `https://unknownworlds.com/en/news/${article.slug}`
+		};
+	}
 	async #fetchMinecraftFeeds(application) {
 		const rssFeed = await Promise.all([betterdiscord.Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null)]);
 		const article = rssFeed[0].result.results[0];
@@ -2508,6 +2521,34 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			url: article?.link
 		};
 	}
+	async feedSelector(g, s) {
+		let d;
+		switch (g) {
+			case "Minecraft":
+				d = await this.#fetchMinecraftFeeds(s);
+				break;
+			case "Fortnite":
+				d = await this.#fetchFortniteFeeds(s);
+				break;
+			case "264710":
+			case "848450":
+			case "1962700":
+				d = await this.#fetchSubnauticaFeeds(s);
+				break;
+			case "discord":
+				d = await this.#fetchDiscordFeeds();
+				break;
+			case "nintendo":
+				d = await this.#fetchNintendoFeeds();
+				break;
+			case "xbox":
+				d = await this.#fetchXboxFeeds();
+				break;
+			default:
+				d = await this.#fetchSteamFeeds(g, s);
+		}
+		return d;
+	}
 	async fetchFeeds() {
 		const gameData = await this.getFeedGameData();
 		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
@@ -2516,26 +2557,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 		for (const gameId of Object.keys(gameData)) {
 			(async (gameId2) => {
-				let feeds;
-				switch (gameId2) {
-					case "Minecraft":
-						feeds = await this.#fetchMinecraftFeeds(gameData[gameId2]);
-						break;
-					case "Fortnite":
-						feeds = await this.#fetchFortniteFeeds(gameData[gameId2]);
-						break;
-					case "discord":
-						feeds = await this.#fetchDiscordFeeds();
-						break;
-					case "nintendo":
-						feeds = await this.#fetchNintendoFeeds();
-						break;
-					case "xbox":
-						feeds = await this.#fetchXboxFeeds();
-						break;
-					default:
-						feeds = await this.#fetchSteamFeeds(gameId2, gameData[gameId2]);
-				}
+				const feeds = await this.feedSelector(gameId2, gameData[gameId2]);
 				if (this.filterFeeds(feeds)) {
 					this.dataSet[gameId2] = {
 						id: gameId2,
@@ -2635,23 +2657,13 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return r;
 	}
 	async getDirectByApplicationId(id, shouldSave) {
-		let article;
 		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
 		for (let i = 0; i < ignore.length; i++) {
 			delete HtmlSanitizer.AllowedTags[ignore[i]];
 		}
 		const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
 		const articleId = game?.thirdPartySkus?.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
-		switch (true) {
-			case !!(articleId === "Minecraft"):
-				article = await this.#fetchMinecraftFeeds(game);
-				break;
-			case !!(articleId === "Fortnite"):
-				article = await this.#fetchFortniteFeeds(game);
-				break;
-			case !isNaN(parseInt(articleId)):
-				article = await this.#fetchSteamFeeds(articleId, game);
-		}
+		const article = await this.feedSelector(articleId, game);
 		if (!article) return;
 		const news = {
 			id: articleId,
@@ -3671,6 +3683,7 @@ function Subpagination({ article }) {
 				NewsStore.setIdling(false);
 				NewsStore.setDirection(article.index - currentArticle.index);
 			},
+			onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(FeedPopout, { ...props, application: article.application, gameId: article.id, articleUrl: article.news?.url })),
 			key: article
 		},
 		BdApi.React.createElement(
@@ -3806,6 +3819,10 @@ class Article extends betterdiscord.React.PureComponent {
 			marginBottom: this.props.orientation === "horizontal" ? "40px" : "0px"
 		};
 	}
+	handleRightClick(e) {
+		let currentArticle = this.props.article;
+		return betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(FeedPopout, { ...props, application: currentArticle.application, gameId: currentArticle.id, articleUrl: currentArticle.news?.url }));
+	}
 	renderBackground() {
 		let currentArticle = this.props.article;
 		return BdApi.React.createElement("div", { className: FeedClasses.background }, BdApi.React.createElement(
@@ -3847,7 +3864,7 @@ class Article extends betterdiscord.React.PureComponent {
 				target: "_blank",
 				role: "button"
 			},
-			BdApi.React.createElement(Common.Animated.div, { className: betterdiscord.Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article), style: this.getRootStyle() }, this.renderBackground(), BdApi.React.createElement(Common.Animated.div, { className: FeedClasses.detailsContainer, style: this.getTextStyle() }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, this.renderApplicationIcon(), BdApi.React.createElement("div", { className: simple ? FeedClasses.titleRowSimple : FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), !simple && BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" })))))))
+			BdApi.React.createElement(Common.Animated.div, { className: betterdiscord.Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article), style: this.getRootStyle(), onContextMenu: (e) => this.handleRightClick(e) }, this.renderBackground(), BdApi.React.createElement(Common.Animated.div, { className: FeedClasses.detailsContainer, style: this.getTextStyle() }, BdApi.React.createElement("div", { className: FeedClasses.applicationArea }, this.renderApplicationIcon(), BdApi.React.createElement("div", { className: simple ? FeedClasses.titleRowSimple : FeedClasses.details }, BdApi.React.createElement("div", { className: `${FeedClasses.titleStandard} ${FeedClasses.title}` }, currentArticle.news?.title || "No Title"), !simple && BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: FeedClasses.description, dangerouslySetInnerHTML: { __html: currentArticle.news?.description || "No description available." } }), BdApi.React.createElement("div", { className: FeedClasses.timestamp }, Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), { dateStyle: "long" })))))))
 		));
 	}
 }
@@ -3900,16 +3917,16 @@ function NewsFeedBuilder() {
 		}
 	)));
 	setTimeout(() => setWaitTime(false), 1e4);
-	if (waitTime) {
+	if (waitTime && !Object.keys(articles).length) {
 		return BdApi.React.createElement(FeedSkeletonBuilder, null);
 	}
-	return BdApi.React.createElement(
+	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2News") ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel) }, BdApi.React.createElement(
 		FeedSkeletonErrorBuilder,
 		{
 			errorText: "Activity Feed Unavailable",
 			errorDescription: "You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
 		}
-	);
+	));
 }
 
 // activity_feed/common/components/SectionHeader.tsx
@@ -5659,7 +5676,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = betterdiscord.Data.load("lastPlayedCards") ?? [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -5752,7 +5769,7 @@ const LastPlayedStore = () => {
 		"LAST_PLAYED_UNMOUNTED": handleUnmount
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -5962,7 +5979,7 @@ const css = `
 
 .search__97b5e {
 		padding: 12px;
-		margin: 20px 0;
+		margin: 5px 0 20px 0;
 		input::placeholder {
 				font-weight: 600;
 				font-size: 14px;
@@ -6208,17 +6225,9 @@ function ExternalSourcesListBuilder() {
 // settings/components/followed_games/FollowedGames.tsx
 function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	const application = GameStore.getDetectableGame((() => {
-		switch (game.applicationId) {
-			case "356875570916753438":
-				return "1402418491272986635";
-			case "454814894596816907":
-				return "1402416901551816837";
-			default:
-				return game.applicationId;
-		}
-	})());
+	const application = GameStore.getGameByApplication(ApplicationStore.getApplication(game.applicationId));
 	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
+	console.log(game, application);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: SettingsClasses.blacklistItemIcon, transform: "scale(1.35)" }) : BdApi.React.createElement(
 		"img",
 		{
@@ -6455,7 +6464,9 @@ class ActivityFeed {
 		await betterdiscord.Utils.forceLoad(betterdiscord.Webpack.getBySource("OPEN_DIRECT_MESSAGE", "friends-popout", { raw: true }).id);
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
-		if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
+		setInterval(async () => {
+			if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
+		}, 100);
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
 		const [appContentModule, appContentKey] = betterdiscord.Webpack.getWithKey(betterdiscord.Webpack.Filters.byStrings("hasNotice", "AppView"));
 		if (appContentModule) {

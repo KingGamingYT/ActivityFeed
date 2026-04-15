@@ -7,7 +7,7 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 import Tooltip from "@common/components/TooltipBuilder";
 
-function FeedPopout({application, gameId, articleUrl, close}) {
+export function FeedPopout({application, gameId, articleUrl, close}) {
     const article = NewsStore.getByGameId(gameId);
     const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
     const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];

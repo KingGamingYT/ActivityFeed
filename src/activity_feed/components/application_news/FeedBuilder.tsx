@@ -73,12 +73,14 @@ export function NewsFeedBuilder() {
     )
     
     setTimeout(() => setWaitTime(false), 10000);
-    if ( waitTime ) {
+    if ( waitTime && !Object.keys(articles).length ) {
         return <FeedSkeletonBuilder />
     }
 
-    return <FeedSkeletonErrorBuilder 
-        errorText="Activity Feed Unavailable"
-        errorDescription="You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
-    />
+    return <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}>
+        <FeedSkeletonErrorBuilder 
+            errorText="Activity Feed Unavailable"
+            errorDescription="You may not have enough game history to create an Activity Feed. If you believe this isn't the case, reload Discord to try again."
+        />
+    </div>
 }

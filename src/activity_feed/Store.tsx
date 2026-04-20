@@ -1,7 +1,7 @@
 import { Data, Utils, Net } from "betterdiscord";
 import { parseXML } from "@activity_feed/common/methods/common";
 import { Common, ModalSystem } from "@modules/common";
-import { ApplicationStore, GameStore, RunningGameStore, WindowStore } from "@modules/stores";
+import { ApplicationStore, GameStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
 import HtmlSanitizer from "@jitbit/htmlsanitizer";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -14,6 +14,7 @@ class GameNewsStore extends Utils.Store {
     lockSet = [];
     blacklist = [];
     whitelist = [];
+    followedGames = [];
     state = [];
     lastTimeFetched;
     idling;
@@ -27,6 +28,7 @@ class GameNewsStore extends Utils.Store {
         this.article = {}
         this.blacklist = [];
         this.whitelist = [];
+        this.followedGames = [];
         this.lastTimeFetched;
         this.direction = 1;
         this.idling = true;
@@ -85,6 +87,7 @@ class GameNewsStore extends Utils.Store {
         this.lockSet = Data.load('lockSet') || [];
         this.whitelist = Data.load('whitelist') || [];
         this.blacklist = Data.load('blacklist') || [];
+        this.followedGames = Data.load('followedGames') || [];
         this.lastTimeFetched = Data.load('lastTimeFetched');
         this.emitChange();
         return;
@@ -130,6 +133,11 @@ class GameNewsStore extends Utils.Store {
     blacklistGame(application, gameId) {
         let b = this.blacklist;
 
+        if (this.isGameFollowed(application.id)) {
+            this.unfollowGame(application.id);
+            return;
+        }
+
         if (!this.getBlacklistedGame(gameId)) {
             b.push({applicationId: application.id, gameId: gameId, name: application.name});
             this.emitChange();
@@ -145,6 +153,45 @@ class GameNewsStore extends Utils.Store {
         this.emitChange();
         Data.save('blacklist', this.blacklist);
         return this.blacklist;
+    }
+
+    isGameWhitelisted(applicationId) {
+        let w = this.whitelist;
+        let r = w?.find(e => e.applicationId === applicationId);
+        console.log(applicationId, r)
+
+        if (r && this.getBlacklistedGame(r?.gameId)) return false;
+
+        return Boolean(r);
+    }
+
+    isGameFollowed(applicationId) {
+        let f = this.followedGames;
+
+        return f?.find(e => e.applicationId === applicationId);
+    }
+
+    getManuallyFollowedGames() {
+        return this.followedGames;
+    }
+
+    followGame(application) {
+        if (this.isGameWhitelisted(application.id)) return;
+        let f = this.followedGames;
+        let g = application.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite").id || application.name;
+        f.push({applicationId: application.id, gameId: g, name: application.name});
+        this.emitChange();
+        Data.save('followedGames', this.followedGames);
+        return;
+    }
+
+    unfollowGame(applicationId) {
+        let f = this.followedGames;
+        let r = this.isGameFollowed(applicationId);
+        if (r) f.splice(f.indexOf(r), 1);
+        this.emitChange();
+        Data.save('followedGames', this.followedGames);
+        return;
     }
 
     async fetchAnyFeed(url, options) {
@@ -204,7 +251,7 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchSubnauticaFeeds(application) {
-        const rssFeed = await Promise.all([ Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=1`).then(r => r.ok ? r.json() : null) ])
+        const rssFeed = await Promise.all([ Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=4`).then(r => r.ok ? r.json() : null) ])
         const article = rssFeed[0].data[0].attributes;
         return {
             application,
@@ -307,13 +354,20 @@ class GameNewsStore extends Utils.Store {
 
     async getFeedGameData() {
         const gameData = {}
-        const gameList = RunningGameStore.getGamesSeen().filter(game => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]));
-        const gameIds = gameList.filter(game => game.id || game.name === "Minecraft").map(game => game.name === "Minecraft" ? GameStore.searchGamesByName(game.name)[0] : game.id);
+        const analyticData = await Common.RestAPI.get('/users/@me/activities/statistics/applications');
+        const manuallyFollowedGames = this.followedGames;
+        const gameIds = analyticData.body.map(game => game.application_id).concat(manuallyFollowedGames);
+        if (gameIds.length > 112) {
+            const split = gameIds.splice(0, 112);
+            await Common.FetchApplications.fetchApplications(gameIds);
+            await Common.FetchApplications.fetchApplications(split);
+        }
+        else { await Common.FetchApplications.fetchApplications(gameIds); }
+        const gameList = analyticData.body.filter(game => ApplicationStore.getApplication(game.application_id));
+        console.log(gameList)
         let applicationList;
-
-        await Common.FetchApplications.fetchApplications(gameIds);
             
-        applicationList = gameList.map(game => ApplicationStore.getApplicationByName(game.name)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
+        applicationList = gameList.map(game => ApplicationStore.getApplication(game.application_id)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
 
         const feedIds = applicationList.map(game => { const steamSku = game.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"); return steamSku?.sku || game.name });
 
@@ -413,13 +467,16 @@ class GameNewsStore extends Utils.Store {
             },
             type: "application_news"
         }
-        if (this.filterFeeds(article) && shouldSave) {
-            Object.assign(this.dataSet[articleId], news)
-            this.whitelist.push({applicationId: article.appId, gameId: articleId})
-            Data.save('whitelist', this.whitelist);
-            Data.save('dataSet', this.dataSet);
+        if (this.filterFeeds(article)) {
+            if (shouldSave) {
+                Object.assign(this.dataSet[articleId], news)
+                this.whitelist.push({applicationId: article.appId, gameId: articleId})
+                Data.save('whitelist', this.whitelist);
+                Data.save('dataSet', this.dataSet);
+            }
+            return news;
         }
-        return news;
+        return;
 
     }
 

@@ -87,4 +87,42 @@
     flex-direction: column;
 }
 
+.emptyApplications {
+    -webkit-box-align: center;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: vertical;
+    align-items: center;
+    background-color: var(--background-base-lowest);
+    border: 1px solid var(--primary-700);
+    border-radius: var(--radius-xs);
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    position: relative;
+
+}
+
+.emptyApplicationsImage {
+    background-image: url('https://static.discord.com/assets/323ba4bf50c8a669daa085cea17561cb.svg');
+    height: 80px;
+    margin-top: 32px;
+    width: 195px;
+}
+
+.emptyApplicationsTitle {
+    font-size: 16px;
+    line-height: 20px;
+    margin-top: 16px;
+}
+
+.emptyApplicationsBody {
+    color: var(--text-subtle);
+    font-size: 14px;
+    line-height: 18px;
+    margin-bottom: 32px;
+    margin-top: 8px;
+    padding: 0 80px;
+    text-align: center;
+}
+
 .newspaperIcon {}

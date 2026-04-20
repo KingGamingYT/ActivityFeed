@@ -1,16 +1,16 @@
-import { Data, Utils } from "betterdiscord";
+import { Data, Utils, ReactUtils } from "betterdiscord";
 import { useEffect } from "react";
 import { Common, FetchGameUtils } from "@modules/common";
 import { ApplicationStore, ContentInventoryStore, PresenceStore, NewGameStore, UserStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 
 const LastPlayedStore = (() => {
-    let lastPlayedCards = Data.load('lastPlayedCards') ?? [];
+    let lastPlayedCards = [];
     let gameIds = Data.load('gameIds') ?? [];
     let lastFetched = Data.load('lastFetched') ?? undefined;
     let shouldPersistentlyFetch = false;
 
-    function newFetchLastPlayed() {
+    function fetchLastPlayed() {
         let seenGames = ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries;
         const recentlySeenGames = seenGames.filter(entry => new Date(entry.content?.started_at) > new Date(Date.now() - 4.32e8)).map(item => item.content);
         const recentlySeenGameIds = recentlySeenGames.map(entry => entry?.extra?.application_id);
@@ -26,29 +26,6 @@ const LastPlayedStore = (() => {
         return;
     }
 
-    async function fetchLastPlayed() {
-        let seenGames = await Common.RestAPI.get(Common.Endpoints.ACTIVITIES);
-        const recentlySeenGames = seenGames.body.filter(activity => new Date(activity.updated_at) > new Date(Date.now() - 4.32e8))
-        const recentlySeenGameIds = recentlySeenGames.map(activity => activity.application_id);
-        const _recentlySeenGameIds = Array.from(new Set(recentlySeenGameIds.map(id => id)));
-        for (const id of _recentlySeenGameIds) {
-            if (!ApplicationStore.getApplication(id)) {
-                await Common.FetchApplications.fetchApplications([id]);
-            }
-        }
-
-        const __recentlySeenGameIds = _recentlySeenGameIds.filter(item => ApplicationStore.getApplication(item));
-
-        FetchGameUtils.fetchMultipleGames.fetchMany([_recentlySeenGameIds]);
-
-        Data.save('gameIds', gameIds);
-        lastFetched = Date.now();
-        Data.save('lastFetched', lastFetched);
-        setLastPlayed(__recentlySeenGameIds);
-        Data.save('lastPlayedCards', lastPlayedCards);
-        return;
-    }
-
     async function setLastPlayed(g) {
         await Common.FetchApplications.fetchApplications(g);
         let titleNews = [];
@@ -57,7 +34,7 @@ const LastPlayedStore = (() => {
             const presentNews = await NewsStore.getDirectByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
             const isNewNews = NewsStore.filterFeeds(presentNews?.news);
             titleNews.push(isNewNews && presentNews);
-            playerList.push(ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries.filter(entry => entry.content?.extra?.application_id?.includes(id)).map(item => item.content));
+            playerList.push(ReactUtils.wrapInHooks(Common.RecentlyPlayedByApplicationId)(id));
         }
         lastPlayedCards = g.map((id, index) => { return {
             application: NewGameStore.getGame(id) ?? ApplicationStore.getApplication(id),
@@ -69,12 +46,13 @@ const LastPlayedStore = (() => {
             }}),
             titleNews: titleNews[index]
         }})
-        Data.save('lastPlayedCards', lastPlayedCards);
+        dispatchMethods.emitChange()
+        //Data.save('lastPlayedCards', lastPlayedCards);
     }
 
     function handleMount() {
         shouldPersistentlyFetch = true,
-        newFetchLastPlayed();
+        fetchLastPlayed();
         dispatchMethods.emitChange(); 
     }
 
@@ -82,12 +60,13 @@ const LastPlayedStore = (() => {
         shouldPersistentlyFetch = false;
     }
 
+    function handleLogout() {
+        shouldPersistentlyFetch = false;
+        lastPlayedCards = [];
+    }
+
     class LastPlayedStore extends Common.FluxStore.Ay.Store {
         static displayName = "LastPlayedStore";
-
-        testNewFetch() {
-            newFetchLastPlayed();
-        }
 
         get lastPlayedCards() {
             return lastPlayedCards;
@@ -97,8 +76,8 @@ const LastPlayedStore = (() => {
             return shouldPersistentlyFetch;
         }
 
-        async getLastPlayed() {
-            await fetchLastPlayed();
+        getLastPlayed() {
+            fetchLastPlayed();
             return lastPlayedCards;
         }
 
@@ -109,7 +88,8 @@ const LastPlayedStore = (() => {
     }
     let dispatchMethods = new LastPlayedStore(Common.FluxDispatcher, {
         "LAST_PLAYED_MOUNTED": handleMount,
-        "LAST_PLAYED_UNMOUNTED": handleUnmount
+        "LAST_PLAYED_UNMOUNTED": handleUnmount,
+        "LOGOUT": handleLogout
     });
 
     return dispatchMethods;

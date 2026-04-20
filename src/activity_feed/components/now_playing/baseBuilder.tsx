@@ -1,5 +1,5 @@
 import { Data, Hooks } from 'betterdiscord';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Common } from "@modules/common";
 import { NowPlayingViewStore, useStateFromStores } from "@modules/stores";
 import { chunkArray, useWindowSize } from "@common/methods/common";
@@ -26,7 +26,7 @@ function NowPlayingColumnBuilder({nowPlayingCards, type}) {
 }
 
 export function NowPlayingBuilder(props) {
-    Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_MOUNTED'});
+    useEffect(() => void Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_MOUNTED'}), []);
     const [width, height] = useWindowSize();
     const nowPlayingCards = useStateFromStores([ NowPlayingViewStore ], () => NowPlayingViewStore.nowPlayingCards);
     const numColumns = Math.min(Math.max(Math.floor(width / 600), 1), 2);
@@ -54,7 +54,7 @@ export function NowPlayingBuilder(props) {
 }
 
 export function WhatsNewBuilder(props) {
-    Common.FluxDispatcher.dispatch({type: 'LAST_PLAYED_MOUNTED'});
+    useEffect(() => void Common.FluxDispatcher.dispatch({type: 'LAST_PLAYED_MOUNTED'}), []);
     const [width, height] = useWindowSize();
     const lastPlayedCards = useStateFromStores([ LastPlayedStore ], () => LastPlayedStore.lastPlayedCards);
     const _lastPlayedCards = lastPlayedCards.filter(card => card.players.length > 0)

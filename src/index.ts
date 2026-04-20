@@ -1,8 +1,9 @@
 import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
-import { createElement } from "react";
+import { createElement, useState, useEffect } from "react";
 import { container, Common, NavigationUtils, Router } from "./modules/common";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
+import { RecentNews } from "@activity_feed/components/application_news/components/GameProfileRecentNews";
 import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
 import settingsItem from "@settings/components/PanelBuilder";
@@ -131,6 +132,33 @@ export default class ActivityFeed {
 
         Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
             return createElement(CoachmarkWrapper, {button: res})
+        })
+
+        Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 
+            Patcher.after(res, "type", (that, [props], res) => { 
+                const options = {
+                    walkable: [
+                        'props',
+                        'children'
+                    ],
+                    ignore: []
+                };
+                const v1Data = Utils.findInTree(res, (tree) => tree?.className?.includes("mainContent"), options); 
+                const v2Data = Utils.findInTree(res, (tree) => tree?.className?.includes("twoColumnMainContent"), options);
+                v1Data ? Patcher.after(v1Data.children[0], "type", (that, [props], res) => { 
+                    const game = res.props.children[1].props.game;
+
+                    res.props.children.push(
+                        createElement(RecentNews, { applicationId: game.id, type: "GAME_PROFILE" })
+                    )
+                }) : Patcher.after(v2Data.children[0], "type", (that, [props], res) => {
+                    const game = Utils.findInTree(res, (tree) => tree && Object.hasOwn(tree, "game"), options).game;
+
+                    res.props.children.push(
+                        createElement(RecentNews, { applicationId: game.id, type: "GAME_PROFILE_V2" })
+                    )
+                })
+            }) 
         })
     }
     stop() {

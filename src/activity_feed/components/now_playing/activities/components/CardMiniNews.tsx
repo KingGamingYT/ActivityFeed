@@ -2,6 +2,8 @@ import { Common } from "@modules/common";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function CardMiniNews({currentArticle}) {
+    const thumbnail = currentArticle.news?.thumbnail?.replace(/\s/g, "%20"); // fix for urls that have spaces in them thanks to lacking URI encoding
+
 	return (
 		<a
             tabindex={currentArticle.index}
@@ -15,7 +17,7 @@ export function CardMiniNews({currentArticle}) {
                 <div 
                     className={FeedClasses.backgroundImage}
                     style={{ 
-                        backgroundImage: `url(${currentArticle.news?.thumbnail}), 
+                        backgroundImage: `url(${thumbnail}), 
                         url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg),
                         url(https://static.discord.com/assets/6a0d045ec452de05f71ee63fece2327f.svg)`
                     }}

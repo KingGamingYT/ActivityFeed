@@ -12,26 +12,18 @@ export function LauncherGameBuilder({game, runningGames}) {
     const timer = setTimeout(() => setDisable(false), 10000);
     const disableCheck = useMemo(() => ~runningGames.findIndex(m => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
     const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
-    const skuViaGame = fullGame.thirdPartySkus;
+    const libraryApplication = new Common.BasicLibraryApplication({fullGame});
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
     const refDOM = useRef(null)
     const [showPopout, setShowPopout] = useState(false);
 
-    const isSteam = Object.values(skuViaGame).find(x => x.distributor.toLowerCase().includes('steam'))
-
     function PlayPopout({close}) {
         return (
             <ContextMenu.Menu navId="launcher-context-menu" onClose={close}>
-                <ContextMenu.Item id="play-game" label="Play Game" action={() => { setDisable(true); openGame(); timer }} />
+                <ContextMenu.Item id="play-game" label="Play Game" action={() => { setDisable(true); Common.LibraryApplicationUtils.playApplication(game?.id, libraryApplication, {}); timer }} />
                 {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(fullGame.id)} />}
             </ContextMenu.Menu>
         )
-    }
-
-    function openGame()
-    {
-        const items = game.exePath.split('/');
-        shell.openExternal(!!isSteam && ["steamapps", "steamlibrary"].some(item => items.includes(item)) ? `steam://run/${isSteam.id}` : game.exePath)
     }
 
     return (
@@ -55,7 +47,7 @@ export function LauncherGameBuilder({game, runningGames}) {
                     <button 
                         className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
                         disabled={disableCheck}
-                        onClick={() => { setDisable(true); openGame(); timer }}>
+                        onClick={() => { setDisable(true); Common.LibraryApplicationUtils.playApplication(game?.id, libraryApplication, {}); timer }}>
                         <div className={`${Common.ButtonVoidClasses.contents}`}>Play</div>
                     </button>
                 </div>

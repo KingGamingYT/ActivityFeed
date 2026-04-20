@@ -1,6 +1,6 @@
 import { layoutUtils } from "@modules/common";
 import { RefreshSection, AdvancedSection } from "./sections";
-import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./followed_games";
+import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./sections/followed_games";
 import { NewspaperIcon } from "./common/SidebarItemIcon";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
@@ -55,7 +55,7 @@ layoutUtils.Accordion("activity_feed_advanced_accordion",
         ],
         key: "activity_feed_advanced_accordion",
         type: LayoutTypes.ACCORDION,
-        useTitle: () => "View Advanced & Debug Settings for Activity Feed",
+        useTitle: (opened) =>  opened ? "Hide Advanced & Debug Settings for Activity Feed" : "View Advanced & Debug Settings for Activity Feed",
         useCollapsedSubtitle: () => "Developer options only! Don't touch these unless you want to break the activity feed in some way."
     }
 )

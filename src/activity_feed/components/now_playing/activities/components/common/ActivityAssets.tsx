@@ -2,11 +2,23 @@ import { useState } from 'react';
 import { Common } from "@modules/common";
 import Tooltip from '@common/components/TooltipBuilder';
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
+
+interface GameIconAsset {
+    url: string | (() => string),
+    id: Number,
+    name: string
+}
 interface RichImageAsset {
     url: string | (() => string),
     tooltipText: string,
     onClick?: React.MouseEventHandler<HTMLImageElement>,
     type: "Large" | "Small"
+}
+
+interface TwitchImageAsset {
+    url: string,
+    imageId: Number,
+    streamUrl: string
 }
 
 export function XboxImageAsset({url}) {
@@ -19,12 +31,10 @@ export function XboxImageAsset({url}) {
     )
 }
 
-export function FallbackAsset(props) {
-    const { className, style, transform } = props;
+export function FallbackAsset(props: any) {
     return (
-        <svg className={className} style={style}>
+        <svg {...props} viewBox="0 0 24 24">
             <path
-                style={{ transform: transform }}
                 fill="white" 
                 fillRule="evenodd"
                 d="M5 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5Zm6.81 7c-.54 0-1 .26-1.23.61A1 1 0 0 1 8.92 8.5 3.49 3.49 0 0 1 11.82 7c1.81 0 3.43 1.38 3.43 3.25 0 1.45-.98 2.61-2.27 3.06a1 1 0 0 1-1.96.37l-.19-1a1 1 0 0 1 .98-1.18c.87 0 1.44-.63 1.44-1.25S12.68 9 11.81 9ZM13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm7-10.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM18.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM7 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM5.5 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
@@ -38,7 +48,7 @@ export function SpotifyAsset({activity, user}) {
 
     return (
         <>
-            { shouldFallback ? ( <FallbackAsset className={NowPlayingClasses.smallEmptyIcon} style={{ width: "40px", height: "40px" }} transform="scale(1.65)" /> ) :
+            { shouldFallback ? ( <FallbackAsset className={NowPlayingClasses.smallEmptyIcon} style={{ width: "40px", height: "40px" }} /> ) :
                 <svg 
                     className={NowPlayingClasses.gameIcon} 
                     role="image" 
@@ -60,18 +70,18 @@ export function SpotifyAsset({activity, user}) {
     )
 }
 
-export function GameIconAsset({url, id, name}) {
+export function GameIconAsset({url, id, name}: GameIconAsset) {
     const [shouldFallback, setShouldFallback] = useState(false);
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: id});
 
     return (
         <>
-            { shouldFallback ? ( <FallbackAsset className={NowPlayingClasses.gameIcon} style={{ width: "40px", height: "40px" }} transform="scale(1.65)" /> ) :
+            { shouldFallback ? ( <FallbackAsset className={NowPlayingClasses.gameIcon} style={{ width: "40px", height: "40px" }} /> ) :
                 <img 
                     className={NowPlayingClasses.gameIcon}
                     style={{ width: "40px", height: "40px" }}
                     aria-label={Common.intl.intl.formatToPlainString(Common.intl.t['nh+jWk'], {game: name})}
-                    src={url}
+                    src={`${url}`}
                     onClick={useGameProfile}
                     onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
                     onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
@@ -87,7 +97,7 @@ export function RichImageAsset({url, tooltipText, onClick, type}: RichImageAsset
 
     return (
         <Tooltip note={tooltipText}>
-            { shouldFallback ? ( <FallbackAsset className={`${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`} transform={type === "Large" ? "scale(3.65)" : "scale(1.30)"} /> ) :
+            { shouldFallback ? ( <FallbackAsset className={`${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`} /> ) :
                 <img 
                     className={`${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}`}
                     aria-label={tooltipText}
@@ -101,7 +111,7 @@ export function RichImageAsset({url, tooltipText, onClick, type}: RichImageAsset
     )
 }
 
-export function TwitchImageAsset({url, imageId, streamUrl}) {
+export function TwitchImageAsset({url, imageId, streamUrl}: TwitchImageAsset) {
     return (
         <a
             className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.twitchBackgroundImage}`}
@@ -109,7 +119,7 @@ export function TwitchImageAsset({url, imageId, streamUrl}) {
             rel="noreferrer nopener"
             target="_blank"
             >
-                { !imageId ? ( <FallbackAsset className={`${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`} transform="scale(1.65)"/> ) :
+                { !imageId ? ( <FallbackAsset className={`${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`} /> ) :
                     <img 
                         className={`${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`}
                         alt={null}

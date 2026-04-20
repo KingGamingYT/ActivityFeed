@@ -14,7 +14,7 @@ export function FeedPopout({application, gameId, articleUrl, close}) {
 
     if (isNaN(application.id)) {
         return (
-            <ContextMenu.Menu navId="feed-overflow" onClose={close}>
+            <ContextMenu.Menu navId="feed-overflow" onClose={close ?? ((e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e))}>
                 <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
                 {!NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
                     id="lock-in-article" 
@@ -31,8 +31,8 @@ export function FeedPopout({application, gameId, articleUrl, close}) {
     }
 
     return (
-        <ContextMenu.Menu navId="feed-overflow" onClose={close}>
-            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(applicationId)} />}
+        <ContextMenu.Menu navId="feed-overflow" onClose={close ?? ((e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e))}>
+            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(application.id)} />}
             <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
             <ContextMenu.Item 
                 id="unfollow-game" 

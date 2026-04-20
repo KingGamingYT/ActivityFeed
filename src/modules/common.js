@@ -6,13 +6,14 @@ const Filters = [
     { name: "ActivityTimer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('timestamps', '.TEXT_FEEDBACK_POSITIVE'), searchExports: true },
     { name: "AnchorClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('anchor', 'anchorUnderlineOnHover'), searchExports: true },
     { name: "Animated", filter: x => x.Easing && x.accelerate },
+    { name: "BasicLibraryApplication", filter: /* @__PURE__ */ Webpack.Filters.byPrototypeKeys('getDistributor') },
     { name: "AvatarFetch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('src', 'statusColor', 'size', 'isMobile'), searchExports: true },
     { name: "ButtonVoidClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('lookFilled', 'button') },
     { name: "ButtonManaClasses", filter: x => x.primary && x.hasText && !x.hasTrailing },
     { name: "CallButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('PRESS_JOIN_CALL_BUTTON') },
     { name: "CaretClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('caret', 'caret--center') },
     { name: "CardPopout", filter: /* @__PURE__ */ Webpack.Filters.byStrings('party', 'close', 'onSelect'), searchExports: true },
-    { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write'), searchExports: true },
+    { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write', 'Clipboard API not supported.'), searchExports: true },
     { name: "DMSidebar", filter: /* @__PURE__ */ Webpack.Filters.bySource(".A.CONTACTS_LIST") },
     { name: "Endpoints", filter: /* @__PURE__ */ Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("fetchApplication") },
@@ -29,6 +30,7 @@ const Filters = [
     { name: "Icons", filter: x=>x.AppsIcon },
     { name: "intl", filter: x=>x.t && x.t.formatToMarkdownString },
     { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('user', 'activity', 'onAction', 'onClose', 'themeType', 'embeddedActivity') },
+    { name: "LibraryApplicationUtils", filter: x => x.installApplication },
     { name: "LinkButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('route', 'iconClassName'), searchExports: true },
     { name: "LinkButtonClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('linkButtonIcon') },
     { name: "LiveBadge", filter: /* @__PURE__ */ Webpack.Filters.byStrings('shape', '.ROUND') },
@@ -46,13 +48,16 @@ const Filters = [
     { name: "PopoverClasses", filter: x => x.graphic && x.closeButton },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
     { name: "ReactSpring", filter: /* @__PURE__ */ Webpack.Filters.byKeys('useSpring', 'a') },
+    { name: "RecentlyPlayedByApplicationId", filter: /* @__PURE__ */ Webpack.Filters.byStrings('GLOBAL_FEED', 'application_id'), searchExports: true },
     { name: "RestAPI", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
     { name: "SettingsButton", filter: /* @__PURE__ */ Webpack.Filters.bySource('webBuildOverride') },
     { name: "Spinner", filter: /* @__PURE__ */ Webpack.Filters.byStrings('="wanderingCubes'), searchExports:true },
     { name: "SpotifyButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'PRESS_PLAY_ON_SPOTIFY_BUTTON') },
+    { name: "TextFormatClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('defaultColor') },
     { name: "Tooltip", filter: /* @__PURE__ */ Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
     { name: "TransitionGroup", filter: /* @__PURE__ */ Webpack.Filters.byStrings("transitionAppear"), searchExports: true },
+    { name: "UIModule", filter: x => x.Heading && x.ButtonGroup },
     { name: "UpperIconClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('icon', 'upperContainer') },
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
     { name: "UserProfileWrapperComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('onClickContainer:', 'user:', '.isNonUserBot()?') },
@@ -83,6 +88,14 @@ export const ContextMenus = () => {
         ContextMenuVoice = Webpack.getBySource('channel', 'channel-context', 'data-menu-migrated');
     }
     return {ContextMenuUser, ContextMenuVoice};
+}
+
+export const GameProfileClasses = () => {
+    let Classes = Webpack.getByKeys('sectionHeader', 'gameProfileModal');
+    if (!Classes) {
+        Classes = Webpack.getByKeys('sectionHeader', 'gameProfileModal');
+    }
+    return Classes;
 }
 
 export const layoutUtils = /* @__PURE__ */ Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),

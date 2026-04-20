@@ -8,18 +8,24 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
+function FollowedGameEmptyBuilder() {
+    return (
+        <div className={SettingsClasses.emptyApplications}>
+            <div className={SettingsClasses.emptyApplicationsImage} />
+            <div className={`${Common.TextFormatClasses.defaultColor} ${SettingsClasses.emptyApplicationsTitle}`}>You're not following any games</div>
+            <div className={`${SettingsClasses.emptyApplicationsBody}`}>Discord will automatically follow games that you play, but you can unfollow anytime.</div>
+        </div>
+    )
+}
+
 function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    let application: any;
-    switch (game.applicationId) {
-        case "356875570916753438": case "454814894596816907": application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]); break;
-        default: application = GameStore.getDetectableGame(game.applicationId);
-    }
+    const application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]) ?? GameStore.getDetectableGame(game.applicationId) ?? ApplicationStore.getApplication(game.applicationId);
     const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
 
     return (
         <div className={SettingsClasses.blacklistItem} style={{ display: "flex" }}>
-            { shouldFallback ? ( <FallbackAsset className={SettingsClasses.blacklistItemIcon} transform="scale(1.35)" /> ) : <img 
+            { shouldFallback ? ( <FallbackAsset className={SettingsClasses.blacklistItemIcon} /> ) : <img 
                 className={SettingsClasses.blacklistItemIcon} 
                 src={`https://cdn.discordapp.com/app-icons/${application?.id}/${application?.icon}.webp?size=32&keep_aspect_ratio=false`}
                 onError={() => setShouldFallback(true)}
@@ -34,7 +40,7 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); updateBlacklist(blacklist.filter(item => item.gameId !== game.gameId)); props.onClose(); }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); updateBlacklist(blacklist.filter(item => item.applicationId !== game.applicationId)); props.onClose(); }}
                             ]}
                         >
                             <>
@@ -53,11 +59,11 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
                             title="Are you sure?"
                             actions={[
                                 {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, game.gameId); updateBlacklist(blacklist.filter(item => item.gameId !== game.gameId)); props.onClose() }}
+                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, game?.gameId); updateBlacklist(blacklist.filter(item => item.applicationId !== game.applicationId)); props.onClose() }}
                             ]}
                         >
                             <>
-                                <div className={MainClasses.emptyText}>Do you want to unfollow this game? Its announcements will be hidden from your Activity Feed.</div>
+                                <div className={MainClasses.emptyText}>Do you want to unfollow this game? Its announcements will be removed from your Activity Feed.</div>
                                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
                             </> 
                         </Common.ModalRoot.Modal>
@@ -70,13 +76,17 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
 
 export function FollowedGameListBuilder() {
     const whitelist = NewsStore.getWhitelist();
+    const followedGames = NewsStore.getManuallyFollowedGames();
+    const allGames = whitelist.concat(followedGames);
     const [blacklist, updateBlacklist] = useState(NewsStore.getBlacklist());
     const [query, setQuery] = useState("");
 
+    if (!allGames || !allGames.length) return <FollowedGameEmptyBuilder />
+
     const filtered = useMemo(() => {
         const _query = query.toLowerCase();
-        return whitelist?.filter(item => item?.name.toLowerCase().includes(_query));
-    }, [whitelist, query]);
+        return allGames?.filter(item => item?.name?.toLowerCase().includes(_query));
+    }, [allGames, query]);
 
     return (
         <>

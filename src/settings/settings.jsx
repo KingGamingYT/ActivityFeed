@@ -127,7 +127,7 @@ export default {
             name: "Xbox",
             note: "News from Xbox's blog.",
             icon: Common.Icons.XboxNeutralIcon,
-            color: "var(--xbox)",
+            color: "var(--platform-xbox)",
             enabled: false
         }
     }

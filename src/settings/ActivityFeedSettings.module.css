@@ -44,10 +44,15 @@
 
 .blacklistItem button {
     flex: 0 1 auto;
+    font-weight: 400;
     align-self: center;
     width: auto;
     margin-left: 20px;
+    border-radius: var(--radius-xs);
+    color: var(--text-subtle) !important;
 }
+
+.unhideBlacklisted {}
 
 .search {
     padding: 12px;

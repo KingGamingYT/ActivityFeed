@@ -1,9 +1,11 @@
 import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
 import { createElement, useState, useEffect } from "react";
 import { container, Common, NavigationUtils, Router } from "./modules/common";
+import { ApplicationStore } from "./modules/stores";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
 import { RecentNews } from "@activity_feed/components/application_news/components/GameProfileRecentNews";
+import FollowButton from "@now_playing/activities/components/common/FollowButton";
 import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
 import settingsItem from "@settings/components/PanelBuilder";
@@ -132,6 +134,14 @@ export default class ActivityFeed {
 
         Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
             return createElement(CoachmarkWrapper, {button: res})
+        })
+
+        Patcher.after(Webpack.getBySource('disableGameProfileLinks', 'ANDROID'), 'A', (that, [props], res) => {
+            const application = ApplicationStore.getApplication(res.props.children[0].props.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props.entry.extra.game_name);
+            Patcher.after(res.props.children[0], 'type', (that, [props], res) => {
+                console.log(res);
+                res.props.children.push(createElement(FollowButton, { application, fullWidth: true }))
+            })
         })
 
         Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 

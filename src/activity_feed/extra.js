@@ -13,7 +13,8 @@ const styles = Object.assign({
         interactiveSelected: Webpack.getByKeys('icon', 'upperContainer').interactiveSelected,
         lookFilled: Webpack.getByKeys('colorPrimary', 'grow').lookFilled,
         colorPrimary: Webpack.getByKeys('colorPrimary', 'grow').colorPrimary,
-        contents: Webpack.getByKeys('colorPrimary', 'grow').contents
+        contents: Webpack.getByKeys('colorPrimary', 'grow').contents,
+        popoutContentWrapper: Webpack.getByKeys('popoutContentWrapper').popoutContentWrapper
     },
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('itemCard')),
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('tabularNumbers')),
@@ -279,6 +280,18 @@ export const extraCSS = webpackify(`
     .overflowUserOverflow .wrapper {
         width: 30px !important;
         height: 30px !important;
+    }
+
+    .popoutContentWrapper .button {
+        background: var(--control-secondary-background-default);
+        color: var(--white);
+        margin-top: 16px;
+        &:hover {
+            background-color: var(--control-secondary-background-hover) !important;
+        }
+        &:active {
+            background-color: var(--control-secondary-background-active) !important; 
+        }
     }
 `);
 

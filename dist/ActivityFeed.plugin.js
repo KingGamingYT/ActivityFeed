@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.0-dev
+ * @version 1.0.0
  */
 
 /*@cc_on
@@ -5386,6 +5386,7 @@ function FallbackAsset(props) {
 }
 function SpotifyAsset({ activity, user }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
+	const useAlbum = Common.OpenAlbum(activity, user.id);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.smallEmptyIcon, style: { width: "40px", height: "40px" } }) : BdApi.React.createElement(
 		"svg",
 		{
@@ -5394,7 +5395,9 @@ function SpotifyAsset({ activity, user }) {
 			width: "40",
 			height: "40",
 			viewBox: "0 0 16 16",
-			onClick: () => Common.openSpotifyAlbumFromStatus(activity, user.id),
+			onMouseOver: (e) => Boolean(useAlbum) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => Boolean(useAlbum) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
+			onClick: () => useAlbum,
 			onError: () => setShouldFallback(true)
 		},
 		BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement(
@@ -5425,7 +5428,7 @@ function GameIconAsset({ url, id, name }) {
 		}
 	));
 }
-function RichImageAsset({ url, tooltipText, onClick, type }) {
+function RichImageAsset({ url, tooltipText, onClick, onMouseOver, onMouseLeave, type }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
 	return BdApi.React.createElement(Tooltip, { note: tooltipText }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}` }) : BdApi.React.createElement(
 		"img",
@@ -5435,6 +5438,8 @@ function RichImageAsset({ url, tooltipText, onClick, type }) {
 			alt: tooltipText,
 			src: `${url}`,
 			onClick,
+			onMouseOver,
+			onMouseLeave,
 			onError: () => setShouldFallback(true)
 		}
 	));
@@ -5495,6 +5500,7 @@ function RegularTwitchActivityBuilder({ user, activity, game }) {
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.twitchActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(GameIconAsset, { url: activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`, id: activity?.application_id, name: game?.name }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`, activity, game, type: "TWITCH" }), BdApi.React.createElement(RichCardTrailing, { activity, user }));
 }
 function RichActivityBuilder({ user, activity, v2Enabled }) {
+	const useAlbum = Common.OpenAlbum(activity, user.id);
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.assets}` }, BdApi.React.createElement(
 		RichImageAsset,
 		{
@@ -5509,7 +5515,9 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 				}
 			})(),
 			tooltipText: activity.assets.large_text,
-			onClick: () => activity.type === 2 && Common.OpenAlbum(activity, user.id),
+			onClick: () => activity.type === 2 && useAlbum,
+			onMouseOver: (e) => useAlbum && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => useAlbum && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
 			type: "Large"
 		}
 	), activity?.assets && activity?.assets.small_image && BdApi.React.createElement(

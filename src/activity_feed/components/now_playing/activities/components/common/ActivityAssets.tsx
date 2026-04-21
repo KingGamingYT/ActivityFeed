@@ -45,6 +45,7 @@ export function FallbackAsset(props: any) {
 
 export function SpotifyAsset({activity, user}) {
     const [shouldFallback, setShouldFallback] = useState(false);
+    const useAlbum = Common.OpenAlbum(activity, user.id);
 
     return (
         <>
@@ -55,7 +56,9 @@ export function SpotifyAsset({activity, user}) {
                     width="40" 
                     height="40" 
                     viewBox="0 0 16 16" 
-                    onClick={() => Common.openSpotifyAlbumFromStatus(activity, user.id)}
+                    onMouseOver={(e) => Boolean(useAlbum) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                    onMouseLeave={(e) => Boolean(useAlbum) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                    onClick={() => useAlbum}
                     onError={() => (setShouldFallback(true))}>
                     <g fill="none" fillRule="evenodd">
                         <path 
@@ -94,7 +97,7 @@ export function GameIconAsset({url, id, name}: GameIconAsset) {
     )
 }
 
-export function RichImageAsset({url, tooltipText, onClick, type}: RichImageAsset) {
+export function RichImageAsset({url, tooltipText, onClick, onMouseOver, onMouseLeave, type}: RichImageAsset) {
     const [shouldFallback, setShouldFallback] = useState(false);
 
     return (
@@ -106,6 +109,8 @@ export function RichImageAsset({url, tooltipText, onClick, type}: RichImageAsset
                     alt={tooltipText}
                     src={`${url}`}
                     onClick={onClick}
+                    onMouseOver={onMouseOver}
+                    onMouseLeave={onMouseLeave}
                     onError={() => (setShouldFallback(true))}
                 ></img>
             }

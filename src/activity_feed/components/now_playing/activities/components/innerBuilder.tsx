@@ -31,6 +31,8 @@ export function RegularTwitchActivityBuilder({user, activity, game}) {
 }
 
 export function RichActivityBuilder({user, activity, v2Enabled}) {
+    const useAlbum = Common.OpenAlbum(activity, user.id);
+
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`} style={{ flex: "1 1 auto" }}>
             <div className={`${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}`}>
@@ -45,7 +47,9 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                                 }
                             })()}
                             tooltipText={activity.assets.large_text}
-                            onClick={() => activity.type === 2 && Common.OpenAlbum(activity, user.id)}
+                            onClick={() => activity.type === 2 && useAlbum}
+                            onMouseOver={(e) =>  useAlbum && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                            onMouseLeave={(e) => useAlbum && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                             type="Large"
                         />
                         {activity?.assets && activity?.assets.small_image && <RichImageAsset

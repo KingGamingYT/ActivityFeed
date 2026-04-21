@@ -19,7 +19,6 @@ class GameNewsStore extends Utils.Store {
     lastTimeFetched;
     idling;
     direction;
-    hasDismissedSettingsCoachmark;
     constructor() {
         super();
         this.dataSet = {};
@@ -32,7 +31,6 @@ class GameNewsStore extends Utils.Store {
         this.lastTimeFetched;
         this.direction = 1;
         this.idling = true;
-        this.hasDismissedSettingsCoachmark = Data.load("hasDismissedSettingsCoachmark") ?? false;
 
         window.addEventListener("resize", this.listener)
     }
@@ -71,13 +69,6 @@ class GameNewsStore extends Utils.Store {
         this.article = this.displaySet[0];
     }
 
-    setHasDismissedSettingsCoachmark(v) {
-        this.hasDismissedSettingsCoachmark = v;
-        Data.save("hasDismissedSettingsCoachmark", v);
-        this.emitChange();
-        return;
-    }
-
     getFeeds() {
         return this.dataSet;
     }
@@ -112,11 +103,29 @@ class GameNewsStore extends Utils.Store {
         return this.whitelist;
     }
 
+    getWhitelistedGameByApplicationId(applicationId) {
+        let w = this.whitelist;
+
+        return w.find(e => e.applicationId === applicationId);
+    }
+
+    getWhitelistedGameByGameId(gameId) {
+        let w = this.whitelist;
+
+        return w.find(e => e.gameId === gameId);
+    }
+
     getBlacklist() {
         return this.blacklist;
     }
 
-    getBlacklistedGame(gameId) {
+    getBlacklistedGameByApplicationId(applicationId) {
+        let b = this.blacklist;
+
+        return b?.find(e => e.applicationId === applicationId);
+    }
+
+    getBlacklistedGameByGameId(gameId) {
         let b = this.blacklist;
 
         return b?.find(e => e.gameId === gameId);
@@ -132,23 +141,32 @@ class GameNewsStore extends Utils.Store {
 
     blacklistGame(application, gameId) {
         let b = this.blacklist;
+        let g;
 
         if (this.isGameFollowed(application.id)) {
             this.unfollowGame(application.id);
             return;
         }
 
-        if (!this.getBlacklistedGame(gameId)) {
-            b.push({applicationId: application.id, gameId: gameId, name: application.name});
+        if (!gameId) g = this.getWhitelistedGameByApplicationId(application.id);
+
+        if (!this.getBlacklistedGameByGameId(gameId ?? g?.gameId)) {
+            b.push({applicationId: application.id, gameId: gameId ?? g?.gameId, name: application.name});
             this.emitChange();
             Data.save('blacklist', this.blacklist);
         }
         return;
     }
 
+    isGameBlacklisted(applicationId) {
+        let r = this.getBlacklistedGameByApplicationId(applicationId);
+
+        return Boolean(r);
+    }
+
     whitelistGame(gameId) {
         let b = this.blacklist;
-        const g = this.getBlacklistedGame(gameId);
+        const g = this.getBlacklistedGameByGameId(gameId);
         b.splice(b.indexOf(g), 1);
         this.emitChange();
         Data.save('blacklist', this.blacklist);
@@ -156,11 +174,9 @@ class GameNewsStore extends Utils.Store {
     }
 
     isGameWhitelisted(applicationId) {
-        let w = this.whitelist;
-        let r = w?.find(e => e.applicationId === applicationId);
-        console.log(applicationId, r)
+        let r = this.getWhitelistedGameByApplicationId(applicationId);
 
-        if (r && this.getBlacklistedGame(r?.gameId)) return false;
+        if (r && this.getBlacklistedGameByGameId(r?.gameId)) return false;
 
         return Boolean(r);
     }
@@ -168,7 +184,7 @@ class GameNewsStore extends Utils.Store {
     isGameFollowed(applicationId) {
         let f = this.followedGames;
 
-        return f?.find(e => e.applicationId === applicationId);
+        return f?.find(e => e.applicationId === applicationId) ?? false;
     }
 
     getManuallyFollowedGames() {
@@ -177,8 +193,12 @@ class GameNewsStore extends Utils.Store {
 
     followGame(application) {
         if (this.isGameWhitelisted(application.id)) return;
+        if (this.isGameBlacklisted(application.id)) {
+            this.whitelistGame(this.getBlacklistedGameByApplicationId(application.id)?.gameId);
+            return;
+        }
         let f = this.followedGames;
-        let g = application.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite").id || application.name;
+        let g = application.thirdPartySkus.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || application.name;
         f.push({applicationId: application.id, gameId: g, name: application.name});
         this.emitChange();
         Data.save('followedGames', this.followedGames);
@@ -364,7 +384,6 @@ class GameNewsStore extends Utils.Store {
         }
         else { await Common.FetchApplications.fetchApplications(gameIds); }
         const gameList = analyticData.body.filter(game => ApplicationStore.getApplication(game.application_id));
-        console.log(gameList)
         let applicationList;
             
         applicationList = gameList.map(game => ApplicationStore.getApplication(game.application_id)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
@@ -493,7 +512,7 @@ class GameNewsStore extends Utils.Store {
         let s = this.lockSet;
         t = t.concat(s);
         let keys = Object.keys(feeds);
-        let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
+        let _keys = keys.filter((key) => !this.getBlacklistedGameByGameId(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
         let total = _keys.length;
         let sorted = this.sortFeeds(_keys);
 

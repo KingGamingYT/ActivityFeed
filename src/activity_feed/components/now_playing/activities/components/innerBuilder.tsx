@@ -45,6 +45,7 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                                 }
                             })()}
                             tooltipText={activity.assets.large_text}
+                            onClick={() => activity.type === 2 && Common.OpenAlbum(activity, user.id)}
                             type="Large"
                         />
                         {activity?.assets && activity?.assets.small_image && <RichImageAsset

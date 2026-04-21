@@ -73,6 +73,7 @@ const Filters = [
 	{ name: "MediaProgressBar", filter: betterdiscord.Webpack.Filters.byStrings("start", "end", "duration", "percentage"), searchExports: true },
 	{ name: "ModalAccessUtils", filter: (x) => x.openUserProfileModal },
 	{ name: "ModalRoot", filter: (x) => x.Modal },
+	{ name: "OpenAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".ALBUM", ".EPISODE"), searchExports: true },
 	{ name: "OpenDM", filter: (x) => x.openPrivateChannel },
 	{ name: "OpenVoiceChannel", filter: (x) => x.selectVoiceChannel, searchExports: true },
 	{ name: "OpenSpotifyAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
@@ -1897,6 +1898,23 @@ async function parseXML(xml) {
 	return result;
 }
 
+// activity_feed/components/coachmark/ActivityFeedSettingsCoachmarkStore.tsx
+class ActivityFeedSettingsCoachmarkStore extends betterdiscord.Utils.Store {
+	static displayName = "ActivityFeedSettingsCoachmarkStore";
+	hasDismissedSettingsCoachmark;
+	constructor() {
+		super();
+		this.hasDismissedSettingsCoachmark = betterdiscord.Data.load("hasDismissedSettingsCoachmark") ?? false;
+	}
+	setHasDismissedSettingsCoachmark(v) {
+		this.hasDismissedSettingsCoachmark = v;
+		betterdiscord.Data.save("hasDismissedSettingsCoachmark", v);
+		this.emitChange();
+		return;
+	}
+}
+const ActivityFeedSettingsCoachmarkStore$1 = new ActivityFeedSettingsCoachmarkStore();
+
 // settings/settings.jsx
 const settings = {
 	main: {
@@ -1941,7 +1959,7 @@ const settings = {
 			note: "Settings coachmark will reappear again after having previously been dismissed.",
 			innerText: "Reset",
 			type: "button",
-			onClick: () => NewsStore.setHasDismissedSettingsCoachmark(false)
+			onClick: () => ActivityFeedSettingsCoachmarkStore$1.setHasDismissedSettingsCoachmark(false)
 		},
 		clearLockedInArticles: {
 			name: "Clear locked in articles",
@@ -2329,7 +2347,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	lastTimeFetched;
 	idling;
 	direction;
-	hasDismissedSettingsCoachmark;
 	constructor() {
 		super();
 		this.dataSet = {};
@@ -2342,7 +2359,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		this.lastTimeFetched;
 		this.direction = 1;
 		this.idling = true;
-		this.hasDismissedSettingsCoachmark = betterdiscord.Data.load("hasDismissedSettingsCoachmark") ?? false;
 		window.addEventListener("resize", this.listener);
 	}
 	listener = () => {
@@ -2383,12 +2399,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 		this.article = this.displaySet[0];
 	}
-	setHasDismissedSettingsCoachmark(v) {
-		this.hasDismissedSettingsCoachmark = v;
-		betterdiscord.Data.save("hasDismissedSettingsCoachmark", v);
-		this.emitChange();
-		return;
-	}
 	getFeeds() {
 		return this.dataSet;
 	}
@@ -2417,10 +2427,22 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	getWhitelist() {
 		return this.whitelist;
 	}
+	getWhitelistedGameByApplicationId(applicationId) {
+		let w = this.whitelist;
+		return w.find((e) => e.applicationId === applicationId);
+	}
+	getWhitelistedGameByGameId(gameId) {
+		let w = this.whitelist;
+		return w.find((e) => e.gameId === gameId);
+	}
 	getBlacklist() {
 		return this.blacklist;
 	}
-	getBlacklistedGame(gameId) {
+	getBlacklistedGameByApplicationId(applicationId) {
+		let b = this.blacklist;
+		return b?.find((e) => e.applicationId === applicationId);
+	}
+	getBlacklistedGameByGameId(gameId) {
 		let b = this.blacklist;
 		return b?.find((e) => e.gameId === gameId);
 	}
@@ -2432,43 +2454,51 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	blacklistGame(application, gameId) {
 		let b = this.blacklist;
+		let g;
 		if (this.isGameFollowed(application.id)) {
 			this.unfollowGame(application.id);
 			return;
 		}
-		if (!this.getBlacklistedGame(gameId)) {
-			b.push({ applicationId: application.id, gameId, name: application.name });
+		if (!gameId) g = this.getWhitelistedGameByApplicationId(application.id);
+		if (!this.getBlacklistedGameByGameId(gameId ?? g?.gameId)) {
+			b.push({ applicationId: application.id, gameId: gameId ?? g?.gameId, name: application.name });
 			this.emitChange();
 			betterdiscord.Data.save("blacklist", this.blacklist);
 		}
 		return;
 	}
+	isGameBlacklisted(applicationId) {
+		let r = this.getBlacklistedGameByApplicationId(applicationId);
+		return Boolean(r);
+	}
 	whitelistGame(gameId) {
 		let b = this.blacklist;
-		const g = this.getBlacklistedGame(gameId);
+		const g = this.getBlacklistedGameByGameId(gameId);
 		b.splice(b.indexOf(g), 1);
 		this.emitChange();
 		betterdiscord.Data.save("blacklist", this.blacklist);
 		return this.blacklist;
 	}
 	isGameWhitelisted(applicationId) {
-		let w = this.whitelist;
-		let r = w?.find((e) => e.applicationId === applicationId);
-		console.log(applicationId, r);
-		if (r && this.getBlacklistedGame(r?.gameId)) return false;
+		let r = this.getWhitelistedGameByApplicationId(applicationId);
+		if (r && this.getBlacklistedGameByGameId(r?.gameId)) return false;
 		return Boolean(r);
 	}
 	isGameFollowed(applicationId) {
 		let f = this.followedGames;
-		return f?.find((e) => e.applicationId === applicationId);
+		return f?.find((e) => e.applicationId === applicationId) ?? false;
 	}
 	getManuallyFollowedGames() {
 		return this.followedGames;
 	}
 	followGame(application) {
 		if (this.isGameWhitelisted(application.id)) return;
+		if (this.isGameBlacklisted(application.id)) {
+			this.whitelistGame(this.getBlacklistedGameByApplicationId(application.id)?.gameId);
+			return;
+		}
 		let f = this.followedGames;
-		let g = application.thirdPartySkus.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite").id || application.name;
+		let g = application.thirdPartySkus.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || application.name;
 		f.push({ applicationId: application.id, gameId: g, name: application.name });
 		this.emitChange();
 		betterdiscord.Data.save("followedGames", this.followedGames);
@@ -2656,7 +2686,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 			await Common.FetchApplications.fetchApplications(gameIds);
 		}
 		const gameList = analyticData.body.filter((game) => ApplicationStore.getApplication(game.application_id));
-		console.log(gameList);
 		let applicationList;
 		applicationList = gameList.map((game) => ApplicationStore.getApplication(game.application_id)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"));
 		const feedIds = applicationList.map((game) => {
@@ -2774,7 +2803,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		let s = this.lockSet;
 		t = t.concat(s);
 		let keys = Object.keys(feeds);
-		let _keys = keys.filter((key) => !this.getBlacklistedGame(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
+		let _keys = keys.filter((key) => !this.getBlacklistedGameByGameId(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
 		let total = _keys.length;
 		let sorted = this.sortFeeds(_keys);
 		if (!_keys.length) return;
@@ -3818,7 +3847,9 @@ function FeedSkeletonErrorBuilder({ errorText, errorDescription }) {
 // activity_feed/components/application_news/Article.tsx
 function FeedArticle(Article2) {
 	return function WrappedComponent(props) {
-		const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: props.article.application.id });
+		let id = props.article.application.id;
+		if (isNaN(id)) id = void 0;
+		const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
 		const orientation = betterdiscord.Hooks.useStateFromStores(NewsStore, () => NewsStore.getOrientation());
 		return BdApi.React.createElement(Article2, { ...props, useGameProfile, orientation });
 	};
@@ -5377,7 +5408,9 @@ function SpotifyAsset({ activity, user }) {
 }
 function GameIconAsset({ url, id, name }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
+	let appId = id;
+	if (isNaN(appId)) appId = void 0;
+	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: appId });
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.gameIcon, style: { width: "40px", height: "40px" } }) : BdApi.React.createElement(
 		"img",
 		{
@@ -5476,6 +5509,7 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 				}
 			})(),
 			tooltipText: activity.assets.large_text,
+			onClick: () => activity.type === 2 && Common.OpenAlbum(activity, user.id),
 			type: "Large"
 		}
 	), activity?.assets && activity?.assets.small_image && BdApi.React.createElement(
@@ -5500,26 +5534,45 @@ function RichTwitchActivityBuilder({ activity }) {
 
 // activity_feed/components/now_playing/activities/components/CardActivity.tsx
 function ActivityCardContextMenu({ currentActivity, currentGame }) {
-	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: currentActivity?.application_id });
-	const application = ApplicationStore.getApplicationByName(currentGame.name);
-	const [followedGames, updateFollowStatus] = react.useState(NewsStore.getManuallyFollowedGames());
-	const isFollowed = NewsStore.isGameFollowed(application.id ?? currentActivity?.application_id);
-	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "activity-context", onClose: (e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e) }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "open-game-profile", label: "Open Game Profile", action: useGameProfile, disabled: !useGameProfile }), BdApi.React.createElement(
-		betterdiscord.ContextMenu.CheckboxItem,
-		{
-			id: "follow-game",
-			label: "Show on Activity Feed",
-			checked: isFollowed,
-			disabled: !currentGame,
-			action: isFollowed ? () => {
-				NewsStore.blacklistGame(application ?? { id: currentActivity?.application_id });
-				updateFollowStatus(followedGames.filter((item) => item.applicationId !== (application.id ?? currentActivity?.application_id)));
-			} : () => {
-				NewsStore.followGame(application ?? currentGame);
-				updateFollowStatus(followedGames.filter((item) => item.applicationId !== (application.id ?? currentActivity?.application_id)));
-			}
+	switch (currentActivity.type) {
+		case 0: {
+			let id = currentActivity?.application_id;
+			if (isNaN(id)) id = void 0;
+			const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: id });
+			let application = ApplicationStore.getApplicationByName(currentGame.name);
+			if (application.type == null) application = ApplicationStore.getApplication(currentActivity?.application_id);
+			const [followedGames, updateFollowStatus] = react.useState(NewsStore.getManuallyFollowedGames());
+			const [blacklist, updateBlacklist] = react.useState(NewsStore.getBlacklist());
+			const isFollowed = NewsStore.isGameFollowed(application.id ?? currentActivity?.application_id);
+			const isWhitelisted = NewsStore.isGameWhitelisted(application.id ?? currentActivity?.application_id);
+			return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "activity-context", onClose: (e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e) }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "open-game-profile", label: "Open Game Profile", action: useGameProfile, disabled: !useGameProfile }), BdApi.React.createElement(
+				betterdiscord.ContextMenu.CheckboxItem,
+				{
+					id: "follow-game",
+					label: "Show on Activity Feed",
+					checked: isFollowed || isWhitelisted,
+					disabled: !currentGame || application.type == null,
+					action: isFollowed || isWhitelisted ? () => {
+						NewsStore.blacklistGame(application ?? { id: currentActivity?.application_id });
+						isFollowed ? updateFollowStatus(followedGames.filter((item) => item.applicationId !== (application.id ?? currentActivity?.application_id))) : updateBlacklist(blacklist.filter((item) => item.applicationId !== (application.id ?? currentActivity?.application_id)));
+					} : () => {
+						NewsStore.followGame(application ?? currentGame);
+						isFollowed ? updateFollowStatus(followedGames.filter((item) => item.applicationId !== (application.id ?? currentActivity?.application_id))) : updateBlacklist(blacklist.filter((item) => item.applicationId !== (application.id ?? currentActivity?.application_id)));
+					}
+				}
+			));
 		}
-	));
+		case 1:
+			return;
+		case 2:
+			return;
+		case 3:
+			return;
+		case 4:
+			return;
+		case 5:
+			return;
+	}
 }
 function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
 	if (currentActivity.type == 1) return;
@@ -5697,6 +5750,7 @@ function CardMiniNews({ currentArticle }) {
 			tabindex: currentArticle.index,
 			className: `${Common.AnchorClasses.anchor} ${FeedClasses.newsLink} ${FeedClasses.news}`,
 			href: currentArticle.news?.url || "#",
+			onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(FeedPopout, { ...props, application: currentArticle.application, gameId: currentArticle.id, articleUrl: currentArticle.news?.url })),
 			rel: "noreferrer nopener",
 			target: "_blank",
 			role: "button"
@@ -5800,7 +5854,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = (() => {
+const LastPlayedStore = () => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -5876,7 +5930,7 @@ const LastPlayedStore = (() => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-});
+};
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -6013,15 +6067,15 @@ const CoachmarkClasses = modules_95b05254;
 // activity_feed/components/coachmark/IntroCoachmark.tsx
 function IntroCoachmark({ close }) {
 	return BdApi.React.createElement("div", { className: `${CoachmarkClasses.coachmark} ${Common.PopoverClasses.popover}` }, BdApi.React.createElement("div", { className: Common.PopoverClasses.graphic }, BdApi.React.createElement("img", { className: CoachmarkClasses.image, alt: "", draggable: "false", src: "https://static.discord.com/assets/de14fab6de78b0fc2f679eb74b735151.svg" })), BdApi.React.createElement("div", { className: CoachmarkClasses.body }, BdApi.React.createElement("div", { className: CoachmarkClasses.bodyHeader }, BdApi.React.createElement("div", { className: CoachmarkClasses.title }, "Activity Feed")), BdApi.React.createElement("div", { className: CoachmarkClasses.bodyContent }, BdApi.React.createElement("div", { className: CoachmarkClasses.content }, "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!"))), BdApi.React.createElement("div", { className: CoachmarkClasses.actions }, BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`, type: "button", onClick: () => {
-		NewsStore.setHasDismissedSettingsCoachmark(true);
+		ActivityFeedSettingsCoachmarkStore$1.setHasDismissedSettingsCoachmark(true);
 		Common.OpenUserSettings.openUserSettings("activity_feed_panel", { section: "activity_feed_sidebar_item" });
 	} }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildrenWrapper}` }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildren}` }, BdApi.React.createElement("span", { className: CoachmarkClasses.buttonContent }, "Take me there!")))), BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.secondary} ${CoachmarkClasses.closeButton}`, type: "button", onClick: () => {
-		NewsStore.setHasDismissedSettingsCoachmark(true);
+		ActivityFeedSettingsCoachmarkStore$1.setHasDismissedSettingsCoachmark(true);
 	} }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildrenWrapper}` }, BdApi.React.createElement("div", { className: `${Common.ButtonManaClasses.buttonChildren}` }, BdApi.React.createElement("span", { className: CoachmarkClasses.buttonContent }, "Close"))))), BdApi.React.createElement("div", { className: `${Common.CaretClasses.caret} ${Common.CaretClasses["caret--bottom"]} ${Common.CaretClasses["caret--start"]}` }, BdApi.React.createElement("svg", { width: "22", height: "14", viewBox: "0 0 22 14", fill: "none", className: Common.PopoverClasses.caretIcon }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39127C12.4557 11.2796 9.54425 11.2796 7.94646 9.39127L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39127Z" }), BdApi.React.createElement("mask", { id: "mask0_caret", maskUnits: "userSpaceOnUse", x: "0", y: "0", width: "22", height: "11", style: { maskType: "alpha" } }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretFill, d: "M14.0535 9.39126C12.4557 11.2796 9.54425 11.2796 7.94646 9.39126L1 1Q0 0 1 0L21 0Q22 0 21 1L14.0535 9.39126Z" })), BdApi.React.createElement("g", { mask: "url(mask0_caret)" }, BdApi.React.createElement("path", { className: Common.PopoverClasses.caretStroke, d: "M13.6572 9.13184C12.2604 10.761 9.73957 10.761 8.34277 9.13184L1.0869141 0.5Q0.0869141 -0.5 1.0869141 -0.5L20.9131 -0.5Q21.9131 -0.5 20.9131 0.5L13.6572 9.13184Z" })))));
 }
 function IntroCoachmarkPopout({ button }) {
 	const [showPopout, setShowPopout] = react.useState(false);
-	const isShouldShow = betterdiscord.Hooks.useStateFromStores(NewsStore, () => NewsStore.hasDismissedSettingsCoachmark);
+	const isShouldShow = betterdiscord.Hooks.useStateFromStores(ActivityFeedSettingsCoachmarkStore$1, () => ActivityFeedSettingsCoachmarkStore$1.hasDismissedSettingsCoachmark);
 	const refDOM = react.useRef(null);
 	react.useEffect(() => {
 		setShowPopout(!isShouldShow);
@@ -6034,7 +6088,7 @@ function IntroCoachmarkPopout({ button }) {
 			targetElementRef: refDOM,
 			onRequestClose: () => {
 				setShowPopout(false);
-				NewsStore.setHasDismissedSettingsCoachmark(true);
+				ActivityFeedSettingsCoachmarkStore$1.setHasDismissedSettingsCoachmark(true);
 			},
 			renderPopout: () => {
 				return BdApi.React.createElement(Common.PopoutContainer, null, BdApi.React.createElement(IntroCoachmark, { close: () => setShowPopout(false) }));
@@ -6412,7 +6466,7 @@ function FollowedGameEmptyBuilder() {
 function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
 	const application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]) ?? GameStore.getDetectableGame(game.applicationId) ?? ApplicationStore.getApplication(game.applicationId);
-	const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
+	const isUnfollowed = Boolean(NewsStore.getBlacklistedGameByGameId(game.gameId));
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: SettingsClasses.blacklistItemIcon }) : BdApi.React.createElement(
 		"img",
 		{
@@ -6636,7 +6690,7 @@ function NavigatorButton() {
 	);
 }
 function CoachmarkWrapper({ button }) {
-	if (useSelectedState() && !NewsStore.hasDismissedSettingsCoachmark) {
+	if (useSelectedState() && !ActivityFeedSettingsCoachmarkStore$1.hasDismissedSettingsCoachmark) {
 		return react.createElement(IntroCoachmarkPopout, { button });
 	}
 	return button;
@@ -6645,6 +6699,7 @@ class ActivityFeed {
 	GameNewsStore = NewsStore;
 	NewsArticle = NewsArticle;
 	LastPlayedStore = LastPlayedStore$1;
+	ActivityFeedSettingsCoachmarkStore = ActivityFeedSettingsCoachmarkStore$1;
 	async start() {
 		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
@@ -6730,7 +6785,6 @@ class ActivityFeed {
 		betterdiscord.Patcher.after(betterdiscord.Webpack.getBySource("disableGameProfileLinks", "ANDROID"), "A", (that, [props], res) => {
 			const application = ApplicationStore.getApplication(res.props.children[0].props.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props.entry.extra.game_name);
 			betterdiscord.Patcher.after(res.props.children[0], "type", (that2, [props2], res2) => {
-				console.log(res2);
 				res2.props.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
 			});
 		});

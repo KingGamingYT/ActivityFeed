@@ -9,7 +9,9 @@ import NewsStore from "@activity_feed/Store";
 
 export function FeedArticle(Article) {
     return function WrappedComponent(props) {
-        const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: props.article.application.id});
+        let id = props.article.application.id;
+        if (isNaN(id)) id = undefined; 
+        const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: id});
         const orientation = Hooks.useStateFromStores(NewsStore, () => NewsStore.getOrientation());
         return <Article {...props} useGameProfile={useGameProfile} orientation={orientation} />
     }

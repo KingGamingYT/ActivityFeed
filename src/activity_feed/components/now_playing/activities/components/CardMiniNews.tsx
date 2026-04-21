@@ -1,4 +1,6 @@
+import { ContextMenu } from "betterdiscord";
 import { Common } from "@modules/common";
+import { FeedPopout } from "@application_news/components/OverflowBuilder";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function CardMiniNews({currentArticle}) {
@@ -9,6 +11,7 @@ export function CardMiniNews({currentArticle}) {
             tabindex={currentArticle.index}
             className={`${Common.AnchorClasses.anchor} ${FeedClasses.newsLink} ${FeedClasses.news}`}
             href={currentArticle.news?.url || "#"}
+            onContextMenu={e => ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} /> )}
             rel="noreferrer nopener"
             target="_blank"
             role="button"

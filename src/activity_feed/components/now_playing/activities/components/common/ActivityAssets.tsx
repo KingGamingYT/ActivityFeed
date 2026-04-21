@@ -72,7 +72,9 @@ export function SpotifyAsset({activity, user}) {
 
 export function GameIconAsset({url, id, name}: GameIconAsset) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: id});
+    let appId = id;
+    if (isNaN(appId)) appId = undefined; 
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: appId});
 
     return (
         <>

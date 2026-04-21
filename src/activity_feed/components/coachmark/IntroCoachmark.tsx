@@ -1,7 +1,7 @@
 import { Hooks } from "betterdiscord"
 import { useState, useRef, useEffect } from "react";
 import { Common } from "@modules/common";
-import NewsStore from "@activity_feed/Store";
+import ActivityFeedSettingsCoachmarkStore from "./ActivityFeedSettingsCoachmarkStore";
 import CoachmarkClasses from "./IntroCoachmark.module.css";
 
 export function IntroCoachmark({close}) {
@@ -19,14 +19,14 @@ export function IntroCoachmark({close}) {
                 </div>
             </div>
             <div className={CoachmarkClasses.actions}>
-                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`} type={"button"} onClick={() => {NewsStore.setHasDismissedSettingsCoachmark(true); Common.OpenUserSettings.openUserSettings('activity_feed_panel', {section: 'activity_feed_sidebar_item'}); close}}>
+                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`} type={"button"} onClick={() => {ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true); Common.OpenUserSettings.openUserSettings('activity_feed_panel', {section: 'activity_feed_sidebar_item'}); close}}>
                     <div className={`${Common.ButtonManaClasses.buttonChildrenWrapper}`}>
                         <div className={`${Common.ButtonManaClasses.buttonChildren}`}>
                             <span className={CoachmarkClasses.buttonContent}>Take me there!</span>
                         </div>
                     </div>
                 </button>
-                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.secondary} ${CoachmarkClasses.closeButton}`} type={"button"} onClick={() => {NewsStore.setHasDismissedSettingsCoachmark(true); close}}>
+                <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.secondary} ${CoachmarkClasses.closeButton}`} type={"button"} onClick={() => {ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true); close}}>
                     <div className={`${Common.ButtonManaClasses.buttonChildrenWrapper}`}>
                         <div className={`${Common.ButtonManaClasses.buttonChildren}`}>
                             <span className={CoachmarkClasses.buttonContent}>Close</span>
@@ -51,7 +51,7 @@ export function IntroCoachmark({close}) {
 
 export function IntroCoachmarkPopout({button}) {
     const [showPopout, setShowPopout] = useState(false);
-    const isShouldShow = Hooks.useStateFromStores(NewsStore, () => NewsStore.hasDismissedSettingsCoachmark)
+    const isShouldShow = Hooks.useStateFromStores(ActivityFeedSettingsCoachmarkStore, () => ActivityFeedSettingsCoachmarkStore.hasDismissedSettingsCoachmark)
 
     const refDOM = useRef(null)
 
@@ -65,7 +65,7 @@ export function IntroCoachmarkPopout({button}) {
                 shouldShow={showPopout}
                 position="top"
                 targetElementRef={refDOM}
-                onRequestClose={() => {setShowPopout(false); NewsStore.setHasDismissedSettingsCoachmark(true)}}
+                onRequestClose={() => {setShowPopout(false); ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true)}}
                 renderPopout={() => {
                     return <Common.PopoutContainer>
                         <IntroCoachmark close={() => setShowPopout(false)} />

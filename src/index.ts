@@ -12,6 +12,7 @@ import settingsItem from "@settings/components/PanelBuilder";
 import NewsStore from "./activity_feed/Store";
 import NewsArticle from "@application_news/Article";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
+import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 
 
 function useSelectedState() {
@@ -32,7 +33,7 @@ function NavigatorButton() {
 
 function CoachmarkWrapper({button})
 {
-    if (useSelectedState() && !NewsStore.hasDismissedSettingsCoachmark) {
+    if (useSelectedState() && !ActivityFeedSettingsCoachmarkStore.hasDismissedSettingsCoachmark) {
         return createElement(IntroCoachmarkPopout, {button})
     }
     return button;
@@ -42,6 +43,7 @@ export default class ActivityFeed {
     GameNewsStore = NewsStore;
     NewsArticle = NewsArticle;
     LastPlayedStore = LastPlayedStore;
+    ActivityFeedSettingsCoachmarkStore = ActivityFeedSettingsCoachmarkStore;
     async start() {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
@@ -139,7 +141,6 @@ export default class ActivityFeed {
         Patcher.after(Webpack.getBySource('disableGameProfileLinks', 'ANDROID'), 'A', (that, [props], res) => {
             const application = ApplicationStore.getApplication(res.props.children[0].props.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props.entry.extra.game_name);
             Patcher.after(res.props.children[0], 'type', (that, [props], res) => {
-                console.log(res);
                 res.props.children.push(createElement(FollowButton, { application, fullWidth: true }))
             })
         })

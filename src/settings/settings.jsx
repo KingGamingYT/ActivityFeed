@@ -1,5 +1,6 @@
 import { Common } from "@modules/common";
 import NewsStore from "@activity_feed/Store";
+import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 
 export default {
     main: {
@@ -44,7 +45,7 @@ export default {
             note: "Settings coachmark will reappear again after having previously been dismissed.",
             innerText: "Reset",
             type: "button",
-            onClick: () => NewsStore.setHasDismissedSettingsCoachmark(false)
+            onClick: () => ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(false)
         },
         clearLockedInArticles: {
             name: "Clear locked in articles",

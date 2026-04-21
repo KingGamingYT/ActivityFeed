@@ -21,7 +21,7 @@ function FollowedGameEmptyBuilder() {
 function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
     const [shouldFallback, setShouldFallback] = useState(false);
     const application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]) ?? GameStore.getDetectableGame(game.applicationId) ?? ApplicationStore.getApplication(game.applicationId);
-    const isUnfollowed = Boolean(NewsStore.getBlacklistedGame(game.gameId));
+    const isUnfollowed = Boolean(NewsStore.getBlacklistedGameByGameId(game.gameId));
 
     return (
         <div className={SettingsClasses.blacklistItem} style={{ display: "flex" }}>

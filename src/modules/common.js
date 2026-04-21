@@ -38,6 +38,7 @@ const Filters = [
     { name: "MediaProgressBar", filter: /* @__PURE__ */ Webpack.Filters.byStrings('start', 'end', 'duration', 'percentage'), searchExports: true },
     { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
     { name: "ModalRoot", filter: x => x.Modal },
+    { name: "OpenAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.ALBUM', '.EPISODE'), searchExports: true },
     { name: "OpenDM", filter: x => x.openPrivateChannel },
     { name: "OpenVoiceChannel", filter: x=> x.selectVoiceChannel, searchExports: true },
     { name: "OpenSpotifyAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },

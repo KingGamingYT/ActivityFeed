@@ -12,6 +12,8 @@ interface RichImageAsset {
     url: string | (() => string),
     tooltipText: string,
     onClick?: React.MouseEventHandler<HTMLImageElement>,
+    onMouseOver?: React.MouseEventHandler<HTMLImageElement>,
+    onMouseLeave?: React.MouseEventHandler<HTMLImageElement>,
     type: "Large" | "Small"
 }
 
@@ -45,7 +47,6 @@ export function FallbackAsset(props: any) {
 
 export function SpotifyAsset({activity, user}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    const useAlbum = Common.OpenAlbum(activity, user.id);
 
     return (
         <>
@@ -56,9 +57,9 @@ export function SpotifyAsset({activity, user}) {
                     width="40" 
                     height="40" 
                     viewBox="0 0 16 16" 
-                    onMouseOver={(e) => Boolean(useAlbum) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                    onMouseLeave={(e) => Boolean(useAlbum) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
-                    onClick={() => useAlbum}
+                    onClick={(e) => {activity.name.toLowerCase().includes('spotify') && e.stopPropagation(), Common.OpenAlbum(activity, user.id);}}
+                    onMouseOver={(e) =>  activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                     onError={() => (setShouldFallback(true))}>
                     <g fill="none" fillRule="evenodd">
                         <path 

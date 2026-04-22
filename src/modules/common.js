@@ -39,10 +39,11 @@ const Filters = [
     { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
     { name: "ModalRoot", filter: x => x.Modal },
     { name: "OpenAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.ALBUM', '.EPISODE'), searchExports: true },
+    { name: "OpenArtist", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
     { name: "OpenDM", filter: x => x.openPrivateChannel },
     { name: "OpenVoiceChannel", filter: x=> x.selectVoiceChannel, searchExports: true },
-    { name: "OpenSpotifyAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
     { name: "OpenStream", filter: /* @__PURE__ */ Webpack.Filters.byStrings('guildId', 'getWindowOpen', 'CHANNEL_CALL_POPOUT'),  searchExports: true },
+    { name: "OpenTrack", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.TRACK', 'isProtocolRegistered'), searchExports: true },
     { name: "OpenUserSettings", filter: x=> x.openUserSettings },
     { name: "Popout", filter: /* @__PURE__ */ Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
     { name: "PopoutContainer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('type', 'position', 'data-popout-animating'), searchExports: true },
@@ -80,6 +81,10 @@ export const Common = CommonExport();
 
 export const { shell } = require('electron');
 export const { container } = /* @__PURE__ */ Webpack.getModule(m => m.container && m.panels);
+
+export const Title = /* @__PURE__ */ Webpack.getMangled('flashQueue', {
+    WindowTitle: /* @__PURE__ */ Webpack.Filters.byStrings('null')
+})
 
 export const ContextMenus = () => {
     let ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');

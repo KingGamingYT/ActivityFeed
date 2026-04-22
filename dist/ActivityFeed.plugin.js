@@ -74,10 +74,11 @@ const Filters = [
 	{ name: "ModalAccessUtils", filter: (x) => x.openUserProfileModal },
 	{ name: "ModalRoot", filter: (x) => x.Modal },
 	{ name: "OpenAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".ALBUM", ".EPISODE"), searchExports: true },
+	{ name: "OpenArtist", filter: betterdiscord.Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
 	{ name: "OpenDM", filter: (x) => x.openPrivateChannel },
 	{ name: "OpenVoiceChannel", filter: (x) => x.selectVoiceChannel, searchExports: true },
-	{ name: "OpenSpotifyAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".metadata)?void", ".EPISODE?"), searchExports: true },
 	{ name: "OpenStream", filter: betterdiscord.Webpack.Filters.byStrings("guildId", "getWindowOpen", "CHANNEL_CALL_POPOUT"), searchExports: true },
+	{ name: "OpenTrack", filter: betterdiscord.Webpack.Filters.byStrings(".TRACK", "isProtocolRegistered"), searchExports: true },
 	{ name: "OpenUserSettings", filter: (x) => x.openUserSettings },
 	{ name: "Popout", filter: betterdiscord.Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
 	{ name: "PopoutContainer", filter: betterdiscord.Webpack.Filters.byStrings("type", "position", "data-popout-animating"), searchExports: true },
@@ -111,6 +112,9 @@ const CommonExport = () => {
 const Common = CommonExport();
 require("electron");
 const { container } = betterdiscord.Webpack.getModule((m) => m.container && m.panels);
+const Title = betterdiscord.Webpack.getMangled("flashQueue", {
+	WindowTitle: betterdiscord.Webpack.Filters.byStrings("null")
+});
 const ContextMenus = () => {
 	let ContextMenuUser = betterdiscord.Webpack.getBySource("data-menu-migrated", "user-context", "appContext");
 	let ContextMenuVoice = betterdiscord.Webpack.getBySource("channel", "channel-context", "data-menu-migrated");
@@ -2810,7 +2814,7 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		ld: for (let d in sorted) {
 			let f = _keys.filter((k) => new Date(feeds[k].news.timestamp).toDateString() === sorted[d]);
 			for (let g = 0; g < 4 - s.length; g++) {
-				if (g > f.length) break;
+				if (g > f.length + 1) break;
 				if (g > total - 1 || t.length > 3) break ld;
 				let rand = f.length * Math.random() << 0;
 				t.push(feeds[f[rand]]);
@@ -3625,11 +3629,14 @@ const FeedClasses = modules_98d78101;
 // activity_feed/common/components/TooltipBuilder.tsx
 const Tooltip = ({ note, position, children, forceOpen }) => {
 	return BdApi.React.createElement(Common.Tooltip, { text: note, forceOpen, position: position || "top" }, (props) => {
-		children.props = {
-			...props,
-			...children.props
-		};
-		return children;
+		const child = react.Children.only(children);
+		return react.cloneElement(child, Object.entries(props).reduce((pre, [key, value]) => {
+			pre[key] = key in props ? (...args) => {
+				child.props[key]?.(...args);
+				return value(...args);
+			} : value;
+			return pre;
+		}, {}));
 	});
 };
 
@@ -5186,7 +5193,8 @@ function DiscordTag({ user, voice }) {
 }
 
 // activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
-function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
+function ActivityType(props) {
+	const { activity, user, game, channel, stream, streamUser, server, type } = props;
 	useStateFromStores([GuildStore], () => GuildStore.getGuild(channel?.guild_id));
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
 	switch (type) {
@@ -5202,7 +5210,25 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
 				game?.name
 			)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity?.timestamps?.start || activity.created_at })));
 		case "RICH":
-			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity.details || activity?.state), activity?.details && BdApi.React.createElement("div", { className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}` }, activity?.state), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common.ActivityTimer, { activity }));
+			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(
+				"div",
+				{
+					className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`,
+					onClick: () => activity.name.toLowerCase().includes("spotify") && Common.OpenTrack(activity),
+					onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
+					onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
+				},
+				activity.details || activity?.state
+			), activity?.details && BdApi.React.createElement(
+				"div",
+				{
+					className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`,
+					onClick: () => activity.name.toLowerCase().includes("spotify") && Common.OpenArtist(activity, user.id, 0),
+					onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
+					onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
+				},
+				activity?.state
+			), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common.ActivityTimer, { activity }));
 		case "TWITCH":
 			return BdApi.React.createElement("div", { className: NowPlayingClasses.streamInfo }, BdApi.React.createElement("div", { className: NowPlayingClasses.gameName }, activity?.name.toLowerCase().includes("twitch") ? game?.name : game?.name.substring(0, 13) + activity?.name), BdApi.React.createElement(
 				"a",
@@ -5226,19 +5252,8 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
 	}
 }
 function FlexInfo(props) {
-	const { className, style, onClick, activity, game, channel, stream, streamUser, server, type } = props;
-	return BdApi.React.createElement("div", { className, style, onClick }, BdApi.React.createElement(
-		ActivityType,
-		{
-			activity,
-			game,
-			channel,
-			stream,
-			streamUser,
-			server,
-			type
-		}
-	));
+	const { className, style, onClick } = props;
+	return BdApi.React.createElement("div", { className, style, onClick }, BdApi.React.createElement(ActivityType, { ...props }));
 }
 
 // activity_feed/components/now_playing/activities/components/common/AvatarWithPopoutWrapper.tsx
@@ -5386,7 +5401,6 @@ function FallbackAsset(props) {
 }
 function SpotifyAsset({ activity, user }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	const useAlbum = Common.OpenAlbum(activity, user.id);
 	return BdApi.React.createElement(BdApi.React.Fragment, null, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: NowPlayingClasses.smallEmptyIcon, style: { width: "40px", height: "40px" } }) : BdApi.React.createElement(
 		"svg",
 		{
@@ -5395,9 +5409,11 @@ function SpotifyAsset({ activity, user }) {
 			width: "40",
 			height: "40",
 			viewBox: "0 0 16 16",
-			onMouseOver: (e) => Boolean(useAlbum) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
-			onMouseLeave: (e) => Boolean(useAlbum) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
-			onClick: () => useAlbum,
+			onClick: (e) => {
+				activity.name.toLowerCase().includes("spotify") && e.stopPropagation(), Common.OpenAlbum(activity, user.id);
+			},
+			onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
 			onError: () => setShouldFallback(true)
 		},
 		BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement(
@@ -5500,7 +5516,6 @@ function RegularTwitchActivityBuilder({ user, activity, game }) {
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.twitchActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(GameIconAsset, { url: activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`, id: activity?.application_id, name: game?.name }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`, activity, game, type: "TWITCH" }), BdApi.React.createElement(RichCardTrailing, { activity, user }));
 }
 function RichActivityBuilder({ user, activity, v2Enabled }) {
-	const useAlbum = Common.OpenAlbum(activity, user.id);
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.assets}` }, BdApi.React.createElement(
 		RichImageAsset,
 		{
@@ -5515,9 +5530,11 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 				}
 			})(),
 			tooltipText: activity.assets.large_text,
-			onClick: () => activity.type === 2 && useAlbum,
-			onMouseOver: (e) => useAlbum && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
-			onMouseLeave: (e) => useAlbum && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
+			onClick: () => {
+				activity.name.toLowerCase().includes("spotify") && Common.OpenAlbum(activity, user.id);
+			},
+			onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
 			type: "Large"
 		}
 	), activity?.assets && activity?.assets.small_image && BdApi.React.createElement(
@@ -5527,7 +5544,7 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 			tooltipText: activity.assets.small_text,
 			type: "Small"
 		}
-	)), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`, activity, type: "RICH" }), BdApi.React.createElement(RichCardTrailing, { activity, user, v2Enabled }))));
+	)), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`, activity, user, type: "RICH" }), BdApi.React.createElement(RichCardTrailing, { activity, user, v2Enabled }))));
 }
 function RichTwitchActivityBuilder({ activity }) {
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: NowPlayingClasses.assets }, BdApi.React.createElement("div", { className: NowPlayingClasses.twitchImageContainer }, BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.twitchImageOverlay, activity, type: "TWITCH_OVERLAY" }), BdApi.React.createElement(
@@ -5862,7 +5879,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = (() => {
+const LastPlayedStore = () => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -5938,7 +5955,7 @@ const LastPlayedStore = (() => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-});
+};
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -5988,9 +6005,11 @@ function TabBaseBuilder() {
 		window.addEventListener("keydown", recoverOnReload);
 		return () => window.removeEventListener("keydown", recoverOnReload);
 	});
-	document.title = "Activity";
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
-	return BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement(WhatsNewBuilder, { className: NowPlayingClasses.whatsNew, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))));
+	return [
+		BdApi.React.createElement(Title.WindowTitle, { location: "Activity" }),
+		BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement(WhatsNewBuilder, { className: NowPlayingClasses.whatsNew, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))))
+	];
 }
 
 // activity_feed/components/coachmark/IntroCoachmark.module.css
@@ -6680,6 +6699,56 @@ const settingsItem = layoutUtils.SidebarItem(
 	}
 );
 
+// activity_feed/components/now_playing/PresenceTypeStore.tsx
+class PresenceTypeStore extends betterdiscord.Utils.Store {
+	static displayName = "PresenceTypeStore";
+	types = {};
+	constructor() {
+		super();
+		this.types = {
+			0: "PLAYING",
+			1: "STREAMING",
+			2: "LISTENING",
+			3: "WATCHING",
+			4: "CUSTOM",
+			5: "COMPETING"
+		};
+	}
+	getAllActivityTypes(activities) {
+		let f = [];
+		for (let a of activities) {
+			if (!a) return;
+			f.push(this.getActivityType(a));
+		}
+		return f;
+	}
+	getAllActivityProperties(activities) {
+		let d = [];
+		for (let a of activities) {
+			if (!a) return;
+			d.push(this.getActivityProperties(a));
+		}
+		return d;
+	}
+	getActivityType(activity) {
+		return this.types[activity.type];
+	}
+	getActivityPlatform(activity, isSpotify) {
+		switch (true) {
+			case !!(isSpotify || activity?.name?.toLowerCase()?.includes("spotify")):
+				return "SPOTIFY";
+			case !!activity?.platform?.includes("xbox"):
+				return "XBOX";
+			case !!(activity?.platform?.includes("playstation") || activity?.platform?.includes("ps5")):
+				return "PLAYSTATION";
+		}
+	}
+	getActivityProperties(activity) {
+		return { type: this.getActivityType(activity), platform: this.getActivityPlatform(activity) };
+	}
+}
+const PresenceTypeStore$1 = new PresenceTypeStore();
+
 // index.ts
 function useSelectedState() {
 	return Router.useLocation().pathname.startsWith("/activity-feed");
@@ -6708,6 +6777,7 @@ class ActivityFeed {
 	NewsArticle = NewsArticle;
 	LastPlayedStore = LastPlayedStore$1;
 	ActivityFeedSettingsCoachmarkStore = ActivityFeedSettingsCoachmarkStore$1;
+	PresenceTypeStore = PresenceTypeStore$1;
 	async start() {
 		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));

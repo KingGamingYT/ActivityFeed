@@ -4,9 +4,11 @@ import { TimeClock, InactiveTimeClock } from '@common/methods/common';
 import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
-function ActivityType({ type, activity, game, channel, server, stream, streamUser }) {
+function ActivityType(props) {
+    const { activity, user, game, channel, stream, streamUser, server, type } = props
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
+
     switch (type) {
         case "REGULAR": return (
             <>
@@ -25,8 +27,20 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
         )
         case "RICH": return (
             <>
-                <div className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}>{activity.details || activity?.state}</div>
-                {activity?.details && <div className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}>{activity?.state}</div>}
+                <div 
+                    className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
+                    onClick={() => activity.name.toLowerCase().includes('spotify') && Common.OpenTrack(activity)}
+                    onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                    >{activity.details || activity?.state}
+                </div>
+                {activity?.details && <div 
+                    className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
+                    onClick={() => activity.name.toLowerCase().includes('spotify') && Common.OpenArtist(activity, user.id, 0)}
+                    onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                    >{activity?.state}
+                </div>}
                 {
                     activity?.timestamps?.end ? <div className="mediaProgressBarContainer">
                         <Common.MediaProgressBar start={activity?.timestamps?.start || activity?.created_at} end={activity?.timestamps?.end} />
@@ -87,19 +101,11 @@ function ActivityType({ type, activity, game, channel, server, stream, streamUse
 }
 
 export function FlexInfo(props) {
-    const { className, style, onClick, activity, game, channel, stream, streamUser, server, type } = props
+    const { className, style, onClick } = props
 
     return (
         <div className={className} style={style} onClick={onClick}>
-            <ActivityType  
-                activity={activity} 
-                game={game} 
-                channel={channel} 
-                stream={stream} 
-                streamUser={streamUser}
-                server={server} 
-                type={type} 
-            />
+            <ActivityType {...props} />
         </div>
     )
 }

@@ -13,6 +13,7 @@ import NewsStore from "./activity_feed/Store";
 import NewsArticle from "@application_news/Article";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
+import PresenceTypeStore from "@activity_feed/components/now_playing/PresenceTypeStore";
 
 
 function useSelectedState() {
@@ -44,6 +45,7 @@ export default class ActivityFeed {
     NewsArticle = NewsArticle;
     LastPlayedStore = LastPlayedStore;
     ActivityFeedSettingsCoachmarkStore = ActivityFeedSettingsCoachmarkStore;
+    PresenceTypeStore = PresenceTypeStore;
     async start() {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));

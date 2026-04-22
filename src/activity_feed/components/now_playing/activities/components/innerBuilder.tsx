@@ -31,8 +31,6 @@ export function RegularTwitchActivityBuilder({user, activity, game}) {
 }
 
 export function RichActivityBuilder({user, activity, v2Enabled}) {
-    const useAlbum = Common.OpenAlbum(activity, user.id);
-
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`} style={{ flex: "1 1 auto" }}>
             <div className={`${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}`}>
@@ -47,9 +45,9 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                                 }
                             })()}
                             tooltipText={activity.assets.large_text}
-                            onClick={() => activity.type === 2 && useAlbum}
-                            onMouseOver={(e) =>  useAlbum && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                            onMouseLeave={(e) => useAlbum && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                            onClick={() => {activity.name.toLowerCase().includes('spotify') && Common.OpenAlbum(activity, user.id);}}
+                            onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                            onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                             type="Large"
                         />
                         {activity?.assets && activity?.assets.small_image && <RichImageAsset
@@ -61,7 +59,7 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                             type="Small"
                         />}
                     </div>
-                    <FlexInfo className={`${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`} activity={activity} type="RICH" />
+                    <FlexInfo className={`${NowPlayingClasses.contentImagesActivityFeed} ${NowPlayingClasses.content}`} activity={activity} user={user} type="RICH" />
                     <RichCardTrailing activity={activity} user={user} v2Enabled={v2Enabled} />
                 </div>
             </div>

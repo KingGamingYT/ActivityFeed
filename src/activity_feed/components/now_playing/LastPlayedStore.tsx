@@ -1,5 +1,4 @@
-import { Data, Utils, ReactUtils } from "betterdiscord";
-import { useEffect } from "react";
+import { Data, ReactUtils } from "betterdiscord";
 import { Common, FetchGameUtils } from "@modules/common";
 import { ApplicationStore, ContentInventoryStore, PresenceStore, NewGameStore, UserStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";

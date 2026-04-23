@@ -48,10 +48,10 @@ export function InactiveTimeClock({timestamp}) {
 export function GradGen(game, check, isSpotify, activity, voice, stream) {
     let input;
     switch (true) {
-        case !! check?.streaming: activity.name.toLowerCase().includes("youtube") ? input = 'https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
+        case !! check?.find(x => x.type === "STREAMING"): check?.find(x => x.plaform === "YOUTUBE") ? input = 'https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
-        case !! activity?.name.includes("YouTube Music"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
-        case !! activity?.platform?.includes("xbox"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
+        case !! check?.find(x => x.platform === "YT_MUSIC"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
+        case !! check?.find(x => x.platform === "XBOX"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
         case !! (activity?.assets && activity?.assets.large_image?.includes('external')): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! (activity?.assets && activity?.assets.large_image): input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`; break;
         case !! (game?.icon || game?.iconHash): input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon || game?.supplementalData?.iconHash}.png?size=1024&keep_aspect_ratio=true`; break;
@@ -66,12 +66,12 @@ export function SplashGen(game, isSpotify, activity, voice, stream, check) {
     switch (true) {
         case !! game?.data?.bannerHash?.length: input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.data?.bannerHash}.png?size=1024&keep_aspect_ratio=true`; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
-        case !! activity?.platform?.includes("xbox"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
-        case !! ["YouTube Music", "Crunchyroll"].includes(activity?.name): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
+        case !! check?.find(x => x.platform === "XBOX"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
+        case !! check?.find(x => x.platform === "YT_MUSIC" || x.platform === "CRUNCHYROLL"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! (voice && voice[0]?.guild?.banner && !activity): input = 'https://cdn.discordapp.com/banners/' + voice[0]?.guild?.id + '/' + voice[0]?.guild?.banner + '.webp?size=1024&keep_aspect_ratio=true'; break;
         case !! (voice && stream): stream.guildId ? input = `https://cdn.discordapp.com/icons/${stream.guildId}/${voice[0]?.guild?.icon}.png?size=1024` : input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
         case !! (voice && !activity): input = `https://cdn.discordapp.com/icons/${voice[0]?.guild?.id}/${voice[0]?.guild?.icon}.png?size=1024`; break;
-        case !! check?.streaming: activity.name.toLowerCase().endsWith('youtube') ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`; break;
+        case !! check?.find(x => x.type === "STREAMING"): check?.find(x => x.plaform === "YOUTUBE") ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`; break;
         case !! (!game?.data?.media?.artwork_urls && game?.data?.screenshotUrls): input = game?.data?.screenshotUrls[0]; break;
         case !! (!game?.data?.screenshotUrls): input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
         default: input = game?.data?.media?.artwork_urls[0];

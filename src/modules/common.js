@@ -41,6 +41,7 @@ const Filters = [
     { name: "OpenAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.ALBUM', '.EPISODE'), searchExports: true },
     { name: "OpenArtist", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
     { name: "OpenDM", filter: x => x.openPrivateChannel },
+    { name: "OpenLink", filter: /* @__PURE__ */ Webpack.Filters.byStrings('UserProfile', 'activity', 'application', 'void') },
     { name: "OpenVoiceChannel", filter: x=> x.selectVoiceChannel, searchExports: true },
     { name: "OpenStream", filter: /* @__PURE__ */ Webpack.Filters.byStrings('guildId', 'getWindowOpen', 'CHANNEL_CALL_POPOUT'),  searchExports: true },
     { name: "OpenTrack", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.TRACK', 'isProtocolRegistered'), searchExports: true },

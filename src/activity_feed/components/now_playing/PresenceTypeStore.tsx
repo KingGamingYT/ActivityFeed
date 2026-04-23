@@ -24,29 +24,35 @@ class PresenceTypeStore extends Utils.Store {
         return f;
     } 
 
-    getAllActivityProperties(activities: Array<Object>) {
+    getAllActivityProperties(activities: Array<Object>, isSpotify?: Boolean) {
         let d = []
         for (let a of activities) {
             if (!a) return;
-            d.push(this.getActivityProperties(a))
+            d.push(this.getActivityProperties(a, isSpotify))
         }
         return d;
     }
 
     getActivityType(activity: Object) {
-        return this.types[activity.type as keyof Object];
+        if (activity?.activity) activity = activity?.activity;
+        return this.types[activity?.type as keyof Object];
     }
 
     getActivityPlatform(activity: Object, isSpotify?: Boolean) {
+        if (activity?.activity) activity = activity?.activity;
         switch(true) {
             case !! (isSpotify || activity?.name?.toLowerCase()?.includes("spotify")): return "SPOTIFY";
             case !! activity?.platform?.includes("xbox"): return "XBOX";
             case !! (activity?.platform?.includes("playstation") || activity?.platform?.includes("ps5")): return "PLAYSTATION";
+            case !! (activity?.name?.toLowerCase().includes("youtube music")): return "YT_MUSIC";
+            case !! (activity?.name?.toLowerCase().endsWith("youtube")): return "YOUTUBE";
+            case !! (activity?.name?.toLowerCase().includes("twitch")): return "TWITCH";
+            case !! (activity?.name?.toLowerCase().includes("crunchyroll")): return "CRUNCHYROLL";
         }
     }
 
-    getActivityProperties(activity: Object) {
-        return {type: this.getActivityType(activity), platform: this.getActivityPlatform(activity)}
+    getActivityProperties(activity: Object, isSpotify?: Boolean) {
+        return {type: this.getActivityType(activity), platform: this.getActivityPlatform(activity, isSpotify)}
     }
 }
 export default new PresenceTypeStore();

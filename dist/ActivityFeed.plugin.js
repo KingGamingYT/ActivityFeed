@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.0
+ * @version 1.0.0-dev
  */
 
 /*@cc_on
@@ -76,6 +76,7 @@ const Filters = [
 	{ name: "OpenAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".ALBUM", ".EPISODE"), searchExports: true },
 	{ name: "OpenArtist", filter: betterdiscord.Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
 	{ name: "OpenDM", filter: (x) => x.openPrivateChannel },
+	{ name: "OpenLink", filter: betterdiscord.Webpack.Filters.byStrings("UserProfile", "activity", "application", "void") },
 	{ name: "OpenVoiceChannel", filter: (x) => x.selectVoiceChannel, searchExports: true },
 	{ name: "OpenStream", filter: betterdiscord.Webpack.Filters.byStrings("guildId", "getWindowOpen", "CHANNEL_CALL_POPOUT"), searchExports: true },
 	{ name: "OpenTrack", filter: betterdiscord.Webpack.Filters.byStrings(".TRACK", "isProtocolRegistered"), searchExports: true },
@@ -1757,16 +1758,16 @@ function InactiveTimeClock({ timestamp }) {
 function GradGen(game, check, isSpotify, activity, voice, stream) {
 	let input;
 	switch (true) {
-		case !!check?.streaming:
-			activity.name.toLowerCase().includes("youtube") ? input = "https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png" : input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
+		case !!check?.find((x) => x.type === "STREAMING"):
+			check?.find((x) => x.plaform === "YOUTUBE") ? input = "https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png" : input = "https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg";
 			break;
 		case !!isSpotify:
 			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
 			break;
-		case !!activity?.name.includes("YouTube Music"):
+		case !!check?.find((x) => x.platform === "YT_MUSIC"):
 			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
 			break;
-		case !!activity?.platform?.includes("xbox"):
+		case !!check?.find((x) => x.platform === "XBOX"):
 			input = "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png";
 			break;
 		case !!(activity?.assets && activity?.assets.large_image?.includes("external")):
@@ -1796,10 +1797,10 @@ function SplashGen(game, isSpotify, activity, voice, stream, check) {
 		case !!isSpotify:
 			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
 			break;
-		case !!activity?.platform?.includes("xbox"):
+		case !!check?.find((x) => x.platform === "XBOX"):
 			input = "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png";
 			break;
-		case !!["YouTube Music", "Crunchyroll"].includes(activity?.name):
+		case !!check?.find((x) => x.platform === "YT_MUSIC" || x.platform === "CRUNCHYROLL"):
 			input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf("/"))}`;
 			break;
 		case !!(voice && voice[0]?.guild?.banner && !activity):
@@ -1811,8 +1812,8 @@ function SplashGen(game, isSpotify, activity, voice, stream, check) {
 		case !!(voice && !activity):
 			input = `https://cdn.discordapp.com/icons/${voice[0]?.guild?.id}/${voice[0]?.guild?.icon}.png?size=1024`;
 			break;
-		case !!check?.streaming:
-			activity.name.toLowerCase().endsWith("youtube") ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`;
+		case !!check?.find((x) => x.type === "STREAMING"):
+			check?.find((x) => x.plaform === "YOUTUBE") ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`;
 			break;
 		case !!(!game?.data?.media?.artwork_urls && game?.data?.screenshotUrls):
 			input = game?.data?.screenshotUrls[0];
@@ -5192,11 +5193,72 @@ function DiscordTag({ user, voice }) {
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { display: "flex", flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
 }
 
+// activity_feed/components/now_playing/PresenceTypeStore.tsx
+class PresenceTypeStore extends betterdiscord.Utils.Store {
+	static displayName = "PresenceTypeStore";
+	types = {};
+	constructor() {
+		super();
+		this.types = {
+			0: "PLAYING",
+			1: "STREAMING",
+			2: "LISTENING",
+			3: "WATCHING",
+			4: "CUSTOM",
+			5: "COMPETING"
+		};
+	}
+	getAllActivityTypes(activities) {
+		let f = [];
+		for (let a of activities) {
+			if (!a) return;
+			f.push(this.getActivityType(a));
+		}
+		return f;
+	}
+	getAllActivityProperties(activities, isSpotify) {
+		let d = [];
+		for (let a of activities) {
+			if (!a) return;
+			d.push(this.getActivityProperties(a, isSpotify));
+		}
+		return d;
+	}
+	getActivityType(activity) {
+		if (activity?.activity) activity = activity?.activity;
+		return this.types[activity?.type];
+	}
+	getActivityPlatform(activity, isSpotify) {
+		if (activity?.activity) activity = activity?.activity;
+		switch (true) {
+			case !!(isSpotify || activity?.name?.toLowerCase()?.includes("spotify")):
+				return "SPOTIFY";
+			case !!activity?.platform?.includes("xbox"):
+				return "XBOX";
+			case !!(activity?.platform?.includes("playstation") || activity?.platform?.includes("ps5")):
+				return "PLAYSTATION";
+			case !!activity?.name?.toLowerCase().includes("youtube music"):
+				return "YT_MUSIC";
+			case !!activity?.name?.toLowerCase().endsWith("youtube"):
+				return "YOUTUBE";
+			case !!activity?.name?.toLowerCase().includes("twitch"):
+				return "TWITCH";
+			case !!activity?.name?.toLowerCase().includes("crunchyroll"):
+				return "CRUNCHYROLL";
+		}
+	}
+	getActivityProperties(activity, isSpotify) {
+		return { type: this.getActivityType(activity), platform: this.getActivityPlatform(activity, isSpotify) };
+	}
+}
+const PresenceTypeStore$1 = new PresenceTypeStore();
+
 // activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
 function ActivityType(props) {
 	const { activity, user, game, channel, stream, streamUser, server, type } = props;
 	useStateFromStores([GuildStore], () => GuildStore.getGuild(channel?.guild_id));
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
+	const activityProperties = PresenceTypeStore$1.getActivityProperties(activity);
 	switch (type) {
 		case "REGULAR":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.gameNameWrapper }, BdApi.React.createElement(
@@ -5214,7 +5276,15 @@ function ActivityType(props) {
 				"div",
 				{
 					className: `${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`,
-					onClick: () => activity.name.toLowerCase().includes("spotify") && Common.OpenTrack(activity),
+					onClick: () => {
+						switch (activityProperties?.platform) {
+							case "SPOTIFY":
+							case "YT_MUSIC":
+								return Common.OpenTrack(activity);
+							case "CRUNCHYROLL":
+								return Common.OpenLink({ activity });
+						}
+					},
 					onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
 					onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
 				},
@@ -5863,9 +5933,10 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const streams = card.party.applicationStreams;
 	const isSpotify = card.party.isSpotifyActivity;
 	const filterCheck = activityCheck(activities, isSpotify);
-	const cardGrad = GradGen(currentGame, filterCheck, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
+	const activityProperties = PresenceTypeStore$1.getAllActivityProperties(activities, isSpotify);
+	const cardGrad = GradGen(currentGame, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
 	const game = NewGameStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
-	const splash = SplashGen({ currentGame, data: game }, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, filterCheck);
+	const splash = SplashGen({ currentGame, data: game }, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, activityProperties);
 	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(NowPlayingCardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(NowPlayingCardBody, { activities, user, voice, streams, check: filterCheck, isSpotify, v2Enabled }));
 }
 function WhatsNewCardBuilder({ card, v2Enabled }) {
@@ -5879,7 +5950,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -5955,7 +6026,7 @@ const LastPlayedStore = () => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -6699,56 +6770,6 @@ const settingsItem = layoutUtils.SidebarItem(
 	}
 );
 
-// activity_feed/components/now_playing/PresenceTypeStore.tsx
-class PresenceTypeStore extends betterdiscord.Utils.Store {
-	static displayName = "PresenceTypeStore";
-	types = {};
-	constructor() {
-		super();
-		this.types = {
-			0: "PLAYING",
-			1: "STREAMING",
-			2: "LISTENING",
-			3: "WATCHING",
-			4: "CUSTOM",
-			5: "COMPETING"
-		};
-	}
-	getAllActivityTypes(activities) {
-		let f = [];
-		for (let a of activities) {
-			if (!a) return;
-			f.push(this.getActivityType(a));
-		}
-		return f;
-	}
-	getAllActivityProperties(activities) {
-		let d = [];
-		for (let a of activities) {
-			if (!a) return;
-			d.push(this.getActivityProperties(a));
-		}
-		return d;
-	}
-	getActivityType(activity) {
-		return this.types[activity.type];
-	}
-	getActivityPlatform(activity, isSpotify) {
-		switch (true) {
-			case !!(isSpotify || activity?.name?.toLowerCase()?.includes("spotify")):
-				return "SPOTIFY";
-			case !!activity?.platform?.includes("xbox"):
-				return "XBOX";
-			case !!(activity?.platform?.includes("playstation") || activity?.platform?.includes("ps5")):
-				return "PLAYSTATION";
-		}
-	}
-	getActivityProperties(activity) {
-		return { type: this.getActivityType(activity), platform: this.getActivityPlatform(activity) };
-	}
-}
-const PresenceTypeStore$1 = new PresenceTypeStore();
-
 // index.ts
 function useSelectedState() {
 	return Router.useLocation().pathname.startsWith("/activity-feed");
@@ -6782,7 +6803,7 @@ class ActivityFeed {
 		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
 		}
-		await betterdiscord.Utils.forceLoad(betterdiscord.Webpack.getBySource("OPEN_DIRECT_MESSAGE", "friends-popout", { raw: true }).id);
+		await betterdiscord.Utils.forceLoad(betterdiscord.Webpack.getBySource("handleUserContextMenu", { raw: true }).id);
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		setInterval(async () => {

@@ -3,6 +3,7 @@ import { activityCheck, GradGen, SplashGen } from "@common/methods/common";
 import { ApplicationStore, NewGameStore, GameStore } from "@modules/stores";
 import { NowPlayingCardHeader, NowPlayingCardBody, WhatsNewCardHeader, WhatsNewCardBody } from "./card_shop/index";
 import NowPlayingClasses from "./NowPlaying.module.css";
+import PresenceTypeStore from "./PresenceTypeStore";
 
 export function NowPlayingCardBuilder({card, v2Enabled}) {
     const user = card.party.priorityMembers[0].user;
@@ -12,7 +13,8 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const streams = card.party.applicationStreams;
     const isSpotify = card.party.isSpotifyActivity;
     const filterCheck = activityCheck(activities, isSpotify);
-    const cardGrad = GradGen(currentGame, filterCheck, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
+    const activityProperties = PresenceTypeStore.getAllActivityProperties(activities, isSpotify);
+    const cardGrad = GradGen(currentGame, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
 
     (async () => {
         if (!NewGameStore.getGame(currentGame?.id)) {
@@ -21,7 +23,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     })
     
     const game = NewGameStore.getGame(currentGame?.id) || (ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id));
-    const splash = SplashGen({currentGame: currentGame, data: game}, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, filterCheck);
+    const splash = SplashGen({currentGame: currentGame, data: game}, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, activityProperties);
 
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>

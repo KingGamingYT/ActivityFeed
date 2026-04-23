@@ -3,11 +3,13 @@ import { GuildStore, useStateFromStores } from '@modules/stores';
 import { TimeClock, InactiveTimeClock } from '@common/methods/common';
 import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
+import PresenceTypeStore from "@now_playing/PresenceTypeStore";
 
 function ActivityType(props) {
     const { activity, user, game, channel, stream, streamUser, server, type } = props
     const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
+    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
 
     switch (type) {
         case "REGULAR": return (
@@ -29,7 +31,10 @@ function ActivityType(props) {
             <>
                 <div 
                     className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
-                    onClick={() => activity.name.toLowerCase().includes('spotify') && Common.OpenTrack(activity)}
+                    onClick={() => {switch(activityProperties?.platform) {
+                        case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
+                        case "CRUNCHYROLL": return Common.OpenLink({activity})
+                    }}}
                     onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
                     onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
                     >{activity.details || activity?.state}

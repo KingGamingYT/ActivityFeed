@@ -50,7 +50,7 @@ export default class ActivityFeed {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
         }
-        await Utils.forceLoad(Webpack.getBySource('OPEN_DIRECT_MESSAGE', 'friends-popout', {raw: true}).id);
+        await Utils.forceLoad(Webpack.getBySource('handleUserContextMenu', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
         setInterval(async () => {

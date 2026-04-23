@@ -1,8 +1,11 @@
+import { ReactUtils } from "betterdiscord";
 import { Common } from "@modules/common";
+import { UserStore } from "@modules/stores";
 import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
 import { RichImageAsset, SpotifyAsset, GameIconAsset, XboxImageAsset, TwitchImageAsset } from "./common/ActivityAssets";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
+import PresenceTypeStore from "../../PresenceTypeStore";
 
 export function RegularActivityBuilder({activity, user, game, players, server, check, v2Enabled}) {
     return (
@@ -31,6 +34,8 @@ export function RegularTwitchActivityBuilder({user, activity, game}) {
 }
 
 export function RichActivityBuilder({user, activity, v2Enabled}) {
+    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
+
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`} style={{ flex: "1 1 auto" }}>
             <div className={`${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}`}>
@@ -45,9 +50,12 @@ export function RichActivityBuilder({user, activity, v2Enabled}) {
                                 }
                             })()}
                             tooltipText={activity.assets.large_text}
-                            onClick={() => {activity.name.toLowerCase().includes('spotify') && Common.OpenAlbum(activity, user.id);}}
-                            onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                            onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                            onClick={() => {switch(activityProperties?.platform) {
+                                case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
+                                case "CRUNCHYROLL": return ReactUtils.wrapInHooks(Common.OpenLink)({user, currentUser: UserStore.getCurrentUser(), activity})()
+                            }}}
+                            onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                            onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                             type="Large"
                         />
                         {activity?.assets && activity?.assets.small_image && <RichImageAsset

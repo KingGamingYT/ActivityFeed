@@ -1,5 +1,6 @@
+import { ReactUtils } from "betterdiscord";
 import { Common } from '@modules/common';
-import { GuildStore, useStateFromStores } from '@modules/stores';
+import { GuildStore, UserStore, useStateFromStores } from '@modules/stores';
 import { TimeClock, InactiveTimeClock } from '@common/methods/common';
 import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
@@ -33,17 +34,17 @@ function ActivityType(props) {
                     className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
                     onClick={() => {switch(activityProperties?.platform) {
                         case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
-                        case "CRUNCHYROLL": return Common.OpenLink({activity})
+                        case "CRUNCHYROLL": return ReactUtils.wrapInHooks(Common.OpenLink)({user, currentUser: UserStore.getCurrentUser(), activity})()
                     }}}
-                    onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                    onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                    onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
                     >{activity.details || activity?.state}
                 </div>
                 {activity?.details && <div 
                     className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
-                    onClick={() => activity.name.toLowerCase().includes('spotify') && Common.OpenArtist(activity, user.id, 0)}
-                    onMouseOver={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                    onClick={() => activityProperties?.platform === "SPOTIFY" && Common.OpenArtist(activity, user.id, 0)}
+                    onMouseOver={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                    onMouseLeave={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
                     >{activity?.state}
                 </div>}
                 {

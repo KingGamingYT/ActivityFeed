@@ -5282,20 +5282,20 @@ function ActivityType(props) {
 							case "YT_MUSIC":
 								return Common.OpenTrack(activity);
 							case "CRUNCHYROLL":
-								return Common.OpenLink({ activity });
+								return betterdiscord.ReactUtils.wrapInHooks(Common.OpenLink)({ user, currentUser: UserStore.getCurrentUser(), activity })();
 						}
 					},
-					onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
-					onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
+					onMouseOver: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
+					onMouseLeave: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
 				},
 				activity.details || activity?.state
 			), activity?.details && BdApi.React.createElement(
 				"div",
 				{
 					className: `${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`,
-					onClick: () => activity.name.toLowerCase().includes("spotify") && Common.OpenArtist(activity, user.id, 0),
-					onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
-					onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
+					onClick: () => activityProperties?.platform === "SPOTIFY" && Common.OpenArtist(activity, user.id, 0),
+					onMouseOver: (e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
+					onMouseLeave: (e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
 				},
 				activity?.state
 			), activity?.timestamps?.end ? BdApi.React.createElement("div", { className: "mediaProgressBarContainer" }, BdApi.React.createElement(Common.MediaProgressBar, { start: activity?.timestamps?.start || activity?.created_at, end: activity?.timestamps?.end })) : BdApi.React.createElement(Common.ActivityTimer, { activity }));
@@ -5586,6 +5586,7 @@ function RegularTwitchActivityBuilder({ user, activity, game }) {
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.twitchActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(GameIconAsset, { url: activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`, id: activity?.application_id, name: game?.name }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`, activity, game, type: "TWITCH" }), BdApi.React.createElement(RichCardTrailing, { activity, user }));
 }
 function RichActivityBuilder({ user, activity, v2Enabled }) {
+	const activityProperties = PresenceTypeStore$1.getActivityProperties(activity);
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.assets}` }, BdApi.React.createElement(
 		RichImageAsset,
 		{
@@ -5601,10 +5602,16 @@ function RichActivityBuilder({ user, activity, v2Enabled }) {
 			})(),
 			tooltipText: activity.assets.large_text,
 			onClick: () => {
-				activity.name.toLowerCase().includes("spotify") && Common.OpenAlbum(activity, user.id);
+				switch (activityProperties?.platform) {
+					case "SPOTIFY":
+					case "YT_MUSIC":
+						return Common.OpenTrack(activity);
+					case "CRUNCHYROLL":
+						return betterdiscord.ReactUtils.wrapInHooks(Common.OpenLink)({ user, currentUser: UserStore.getCurrentUser(), activity })();
+				}
 			},
-			onMouseOver: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
-			onMouseLeave: (e) => activity.name.toLowerCase().includes("spotify") && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
+			onMouseOver: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
 			type: "Large"
 		}
 	), activity?.assets && activity?.assets.small_image && BdApi.React.createElement(
@@ -5950,7 +5957,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = (() => {
+const LastPlayedStore = () => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -6026,7 +6033,7 @@ const LastPlayedStore = (() => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-});
+};
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx

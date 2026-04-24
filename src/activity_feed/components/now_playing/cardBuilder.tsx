@@ -12,7 +12,6 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const voice = card.party.voiceChannels;
     const streams = card.party.applicationStreams;
     const isSpotify = card.party.isSpotifyActivity;
-    const filterCheck = activityCheck(activities, isSpotify);
     const activityProperties = PresenceTypeStore.getAllActivityProperties(activities, isSpotify);
     const cardGrad = GradGen(currentGame, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
 
@@ -28,7 +27,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>
             <NowPlayingCardHeader card={card} activities={activities} game={currentGame} splash={splash} user={user} voice={voice} isSpotify={isSpotify} />
-            <NowPlayingCardBody activities={activities} user={user} voice={voice} streams={streams} check={filterCheck} isSpotify={isSpotify} v2Enabled={v2Enabled} />
+            <NowPlayingCardBody activities={activities} user={user} voice={voice} streams={streams} isSpotify={isSpotify} v2Enabled={v2Enabled} />
         </div>
     )
 }

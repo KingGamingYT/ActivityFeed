@@ -4,6 +4,7 @@ import AvatarWithPopoutWrapper from "./AvatarWithPopoutWrapper";
 import Tooltip from "@activity_feed/common/components/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
+import PresenceTypeStore from "@now_playing/PresenceTypeStore";
 
 interface RegularButtons {
     activity: Object,
@@ -65,8 +66,9 @@ function PartyMemberListBuilder({activity, users}) {
     )
 }
 
-export function RegularCardTrailing({activity, user, server, players, check, v2Enabled}: RegularButtons) {
+export function RegularCardTrailing({activity, user, server, players, v2Enabled}: RegularButtons) {
     const [width, height] = useWindowSize();
+    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
 
     if (width <= 1240 && width >= 1200) return;
 
@@ -79,13 +81,13 @@ export function RegularCardTrailing({activity, user, server, players, check, v2E
                 guildId={server?.id}
                 size="SIZE_32"
             />}
-            {check?.spotify !== 0 && <div className={`${NowPlayingClasses.serviceButtonWrapper}`}>
-                <Common.SpotifyButtons user={user} activity={activity} />
+            {(activityProperties.platform === "SPOTIFY") && <div className={`${NowPlayingClasses.serviceButtonWrapper}`}>
+                
             </div>}
-            {!activity?.name.includes("YouTube Music") && activity?.assets ? null : <div 
+            {activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : <div 
                 className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
                 style={{ flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}>
-                {v2Enabled && activity?.party && activity?.party?.size ? null : <Common.ActivityButtons user={user} activity={activity} />}
+                {v2Enabled && activity?.party && activity?.party?.size ? null : null}
             </div>}
         </>
     )
@@ -93,12 +95,14 @@ export function RegularCardTrailing({activity, user, server, players, check, v2E
 
 export function RichCardTrailing({activity, user, v2Enabled}: RichButtons) {
     const [width, height] = useWindowSize();
+    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
+
     return (
         <>
-            {(width <= 1240 && width >= 1200) && !activity?.name.includes("YouTube Music") && <div 
+            {(width <= 1240 && width >= 1200) && activityProperties.platform !== "YT_MUSIC" && <div 
                 className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
                 style={{ flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}>
-                {v2Enabled && activity?.party && activity?.party?.size ? null : <Common.ActivityButtons user={user} activity={activity} />}
+                {v2Enabled && activity?.party && activity?.party?.size ? null : null}
             </div>}
         </>
     )
@@ -118,7 +122,7 @@ export function VoiceCardTrailing({members, server, channel}) {
                 channelId={channel.id}
                 size="SIZE_32"
             />
-            <Common.CallButtons channel={channel} />
+            
         </>
     )
 
@@ -135,7 +139,7 @@ export function PartyFooter({party, players, user, activity}) {
                     style={{ flex: "1 1 100%" }}>
                     {Common.intl.intl.formatToPlainString(Common.intl.t['gLu7NU'], { partySize: party.size[0], maxPartySize: party.size[1]})}
                 </div>
-                <Common.JoinButton user={user} activity={activity} />
+                
             </div>
         </>
     )

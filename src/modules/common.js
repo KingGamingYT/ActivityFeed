@@ -14,6 +14,7 @@ const Filters = [
     { name: "CaretClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('caret', 'caret--center') },
     { name: "CardPopout", filter: /* @__PURE__ */ Webpack.Filters.byStrings('party', 'close', 'onSelect'), searchExports: true },
     { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write', 'Clipboard API not supported.'), searchExports: true },
+    { name: "ClydeIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M19.73'), searchExports: true },
     { name: "DMSidebar", filter: /* @__PURE__ */ Webpack.Filters.bySource(".A.CONTACTS_LIST") },
     { name: "Endpoints", filter: /* @__PURE__ */ Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("fetchApplication") },
@@ -37,6 +38,7 @@ const Filters = [
     { name: "Lodash", filter: /* @__PURE__ */ Webpack.Filters.byKeys('throttle') },
     { name: "MediaProgressBar", filter: /* @__PURE__ */ Webpack.Filters.byStrings('start', 'end', 'duration', 'percentage'), searchExports: true },
     { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
+    { name: "NintendoSwitchNeutralIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M10.04'), searchExports: true },
     { name: "ModalRoot", filter: x => x.Modal },
     { name: "OpenAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.ALBUM', '.EPISODE'), searchExports: true },
     { name: "OpenArtist", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
@@ -47,7 +49,6 @@ const Filters = [
     { name: "OpenTrack", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.TRACK', 'isProtocolRegistered'), searchExports: true },
     { name: "OpenUserSettings", filter: x=> x.openUserSettings },
     { name: "Popout", filter: /* @__PURE__ */ Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
-    { name: "PopoutContainer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('type', 'position', 'data-popout-animating'), searchExports: true },
     { name: "PopoverClasses", filter: x => x.graphic && x.closeButton },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
     { name: "ReactSpring", filter: /* @__PURE__ */ Webpack.Filters.byKeys('useSpring', 'a') },
@@ -65,6 +66,7 @@ const Filters = [
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
     { name: "UserProfileWrapperComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('onClickContainer:', 'user:', '.isNonUserBot()?') },
     { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId', 'getNickname') },
+    { name: "XboxIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M10.9'), searchExports: true },
     { name: "ManaSwitch", filter: Webpack.Filters.byStrings('SWITCH_BACKGROUND_DEFAULT'), searchExports: true }
 ]
 
@@ -136,3 +138,5 @@ export const ModalSystem = /* @__PURE__ */ Webpack.getMangled(".modalKey?", {
 export const FetchGameUtils = Webpack.getMangled('Error("Failed to fetch game data")', {
     fetchMultipleGames: BdApi.Webpack.Filters.byStrings('isLoading', 'Array.isArray')
 })
+
+export const SettingsRoot = Webpack.waitForModule((m) => m?.key === "$Root", { searchExports: true, searchDefault: false });

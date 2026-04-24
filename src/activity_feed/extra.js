@@ -16,7 +16,7 @@ const styles = Object.assign({
         contents: Webpack.getByKeys('colorPrimary', 'grow').contents,
         popoutContentWrapper: Webpack.getByKeys('popoutContentWrapper').popoutContentWrapper
     },
-    Object.getOwnPropertyDescriptors(Webpack.getByKeys('itemCard')),
+
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('tabularNumbers')),
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('bar', 'container', 'progress')),
     Object.getOwnPropertyDescriptors(Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1)),

@@ -113,21 +113,21 @@ export default {
         discord: {
             name: "Discord",
             note: "News from Discord's blog.",
-            icon: Common.Icons.ClydeIcon,
+            icon: Common.ClydeIcon,
             color: "var(--background-brand)",
             enabled: true
         },
         nintendo: {
             name: "Nintendo",
             note: "Nintendo news sourced from nintendoeverything.com.",
-            icon: Common.Icons.NintendoSwitchNeutralIcon,
+            icon: Common.NintendoSwitchNeutralIcon,
             color: "rgba(230, 0, 18, 1)",
             enabled: false
         },
         xbox: {
             name: "Xbox",
             note: "News from Xbox's blog.",
-            icon: Common.Icons.XboxNeutralIcon,
+            icon: Common.XboxNeutralIcon,
             color: "var(--platform-xbox)",
             enabled: false
         }

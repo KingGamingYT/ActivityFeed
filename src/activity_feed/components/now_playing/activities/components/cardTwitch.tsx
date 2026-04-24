@@ -1,10 +1,12 @@
 import { RegularTwitchActivityBuilder, RichTwitchActivityBuilder } from "./InnerBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
+import PresenceTypeStore from "../../PresenceTypeStore";
 
-export function TwitchCard({user, activity, check}) {
-    if (!check?.streaming) return;
-    const currentGame = activity?.game;
+export function TwitchCard({user, activity}) {
     const currentActivity = activity?.activity;
+    const activityProperties = PresenceTypeStore.getActivityProperties(currentActivity);
+    if (!currentActivity || !activityProperties?.type === "STREAMING") return;
+    const currentGame = activity?.game;
 
     return (
         <>

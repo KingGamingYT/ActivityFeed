@@ -5,20 +5,20 @@ import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
 import { RichImageAsset, SpotifyAsset, GameIconAsset, XboxImageAsset, TwitchImageAsset } from "./common/ActivityAssets";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import PresenceTypeStore from "../../PresenceTypeStore";
 
-export function RegularActivityBuilder({activity, user, game, players, server, check, v2Enabled}) {
+export function RegularActivityBuilder({activity, activityProperties, user, game, players, server, v2Enabled}) {
+    console.log(activityProperties)
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.activity}`} style={{ flex: "1 1 auto" }}>
             {(() => {
-                switch (true) {
-                    case !! check?.spotify: return <SpotifyAsset activity={activity} user={user} />
-                    case !! activity?.platform?.includes('xbox'): return <XboxImageAsset url={'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'}/>
+                switch (activityProperties.platform) {
+                    case "SPOTIFY": return <SpotifyAsset activity={activity} user={user} />
+                    case "XBOX": return <XboxImageAsset url={'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'}/>
                     default: return <GameIconAsset url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`} id={activity?.application_id} name={game?.name} />
                 }
             })()}
             <FlexInfo className={NowPlayingClasses.gameInfo} activity={activity} game={game} type="REGULAR" />
-            <RegularCardTrailing activity={activity} user={user} server={server} players={players} check={check} v2Enabled={v2Enabled} />
+            <RegularCardTrailing activity={activity} user={user} server={server} players={players} v2Enabled={v2Enabled} />
         </div>
     )
 }
@@ -33,8 +33,7 @@ export function RegularTwitchActivityBuilder({user, activity, game}) {
     )
 }
 
-export function RichActivityBuilder({user, activity, v2Enabled}) {
-    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
+export function RichActivityBuilder({user, activity, activityProperties, v2Enabled}) {
 
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`} style={{ flex: "1 1 auto" }}>

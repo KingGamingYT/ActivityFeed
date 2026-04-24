@@ -73,9 +73,9 @@ export function FeedOverflowBuilder({application, gameId, articleUrl, position})
             targetElementRef={refDOM}
             clickTrap={true}
             onRequestClose={() => setShowPopout(false)}
-            renderPopout={() => <Common.PopoutContainer position={position}>
+            renderPopout={() => 
                 <FeedPopout application={application} gameId={gameId} articleUrl={articleUrl} close={() => setShowPopout(false) } />
-            </Common.PopoutContainer>}
+            }
             position={position}
             shouldShow={showPopout}
         >{(props) => <div

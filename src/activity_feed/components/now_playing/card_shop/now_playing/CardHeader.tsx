@@ -20,7 +20,7 @@ function HeaderActions({card, user}) {
                 targetElementRef={refDOM}
                 clickTrap={true}
                 onRequestClose={() => setShowPopout(false)}
-                renderPopout={() => <Common.PopoutContainer position="left"><Common.CardPopout party={card.party} close={() => setShowPopout(false)} /></Common.PopoutContainer>}
+                renderPopout={() => <Common.CardPopout party={card.party} close={() => setShowPopout(false)} />}
                 position="left"
                 shouldShow={showPopout}>
                 {(props) => <span

@@ -49,6 +49,7 @@ const Filters = [
 	{ name: "CaretClasses", filter: betterdiscord.Webpack.Filters.byKeys("caret", "caret--center") },
 	{ name: "CardPopout", filter: betterdiscord.Webpack.Filters.byStrings("party", "close", "onSelect"), searchExports: true },
 	{ name: "Clipboard", filter: betterdiscord.Webpack.Filters.byStrings("navigator.clipboard.write", "Clipboard API not supported."), searchExports: true },
+	{ name: "ClydeIcon", filter: betterdiscord.Webpack.Filters.byStrings("colorClass", "M19.73"), searchExports: true },
 	{ name: "DMSidebar", filter: betterdiscord.Webpack.Filters.bySource(".A.CONTACTS_LIST") },
 	{ name: "Endpoints", filter: betterdiscord.Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
 	{ name: "FetchApplications", filter: betterdiscord.Webpack.Filters.byKeys("fetchApplication") },
@@ -72,6 +73,7 @@ const Filters = [
 	{ name: "Lodash", filter: betterdiscord.Webpack.Filters.byKeys("throttle") },
 	{ name: "MediaProgressBar", filter: betterdiscord.Webpack.Filters.byStrings("start", "end", "duration", "percentage"), searchExports: true },
 	{ name: "ModalAccessUtils", filter: (x) => x.openUserProfileModal },
+	{ name: "NintendoSwitchNeutralIcon", filter: betterdiscord.Webpack.Filters.byStrings("colorClass", "M10.04"), searchExports: true },
 	{ name: "ModalRoot", filter: (x) => x.Modal },
 	{ name: "OpenAlbum", filter: betterdiscord.Webpack.Filters.byStrings(".ALBUM", ".EPISODE"), searchExports: true },
 	{ name: "OpenArtist", filter: betterdiscord.Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
@@ -82,7 +84,6 @@ const Filters = [
 	{ name: "OpenTrack", filter: betterdiscord.Webpack.Filters.byStrings(".TRACK", "isProtocolRegistered"), searchExports: true },
 	{ name: "OpenUserSettings", filter: (x) => x.openUserSettings },
 	{ name: "Popout", filter: betterdiscord.Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
-	{ name: "PopoutContainer", filter: betterdiscord.Webpack.Filters.byStrings("type", "position", "data-popout-animating"), searchExports: true },
 	{ name: "PopoverClasses", filter: (x) => x.graphic && x.closeButton },
 	{ name: "PositionClasses", filter: betterdiscord.Webpack.Filters.byKeys("noWrap") },
 	{ name: "ReactSpring", filter: betterdiscord.Webpack.Filters.byKeys("useSpring", "a") },
@@ -100,6 +101,7 @@ const Filters = [
 	{ name: "UseStreamPreviewURL", filter: betterdiscord.Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
 	{ name: "UserProfileWrapperComponent", filter: betterdiscord.Webpack.Filters.byStrings("onClickContainer:", "user:", ".isNonUserBot()?") },
 	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId", "getNickname") },
+	{ name: "XboxIcon", filter: betterdiscord.Webpack.Filters.byStrings("colorClass", "M10.9"), searchExports: true },
 	{ name: "ManaSwitch", filter: betterdiscord.Webpack.Filters.byStrings("SWITCH_BACKGROUND_DEFAULT"), searchExports: true }
 ];
 const bulkData = betterdiscord.Webpack.getBulk(...Filters);
@@ -162,6 +164,7 @@ const ModalSystem = betterdiscord.Webpack.getMangled(".modalKey?", {
 const FetchGameUtils = betterdiscord.Webpack.getMangled('Error("Failed to fetch game data")', {
 	fetchMultipleGames: BdApi.Webpack.Filters.byStrings("isLoading", "Array.isArray")
 });
+const SettingsRoot = betterdiscord.Webpack.waitForModule((m) => m?.key === "$Root", { searchExports: true, searchDefault: false });
 
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
@@ -1826,55 +1829,6 @@ function SplashGen(game, isSpotify, activity, voice, stream, check) {
 	}
 	return input || null;
 }
-function activityCheck(activities, isSpotify) {
-	if (!activities) return;
-	let pass = {
-		playing: 0,
-		xbox: 0,
-		playstation: 0,
-		streaming: 0,
-		listening: 0,
-		spotify: 0,
-		watching: 0,
-		competing: 0,
-		custom: 0
-	};
-	for (let i = 0; i < activities.length; i++) {
-		if (!activities[i]) {
-			return;
-		}
-		switch (activities[i]?.activity?.type) {
-			case 0:
-				pass.playing = 1;
-				break;
-			case 1:
-				pass.streaming = 1;
-				break;
-			case 2:
-				pass.listening = 1;
-				break;
-			case 3:
-				pass.watching = 1;
-				break;
-			case 4:
-				pass.custom = 1;
-				break;
-			case 5:
-				pass.competing = 1;
-				break;
-		}
-		if (activities[i]?.activity?.platform?.includes("xbox")) {
-			pass.xbox = 1;
-		}
-		if (activities[i]?.activity?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
-			pass.playstation = 1;
-		}
-		if (isSpotify) {
-			pass.spotify = 1;
-		}
-	}
-	return pass;
-}
 function useWindowSize() {
 	const [size, setSize] = react.useState([0, 0]);
 	react.useLayoutEffect(() => {
@@ -2032,21 +1986,21 @@ const settings = {
 		discord: {
 			name: "Discord",
 			note: "News from Discord's blog.",
-			icon: Common.Icons.ClydeIcon,
+			icon: Common.ClydeIcon,
 			color: "var(--background-brand)",
 			enabled: true
 		},
 		nintendo: {
 			name: "Nintendo",
 			note: "Nintendo news sourced from nintendoeverything.com.",
-			icon: Common.Icons.NintendoSwitchNeutralIcon,
+			icon: Common.NintendoSwitchNeutralIcon,
 			color: "rgba(230, 0, 18, 1)",
 			enabled: false
 		},
 		xbox: {
 			name: "Xbox",
 			note: "News from Xbox's blog.",
-			icon: Common.Icons.XboxNeutralIcon,
+			icon: Common.XboxNeutralIcon,
 			color: "var(--platform-xbox)",
 			enabled: false
 		}
@@ -3711,7 +3665,7 @@ function FeedOverflowBuilder({ application, gameId, articleUrl, position }) {
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position }, BdApi.React.createElement(FeedPopout, { application, gameId, articleUrl, close: () => setShowPopout(false) })),
+			renderPopout: () => BdApi.React.createElement(FeedPopout, { application, gameId, articleUrl, close: () => setShowPopout(false) }),
 			position,
 			shouldShow: showPopout
 		},
@@ -5390,8 +5344,9 @@ function PartyMemberListBuilder({ activity, users }) {
 		}
 	), totalCount > 10 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.emptyUser} ${NowPlayingClasses.userOverflow}`, style: { width: userOverflowCount > 9 ? "22px" : "19px", borderRadius: userOverflowCount > 9 && "16px" } }, `+${userOverflowCount}`));
 }
-function RegularCardTrailing({ activity, user, server, players, check, v2Enabled }) {
+function RegularCardTrailing({ activity, user, server, players, v2Enabled }) {
 	const [width, height] = useWindowSize();
+	const activityProperties = PresenceTypeStore$1.getActivityProperties(activity);
 	if (width <= 1240 && width >= 1200) return;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, server && BdApi.React.createElement(
 		Common.VoiceList,
@@ -5402,24 +5357,25 @@ function RegularCardTrailing({ activity, user, server, players, check, v2Enabled
 			guildId: server?.id,
 			size: "SIZE_32"
 		}
-	), check?.spotify !== 0 && BdApi.React.createElement("div", { className: `${NowPlayingClasses.serviceButtonWrapper}` }, BdApi.React.createElement(Common.SpotifyButtons, { user, activity })), !activity?.name.includes("YouTube Music") && activity?.assets ? null : BdApi.React.createElement(
+	), activityProperties.platform === "SPOTIFY" && BdApi.React.createElement("div", { className: `${NowPlayingClasses.serviceButtonWrapper}` }), activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : BdApi.React.createElement(
 		"div",
 		{
 			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }
 		},
-		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common.ActivityButtons, { user, activity })
+		v2Enabled && activity?.party && activity?.party?.size ? null : null
 	));
 }
 function RichCardTrailing({ activity, user, v2Enabled }) {
 	const [width, height] = useWindowSize();
-	return BdApi.React.createElement(BdApi.React.Fragment, null, width <= 1240 && width >= 1200 && !activity?.name.includes("YouTube Music") && BdApi.React.createElement(
+	const activityProperties = PresenceTypeStore$1.getActivityProperties(activity);
+	return BdApi.React.createElement(BdApi.React.Fragment, null, width <= 1240 && width >= 1200 && activityProperties.platform !== "YT_MUSIC" && BdApi.React.createElement(
 		"div",
 		{
 			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
 			style: { flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }
 		},
-		v2Enabled && activity?.party && activity?.party?.size ? null : BdApi.React.createElement(Common.ActivityButtons, { user, activity })
+		v2Enabled && activity?.party && activity?.party?.size ? null : null
 	));
 }
 function VoiceCardTrailing({ members, server, channel }) {
@@ -5435,7 +5391,7 @@ function VoiceCardTrailing({ members, server, channel }) {
 			channelId: channel.id,
 			size: "SIZE_32"
 		}
-	), BdApi.React.createElement(Common.CallButtons, { channel }));
+	));
 }
 function PartyFooter({ party, players, user, activity }) {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.sectionDivider, style: { margin: "8px 0 8px 0" } }), BdApi.React.createElement("div", { className: NowPlayingClasses.partyStatusWrapper }, BdApi.React.createElement(PartyMemberListBuilder, { activity, users: players }), BdApi.React.createElement(
@@ -5445,7 +5401,7 @@ function PartyFooter({ party, players, user, activity }) {
 			style: { flex: "1 1 100%" }
 		},
 		Common.intl.intl.formatToPlainString(Common.intl.t["gLu7NU"], { partySize: party.size[0], maxPartySize: party.size[1] })
-	), BdApi.React.createElement(Common.JoinButton, { user, activity })));
+	)));
 }
 
 // activity_feed/components/now_playing/activities/components/common/ActivityAssets.tsx
@@ -5570,23 +5526,23 @@ function VoiceGuildAsset({ channel, server, streamUser }) {
 }
 
 // activity_feed/components/now_playing/activities/components/InnerBuilder.tsx
-function RegularActivityBuilder({ activity, user, game, players, server, check, v2Enabled }) {
+function RegularActivityBuilder({ activity, activityProperties, user, game, players, server, v2Enabled }) {
+	console.log(activityProperties);
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.activity}`, style: { flex: "1 1 auto" } }, (() => {
-		switch (true) {
-			case !!check?.spotify:
+		switch (activityProperties.platform) {
+			case "SPOTIFY":
 				return BdApi.React.createElement(SpotifyAsset, { activity, user });
-			case !!activity?.platform?.includes("xbox"):
+			case "XBOX":
 				return BdApi.React.createElement(XboxImageAsset, { url: "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png" });
 			default:
 				return BdApi.React.createElement(GameIconAsset, { url: `https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`, id: activity?.application_id, name: game?.name });
 		}
-	})(), BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.gameInfo, activity, game, type: "REGULAR" }), BdApi.React.createElement(RegularCardTrailing, { activity, user, server, players, check, v2Enabled }));
+	})(), BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.gameInfo, activity, game, type: "REGULAR" }), BdApi.React.createElement(RegularCardTrailing, { activity, user, server, players, v2Enabled }));
 }
 function RegularTwitchActivityBuilder({ user, activity, game }) {
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.twitchActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(GameIconAsset, { url: activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`, id: activity?.application_id, name: game?.name }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`, activity, game, type: "TWITCH" }), BdApi.React.createElement(RichCardTrailing, { activity, user }));
 }
-function RichActivityBuilder({ user, activity, v2Enabled }) {
-	const activityProperties = PresenceTypeStore$1.getActivityProperties(activity);
+function RichActivityBuilder({ user, activity, activityProperties, v2Enabled }) {
 	return BdApi.React.createElement("div", { className: `${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}` }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.assets}` }, BdApi.React.createElement(
 		RichImageAsset,
 		{
@@ -5676,28 +5632,30 @@ function ActivityCardContextMenu({ currentActivity, currentGame }) {
 			return;
 	}
 }
-function ActivityCard({ user, activities, currentActivity, currentGame, players, server, check, v2Enabled }) {
+function ActivityCard({ user, activities, activityProperties, currentActivity, currentGame, players, server, v2Enabled }) {
 	if (currentActivity.type == 1) return;
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(ActivityCardContextMenu, { ...props, currentActivity, currentGame })) }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, game: currentGame, players, server, check, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(ActivityCardContextMenu, { ...props, currentActivity, currentGame })) }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, activityProperties, game: currentGame, players, server, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, activityProperties, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardActivityWrapper.tsx
-function ActivityCardWrapper({ user, activities, voice, streams, check, v2Enabled }) {
+function ActivityCardWrapper({ user, activities, voice, streams, v2Enabled }) {
 	if (!activities) return;
 	return activities.map((activity) => {
 		const currentActivity = activity?.activity || streams[0].activity;
 		const currentGame = activity?.game || GameStore.getDetectableGame(GameStore.searchGamesByName(streams[0].activity.name)[0]);
 		const players = activity.playingMembers;
 		const server = voice[0]?.guild;
-		return BdApi.React.createElement(ActivityCard, { user, activities, currentActivity, currentGame, players, server, check, v2Enabled });
+		const activityProperties = PresenceTypeStore$1.getActivityProperties(currentActivity);
+		return BdApi.React.createElement(ActivityCard, { user, activities, activityProperties, currentActivity, currentGame, players, server, v2Enabled });
 	});
 }
 
 // activity_feed/components/now_playing/activities/components/CardTwitch.tsx
-function TwitchCard({ user, activity, check }) {
-	if (!check?.streaming) return;
-	const currentGame = activity?.game;
+function TwitchCard({ user, activity }) {
 	const currentActivity = activity?.activity;
+	const activityProperties = PresenceTypeStore$1.getActivityProperties(currentActivity);
+	if (!currentActivity || !activityProperties?.type === "STREAMING") return;
+	const currentGame = activity?.game;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(RegularTwitchActivityBuilder, { user, activity: currentActivity, game: currentGame }), BdApi.React.createElement(RichTwitchActivityBuilder, { activity: currentActivity }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
 }
 
@@ -5764,8 +5722,8 @@ function VoiceCard({ activities, voice, streams }) {
 }
 
 // activity_feed/components/now_playing/card_shop/now_playing/CardBody.tsx
-function NowPlayingCardBody({ activities, user, voice, streams, check, isSpotify, v2Enabled }) {
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), BdApi.React.createElement(TwitchCard, { user, activity: activities.find((entry) => entry.activity?.type == 1) || streams.find((entry) => entry.activity?.type == 1), check }), BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, check, v2Enabled })))));
+function NowPlayingCardBody({ activities, user, voice, streams, isSpotify, v2Enabled }) {
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement("div", { className: `${NowPlayingClasses.gameBody} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`, style: { flex: "1 1 auto" } }, BdApi.React.createElement(VoiceCard, { activities, voice, streams }), BdApi.React.createElement(TwitchCard, { user, activity: activities.find((entry) => entry.activity?.type == 1) || streams.find((entry) => entry.activity?.type == 1) }), BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, v2Enabled })))));
 }
 
 // activity_feed/components/now_playing/activities/components/common/MessageButton.tsx
@@ -5797,7 +5755,7 @@ function HeaderActions$1({ card, user }) {
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common.PopoutContainer, { position: "left" }, BdApi.React.createElement(Common.CardPopout, { party: card.party, close: () => setShowPopout(false) })),
+			renderPopout: () => BdApi.React.createElement(Common.CardPopout, { party: card.party, close: () => setShowPopout(false) }),
 			position: "left",
 			shouldShow: showPopout
 		},
@@ -5939,12 +5897,11 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const voice = card.party.voiceChannels;
 	const streams = card.party.applicationStreams;
 	const isSpotify = card.party.isSpotifyActivity;
-	const filterCheck = activityCheck(activities, isSpotify);
 	const activityProperties = PresenceTypeStore$1.getAllActivityProperties(activities, isSpotify);
 	const cardGrad = GradGen(currentGame, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
 	const game = NewGameStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
 	const splash = SplashGen({ currentGame, data: game }, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, activityProperties);
-	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(NowPlayingCardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(NowPlayingCardBody, { activities, user, voice, streams, check: filterCheck, isSpotify, v2Enabled }));
+	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(NowPlayingCardHeader, { card, activities, game: currentGame, splash, user, voice, isSpotify }), BdApi.React.createElement(NowPlayingCardBody, { activities, user, voice, streams, isSpotify, v2Enabled }));
 }
 function WhatsNewCardBuilder({ card, v2Enabled }) {
 	const players = card.players;
@@ -5957,7 +5914,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -6033,7 +5990,7 @@ const LastPlayedStore = () => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -6086,7 +6043,7 @@ function TabBaseBuilder() {
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
 	return [
 		BdApi.React.createElement(Title.WindowTitle, { location: "Activity" }),
-		BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.Icons.GameControllerIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement(WhatsNewBuilder, { className: NowPlayingClasses.whatsNew, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))))
+		BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Frame") ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed) }, BdApi.React.createElement(Common.HeaderBar, { className: MainClasses.headerBar, "aria-label": "Activity" }, BdApi.React.createElement("div", { className: MainClasses.iconWrapper }, BdApi.React.createElement(Common.XboxIcon, null)), BdApi.React.createElement("div", { className: MainClasses.titleWrapper }, BdApi.React.createElement("div", { className: MainClasses.title }, "Activity"))), BdApi.React.createElement(Scroller, null, BdApi.React.createElement("div", { className: MainClasses.centerContainer }, BdApi.React.createElement(NewsFeedBuilder, null), BdApi.React.createElement(QuickLauncherBuilder, { className: QuickLauncherClasses.quickLauncher, style: { position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" } }), BdApi.React.createElement(NowPlayingBuilder, { className: NowPlayingClasses.nowPlaying, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), BdApi.React.createElement(WhatsNewBuilder, { className: NowPlayingClasses.whatsNew, style: { position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" } }), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement("div", { style: { color: "red" } }, `Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`))))
 	];
 }
 
@@ -6389,7 +6346,6 @@ const styles = Object.assign(
 		contents: betterdiscord.Webpack.getByKeys("colorPrimary", "grow").contents,
 		popoutContentWrapper: betterdiscord.Webpack.getByKeys("popoutContentWrapper").popoutContentWrapper
 	},
-	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("itemCard")),
 	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("tabularNumbers")),
 	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getByKeys("bar", "container", "progress")),
 	Object.getOwnPropertyDescriptors(betterdiscord.Webpack.getModule((x) => x.buttonContainer && Object.keys(x).length === 1)),
@@ -6789,7 +6745,7 @@ function NavigatorButton() {
 			route: "/activity-feed",
 			text: "Activity",
 			icon: () => {
-				return react.createElement(Common.Icons.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
+				return react.createElement(Common.XboxIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon });
 			}
 		}
 	);
@@ -6817,35 +6773,23 @@ class ActivityFeed {
 			if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		}, 100);
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
-		const [appContentModule, appContentKey] = betterdiscord.Webpack.getWithKey(betterdiscord.Webpack.Filters.byStrings("hasNotice", "AppView"));
-		if (appContentModule) {
-			betterdiscord.Patcher.after(appContentModule, appContentKey, (that, args, ret) => {
-				const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5 && node.children.some((c) => c?.props?.path), { walkable: ["children", "props"] }) ?? {};
-				if (!children) return;
-				const index = children.findIndex((m) => m.key === "activity-feed");
-				if (~index) {
-					children.splice(index, 1);
-				}
-				children.push(
-					react.createElement(Route, {
-						disableTrack: true,
-						path: "/activity-feed",
-						render: () => react.createElement(TabBaseBuilder),
-						exact: true,
-						key: "activity-feed"
-					})
-				);
-			});
-			const patchedFn = appContentModule[appContentKey];
-			const inst = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
-			if (inst) {
-				betterdiscord.Patcher.after(inst, "render", (that, args, res) => {
-					if (res?.props?.children) {
-						res.props.children = { ...res.props.children, type: patchedFn };
-					}
-				});
-				inst.forceUpdate();
+		function NewType(props) {
+			const ret = NewType._(props);
+			const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5, { walkable: ["children", "props"] });
+			const index = children.findIndex((m) => m.key === "activity-feed");
+			if (~index) {
+				children.splice(index, 1);
 			}
+			children.push(
+				react.createElement(Route, {
+					disableTrack: true,
+					path: "/activity-feed",
+					render: () => react.createElement(TabBaseBuilder),
+					exact: true,
+					key: "activity-feed"
+				})
+			);
+			return ret;
 		}
 		betterdiscord.DOM.addStyle("activityPanelCSS", styles$1());
 		betterdiscord.DOM.addStyle("activityPanelSupplementalCSS", extraCSS);
@@ -6879,11 +6823,14 @@ class ActivityFeed {
 			];
 			return res;
 		});
-		betterdiscord.Patcher.after(Common.ActivitySectionModule, "buildLayout", (that, [props], res) => {
-			if (!betterdiscord.Utils.findInTree(res, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
-				res.push(settingsItem);
-			}
-			return res;
+		betterdiscord.Patcher.after(SettingsRoot, "buildLayout", (that, [props], res) => {
+			let index = res.findIndex((layout) => layout.key === "activity_section");
+			betterdiscord.Patcher.after(index, "buildLayout", (that2, [props2], res2) => {
+				if (!betterdiscord.Utils.findInTree(res2, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
+					res2.push(settingsItem);
+				}
+				return res2;
+			});
 		});
 		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
 			return react.createElement(CoachmarkWrapper, { button: res });
@@ -6894,6 +6841,44 @@ class ActivityFeed {
 				res2.props.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
 			});
 		});
+		function fu() {
+			const appI = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {
+				filter: (m) => typeof m.ensureChannelMatchesGuild === "function"
+			});
+			console.log("fu()");
+			if (appI) {
+				appI.forceUpdate(() => {
+					const inst = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
+					betterdiscord.Patcher.after(inst, "render", (that, args, res) => {
+						NewType._ ??= res.props.children.type;
+						res.props.children.type = NewType;
+					});
+					inst?.forceUpdate(() => {
+						console.log("inst.forceUpdate");
+						appI.forceUpdate();
+						inst.forceUpdate();
+					});
+				});
+			}
+		}
+		fu();
+		{
+			const appMount = document.getElementById("app-mount");
+			const reactContainerKey = Object.keys(appMount).find((m) => m.startsWith("__reactContainer$"));
+			let container2 = appMount[reactContainerKey];
+			while (!container2.stateNode?.isReactComponent) {
+				container2 = container2.child;
+			}
+			container2 = container2.child;
+			while (!container2.stateNode?.isReactComponent) {
+				container2 = container2.child;
+			}
+			betterdiscord.Patcher.after(container2.stateNode, "render", fu);
+			const undo = betterdiscord.Patcher.after(container2.stateNode, "render", () => {
+				undo();
+				fu();
+			});
+		}
 		betterdiscord.Patcher.after(await betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.bySource('"GameProfileModal"', "forceV2")), "default", (that, [props], res) => {
 			betterdiscord.Patcher.after(res, "type", (that2, [props2], res2) => {
 				const options = {

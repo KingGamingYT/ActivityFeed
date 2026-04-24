@@ -53,14 +53,14 @@ function ActivityCardContextMenu({currentActivity, currentGame}) {
     }
 }
 
-export function ActivityCard({user, activities, currentActivity, currentGame, players, server, check, v2Enabled}) {
+export function ActivityCard({user, activities, activityProperties, currentActivity, currentGame, players, server, v2Enabled}) {
     if (currentActivity.type == 1) return;
 
     return (
         <>
             <div className={NowPlayingClasses.activityContainer} onContextMenu={e => ContextMenu.open(e, (props) => <ActivityCardContextMenu {...props} currentActivity={currentActivity} currentGame={currentGame} />)}>
-                <RegularActivityBuilder user={user} activity={currentActivity} game={currentGame} players={players} server={server} check={check} v2Enabled={v2Enabled} />
-                {currentActivity?.assets && currentActivity?.assets.large_image && <RichActivityBuilder user={user} activity={currentActivity} v2Enabled={v2Enabled} />}
+                <RegularActivityBuilder user={user} activity={currentActivity} activityProperties={activityProperties} game={currentGame} players={players} server={server} v2Enabled={v2Enabled} />
+                {currentActivity?.assets && currentActivity?.assets.large_image && <RichActivityBuilder user={user} activity={currentActivity} activityProperties={activityProperties} v2Enabled={v2Enabled} />}
             </div>
             {v2Enabled && currentActivity?.party && currentActivity?.party.size && <PartyFooter party={currentActivity.party} players={players} user={user} activity={currentActivity} />}
             {activities.length > 1 && activities.pop() !== currentActivity && <div className={MainClasses.sectionDivider} />}

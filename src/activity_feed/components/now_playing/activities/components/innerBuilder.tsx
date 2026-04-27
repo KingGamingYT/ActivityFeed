@@ -7,7 +7,6 @@ import { RichImageAsset, SpotifyAsset, GameIconAsset, XboxImageAsset, TwitchImag
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function RegularActivityBuilder({activity, activityProperties, user, game, players, server, v2Enabled}) {
-    console.log(activityProperties)
     return (
         <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.activity}`} style={{ flex: "1 1 auto" }}>
             {(() => {

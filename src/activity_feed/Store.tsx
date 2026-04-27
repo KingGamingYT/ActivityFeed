@@ -520,8 +520,8 @@ class GameNewsStore extends Utils.Store {
         ld: for (let d in sorted) {
             let f = _keys.filter(k => new Date(feeds[k].news.timestamp).toDateString() === sorted[d])
             //console.log(sorted[d], f)
-            for (let g = 0; g < 4 - s.length; g++) {
-                if (g > f.length + 1) break;
+            for (let g = 0; g <= 4 - s.length; g++) {
+                if (g > f.length) break;
                 if (g > (total - 1) || (t.length > 3)) break ld;
                 let rand = f.length * Math.random() << 0;
                 t.push(feeds[f[rand]]);

@@ -27,7 +27,7 @@ function NavigatorButton() {
             selected: useSelectedState(), 
             route: "/activity-feed", 
             text: "Activity", 
-            icon: () => { return createElement(Common.XboxIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon }) }
+            icon: () => { return createElement(Common.GameControllerIcon, { color: "currentColor", className: Common.LinkButtonClasses.linkButtonIcon }) }
         }
     )
 }
@@ -50,6 +50,7 @@ export default class ActivityFeed {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
         }
+        await Utils.forceLoad(Webpack.getBySource('openNativeAppModal', 'fingerprint', 'AGE_GATE_FAILURE_MODAL_OPEN', {raw: true}).id)
         await Utils.forceLoad(Webpack.getBySource('handleUserContextMenu', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
@@ -82,7 +83,7 @@ export default class ActivityFeed {
         DOM.addStyle('activityPanelCSS', styles());
         DOM.addStyle('activityPanelSupplementalCSS', extraCSS)
 
-        Patcher.after(Common.DMSidebar, "A", (that, [props], res) => {
+        Patcher.after(Webpack.getBySource(".A.CONTACTS_LIST"), "A", (that, [props], res) => {
             const panel = Utils.findInTree(res, m => m?.homeLink, { walkable: [ "props", "children" ] });
             const selected = useSelectedState();
 
@@ -145,7 +146,6 @@ export default class ActivityFeed {
                 filter: m => typeof m.ensureChannelMatchesGuild === "function"
             });
             
-            console.log("fu()");
             if (appI) {
                 appI.forceUpdate(() => {
                     const inst = ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
@@ -157,7 +157,6 @@ export default class ActivityFeed {
                     });
 
                     inst?.forceUpdate(() => {
-                        console.log("inst.forceUpdate");
                         
                         appI.forceUpdate();
                         inst.forceUpdate();

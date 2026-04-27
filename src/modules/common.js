@@ -1,7 +1,9 @@
 import { Webpack } from "betterdiscord";
 
 const Filters = [
+    { name: "ActivityActions", filter: /* @__PURE__ */ Webpack.Filters.byStrings('display', 'getUserOutbox') },
     { name: "ActivityButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'USER_PROFILE_ACTIVITY_BUTTONS') },
+    { name: "ActivityCardClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('gameState', 'clickableImage') },
     { name: "ActivitySectionModule", filter: x => x.key === "activity_section", searchExports: true },
     { name: "ActivityTimer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('timestamps', '.TEXT_FEEDBACK_POSITIVE'), searchExports: true },
     { name: "AnchorClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('anchor', 'anchorUnderlineOnHover'), searchExports: true },
@@ -23,12 +25,12 @@ const Filters = [
     { name: "FluxDispatcher", filter: /* @__PURE__ */ Webpack.Filters.byKeys('dispatch', 'subscribe', 'register'), searchExports: true },
     { name: "FluxStore", filter: x => typeof x.Ay?.Store === 'function', searchExports: false, searchDefault: false },
     { name: "FormSwitch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"data-toggleable-component":"switch"', 'layout:"horizontal"'), searchExports: true },
+    { name: "GameControllerIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.09v4.91a3.09'),  searchExports: true },
     { name: "GameFetchModule", filter: /* @__PURE__ */ Webpack.Filters.bySource("type:\"GAME_FETCH_SUCCESS\",gameIds:") },
     { name: "GameProfile", filter: x => x.openGameProfileModal },
     { name: "GameProfileCheck", filter: /* @__PURE__ */ Webpack.Filters.byStrings('gameProfileModalChecks',  'onOpened') },
     { name: "GradientComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('darken'), searchExports: true },
     { name: "HeaderBar", filter: /* @__PURE__ */ Webpack.Filters.byKeys("Icon", "Divider") }, 
-    { name: "Icons", filter: x=>x.AppsIcon },
     { name: "intl", filter: x=>x.t && x.t.formatToMarkdownString },
     { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('user', 'activity', 'onAction', 'onClose', 'themeType', 'embeddedActivity') },
     { name: "LibraryApplicationUtils", filter: x => x.installApplication },

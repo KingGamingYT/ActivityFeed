@@ -5,6 +5,11 @@ import { NowPlayingCardHeader, NowPlayingCardBody, WhatsNewCardHeader, WhatsNewC
 import NowPlayingClasses from "./NowPlaying.module.css";
 import PresenceTypeStore from "./PresenceTypeStore";
 
+export interface ActivityProperties {
+    type: String,
+    playing?: String | undefined
+}
+
 export function NowPlayingCardBuilder({card, v2Enabled}) {
     const user = card.party.priorityMembers[0].user;
     const activities = card.party.currentActivities;

@@ -34,7 +34,7 @@ export function TabBaseBuilder() {
         <div className={Utils.className((Data.load('v2Frame') ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed)}>
             <Common.HeaderBar className={MainClasses.headerBar} aria-label="Activity">
                 <div className={MainClasses.iconWrapper}>
-                    <Common.XboxIcon />
+                    <Common.GameControllerIcon />
                 </div>
                 <div className={MainClasses.titleWrapper}>
                     <div className={MainClasses.title}>Activity</div>

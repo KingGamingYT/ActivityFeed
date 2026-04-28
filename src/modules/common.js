@@ -68,7 +68,7 @@ const Filters = [
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
     { name: "UserProfileWrapperComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('onClickContainer:', 'user:', '.isNonUserBot()?') },
     { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId', 'getNickname') },
-    { name: "XboxIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M10.9'), searchExports: true },
+    { name: "XboxNeutralIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('22.95c-1.7-.16-3.4-.77-4.88-1.73-1.24-.8-1.52-1.13-1.52-1.8'), searchExports: true },
     { name: "ManaSwitch", filter: Webpack.Filters.byStrings('SWITCH_BACKGROUND_DEFAULT'), searchExports: true }
 ]
 
@@ -109,7 +109,7 @@ export const GameProfileClasses = () => {
     return Classes;
 }
 
-export const layoutUtils = /* @__PURE__ */ Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),
+export const layoutUtils = async () => /* @__PURE__ */ await Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),
     {
         Panel: x => String(x).includes('.PANEL,'),
         Button: x => String(x).includes('.BUTTON,'),

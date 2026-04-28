@@ -1,3 +1,5 @@
+import { Webpack } from "betterdiscord";
+import { lazy } from "react";
 import { layoutUtils } from "@modules/common";
 import { RefreshSection, AdvancedSection } from "./sections";
 import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./sections/followed_games";
@@ -13,6 +15,8 @@ let LayoutTypes = {
     ACCORDION: 6,
     CUSTOM: 19,
 };
+
+console.log(layoutUtils())
 
 const refreshObj = 
 layoutUtils.Custom("activity_feed_visual_refresh", 

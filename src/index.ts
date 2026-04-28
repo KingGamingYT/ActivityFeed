@@ -120,9 +120,11 @@ export default class ActivityFeed {
             return res;
         });
 
-        Patcher.after(SettingsRoot, "buildLayout", (that, [props], res) => {
+        Patcher.after(await SettingsRoot, "buildLayout", (that, [props], res) => {
+            console.log(res)
             let index = res.findIndex((layout) => layout.key === "activity_section");
-            Patcher.after(index, "buildLayout", (that, [props], res) => {
+            console.log(index)
+            Patcher.after(res[index], "buildLayout", (that, [props], res) => {
                 if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
                     res.push(settingsItem);
                 }

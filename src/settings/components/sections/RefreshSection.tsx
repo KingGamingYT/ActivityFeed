@@ -24,7 +24,6 @@ export function RefreshSection() {
                     />
                 })}
             </div>
-            {Plugins.get("ActivityFeed").version.includes("dev") && <Common.ManaSwitch checked={false} />}
         </>
     )
 }

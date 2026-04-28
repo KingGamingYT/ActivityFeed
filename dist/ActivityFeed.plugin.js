@@ -103,7 +103,7 @@ const Filters = [
 	{ name: "UseStreamPreviewURL", filter: betterdiscord.Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
 	{ name: "UserProfileWrapperComponent", filter: betterdiscord.Webpack.Filters.byStrings("onClickContainer:", "user:", ".isNonUserBot()?") },
 	{ name: "VoiceList", filter: betterdiscord.Webpack.Filters.byStrings("maxUsers", "guildId", "getNickname") },
-	{ name: "XboxIcon", filter: betterdiscord.Webpack.Filters.byStrings("colorClass", "M10.9"), searchExports: true },
+	{ name: "XboxNeutralIcon", filter: betterdiscord.Webpack.Filters.byStrings("22.95c-1.7-.16-3.4-.77-4.88-1.73-1.24-.8-1.52-1.13-1.52-1.8"), searchExports: true },
 	{ name: "ManaSwitch", filter: betterdiscord.Webpack.Filters.byStrings("SWITCH_BACKGROUND_DEFAULT"), searchExports: true }
 ];
 const bulkData = betterdiscord.Webpack.getBulk(...Filters);
@@ -136,7 +136,7 @@ const GameProfileClasses = () => {
 	}
 	return Classes;
 };
-const layoutUtils = betterdiscord.Webpack.getMangled(
+const layoutUtils = async () => await betterdiscord.Webpack.getMangled(
 	betterdiscord.Webpack.Filters.bySource("$Root", ".ACCORDION"),
 	{
 		Panel: (x) => String(x).includes(".PANEL,"),
@@ -5299,7 +5299,7 @@ const isPlayStation = betterdiscord.Webpack.getByStrings("platform===", ".PS5");
 const XboxIcon = betterdiscord.Webpack.getByStrings("M8.95185131");
 const PlayStationIcon = betterdiscord.Webpack.getByStrings("M17.7516");
 const isStream = betterdiscord.Webpack.getByStrings("Array.isArray(e)?e.some(");
-const isJoinable = betterdiscord.Webpack.getByStrings("JOIN)&&e.type", { searchExports: true });
+const isJoinable = betterdiscord.Webpack.getByStrings("JOIN)&&", "&&!!(0,", { searchExports: true });
 const isInstance = betterdiscord.Webpack.getByStrings(".INSTANCE&&null!=e");
 const isStageChannel = betterdiscord.Webpack.getByStrings("e?.application_id===", "SS", { searchExports: true });
 const ManaButtons = betterdiscord.Webpack.getBySource("__unsupportedReactNodeAsText", "SPINNING_CIRCLE", '"aria-busy"', "ariaHidden", { searchExports: true });
@@ -6167,7 +6167,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -6243,7 +6243,7 @@ const LastPlayedStore = () => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -6635,7 +6635,7 @@ function RefreshSection() {
 				}
 			}
 		);
-	})), betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && BdApi.React.createElement(Common.ManaSwitch, { checked: false }));
+	})));
 }
 
 // settings/components/common/ButtonItem.tsx
@@ -6716,6 +6716,7 @@ function AdvancedSection() {
 // settings/components/sections/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
+	console.log(item);
 	const [state, setState] = react.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
 		"button",
@@ -6885,6 +6886,7 @@ let LayoutTypes = {
 	ACCORDION: 6,
 	CUSTOM: 19
 };
+console.log(layoutUtils());
 const refreshObj = layoutUtils.Custom(
 	"activity_feed_visual_refresh",
 	{
@@ -7077,9 +7079,11 @@ class ActivityFeed {
 			];
 			return res;
 		});
-		betterdiscord.Patcher.after(SettingsRoot, "buildLayout", (that, [props], res) => {
+		betterdiscord.Patcher.after(await SettingsRoot, "buildLayout", (that, [props], res) => {
+			console.log(res);
 			let index = res.findIndex((layout) => layout.key === "activity_section");
-			betterdiscord.Patcher.after(index, "buildLayout", (that2, [props2], res2) => {
+			console.log(index);
+			betterdiscord.Patcher.after(res[index], "buildLayout", (that2, [props2], res2) => {
 				if (!betterdiscord.Utils.findInTree(res2, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
 					res2.push(settingsItem);
 				}

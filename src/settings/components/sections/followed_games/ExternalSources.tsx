@@ -13,6 +13,7 @@ import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 function ExternalItemBuilder({service}) {
     //const ext = BdApi.Hooks.useStateFromStore(DataStore, () => DataStore.getExternal())
     const item = settings.external[service];
+    console.log(item)
     const [state, setState] = useState(Data.load("external")?.[service] || item.enabled);
 
     return (

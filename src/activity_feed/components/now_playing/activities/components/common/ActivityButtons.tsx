@@ -17,7 +17,7 @@ const isPlayStation = Webpack.getByStrings('platform===', '.PS5');
 const XboxIcon = Webpack.getByStrings('M8.95185131');
 const PlayStationIcon = Webpack.getByStrings('M17.7516');
 const isStream = Webpack.getByStrings('Array.isArray(e)?e.some(');
-const isJoinable = Webpack.getByStrings('JOIN)&&e.type', {searchExports: true});
+const isJoinable = Webpack.getByStrings("JOIN)&&", "&&!!(0,", {searchExports: true});
 const isInstance = Webpack.getByStrings('.INSTANCE&&null!=e');
 const isStageChannel = Webpack.getByStrings('e?.application_id===', 'SS', {searchExports: true});
 const ManaButtons = Webpack.getBySource('__unsupportedReactNodeAsText', 'SPINNING_CIRCLE', '"aria-busy"', 'ariaHidden', {searchExports: true})

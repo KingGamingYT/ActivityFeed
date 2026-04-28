@@ -194,7 +194,7 @@ export default class ActivityFeed {
             });
         }
 
-        Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 
+        /*Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 
             Patcher.after(res, "type", (that, [props], res) => { 
                 const options = {
                     walkable: [
@@ -219,7 +219,7 @@ export default class ActivityFeed {
                     )
                 })
             }) 
-        })
+        })*/
     }
     stop() {
         Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_UNMOUNTED'});

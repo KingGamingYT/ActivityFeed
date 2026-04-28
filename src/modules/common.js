@@ -54,7 +54,6 @@ const Filters = [
     { name: "PopoverClasses", filter: x => x.graphic && x.closeButton },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
     { name: "ReactSpring", filter: /* @__PURE__ */ Webpack.Filters.byKeys('useSpring', 'a') },
-    { name: "RecentlyPlayedByApplicationId", filter: /* @__PURE__ */ Webpack.Filters.byStrings('GLOBAL_FEED', 'application_id'), searchExports: true },
     { name: "RestAPI", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
     { name: "SettingsButton", filter: /* @__PURE__ */ Webpack.Filters.bySource('webBuildOverride') },
@@ -109,7 +108,7 @@ export const GameProfileClasses = () => {
     return Classes;
 }
 
-export const layoutUtils = async () => /* @__PURE__ */ await Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),
+export const layoutUtils = Webpack.getMangled(/* @__PURE__ */ Webpack.Filters.bySource('$Root', '.ACCORDION'),
     {
         Panel: x => String(x).includes('.PANEL,'),
         Button: x => String(x).includes('.BUTTON,'),
@@ -142,3 +141,4 @@ export const FetchGameUtils = Webpack.getMangled('Error("Failed to fetch game da
 })
 
 export const SettingsRoot = Webpack.waitForModule((m) => m?.key === "$Root", { searchExports: true, searchDefault: false });
+export const RecentlyPlayedByApplicationId = Webpack.waitForModule(Webpack.Filters.byStrings('GLOBAL_FEED', 'application_id'), {searchExports: true})

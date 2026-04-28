@@ -89,7 +89,6 @@ const Filters = [
 	{ name: "PopoverClasses", filter: (x) => x.graphic && x.closeButton },
 	{ name: "PositionClasses", filter: betterdiscord.Webpack.Filters.byKeys("noWrap") },
 	{ name: "ReactSpring", filter: betterdiscord.Webpack.Filters.byKeys("useSpring", "a") },
-	{ name: "RecentlyPlayedByApplicationId", filter: betterdiscord.Webpack.Filters.byStrings("GLOBAL_FEED", "application_id"), searchExports: true },
 	{ name: "RestAPI", filter: (x) => typeof x === "object" && x.del && x.put, searchExports: true },
 	{ name: "RootSectionModule", filter: (x) => x?.key === "$Root", searchExports: true },
 	{ name: "SettingsButton", filter: betterdiscord.Webpack.Filters.bySource("webBuildOverride") },
@@ -129,14 +128,7 @@ const ContextMenus = () => {
 	}
 	return { ContextMenuUser, ContextMenuVoice };
 };
-const GameProfileClasses = () => {
-	let Classes = betterdiscord.Webpack.getByKeys("sectionHeader", "gameProfileModal");
-	if (!Classes) {
-		Classes = betterdiscord.Webpack.getByKeys("sectionHeader", "gameProfileModal");
-	}
-	return Classes;
-};
-const layoutUtils = async () => await betterdiscord.Webpack.getMangled(
+const layoutUtils = betterdiscord.Webpack.getMangled(
 	betterdiscord.Webpack.Filters.bySource("$Root", ".ACCORDION"),
 	{
 		Panel: (x) => String(x).includes(".PANEL,"),
@@ -167,6 +159,7 @@ const FetchGameUtils = betterdiscord.Webpack.getMangled('Error("Failed to fetch 
 	fetchMultipleGames: BdApi.Webpack.Filters.byStrings("isLoading", "Array.isArray")
 });
 const SettingsRoot = betterdiscord.Webpack.waitForModule((m) => m?.key === "$Root", { searchExports: true, searchDefault: false });
+const RecentlyPlayedByApplicationId = betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.byStrings("GLOBAL_FEED", "application_id"), { searchExports: true });
 
 // modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
@@ -6167,7 +6160,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = (() => {
+const LastPlayedStore = () => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -6192,7 +6185,7 @@ const LastPlayedStore = (() => {
 			const presentNews = await NewsStore.getDirectByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
 			const isNewNews = NewsStore.filterFeeds(presentNews?.news);
 			titleNews.push(isNewNews && presentNews);
-			playerList.push(betterdiscord.ReactUtils.wrapInHooks(Common.RecentlyPlayedByApplicationId)(id));
+			playerList.push(betterdiscord.ReactUtils.wrapInHooks(await RecentlyPlayedByApplicationId)(id));
 		}
 		lastPlayedCards = g.map((id, index) => {
 			return {
@@ -6243,7 +6236,7 @@ const LastPlayedStore = (() => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-});
+};
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx
@@ -6411,20 +6404,6 @@ function IntroCoachmarkPopout({ button }) {
 			children: () => BdApi.React.createElement("div", null, button)
 		}
 	));
-}
-
-// activity_feed/components/application_news/components/GameProfileRecentNews.tsx
-function RecentNews({ applicationId, type }) {
-	const [article, setArticle] = react.useState({});
-	react.useEffect(() => {
-		(async () => {
-			const pendingArticle = await NewsStore.getDirectByApplicationId(applicationId, false);
-			setArticle(pendingArticle);
-		})();
-	}, [applicationId]);
-	if (type === "GAME_PROFILE") return article && Object.keys(article).length !== 0 && BdApi.React.createElement("div", null, BdApi.React.createElement(Common.UIModule.Heading, { className: GameProfileClasses().sectionHeader, variant: "text-md/semibold", color: "text-strong" }, "Recent News"), Object.keys(article).length !== 0 && BdApi.React.createElement(CardMiniNews, { currentArticle: article }));
-	else if (type === "GAME_PROFILE_V2") return article && Object.keys(article).length !== 0 && BdApi.React.createElement("div", null, BdApi.React.createElement(Common.UIModule.Heading, { variant: "heading-lg/medium", color: "text-strong" }, "Recent News"), Object.keys(article).length !== 0 && BdApi.React.createElement(CardMiniNews, { currentArticle: article }));
-	return;
 }
 
 // settings/ActivityFeedSettings.module.css
@@ -6716,7 +6695,6 @@ function AdvancedSection() {
 // settings/components/sections/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
-	console.log(item);
 	const [state, setState] = react.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
 	return BdApi.React.createElement("div", { className: SettingsClasses.blacklistItem, style: { display: "flex" } }, BdApi.React.createElement(item.icon, { className: SettingsClasses.blacklistItemIcon, color: "WHITE", style: { backgroundColor: item.color, padding: "5px" } }), BdApi.React.createElement("div", { className: SettingsClasses.blacklistItemTextContainer }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}` }, item.name || "Unknown Source"), item.note && BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemDescription} ${MainClasses.emptySubtitle}` }, item.note)), !state ? BdApi.React.createElement(
 		"button",
@@ -6886,7 +6864,6 @@ let LayoutTypes = {
 	ACCORDION: 6,
 	CUSTOM: 19
 };
-console.log(layoutUtils());
 const refreshObj = layoutUtils.Custom(
 	"activity_feed_visual_refresh",
 	{
@@ -7135,30 +7112,6 @@ class ActivityFeed {
 				fu();
 			});
 		}
-		betterdiscord.Patcher.after(await betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.bySource('"GameProfileModal"', "forceV2")), "default", (that, [props], res) => {
-			betterdiscord.Patcher.after(res, "type", (that2, [props2], res2) => {
-				const options = {
-					walkable: [
-						"props",
-						"children"
-					],
-					ignore: []
-				};
-				const v1Data = betterdiscord.Utils.findInTree(res2, (tree) => tree?.className?.includes("mainContent"), options);
-				const v2Data = betterdiscord.Utils.findInTree(res2, (tree) => tree?.className?.includes("twoColumnMainContent"), options);
-				v1Data ? betterdiscord.Patcher.after(v1Data.children[0], "type", (that3, [props3], res3) => {
-					const game = res3.props.children[1].props.game;
-					res3.props.children.push(
-						react.createElement(RecentNews, { applicationId: game.id, type: "GAME_PROFILE" })
-					);
-				}) : betterdiscord.Patcher.after(v2Data.children[0], "type", (that3, [props3], res3) => {
-					const game = betterdiscord.Utils.findInTree(res3, (tree) => tree && Object.hasOwn(tree, "game"), options).game;
-					res3.props.children.push(
-						react.createElement(RecentNews, { applicationId: game.id, type: "GAME_PROFILE_V2" })
-					);
-				});
-			});
-		});
 	}
 	stop() {
 		Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_UNMOUNTED" });

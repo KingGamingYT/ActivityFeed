@@ -1,5 +1,5 @@
 import { Data, ReactUtils } from "betterdiscord";
-import { Common, FetchGameUtils } from "@modules/common";
+import { Common, FetchGameUtils, RecentlyPlayedByApplicationId } from "@modules/common";
 import { ApplicationStore, ContentInventoryStore, PresenceStore, NewGameStore, UserStore } from "@modules/stores";
 import NewsStore from "@activity_feed/Store";
 
@@ -33,7 +33,7 @@ const LastPlayedStore = (() => {
             const presentNews = await NewsStore.getDirectByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
             const isNewNews = NewsStore.filterFeeds(presentNews?.news);
             titleNews.push(isNewNews && presentNews);
-            playerList.push(ReactUtils.wrapInHooks(Common.RecentlyPlayedByApplicationId)(id));
+            playerList.push(ReactUtils.wrapInHooks(await RecentlyPlayedByApplicationId)(id));
         }
         lastPlayedCards = g.map((id, index) => { return {
             application: NewGameStore.getGame(id) ?? ApplicationStore.getApplication(id),

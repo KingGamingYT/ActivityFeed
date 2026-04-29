@@ -126,6 +126,7 @@ class Article extends React.PureComponent {
     renderApplicationIcon() {
         let currentArticle = this.props.article;
         const External = settings.external[currentArticle.id];
+        console.log(External)
         const useGameProfile = this.props.useGameProfile;
 
         return (

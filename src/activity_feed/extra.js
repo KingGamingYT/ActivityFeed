@@ -16,10 +16,7 @@ const styles = Object.assign({
         contents: Webpack.getByKeys('colorPrimary', 'grow').contents,
         popoutContentWrapper: Webpack.getByKeys('popoutContentWrapper').popoutContentWrapper
     },
-
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('tabularNumbers')),
-    Object.getOwnPropertyDescriptors(Webpack.getByKeys('bar', 'container', 'progress')),
-    Object.getOwnPropertyDescriptors(Webpack.getModule(x=>x.buttonContainer && Object.keys(x).length === 1)),
     MainClasses,
     FeedClasses,
     NowPlayingClasses,
@@ -89,7 +86,7 @@ export const extraCSS = webpackify(`
         width: calc(var(--custom-button-button-sm-height) + 4px);
     }
 
-    .content .bar {
+    .content [role="progressbar"] {
         background-color: var(--opacity-white-24);
     }
 
@@ -126,11 +123,8 @@ export const extraCSS = webpackify(`
         .tabularNumbers {
             color: var(--app-message-embed-secondary-text) !important;
         }
-        .bar {
+        [role="progressbar"] {
             background-color: var(--opacity-white-24);
-        }
-        .progress {
-            background-color: var(--white);
         }
         .sectionDivider {
             border-color: var(--opacity-white-12) !important;

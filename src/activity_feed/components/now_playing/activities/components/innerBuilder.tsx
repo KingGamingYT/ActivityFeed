@@ -52,8 +52,8 @@ export function RichActivityBuilder({user, activity, activityProperties, v2Enabl
                                 case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
                                 case "CRUNCHYROLL": return ReactUtils.wrapInHooks(Common.OpenLink)({user, currentUser: UserStore.getCurrentUser(), activity})()
                             }}}
-                            onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                            onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                            onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                            onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                             type="Large"
                         />
                         {activity?.assets && activity?.assets.small_image && <RichImageAsset

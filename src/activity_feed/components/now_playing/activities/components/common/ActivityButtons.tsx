@@ -20,7 +20,7 @@ const isStream = Webpack.getByStrings('Array.isArray(e)?e.some(');
 const isJoinable = Webpack.getByStrings("JOIN)&&", "&&!!(0,", {searchExports: true});
 const isInstance = Webpack.getByStrings('.INSTANCE&&null!=e');
 const isStageChannel = Webpack.getByStrings('e?.application_id===', 'SS', {searchExports: true});
-const ManaButtons = Webpack.getBySource('__unsupportedReactNodeAsText', 'SPINNING_CIRCLE', '"aria-busy"', 'ariaHidden', {searchExports: true})
+const ManaButtons = Webpack.getBySource('__unsupportedReactNodeAsText', 'SPINNING_CIRCLE', '"aria-busy"', 'ariaHidden', '="secondary"', {searchExports: true})
 const ActivityMetadataUpdate = Webpack.getByStrings('USER_ACTIVITY_METADATA', 'ACTIVITY_METADATA_UPDATE', {searchExports: true});
 const Parser = Webpack.getByKeys('formatPathWithQuery');
 const sanitize = Webpack.getByStrings('sanitizeUrl', 'contextKey', {searchExports: true});

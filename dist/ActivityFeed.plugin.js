@@ -49,7 +49,6 @@ const Filters = [
 	{ name: "ButtonManaClasses", filter: (x) => x.primary && x.hasText && !x.hasTrailing },
 	{ name: "CallButtons", filter: betterdiscord.Webpack.Filters.byStrings("PRESS_JOIN_CALL_BUTTON") },
 	{ name: "CaretClasses", filter: betterdiscord.Webpack.Filters.byKeys("caret", "caret--center") },
-	{ name: "CardPopout", filter: betterdiscord.Webpack.Filters.byStrings("party", "close", "onSelect"), searchExports: true },
 	{ name: "Clipboard", filter: betterdiscord.Webpack.Filters.byStrings("navigator.clipboard.write", "Clipboard API not supported."), searchExports: true },
 	{ name: "ClydeIcon", filter: betterdiscord.Webpack.Filters.byStrings("colorClass", "M19.73"), searchExports: true },
 	{ name: "DMSidebar", filter: betterdiscord.Webpack.Filters.bySource(".A.CONTACTS_LIST") },
@@ -128,6 +127,7 @@ const ContextMenus = () => {
 	}
 	return { ContextMenuUser, ContextMenuVoice };
 };
+const CardPopout = Object.values(BdApi.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { raw: true }).declarations).find((x) => x?.toString()?.includes("ACTIVITY_FEED_GUILD_VISITED"));
 const layoutUtils = betterdiscord.Webpack.getMangled(
 	betterdiscord.Webpack.Filters.bySource("$Root", ".ACCORDION"),
 	{
@@ -5295,7 +5295,7 @@ const isStream = betterdiscord.Webpack.getByStrings("Array.isArray(e)?e.some(");
 const isJoinable = betterdiscord.Webpack.getByStrings("JOIN)&&", "&&!!(0,", { searchExports: true });
 const isInstance = betterdiscord.Webpack.getByStrings(".INSTANCE&&null!=e");
 const isStageChannel = betterdiscord.Webpack.getByStrings("e?.application_id===", "SS", { searchExports: true });
-const ManaButtons = betterdiscord.Webpack.getBySource("__unsupportedReactNodeAsText", "SPINNING_CIRCLE", '"aria-busy"', "ariaHidden", { searchExports: true });
+const ManaButtons = betterdiscord.Webpack.getBySource("__unsupportedReactNodeAsText", "SPINNING_CIRCLE", '"aria-busy"', "ariaHidden", '="secondary"', { searchExports: true });
 const ActivityMetadataUpdate = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_METADATA", "ACTIVITY_METADATA_UPDATE", { searchExports: true });
 const Parser = betterdiscord.Webpack.getByKeys("formatPathWithQuery");
 const sanitize = betterdiscord.Webpack.getByStrings("sanitizeUrl", "contextKey", { searchExports: true });
@@ -5307,11 +5307,11 @@ const GameUtils = betterdiscord.Webpack.getByKeys("launch", "reportUnverifiedGam
 const ContainerTooltip = betterdiscord.Webpack.getByStrings("asContainer", "keyboardShortcut", { searchExports: true });
 const DoorExitIcon = betterdiscord.Webpack.getByStrings('"string"==typeof', "18.5V22a1", { searchExports: true });
 const GameControllerIcon = betterdiscord.Webpack.getByStrings(".09v4.91a3.09", { searchExports: true });
-betterdiscord.Webpack.getByStrings("USER_ACTIVITY_PLAY", "spotifyData", { searchExports: true });
-betterdiscord.Webpack.getByStrings("USER_ACTIVITY_SYNC", "spotifyData", { searchExports: true });
-betterdiscord.Webpack.getByStrings("LISTENING", "SPOTIFY).name", { searchExports: true });
-betterdiscord.Webpack.getByStrings("M12.7609503,7.08043507", { searchExports: true });
-betterdiscord.Webpack.getByStrings("0Zm-2.77-.2-3.33-2.5a.25", "className", { searchExports: true });
+const getTrack = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_PLAY", "spotifyData", { searchExports: true });
+const getTrackSync = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_SYNC", "spotifyData", { searchExports: true });
+const hasParty = betterdiscord.Webpack.getByStrings("LISTENING", "SPOTIFY).name", { searchExports: true });
+const SpotifyIcon = betterdiscord.Webpack.getByStrings("M12.7609503,7.08043507", { searchExports: true });
+const ListenAlongIcon = betterdiscord.Webpack.getByStrings("0Zm-2.77-.2-3.33-2.5a.25", "className", { searchExports: true });
 function WidgetButton({ applicationId, onAction, onClose }) {
 	return;
 }
@@ -5522,6 +5522,59 @@ function ActivityButtons({ user, activity, onAction, onClose, application, conta
 	})();
 	return !buttons ? null : BdApi.React.createElement("div", { className: containerClassName }, buttons);
 }
+function SpotifyButtons({ user, activity, onAction }) {
+	const { themeType } = themeContext.E();
+	const track = getTrack(activity, user);
+	const trackSync = getTrackSync(activity, user);
+	if (!hasParty(activity) || !isInstance(activity, 32) && !isInstance(activity, 16)) return;
+	const handleListenAlongOnClick = (e) => {
+		e.stopPropagation();
+		onAction?.({ action: "PRESS_LISTEN_ALONG_ON_SPOTIFY_BUTTON" });
+		trackSync.onClick();
+	};
+	const handlePlayOnClick = (e) => {
+		e?.stopPropagation();
+		onAction?.({ action: "PRESS_PLAY_ON_SPOTIFY_BUTTON" });
+		track.onClick();
+	};
+	return themeType === "MODAL_V2" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(ContainerTooltip, { text: trackSync.tooltip }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			text: trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
+			onClick: handleListenAlongOnClick,
+			disabled: trackSync.disabled,
+			loading: trackSync.loading
+		}
+	)), BdApi.React.createElement(ContainerTooltip, { text: track.tooltip }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			text: track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`]),
+			onClick: handlePlayOnClick,
+			disabled: track.disabled,
+			loading: track.loading
+		}
+	))) : BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: Common.ActivityCardClasses.primaryButton }, BdApi.React.createElement(ContainerTooltip, { text: track.tooltip }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			icon: () => BdApi.React.createElement(SpotifyIcon, null),
+			text: track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`]),
+			onClick: handlePlayOnClick,
+			disabled: track.disabled,
+			loading: track.loading,
+			fullWidth: true
+		}
+	))), BdApi.React.createElement(
+		ManaButtons.q3,
+		{
+			icon: () => BdApi.React.createElement(ListenAlongIcon, { color: "currentColor" }),
+			tooltipText: trackSync.tooltip ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
+			ariaLabel: trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
+			disabled: trackSync.disabled,
+			loading: trackSync.loading,
+			fullWidth: true
+		}
+	));
+}
 
 // activity_feed/components/now_playing/activities/components/common/AvatarWithPopoutWrapper.tsx
 function AvatarWithPopoutWrapper({ className, user, status, size }) {
@@ -5601,7 +5654,7 @@ function RegularCardTrailing({ activity, user, server, players, v2Enabled }) {
 			guildId: server?.id,
 			size: "SIZE_32"
 		}
-	), activityProperties.platform === "SPOTIFY" && BdApi.React.createElement("div", { className: `${NowPlayingClasses.serviceButtonWrapper}` }), activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : BdApi.React.createElement(
+	), activityProperties.platform === "SPOTIFY" && BdApi.React.createElement("div", { className: `${NowPlayingClasses.serviceButtonWrapper}` }, BdApi.React.createElement(SpotifyButtons, { user, activity, onAction: action })), activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : BdApi.React.createElement(
 		"div",
 		{
 			className: `${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`,
@@ -5812,8 +5865,8 @@ function RichActivityBuilder({ user, activity, activityProperties, v2Enabled }) 
 						return betterdiscord.ReactUtils.wrapInHooks(Common.OpenLink)({ user, currentUser: UserStore.getCurrentUser(), activity })();
 				}
 			},
-			onMouseOver: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
-			onMouseLeave: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
+			onMouseOver: (e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
+			onMouseLeave: (e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`),
 			type: "Large"
 		}
 	), activity?.assets && activity?.assets.small_image && BdApi.React.createElement(
@@ -6001,7 +6054,7 @@ function HeaderActions$1({ card, user }) {
 			targetElementRef: refDOM,
 			clickTrap: true,
 			onRequestClose: () => setShowPopout(false),
-			renderPopout: () => BdApi.React.createElement(Common.CardPopout, { party: card.party, close: () => setShowPopout(false) }),
+			renderPopout: () => BdApi.React.createElement(CardPopout, { party: card.party, close: () => setShowPopout(false) }),
 			position: "left",
 			shouldShow: showPopout
 		},
@@ -6160,7 +6213,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let gameIds = betterdiscord.Data.load("gameIds") ?? [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
@@ -6236,7 +6289,7 @@ const LastPlayedStore = () => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx

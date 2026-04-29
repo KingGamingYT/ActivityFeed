@@ -84,7 +84,7 @@ export function RegularCardTrailing({activity, user, server, players, v2Enabled}
                 size="SIZE_32"
             />}
             {(activityProperties.platform === "SPOTIFY") && <div className={`${NowPlayingClasses.serviceButtonWrapper}`}>
-                
+                <SpotifyButtons user={user} activity={activity} onAction={action} />
             </div>}
             {activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : <div 
                 className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}

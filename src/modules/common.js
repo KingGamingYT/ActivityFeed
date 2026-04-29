@@ -14,7 +14,6 @@ const Filters = [
     { name: "ButtonManaClasses", filter: x => x.primary && x.hasText && !x.hasTrailing },
     { name: "CallButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('PRESS_JOIN_CALL_BUTTON') },
     { name: "CaretClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('caret', 'caret--center') },
-    { name: "CardPopout", filter: /* @__PURE__ */ Webpack.Filters.byStrings('party', 'close', 'onSelect'), searchExports: true },
     { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write', 'Clipboard API not supported.'), searchExports: true },
     { name: "ClydeIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M19.73'), searchExports: true },
     { name: "DMSidebar", filter: /* @__PURE__ */ Webpack.Filters.bySource(".A.CONTACTS_LIST") },
@@ -99,6 +98,8 @@ export const ContextMenus = () => {
     }
     return {ContextMenuUser, ContextMenuVoice};
 }
+
+export const CardPopout = Object.values(BdApi.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", {raw: true}).declarations).find((x) => x?.toString()?.includes("ACTIVITY_FEED_GUILD_VISITED"));
 
 export const GameProfileClasses = () => {
     let Classes = Webpack.getByKeys('sectionHeader', 'gameProfileModal');

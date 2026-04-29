@@ -1,6 +1,6 @@
 import { Utils, ContextMenu } from "betterdiscord";
 import { useState, useRef } from "react";
-import { Common, ContextMenus } from "@modules/common";
+import { CardPopout, Common, ContextMenus } from "@modules/common";
 import Tooltip from "@common/components/TooltipBuilder";
 import DiscordTag from "@now_playing/activities/components/common/DiscordTag";
 import MessageButton from "@now_playing/activities/components/common/MessageButton";
@@ -20,7 +20,7 @@ function HeaderActions({card, user}) {
                 targetElementRef={refDOM}
                 clickTrap={true}
                 onRequestClose={() => setShowPopout(false)}
-                renderPopout={() => <Common.CardPopout party={card.party} close={() => setShowPopout(false)} />}
+                renderPopout={() => <CardPopout party={card.party} close={() => setShowPopout(false)} />}
                 position="left"
                 shouldShow={showPopout}>
                 {(props) => <span

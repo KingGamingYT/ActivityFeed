@@ -6102,9 +6102,10 @@ function WhatsNewListOverflow({ players, v2Enabled }) {
 function WhatsNewListItem({ player }) {
 	const user = player.user;
 	const status = player.status;
+	const channel = ChannelStore.getDMChannelFromUserId(user.id);
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => {
 		let Menus = ContextMenus();
-		return BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, user });
+		return BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, channel, user });
 	}) }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: `${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`, user, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }), BdApi.React.createElement(MessageButton, { user }));
 }
 

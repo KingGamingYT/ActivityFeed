@@ -18,11 +18,10 @@ export function VoiceCard({activities, voice, streams}) {
     const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
     const members = stream ? getVoiceParticipants({voice: stream.channelId}) : voice[0]?.members;
     const server = voice[0]?.guild;
-    const Menus = ContextMenus();
 
     return (
             <>
-                <div className={NowPlayingClasses.voiceSection} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuVoice.default {...props} channel={channel} />)}>
+                <div className={NowPlayingClasses.voiceSection} onContextMenu={e => ContextMenu.open(e, (props) => {let Menus = ContextMenus(); return <Menus.ContextMenuVoice.default {...props} channel={channel} />})}>
                     <div className={NowPlayingClasses.voiceSectionAssets}>
                         <VoiceGuildAsset channel={channel} streamUser={streamUsers[0]} server={server} />
                     </div>

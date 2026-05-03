@@ -50,8 +50,8 @@ export default class ActivityFeed {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
         }
-        await Utils.forceLoad(Webpack.getBySource('openNativeAppModal', 'fingerprint', 'AGE_GATE_FAILURE_MODAL_OPEN', {raw: true}).id)
-        await Utils.forceLoad(Webpack.getBySource('handleUserContextMenu', {raw: true}).id);
+        //await Utils.forceLoad(Webpack.getBySource('openNativeAppModal', 'fingerprint', 'AGE_GATE_FAILURE_MODAL_OPEN', {raw: true}).id)
+        //await Utils.forceLoad(Webpack.getBySource('handleUserContextMenu', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
         NewsStore.blacklist = Data.load('blacklist') || [];
         setInterval(async () => {
@@ -59,25 +59,37 @@ export default class ActivityFeed {
         }, 100)
 
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
-        function NewType(props) {
-            const ret = NewType._(props);
-
-            const { children } = Utils.findInTree(ret, (node) => node && node.children?.length > 5, { walkable: [ "children", "props" ] });
-            
-            const index = children.findIndex(m => m.key === "activity-feed");
-            if (~index) { children.splice(index, 1); }            
-
-            children.push(
-                createElement(Route, {
-                    disableTrack: true,
-                    path: "/activity-feed",
-                    render: () => createElement(TabBaseBuilder),
-                    exact: true,
-                    key: "activity-feed"
-                })
-            )
-            
-            return ret;
+        const [appContentModule, appContentKey] = Webpack.getWithKey(Webpack.Filters.byStrings("GUILD_MEMBER_VERIFICATION"), {
+            target: Webpack.getBySource("hasNotice", "AppView", {raw: true}).declarations
+        })
+        if (appContentModule) {
+            Patcher.after(appContentModule, appContentKey, (that, args, ret) => {
+                const { children } = Utils.findInTree(ret, (node) => node && node.children?.length > 5 && node.children.some(c => c?.props?.path), { walkable: ["children", "props"] }) ?? {};
+                if (!children) return;
+                const index = children.findIndex((m) => m.key === "activity-feed");
+                if (~index) {
+                    children.splice(index, 1);
+                }
+                children.push(
+                    createElement(Route, {
+                        disableTrack: true,
+                        path: "/activity-feed",
+                        render: () => createElement(TabBaseBuilder),
+                        exact: true,
+                        key: "activity-feed"
+                    })
+                );
+            });
+            const patchedFn = appContentModule[appContentKey];
+            const inst = ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
+            if (inst) {
+                Patcher.after(inst, "render", (that, args, res) => {
+                    if (res?.props?.children) {
+                        res.props.children = { ...res.props.children, type: patchedFn };
+                    }
+                });
+                inst.forceUpdate();
+            }
         }
 
         DOM.addStyle('activityPanelCSS', styles());
@@ -110,7 +122,7 @@ export default class ActivityFeed {
             return args
         })
 
-        Patcher.after(Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {
+        Patcher.after(Object.values(BdApi.Webpack.getBySource("handleHistoryChange", "ensureChannelMatchesGuild", {raw: true}).declarations).find(BdApi.Webpack.Filters.byPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild")).prototype, "render", (that, args, res) => {
             const channelRouteProps = Utils.findInTree(res, (node) => node && node.path?.length > 5, { walkable: [ "children", "props" ] });
 
             channelRouteProps.path = [
@@ -142,57 +154,6 @@ export default class ActivityFeed {
                 res.props.children.push(createElement(FollowButton, { application, fullWidth: true }))
             })
         })
-
-        function fu() {
-            const appI = ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {
-                filter: m => typeof m.ensureChannelMatchesGuild === "function"
-            });
-            
-            if (appI) {
-                appI.forceUpdate(() => {
-                    const inst = ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
-
-                    Patcher.after(inst, "render", (that, args, res) => {
-                        NewType._ ??= res.props.children.type;
-
-                        res.props.children.type = NewType;
-                    });
-
-                    inst?.forceUpdate(() => {
-                        
-                        appI.forceUpdate();
-                        inst.forceUpdate();
-                    });
-                });
-            };
-        }
-
-        fu();
-
-        {
-            const appMount = document.getElementById("app-mount");
-
-            const reactContainerKey = Object.keys(appMount).find(m => m.startsWith("__reactContainer$"));
-
-            let container = appMount[reactContainerKey];
-
-            while (!container.stateNode?.isReactComponent) {
-                container = container.child;
-            }
-
-            container = container.child;
-
-            while (!container.stateNode?.isReactComponent) {
-                container = container.child;
-            }
-
-            Patcher.after(container.stateNode, "render", fu);
-
-            const undo = Patcher.after(container.stateNode, "render", () => {
-                undo();
-                fu();
-            });
-        }
 
         /*Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 
             Patcher.after(res, "type", (that, [props], res) => { 

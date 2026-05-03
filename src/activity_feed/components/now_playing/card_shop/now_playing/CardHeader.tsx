@@ -1,6 +1,7 @@
 import { Utils, ContextMenu } from "betterdiscord";
 import { useState, useRef } from "react";
 import { CardPopout, Common, ContextMenus } from "@modules/common";
+import { ChannelStore } from "@modules/stores";
 import Tooltip from "@common/components/TooltipBuilder";
 import DiscordTag from "@now_playing/activities/components/common/DiscordTag";
 import MessageButton from "@now_playing/activities/components/common/MessageButton";
@@ -59,10 +60,10 @@ function HeaderIcon({activities, isSpotify, currentGame}) {
 
 export function NowPlayingCardHeader({card, activities, game, splash, user, voice, isSpotify}) {
     const status = card.party.priorityMembers[0].status;
-    const Menus = ContextMenus();
+    const channel = ChannelStore.getDMChannelFromUserId(user.id);
 
     return (
-        <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuUser.default {...props} user={user} />)}>
+        <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}} onContextMenu={e => ContextMenu.open(e, (props) => { let Menus = ContextMenus(); return <Menus.ContextMenuUser.default {...props} channel={channel} user={user} />})}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
                 <AvatarWithPopoutWrapper className={NowPlayingClasses.avatar} user={user} status={status} size="SIZE_40" />

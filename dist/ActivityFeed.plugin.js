@@ -119,15 +119,15 @@ const Title = betterdiscord.Webpack.getMangled("flashQueue", {
 	WindowTitle: betterdiscord.Webpack.Filters.byStrings("null")
 });
 const ContextMenus = () => {
-	let ContextMenuUser = betterdiscord.Webpack.getBySource("data-menu-migrated", "user-context", "appContext");
-	let ContextMenuVoice = betterdiscord.Webpack.getBySource("channel", "channel-context", "data-menu-migrated");
+	let ContextMenuUser = betterdiscord.Webpack.getBySource("DMUserContextMenu", "data-menu-migrated");
+	let ContextMenuVoice = betterdiscord.Webpack.getBySource("channel-context", "CHANNEL_ACTIVITY_FEED_VOICE_MENU");
 	if (!ContextMenuUser) {
-		ContextMenuUser = betterdiscord.Webpack.getBySource("data-menu-migrated", "user-context", "appContext");
-		ContextMenuVoice = betterdiscord.Webpack.getBySource("channel", "channel-context", "data-menu-migrated");
+		ContextMenuUser = betterdiscord.Webpack.getBySource("DMUserContextMenu", "data-menu-migrated");
+		ContextMenuVoice = betterdiscord.Webpack.getBySource("channel-context", "CHANNEL_ACTIVITY_FEED_VOICE_MENU");
 	}
 	return { ContextMenuUser, ContextMenuVoice };
 };
-const CardPopout = Object.values(BdApi.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { raw: true }).declarations).find((x) => x?.toString()?.includes("ACTIVITY_FEED_GUILD_VISITED"));
+const CardPopout = betterdiscord.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: (x) => String(x)?.includes("ACTIVITY_FEED_GUILD_VISITED") });
 const layoutUtils = betterdiscord.Webpack.getMangled(
 	betterdiscord.Webpack.Filters.bySource("$Root", ".ACCORDION"),
 	{
@@ -6005,8 +6005,10 @@ function VoiceCard({ activities, voice, streams }) {
 	const channel = stream ? ChannelStore.getChannel(stream.channelId) : voice[0]?.channel;
 	const members = stream ? getVoiceParticipants({ voice: stream.channelId }) : voice[0]?.members;
 	const server = voice[0]?.guild;
-	const Menus = ContextMenus();
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(Menus.ContextMenuVoice.default, { ...props, channel })) }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser: streamUsers[0], server })), BdApi.React.createElement(
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSection, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => {
+		let Menus = ContextMenus();
+		return BdApi.React.createElement(Menus.ContextMenuVoice.default, { ...props, channel });
+	}) }, BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionAssets }, BdApi.React.createElement(VoiceGuildAsset, { channel, streamUser: streamUsers[0], server })), BdApi.React.createElement(
 		FlexInfo,
 		{
 			className: `${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`,
@@ -6077,8 +6079,11 @@ function HeaderIcon({ activities, isSpotify, currentGame }) {
 }
 function NowPlayingCardHeader({ card, activities, game, splash, user, voice, isSpotify }) {
 	const status = card.party.priorityMembers[0].status;
-	const Menus = ContextMenus();
-	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" }, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, user })) }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.avatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions$1, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
+	const channel = ChannelStore.getDMChannelFromUserId(user.id);
+	return BdApi.React.createElement("div", { className: `${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`, style: { flex: "1 1 auto" }, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => {
+		let Menus = ContextMenus();
+		return BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, channel, user });
+	}) }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.avatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, voice }), BdApi.React.createElement(HeaderActions$1, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
 }
 
 // activity_feed/components/now_playing/activities/components/WhatsNewListItem.tsx
@@ -6097,8 +6102,10 @@ function WhatsNewListOverflow({ players, v2Enabled }) {
 function WhatsNewListItem({ player }) {
 	const user = player.user;
 	const status = player.status;
-	const Menus = ContextMenus();
-	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, user })) }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: `${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`, user, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }), BdApi.React.createElement(MessageButton, { user }));
+	return BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedPlayer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => {
+		let Menus = ContextMenus();
+		return BdApi.React.createElement(Menus.ContextMenuUser.default, { ...props, user });
+	}) }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: `${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`, user, status, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`, type: "LAST_PLAYED", activity: player, streamUser: user }), BdApi.React.createElement(MessageButton, { user }));
 }
 
 // activity_feed/components/now_playing/activities/components/CardMiniNews.tsx
@@ -7050,31 +7057,43 @@ class ActivityFeed {
 		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
 		}
-		await betterdiscord.Utils.forceLoad(betterdiscord.Webpack.getBySource("openNativeAppModal", "fingerprint", "AGE_GATE_FAILURE_MODAL_OPEN", { raw: true }).id);
-		await betterdiscord.Utils.forceLoad(betterdiscord.Webpack.getBySource("handleUserContextMenu", { raw: true }).id);
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		setInterval(async () => {
 			if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		}, 100);
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
-		function NewType(props) {
-			const ret = NewType._(props);
-			const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5, { walkable: ["children", "props"] });
-			const index = children.findIndex((m) => m.key === "activity-feed");
-			if (~index) {
-				children.splice(index, 1);
+		const [appContentModule, appContentKey] = betterdiscord.Webpack.getWithKey(betterdiscord.Webpack.Filters.byStrings("GUILD_MEMBER_VERIFICATION"), {
+			target: betterdiscord.Webpack.getBySource("hasNotice", "AppView", { raw: true }).declarations
+		});
+		if (appContentModule) {
+			betterdiscord.Patcher.after(appContentModule, appContentKey, (that, args, ret) => {
+				const { children } = betterdiscord.Utils.findInTree(ret, (node) => node && node.children?.length > 5 && node.children.some((c) => c?.props?.path), { walkable: ["children", "props"] }) ?? {};
+				if (!children) return;
+				const index = children.findIndex((m) => m.key === "activity-feed");
+				if (~index) {
+					children.splice(index, 1);
+				}
+				children.push(
+					react.createElement(Route, {
+						disableTrack: true,
+						path: "/activity-feed",
+						render: () => react.createElement(TabBaseBuilder),
+						exact: true,
+						key: "activity-feed"
+					})
+				);
+			});
+			const patchedFn = appContentModule[appContentKey];
+			const inst = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
+			if (inst) {
+				betterdiscord.Patcher.after(inst, "render", (that, args, res) => {
+					if (res?.props?.children) {
+						res.props.children = { ...res.props.children, type: patchedFn };
+					}
+				});
+				inst.forceUpdate();
 			}
-			children.push(
-				react.createElement(Route, {
-					disableTrack: true,
-					path: "/activity-feed",
-					render: () => react.createElement(TabBaseBuilder),
-					exact: true,
-					key: "activity-feed"
-				})
-			);
-			return ret;
 		}
 		betterdiscord.DOM.addStyle("activityPanelCSS", styles$1());
 		betterdiscord.DOM.addStyle("activityPanelSupplementalCSS", extraCSS);
@@ -7100,7 +7119,7 @@ class ActivityFeed {
 			args[0] = filtered;
 			return args;
 		});
-		betterdiscord.Patcher.after(betterdiscord.Webpack.getByPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild").prototype, "render", (that, args, res) => {
+		betterdiscord.Patcher.after(Object.values(BdApi.Webpack.getBySource("handleHistoryChange", "ensureChannelMatchesGuild", { raw: true }).declarations).find(BdApi.Webpack.Filters.byPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild")).prototype, "render", (that, args, res) => {
 			const channelRouteProps = betterdiscord.Utils.findInTree(res, (node) => node && node.path?.length > 5, { walkable: ["children", "props"] });
 			channelRouteProps.path = [
 				...channelRouteProps.path.filter((m) => m !== "/activity-feed"),
@@ -7128,42 +7147,6 @@ class ActivityFeed {
 				res2.props.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
 			});
 		});
-		function fu() {
-			const appI = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector("div[class^=app_] > div[class^=app_]"), {
-				filter: (m) => typeof m.ensureChannelMatchesGuild === "function"
-			});
-			if (appI) {
-				appI.forceUpdate(() => {
-					const inst = betterdiscord.ReactUtils.getOwnerInstance(document.querySelector(`.${container}`));
-					betterdiscord.Patcher.after(inst, "render", (that, args, res) => {
-						NewType._ ??= res.props.children.type;
-						res.props.children.type = NewType;
-					});
-					inst?.forceUpdate(() => {
-						appI.forceUpdate();
-						inst.forceUpdate();
-					});
-				});
-			}
-		}
-		fu();
-		{
-			const appMount = document.getElementById("app-mount");
-			const reactContainerKey = Object.keys(appMount).find((m) => m.startsWith("__reactContainer$"));
-			let container2 = appMount[reactContainerKey];
-			while (!container2.stateNode?.isReactComponent) {
-				container2 = container2.child;
-			}
-			container2 = container2.child;
-			while (!container2.stateNode?.isReactComponent) {
-				container2 = container2.child;
-			}
-			betterdiscord.Patcher.after(container2.stateNode, "render", fu);
-			const undo = betterdiscord.Patcher.after(container2.stateNode, "render", () => {
-				undo();
-				fu();
-			});
-		}
 	}
 	stop() {
 		Common.FluxDispatcher.dispatch({ type: "NOW_PLAYING_UNMOUNTED" });

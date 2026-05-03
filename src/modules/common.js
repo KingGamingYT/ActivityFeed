@@ -90,16 +90,16 @@ export const Title = /* @__PURE__ */ Webpack.getMangled('flashQueue', {
 })
 
 export const ContextMenus = () => {
-    let ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');
-    let ContextMenuVoice = Webpack.getBySource('channel', 'channel-context', 'data-menu-migrated');
+    let ContextMenuUser = Webpack.getBySource('DMUserContextMenu', 'data-menu-migrated');
+    let ContextMenuVoice = Webpack.getBySource('channel-context', 'CHANNEL_ACTIVITY_FEED_VOICE_MENU');
     if (!ContextMenuUser) {
-        ContextMenuUser = Webpack.getBySource('data-menu-migrated', 'user-context', 'appContext');
-        ContextMenuVoice = Webpack.getBySource('channel', 'channel-context', 'data-menu-migrated');
+        ContextMenuUser = Webpack.getBySource('DMUserContextMenu', 'data-menu-migrated');
+        ContextMenuVoice = Webpack.getBySource('channel-context', 'CHANNEL_ACTIVITY_FEED_VOICE_MENU');
     }
     return {ContextMenuUser, ContextMenuVoice};
 }
 
-export const CardPopout = Object.values(BdApi.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", {raw: true}).declarations).find((x) => x?.toString()?.includes("ACTIVITY_FEED_GUILD_VISITED"));
+export const CardPopout = Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: (x) => String(x)?.includes("ACTIVITY_FEED_GUILD_VISITED")});
 
 export const GameProfileClasses = () => {
     let Classes = Webpack.getByKeys('sectionHeader', 'gameProfileModal');

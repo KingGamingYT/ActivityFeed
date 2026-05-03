@@ -48,10 +48,9 @@ export function WhatsNewListOverflow({players, v2Enabled}) {
 export function WhatsNewListItem({player}) {
 	const user = player.user;
 	const status = player.status;
-	const Menus = ContextMenus();
 
 	return (
-		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => ContextMenu.open(e, (props) => <Menus.ContextMenuUser.default {...props} user={user} />)}>
+		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => ContextMenu.open(e, (props) => {let Menus = ContextMenus(); return <Menus.ContextMenuUser.default {...props} user={user} />})}>
             <AvatarWithPopoutWrapper className={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} user={user} status={status} size="SIZE_40" />
             <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
 			<MessageButton user={user} />

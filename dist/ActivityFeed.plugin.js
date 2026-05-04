@@ -4168,6 +4168,311 @@ function QuickLauncherBuilder(props) {
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: "Quick Launcher" }), gameList.length === 0 || (betterdiscord.Data.load("freezeDock") ?? settings.default.freezeDock) ? BdApi.React.createElement(LauncherEmptyBuilder, null) : BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Dock") ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock) }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames }))));
 }
 
+// activity_feed/components/now_playing/activities/components/common/ActivityButtons.tsx
+const themeContext = betterdiscord.Webpack.getBySource("themePreferenceForSystemTheme", "createContext");
+const activityAuth = betterdiscord.Webpack.getByStrings("alpha2", "embeddedActivityConfig", { searchExports: true });
+const activityIdCheck = betterdiscord.Webpack.getBySource("{return!!(0", ")(e)}}", { searchExports: true });
+const getCTA = betterdiscord.Webpack.getByStrings("ctaConfig", "flatMap");
+const fetchAuthorization = betterdiscord.Webpack.getByStrings("parentId", "disableFetch", { searchExports: true });
+const CloudPlayButton = betterdiscord.Webpack.getByStrings('"PRESS_CLOUD_PLAY_BUTTON"');
+const isEmbeddedActivity = betterdiscord.Webpack.getByStrings(".EMBEDDED", "{return(0,");
+const isSupportedPlatform = betterdiscord.Webpack.getByStrings("META_QUEST", "supported_platforms");
+const CTAButton = betterdiscord.Webpack.getByStrings("distributorCTAConfigs", '"noopener,noreferrer"');
+const isNonConsole = betterdiscord.Webpack.getByStrings(".CUSTOM_STATUS&&(null");
+const isXbox = betterdiscord.Webpack.getByStrings("platform===", ".XBOX");
+const isPlayStation = betterdiscord.Webpack.getByStrings("platform===", ".PS5");
+const XboxIcon = betterdiscord.Webpack.getByStrings("M8.95185131");
+const PlayStationIcon = betterdiscord.Webpack.getByStrings("M17.7516");
+const isStream = betterdiscord.Webpack.getByStrings("Array.isArray(e)?e.some(");
+const isJoinable = betterdiscord.Webpack.getByStrings("JOIN)&&", "&&!!(0,", { searchExports: true });
+const isInstance = betterdiscord.Webpack.getByStrings(".INSTANCE&&null!=e");
+const isStageChannel = betterdiscord.Webpack.getByStrings("e?.application_id===", "SS", { searchExports: true });
+const ManaButtons = betterdiscord.Webpack.getBySource("__unsupportedReactNodeAsText", "SPINNING_CIRCLE", '"aria-busy"', "ariaHidden", '="secondary"', { searchExports: true });
+const ActivityMetadataUpdate = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_METADATA", "ACTIVITY_METADATA_UPDATE", { searchExports: true });
+const Parser = betterdiscord.Webpack.getByKeys("formatPathWithQuery");
+const sanitize = betterdiscord.Webpack.getByStrings("sanitizeUrl", "contextKey", { searchExports: true });
+const ChannelContext = betterdiscord.Webpack.getByStrings(".POPOUT", "onClose", "contextless");
+const joinProps = betterdiscord.Webpack.getByStrings("DispatchApplicationStore", "embeddedActivity", { searchExports: true });
+const getPlayableGame = betterdiscord.Webpack.getByStrings("data", "getOfficialGame", "null:null", { searchExports: true });
+const SlashCommandIcon = betterdiscord.Webpack.getByStrings("7.61c-.25.95.31", { searchExports: true });
+const GameUtils = betterdiscord.Webpack.getByKeys("launch", "reportUnverifiedGame");
+const ContainerTooltip = betterdiscord.Webpack.getByStrings("asContainer", "keyboardShortcut", { searchExports: true });
+const DoorExitIcon = betterdiscord.Webpack.getByStrings('"string"==typeof', "18.5V22a1", { searchExports: true });
+const GameControllerIcon = betterdiscord.Webpack.getByStrings(".09v4.91a3.09", { searchExports: true });
+const getTrack = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_PLAY", "spotifyData", { searchExports: true });
+const getTrackSync = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_SYNC", "spotifyData", { searchExports: true });
+const hasParty = betterdiscord.Webpack.getByStrings("LISTENING", "SPOTIFY).name", { searchExports: true });
+const SpotifyIcon = betterdiscord.Webpack.getByStrings("M12.7609503,7.08043507", { searchExports: true });
+const ListenAlongIcon = betterdiscord.Webpack.getByStrings("0Zm-2.77-.2-3.33-2.5a.25", "className", { searchExports: true });
+function WidgetButton({ applicationId, onAction, onClose }) {
+	return;
+}
+async function ParseCustomButton({ activity, user, index }) {
+	try {
+		const request = await ActivityMetadataUpdate(activity, user.id);
+		if (request.button_urls.length <= index) return;
+		const url = request.button_urls[index];
+		if ("string" != typeof url) return;
+		const parsed = Parser.safeParseWithQuery(url);
+		if (!parsed?.protocol || !parsed?.hostname) return;
+		sanitize({ href: Parser.format(parsed), trusted: 0 });
+	} catch (e) {
+	}
+}
+function CustomButton({ user, activity, onAction }) {
+	const { themeType } = themeContext.E();
+	if (!activity?.buttons || activity.buttons.length < 1) return;
+	const isCrunchyroll = activity?.application_id === "981509069309354054";
+	return themeType === "MODAL_V2" ? BdApi.React.createElement("div", { className: Common.ActivityCardClasses.customButtons }, activity.buttons.map((button, index) => BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			text: isCrunchyroll ? Common.intl.intl.formatToPlainString(Common.intl.t[`I6JG46`]) : button,
+			onClick: (e) => {
+				e.stopPropagation();
+				onAction?.({
+					action: isCrunchyroll ? "PRESS_WATCH_ON_CRUNCHYROLL_BUTTON" : "PRESS_CUSTOM_BUTTON"
+				})();
+				ParseCustomButton({ user, activity, index });
+			}
+		}
+	))) : BdApi.React.createElement("div", { className: Common.ActivityCardClasses.customButtons }, activity.buttons.map((button, index) => BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			text: isCrunchyroll ? Common.intl.intl.formatToPlainString(Common.intl.t[`I6JG46`]) : button,
+			fullWidth: true,
+			onClick: (e) => {
+				e.stopPropagation();
+				onAction?.({
+					action: isCrunchyroll ? "PRESS_WATCH_ON_CRUNCHYROLL_BUTTON" : "PRESS_CUSTOM_BUTTON"
+				});
+				ParseCustomButton({ user, activity, index });
+			}
+		}
+	)));
+}
+function ConnectAccountButton({ startAuthorization, onAction }) {
+	return;
+}
+function ConsoleButton({ platformType, icon, onAction }) {
+	return;
+}
+function WatchStreamButton({ activity, onAction }) {
+	themeContext.E();
+	return;
+}
+function PlayButton({ user, activity, onAction, onClose }) {
+	const { themeType } = themeContext.E();
+	const channelContext = ChannelContext({ applicationId: activity?.application_id, onClose });
+	const isJoinable2 = joinProps({ activity, user, onClose });
+	const isPlayable = getPlayableGame(activity?.application_id);
+	if (!isJoinable2 && activity && isEmbeddedActivity(activity)) return BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			icon: BdApi.React.createElement(SlashCommandIcon, null),
+			text: Common.intl.intl.formatToPlainString(Common.intl.t[`RscU7I`]),
+			fullWidth: themeType !== "MODAL_V2",
+			onClick: (e) => {
+				e.stopPropagation();
+				isPlayable ? GameUtils.launch({ applicationId: isPlayable }) : onAction?.({ action: "PRESS_PLAY_BUTTON" });
+				channelContext();
+			}
+		}
+	);
+	if (!isJoinable2) return;
+	const { isJoining, handleJoinRequest, buttonCTA, tooltip, isEnabled, isEmbedded } = isJoinable2;
+	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(ContainerTooltip, { text: tooltip, asContainer: !isEnabled }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			icon: isEmbedded ? BdApi.React.createElement(DoorExitIcon, null) : BdApi.React.createElement(GameControllerIcon, null),
+			text: buttonCTA,
+			disabled: !isEnabled,
+			loading: isJoining,
+			fullWidth: themeType !== "MODAL_V2",
+			onClick: (e) => {
+				e.stopPropagation();
+				onAction?.({ action: isEmbedded ? "PRESS_JOIN_BUTTON" : "PRESS_ASK_TO_JOIN_BUTTON" });
+				handleJoinRequest();
+			}
+		}
+	)));
+}
+function NotifyButton({ user, activity, onAction }) {
+	themeContext.E();
+	return;
+}
+function StageChannelListenButton({ activity, onAction, onClose }) {
+	themeContext.E();
+	return;
+}
+function ActivityButtons({ user, activity, onAction, onClose, application, containerClassName }) {
+	const { themeType } = themeContext.E();
+	const isSelf = useStateFromStores([AuthenticationStore], () => AuthenticationStore.getId() === user.id);
+	const hasConfig = activityAuth(application);
+	const idCheck = activityIdCheck.o(activity?.application_id ?? application?.id);
+	const ctaButtons = getCTA("user_profile_activity_buttons", activity?.application_id);
+	const { fetched, canStartAuthorization, hasAlreadyLinked, startAuthorization } = fetchAuthorization(application);
+	const isModal = themeType === "MODAL" || themeType === "MODAL_V2";
+	const isPopout = themeType === "POPOUT";
+	const buttons = (() => {
+		if (isSelf) return isPopout && activity?.type === 0 && application?.id ? BdApi.React.createElement(
+			WidgetButton,
+			{
+				applicationId: application.id,
+				onAction,
+				onClose
+			}
+		) : null;
+		if (activity?.buttons && activity?.buttons.length >= 1) return BdApi.React.createElement(
+			CustomButton,
+			{
+				user,
+				activity,
+				onAction
+			}
+		);
+		if (!idCheck && hasConfig && application && !isModal) return BdApi.React.createElement(
+			CloudPlayButton.A,
+			{
+				application,
+				onAction,
+				onClose
+			}
+		);
+		if (isEmbeddedActivity(activity) || isSupportedPlatform(activity) && idCheck) return BdApi.React.createElement(
+			PlayButton,
+			{
+				user,
+				activity,
+				onAction,
+				onClose
+			}
+		);
+		if (fetched && canStartAuthorization && !hasAlreadyLinked) return BdApi.React.createElement(
+			ConnectAccountButton,
+			{
+				startAuthorization,
+				onAction
+			}
+		);
+		if (ctaButtons.length > 0) return BdApi.React.createElement(
+			CTAButton,
+			{
+				distributorCTAConfigs: ctaButtons,
+				fullWidth: themeType !== "MODAL_V2",
+				stopPropagation: true,
+				onAction,
+				onClose
+			}
+		);
+		if (!isNonConsole(activity)) {
+			if (isXbox(activity)) return BdApi.React.createElement(
+				ConsoleButton,
+				{
+					platformType: "xbox",
+					icon: () => BdApi.React.createElement(XboxIcon, null),
+					onAction
+				}
+			);
+			if (isPlayStation(activity)) return BdApi.React.createElement(
+				ConsoleButton,
+				{
+					platformType: "playstation",
+					icon: () => BdApi.React.createElement(PlayStationIcon, null),
+					onAction
+				}
+			);
+		}
+		return isStream(activity) ? BdApi.React.createElement(
+			WatchStreamButton,
+			{
+				activity,
+				onAction
+			}
+		) : isJoinable(activity) ? BdApi.React.createElement(
+			PlayButton,
+			{
+				user,
+				activity,
+				onAction,
+				onClose
+			}
+		) : isInstance(activity, 1) ? BdApi.React.createElement(
+			NotifyButton,
+			{
+				user,
+				activity,
+				onAction
+			}
+		) : isStageChannel(activity) ? BdApi.React.createElement(
+			StageChannelListenButton,
+			{
+				activity,
+				onAction,
+				onClose
+			}
+		) : null;
+	})();
+	return !buttons ? null : BdApi.React.createElement("div", { className: containerClassName }, buttons);
+}
+function SpotifyButtons({ user, activity, onAction }) {
+	const { themeType } = themeContext.E();
+	const track = getTrack(activity, user);
+	const trackSync = getTrackSync(activity, user);
+	if (!hasParty(activity) || !isInstance(activity, 32) && !isInstance(activity, 16)) return;
+	const handleListenAlongOnClick = (e) => {
+		e.stopPropagation();
+		onAction?.({ action: "PRESS_LISTEN_ALONG_ON_SPOTIFY_BUTTON" });
+		trackSync.onClick();
+	};
+	const handlePlayOnClick = (e) => {
+		e?.stopPropagation();
+		onAction?.({ action: "PRESS_PLAY_ON_SPOTIFY_BUTTON" });
+		track.onClick();
+	};
+	return themeType === "MODAL_V2" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(ContainerTooltip, { text: trackSync.tooltip }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			text: trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
+			onClick: handleListenAlongOnClick,
+			disabled: trackSync.disabled,
+			loading: trackSync.loading
+		}
+	)), BdApi.React.createElement(ContainerTooltip, { text: track.tooltip }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			text: track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`]),
+			onClick: handlePlayOnClick,
+			disabled: track.disabled,
+			loading: track.loading
+		}
+	))) : BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: Common.ActivityCardClasses.primaryButton }, BdApi.React.createElement(ContainerTooltip, { text: track.tooltip }, BdApi.React.createElement(
+		ManaButtons.FD,
+		{
+			icon: () => BdApi.React.createElement(SpotifyIcon, null),
+			text: track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`]),
+			onClick: handlePlayOnClick,
+			disabled: track.disabled,
+			loading: track.loading,
+			fullWidth: true
+		}
+	))), BdApi.React.createElement(
+		ManaButtons.q3,
+		{
+			icon: () => BdApi.React.createElement(ListenAlongIcon, { color: "currentColor" }),
+			tooltipText: trackSync.tooltip ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
+			ariaLabel: trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
+			disabled: trackSync.disabled,
+			loading: trackSync.loading,
+			fullWidth: true
+		}
+	));
+}
+function OpenLinkClickHandler({ location, user, currentUser, activity, application, entry, onClose }) {
+	const isCrunchyroll = activity?.application_id === "981509069309354054";
+	if (isCrunchyroll && user.id !== currentUser.id) return ParseCustomButton({ user, activity, index: 0 });
+	return;
+}
+
 // activity_feed/components/now_playing/NowPlaying.module.css
 const css$2 = `
 .nowPlaying__93528, .whatsNew__93528 {}
@@ -5233,7 +5538,7 @@ function ActivityType(props) {
 							case "YT_MUSIC":
 								return Common.OpenTrack(activity);
 							case "CRUNCHYROLL":
-								return betterdiscord.ReactUtils.wrapInHooks(Common.OpenLink)({ user, currentUser: UserStore.getCurrentUser(), activity })();
+								return OpenLinkClickHandler({ user, currentUser: UserStore.getCurrentUser(), activity });
 						}
 					},
 					onMouseOver: (e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`),
@@ -5275,306 +5580,6 @@ function ActivityType(props) {
 function FlexInfo(props) {
 	const { className, style, onClick } = props;
 	return BdApi.React.createElement("div", { className, style, onClick }, BdApi.React.createElement(ActivityType, { ...props }));
-}
-
-// activity_feed/components/now_playing/activities/components/common/ActivityButtons.tsx
-const themeContext = betterdiscord.Webpack.getBySource("themePreferenceForSystemTheme", "createContext");
-const activityAuth = betterdiscord.Webpack.getByStrings("alpha2", "embeddedActivityConfig", { searchExports: true });
-const activityIdCheck = betterdiscord.Webpack.getBySource("{return!!(0", ")(e)}}", { searchExports: true });
-const getCTA = betterdiscord.Webpack.getByStrings("ctaConfig", "flatMap");
-const fetchAuthorization = betterdiscord.Webpack.getByStrings("parentId", "disableFetch", { searchExports: true });
-const CloudPlayButton = betterdiscord.Webpack.getByStrings('"PRESS_CLOUD_PLAY_BUTTON"');
-const isEmbeddedActivity = betterdiscord.Webpack.getByStrings(".EMBEDDED", "{return(0,");
-const isSupportedPlatform = betterdiscord.Webpack.getByStrings("META_QUEST", "supported_platforms");
-const CTAButton = betterdiscord.Webpack.getByStrings("distributorCTAConfigs", '"noopener,noreferrer"');
-const isNonConsole = betterdiscord.Webpack.getByStrings(".CUSTOM_STATUS&&(null");
-const isXbox = betterdiscord.Webpack.getByStrings("platform===", ".XBOX");
-const isPlayStation = betterdiscord.Webpack.getByStrings("platform===", ".PS5");
-const XboxIcon = betterdiscord.Webpack.getByStrings("M8.95185131");
-const PlayStationIcon = betterdiscord.Webpack.getByStrings("M17.7516");
-const isStream = betterdiscord.Webpack.getByStrings("Array.isArray(e)?e.some(");
-const isJoinable = betterdiscord.Webpack.getByStrings("JOIN)&&", "&&!!(0,", { searchExports: true });
-const isInstance = betterdiscord.Webpack.getByStrings(".INSTANCE&&null!=e");
-const isStageChannel = betterdiscord.Webpack.getByStrings("e?.application_id===", "SS", { searchExports: true });
-const ManaButtons = betterdiscord.Webpack.getBySource("__unsupportedReactNodeAsText", "SPINNING_CIRCLE", '"aria-busy"', "ariaHidden", '="secondary"', { searchExports: true });
-const ActivityMetadataUpdate = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_METADATA", "ACTIVITY_METADATA_UPDATE", { searchExports: true });
-const Parser = betterdiscord.Webpack.getByKeys("formatPathWithQuery");
-const sanitize = betterdiscord.Webpack.getByStrings("sanitizeUrl", "contextKey", { searchExports: true });
-const ChannelContext = betterdiscord.Webpack.getByStrings(".POPOUT", "onClose", "contextless");
-const joinProps = betterdiscord.Webpack.getByStrings("DispatchApplicationStore", "embeddedActivity", { searchExports: true });
-const getPlayableGame = betterdiscord.Webpack.getByStrings("data", "getOfficialGame", "null:null", { searchExports: true });
-const SlashCommandIcon = betterdiscord.Webpack.getByStrings("7.61c-.25.95.31", { searchExports: true });
-const GameUtils = betterdiscord.Webpack.getByKeys("launch", "reportUnverifiedGame");
-const ContainerTooltip = betterdiscord.Webpack.getByStrings("asContainer", "keyboardShortcut", { searchExports: true });
-const DoorExitIcon = betterdiscord.Webpack.getByStrings('"string"==typeof', "18.5V22a1", { searchExports: true });
-const GameControllerIcon = betterdiscord.Webpack.getByStrings(".09v4.91a3.09", { searchExports: true });
-const getTrack = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_PLAY", "spotifyData", { searchExports: true });
-const getTrackSync = betterdiscord.Webpack.getByStrings("USER_ACTIVITY_SYNC", "spotifyData", { searchExports: true });
-const hasParty = betterdiscord.Webpack.getByStrings("LISTENING", "SPOTIFY).name", { searchExports: true });
-const SpotifyIcon = betterdiscord.Webpack.getByStrings("M12.7609503,7.08043507", { searchExports: true });
-const ListenAlongIcon = betterdiscord.Webpack.getByStrings("0Zm-2.77-.2-3.33-2.5a.25", "className", { searchExports: true });
-function WidgetButton({ applicationId, onAction, onClose }) {
-	return;
-}
-async function ParseCustomButton({ activity, user, index }) {
-	try {
-		const request = await ActivityMetadataUpdate(activity, user.id);
-		if (request.button_urls.length <= index) return;
-		const url = request.button_urls[index];
-		if ("string" != typeof url) return;
-		const parsed = Parser.safeParseWithQuery(url);
-		if (!parsed?.protocol || !parsed?.hostname) return;
-		sanitize({ href: Parser.format(parsed), trusted: 0 });
-	} catch (e) {
-	}
-}
-function CustomButton({ user, activity, onAction }) {
-	const { themeType } = themeContext.E();
-	if (!activity?.buttons || activity.buttons.length < 1) return;
-	const isCrunchyroll = activity?.application_id === "981509069309354054";
-	return themeType === "MODAL_V2" ? BdApi.React.createElement("div", { className: Common.ActivityCardClasses.customButtons }, activity.buttons.map((button, index) => BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			text: isCrunchyroll ? Common.intl.intl.formatToPlainString(Common.intl.t[`I6JG46`]) : button,
-			onClick: (e) => {
-				e.stopPropagation();
-				onAction?.({
-					action: isCrunchyroll ? "PRESS_WATCH_ON_CRUNCHYROLL_BUTTON" : "PRESS_CUSTOM_BUTTON"
-				})();
-				ParseCustomButton({ user, activity, index });
-			}
-		}
-	))) : BdApi.React.createElement("div", { className: Common.ActivityCardClasses.customButtons }, activity.buttons.map((button, index) => BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			text: isCrunchyroll ? Common.intl.intl.formatToPlainString(Common.intl.t[`I6JG46`]) : button,
-			fullWidth: true,
-			onClick: (e) => {
-				e.stopPropagation();
-				onAction?.({
-					action: isCrunchyroll ? "PRESS_WATCH_ON_CRUNCHYROLL_BUTTON" : "PRESS_CUSTOM_BUTTON"
-				});
-				ParseCustomButton({ user, activity, index });
-			}
-		}
-	)));
-}
-function ConnectAccountButton({ startAuthorization, onAction }) {
-	return;
-}
-function ConsoleButton({ platformType, icon, onAction }) {
-	return;
-}
-function WatchStreamButton({ activity, onAction }) {
-	themeContext.E();
-	return;
-}
-function PlayButton({ user, activity, onAction, onClose }) {
-	const { themeType } = themeContext.E();
-	const channelContext = ChannelContext({ applicationId: activity?.application_id, onClose });
-	const isJoinable2 = joinProps({ activity, user, onClose });
-	const isPlayable = getPlayableGame(activity?.application_id);
-	if (!isJoinable2 && activity && isEmbeddedActivity(activity)) return BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			icon: BdApi.React.createElement(SlashCommandIcon, null),
-			text: Common.intl.intl.formatToPlainString(Common.intl.t[`RscU7I`]),
-			fullWidth: themeType !== "MODAL_V2",
-			onClick: (e) => {
-				e.stopPropagation();
-				isPlayable ? GameUtils.launch({ applicationId: isPlayable }) : onAction?.({ action: "PRESS_PLAY_BUTTON" });
-				channelContext();
-			}
-		}
-	);
-	if (!isJoinable2) return;
-	const { isJoining, handleJoinRequest, buttonCTA, tooltip, isEnabled, isEmbedded } = isJoinable2;
-	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(ContainerTooltip, { text: tooltip, asContainer: !isEnabled }, BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			icon: isEmbedded ? BdApi.React.createElement(DoorExitIcon, null) : BdApi.React.createElement(GameControllerIcon, null),
-			text: buttonCTA,
-			disabled: !isEnabled,
-			loading: isJoining,
-			fullWidth: themeType !== "MODAL_V2",
-			onClick: (e) => {
-				e.stopPropagation();
-				onAction?.({ action: isEmbedded ? "PRESS_JOIN_BUTTON" : "PRESS_ASK_TO_JOIN_BUTTON" });
-				handleJoinRequest();
-			}
-		}
-	)));
-}
-function NotifyButton({ user, activity, onAction }) {
-	themeContext.E();
-	return;
-}
-function StageChannelListenButton({ activity, onAction, onClose }) {
-	themeContext.E();
-	return;
-}
-function ActivityButtons({ user, activity, onAction, onClose, application, containerClassName }) {
-	const { themeType } = themeContext.E();
-	const isSelf = useStateFromStores([AuthenticationStore], () => AuthenticationStore.getId() === user.id);
-	const hasConfig = activityAuth(application);
-	const idCheck = activityIdCheck.o(activity?.application_id ?? application?.id);
-	const ctaButtons = getCTA("user_profile_activity_buttons", activity?.application_id);
-	const { fetched, canStartAuthorization, hasAlreadyLinked, startAuthorization } = fetchAuthorization(application);
-	const isModal = themeType === "MODAL" || themeType === "MODAL_V2";
-	const isPopout = themeType === "POPOUT";
-	const buttons = (() => {
-		if (isSelf) return isPopout && activity?.type === 0 && application?.id ? BdApi.React.createElement(
-			WidgetButton,
-			{
-				applicationId: application.id,
-				onAction,
-				onClose
-			}
-		) : null;
-		if (activity?.buttons && activity?.buttons.length >= 1) return BdApi.React.createElement(
-			CustomButton,
-			{
-				user,
-				activity,
-				onAction
-			}
-		);
-		if (!idCheck && hasConfig && application && !isModal) return BdApi.React.createElement(
-			CloudPlayButton.A,
-			{
-				application,
-				onAction,
-				onClose
-			}
-		);
-		if (isEmbeddedActivity(activity) || isSupportedPlatform(activity) && idCheck) return BdApi.React.createElement(
-			PlayButton,
-			{
-				user,
-				activity,
-				onAction,
-				onClose
-			}
-		);
-		if (fetched && canStartAuthorization && !hasAlreadyLinked) return BdApi.React.createElement(
-			ConnectAccountButton,
-			{
-				startAuthorization,
-				onAction
-			}
-		);
-		if (ctaButtons.length > 0) return BdApi.React.createElement(
-			CTAButton,
-			{
-				distributorCTAConfigs: ctaButtons,
-				fullWidth: themeType !== "MODAL_V2",
-				stopPropagation: true,
-				onAction,
-				onClose
-			}
-		);
-		if (!isNonConsole(activity)) {
-			if (isXbox(activity)) return BdApi.React.createElement(
-				ConsoleButton,
-				{
-					platformType: "xbox",
-					icon: () => BdApi.React.createElement(XboxIcon, null),
-					onAction
-				}
-			);
-			if (isPlayStation(activity)) return BdApi.React.createElement(
-				ConsoleButton,
-				{
-					platformType: "playstation",
-					icon: () => BdApi.React.createElement(PlayStationIcon, null),
-					onAction
-				}
-			);
-		}
-		return isStream(activity) ? BdApi.React.createElement(
-			WatchStreamButton,
-			{
-				activity,
-				onAction
-			}
-		) : isJoinable(activity) ? BdApi.React.createElement(
-			PlayButton,
-			{
-				user,
-				activity,
-				onAction,
-				onClose
-			}
-		) : isInstance(activity, 1) ? BdApi.React.createElement(
-			NotifyButton,
-			{
-				user,
-				activity,
-				onAction
-			}
-		) : isStageChannel(activity) ? BdApi.React.createElement(
-			StageChannelListenButton,
-			{
-				activity,
-				onAction,
-				onClose
-			}
-		) : null;
-	})();
-	return !buttons ? null : BdApi.React.createElement("div", { className: containerClassName }, buttons);
-}
-function SpotifyButtons({ user, activity, onAction }) {
-	const { themeType } = themeContext.E();
-	const track = getTrack(activity, user);
-	const trackSync = getTrackSync(activity, user);
-	if (!hasParty(activity) || !isInstance(activity, 32) && !isInstance(activity, 16)) return;
-	const handleListenAlongOnClick = (e) => {
-		e.stopPropagation();
-		onAction?.({ action: "PRESS_LISTEN_ALONG_ON_SPOTIFY_BUTTON" });
-		trackSync.onClick();
-	};
-	const handlePlayOnClick = (e) => {
-		e?.stopPropagation();
-		onAction?.({ action: "PRESS_PLAY_ON_SPOTIFY_BUTTON" });
-		track.onClick();
-	};
-	return themeType === "MODAL_V2" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(ContainerTooltip, { text: trackSync.tooltip }, BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			text: trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
-			onClick: handleListenAlongOnClick,
-			disabled: trackSync.disabled,
-			loading: trackSync.loading
-		}
-	)), BdApi.React.createElement(ContainerTooltip, { text: track.tooltip }, BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			text: track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`]),
-			onClick: handlePlayOnClick,
-			disabled: track.disabled,
-			loading: track.loading
-		}
-	))) : BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: Common.ActivityCardClasses.primaryButton }, BdApi.React.createElement(ContainerTooltip, { text: track.tooltip }, BdApi.React.createElement(
-		ManaButtons.FD,
-		{
-			icon: () => BdApi.React.createElement(SpotifyIcon, null),
-			text: track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`]),
-			onClick: handlePlayOnClick,
-			disabled: track.disabled,
-			loading: track.loading,
-			fullWidth: true
-		}
-	))), BdApi.React.createElement(
-		ManaButtons.q3,
-		{
-			icon: () => BdApi.React.createElement(ListenAlongIcon, { color: "currentColor" }),
-			tooltipText: trackSync.tooltip ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
-			ariaLabel: trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`]),
-			disabled: trackSync.disabled,
-			loading: trackSync.loading,
-			fullWidth: true
-		}
-	));
 }
 
 // activity_feed/components/now_playing/activities/components/common/AvatarWithPopoutWrapper.tsx
@@ -5863,7 +5868,7 @@ function RichActivityBuilder({ user, activity, activityProperties, v2Enabled }) 
 					case "YT_MUSIC":
 						return Common.OpenTrack(activity);
 					case "CRUNCHYROLL":
-						return betterdiscord.ReactUtils.wrapInHooks(Common.OpenLink)({ user, currentUser: UserStore.getCurrentUser(), activity })();
+						return OpenLinkClickHandler({ user, currentUser: UserStore.getCurrentUser(), activity });
 				}
 			},
 			onMouseOver: (e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`),
@@ -7058,6 +7063,7 @@ class ActivityFeed {
 		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
 		}
+		const patcher = betterdiscord.ReactUtils.createNodePatcher();
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		setInterval(async () => {
@@ -7142,10 +7148,12 @@ class ActivityFeed {
 		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
 			return react.createElement(CoachmarkWrapper, { button: res });
 		});
-		betterdiscord.Patcher.after(betterdiscord.Webpack.getBySource("disableGameProfileLinks", "ANDROID"), "A", (that, [props], res) => {
-			const application = ApplicationStore.getApplication(res.props.children[0].props.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props.entry.extra.game_name);
-			betterdiscord.Patcher.after(res.props.children[0], "type", (that2, [props2], res2) => {
-				res2.props.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
+		betterdiscord.Patcher.after(betterdiscord.Webpack.getBySource("disableGameProfileLinks", "ANDROID").Ay, "type", (that, [props], res) => {
+			ApplicationStore.getApplication(res.props.children[0].props?.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props?.entry.extra.game_name);
+			betterdiscord.Patcher.after(res.props.children[1].props.children.props, "renderPopout", (that2, [props2], res2) => {
+				patcher.patch(res2.props.children, (props3, res3) => {
+					console.log(res3);
+				});
 			});
 		});
 	}

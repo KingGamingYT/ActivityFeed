@@ -4,6 +4,7 @@ import { UserStore } from "@modules/stores";
 import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
 import { RichImageAsset, SpotifyAsset, GameIconAsset, XboxImageAsset, TwitchImageAsset } from "./common/ActivityAssets";
+import { OpenLinkClickHandler } from "./common/ActivityButtons";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function RegularActivityBuilder({activity, activityProperties, user, game, players, server, v2Enabled}) {
@@ -50,7 +51,7 @@ export function RichActivityBuilder({user, activity, activityProperties, v2Enabl
                             tooltipText={activity.assets.large_text}
                             onClick={() => {switch(activityProperties?.platform) {
                                 case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
-                                case "CRUNCHYROLL": return ReactUtils.wrapInHooks(Common.OpenLink)({user, currentUser: UserStore.getCurrentUser(), activity})()
+                                case "CRUNCHYROLL": return OpenLinkClickHandler({user, currentUser: UserStore.getCurrentUser(), activity})
                             }}}
                             onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
                             onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}

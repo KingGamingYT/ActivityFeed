@@ -50,6 +50,7 @@ export default class ActivityFeed {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
         }
+        const patcher = ReactUtils.createNodePatcher();
         //await Utils.forceLoad(Webpack.getBySource('openNativeAppModal', 'fingerprint', 'AGE_GATE_FAILURE_MODAL_OPEN', {raw: true}).id)
         //await Utils.forceLoad(Webpack.getBySource('handleUserContextMenu', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
@@ -148,11 +149,15 @@ export default class ActivityFeed {
             return createElement(CoachmarkWrapper, {button: res})
         })
 
-        Patcher.after(Webpack.getBySource('disableGameProfileLinks', 'ANDROID'), 'A', (that, [props], res) => {
-            const application = ApplicationStore.getApplication(res.props.children[0].props.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props.entry.extra.game_name);
-            Patcher.after(res.props.children[0], 'type', (that, [props], res) => {
-                res.props.children.push(createElement(FollowButton, { application, fullWidth: true }))
+        Patcher.after(Webpack.getBySource('disableGameProfileLinks', 'ANDROID').Ay, 'type', (that, [props], res) => {
+            const application = ApplicationStore.getApplication(res.props.children[0].props?.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props?.entry.extra.game_name);
+            //console.log(res)
+            Patcher.after(res.props.children[1].props.children.props, 'renderPopout', (that, [props], res) => {
+                patcher.patch(res.props.children, (props, res) => {
+                    console.log(res)
+                })
             })
+
         })
 
         /*Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 

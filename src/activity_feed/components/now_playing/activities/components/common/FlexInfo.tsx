@@ -2,6 +2,7 @@ import { ReactUtils } from "betterdiscord";
 import { Common } from '@modules/common';
 import { GuildStore, UserStore, useStateFromStores } from '@modules/stores';
 import { TimeClock, InactiveTimeClock } from '@common/methods/common';
+import { OpenLinkClickHandler } from "./ActivityButtons";
 import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import PresenceTypeStore from "@now_playing/PresenceTypeStore";
@@ -34,7 +35,7 @@ function ActivityType(props) {
                     className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
                     onClick={() => {switch(activityProperties?.platform) {
                         case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
-                        case "CRUNCHYROLL": return ReactUtils.wrapInHooks(Common.OpenLink)({user, currentUser: UserStore.getCurrentUser(), activity})()
+                        case "CRUNCHYROLL": return OpenLinkClickHandler({user, currentUser: UserStore.getCurrentUser(), activity})
                     }}}
                     onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
                     onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}

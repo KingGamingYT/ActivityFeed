@@ -278,3 +278,9 @@ export function SpotifyButtons({user, activity, onAction}) {
         />
     </>
 }
+
+export function OpenLinkClickHandler({location, user, currentUser, activity, application, entry, onClose}) {
+    const isCrunchyroll = activity?.application_id === "981509069309354054";
+    if (isCrunchyroll && user.id !== currentUser.id) return ParseCustomButton({user, activity, index: 0});
+    return;
+}

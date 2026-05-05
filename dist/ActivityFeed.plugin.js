@@ -2599,6 +2599,8 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return d;
 	}
 	async fetchFeeds() {
+		this.lastTimeFetched = Date.now();
+		betterdiscord.Data.save("lastTimeFetched", this.lastTimeFetched);
 		const gameData = await this.getFeedGameData();
 		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
 		for (let i = 0; i < ignore.length; i++) {
@@ -2625,8 +2627,6 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 				}
 			})(gameId);
 		}
-		this.lastTimeFetched = Date.now();
-		betterdiscord.Data.save("lastTimeFetched", this.lastTimeFetched);
 	}
 	async getFeedGameData() {
 		const gameData = {};
@@ -3904,7 +3904,6 @@ class Article extends betterdiscord.React.PureComponent {
 	renderApplicationIcon() {
 		let currentArticle = this.props.article;
 		const External = settings.external[currentArticle.id];
-		console.log(External);
 		const useGameProfile = this.props.useGameProfile;
 		return isNaN(currentArticle.news?.application_id) ? BdApi.React.createElement(External.icon, { className: FeedClasses.gameIcon, color: "WHITE", style: { backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" } }) : BdApi.React.createElement(
 			"img",
@@ -6353,6 +6352,7 @@ function TabBaseBuilder() {
 		window.addEventListener("keydown", recoverOnReload);
 		return () => window.removeEventListener("keydown", recoverOnReload);
 	});
+	Common.FluxDispatcher.dispatch({ type: "APP_VIEW_SET_HOME_LINK", link: "/activity-feed" });
 	const gags = ["Don't have a cow, man", "1, 2, and 4", "typescript sux", "a lot of people were a big help on this project, thanks to 11pixels, davart, arven, doggysbootsy, and others", "267 tealwood drive coppell texas", "discord is lazy", "1.13 is a myth", `the current user is ${UserStore.getCurrentUser()?.globalName}. hello!`, "hat kid fav protag", "over 3300 lines of code and counting!", "saleem, i know what you did", "Tread lightly young traveler, instability ahead", "vorapis.pages.dev", "who cares about game news anymore anyway", "Madman Certified!", "happy birthday nedyak", "milbits has rabies", "i'm really gonna do it this time"];
 	return [
 		BdApi.React.createElement(Title.WindowTitle, { location: "Activity" }),
@@ -7063,13 +7063,16 @@ class ActivityFeed {
 		if (window.document.location.pathname === "/app") {
 			requestAnimationFrame(() => NavigationUtils.transitionTo("/activity-feed"));
 		}
-		const patcher = betterdiscord.ReactUtils.createNodePatcher();
+		betterdiscord.ReactUtils.createNodePatcher();
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");
 		NewsStore.blacklist = betterdiscord.Data.load("blacklist") || [];
 		setInterval(async () => {
 			if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
 		}, 100);
 		const Route = betterdiscord.Webpack.getByStrings("disableTrack", "impressionName");
+		let ContentInventoryCard = betterdiscord.Webpack.getMangled(betterdiscord.Webpack.Filters.bySource("disableGameProfileLinks", "ANDROID"), {
+			ContentInventoryCardHeader: (x) => String(x).includes('"ContentPopout"')
+		}, { mapDeclarations: true });
 		const [appContentModule, appContentKey] = betterdiscord.Webpack.getWithKey(betterdiscord.Webpack.Filters.byStrings("GUILD_MEMBER_VERIFICATION"), {
 			target: betterdiscord.Webpack.getBySource("hasNotice", "AppView", { raw: true }).declarations
 		});
@@ -7148,13 +7151,9 @@ class ActivityFeed {
 		betterdiscord.Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
 			return react.createElement(CoachmarkWrapper, { button: res });
 		});
-		betterdiscord.Patcher.after(betterdiscord.Webpack.getBySource("disableGameProfileLinks", "ANDROID").Ay, "type", (that, [props], res) => {
-			ApplicationStore.getApplication(res.props.children[0].props?.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props?.entry.extra.game_name);
-			betterdiscord.Patcher.after(res.props.children[1].props.children.props, "renderPopout", (that2, [props2], res2) => {
-				patcher.patch(res2.props.children, (props3, res3) => {
-					console.log(res3);
-				});
-			});
+		betterdiscord.Patcher.after(ContentInventoryCard, "ContentInventoryCardHeader", (that, [props], res) => {
+			const application = ApplicationStore.getApplication(res.props.children[0].props?.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props?.entry.extra.game_name);
+			res.props.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
 		});
 	}
 	stop() {

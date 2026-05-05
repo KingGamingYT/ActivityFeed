@@ -340,6 +340,8 @@ class GameNewsStore extends Utils.Store {
     }
 
     async fetchFeeds() {
+        this.lastTimeFetched = Date.now();
+        Data.save('lastTimeFetched', this.lastTimeFetched);
         const gameData = await this.getFeedGameData();
         const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A']
         for (let i = 0; i < ignore.length; i++) {
@@ -366,10 +368,6 @@ class GameNewsStore extends Utils.Store {
                 }
             })(gameId)
         }
-
-        this.lastTimeFetched = Date.now();
-        
-        Data.save('lastTimeFetched', this.lastTimeFetched);
     }
 
     async getFeedGameData() {

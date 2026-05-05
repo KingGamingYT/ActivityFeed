@@ -60,6 +60,9 @@ export default class ActivityFeed {
         }, 100)
 
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
+        let ContentInventoryCard = Webpack.getMangled(Webpack.Filters.bySource('disableGameProfileLinks', 'ANDROID'), {
+            ContentInventoryCardHeader: x => String(x).includes('"ContentPopout"')
+        }, {mapDeclarations: true})
         const [appContentModule, appContentKey] = Webpack.getWithKey(Webpack.Filters.byStrings("GUILD_MEMBER_VERIFICATION"), {
             target: Webpack.getBySource("hasNotice", "AppView", {raw: true}).declarations
         })
@@ -149,15 +152,9 @@ export default class ActivityFeed {
             return createElement(CoachmarkWrapper, {button: res})
         })
 
-        Patcher.after(Webpack.getBySource('disableGameProfileLinks', 'ANDROID').Ay, 'type', (that, [props], res) => {
+        Patcher.after(ContentInventoryCard, 'ContentInventoryCardHeader', (that, [props], res) => {
             const application = ApplicationStore.getApplication(res.props.children[0].props?.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props?.entry.extra.game_name);
-            //console.log(res)
-            Patcher.after(res.props.children[1].props.children.props, 'renderPopout', (that, [props], res) => {
-                patcher.patch(res.props.children, (props, res) => {
-                    console.log(res)
-                })
-            })
-
+            res.props.children.push(createElement(FollowButton, { application, fullWidth: true }))
         })
 
         /*Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 

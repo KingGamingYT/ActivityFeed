@@ -395,6 +395,13 @@
     overflow: hidden;
 }
 
+.contents {
+    margin: 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .details {
     font-weight: 600;
 }
@@ -713,6 +720,17 @@
 
 .soloAvatarTooltipTimestamp {
     opacity: 0.6;
+}
+
+.followGameButtonActivityFeed {
+    background: var(--control-secondary-background-default);
+    color: var(--white);
+    &:hover {
+        background-color: var(--control-secondary-background-hover) !important;
+    }
+    &:active {
+        background-color: var(--control-secondary-background-active) !important; 
+    }
 }
 
 .cardV2 {

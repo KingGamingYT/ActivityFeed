@@ -4,16 +4,16 @@ import { container, Common, NavigationUtils, SettingsRoot, Router } from "./modu
 import { ApplicationStore } from "./modules/stores";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
-import { RecentNews } from "@activity_feed/components/application_news/components/GameProfileRecentNews";
+import { RecentNews } from "@application_news/components/GameProfileRecentNews";
 import FollowButton from "@now_playing/activities/components/common/FollowButton";
 import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
-import settingsItem from "@settings/components/PanelBuilder";
+import SettingsItem from "@settings/components/PanelBuilder";
 import NewsStore from "./activity_feed/Store";
 import NewsArticle from "@application_news/Article";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
-import PresenceTypeStore from "@activity_feed/components/now_playing/PresenceTypeStore";
+import PresenceTypeStore from "@now_playing/PresenceTypeStore";
 
 
 function useSelectedState() {
@@ -46,11 +46,14 @@ export default class ActivityFeed {
     LastPlayedStore = LastPlayedStore;
     ActivityFeedSettingsCoachmarkStore = ActivityFeedSettingsCoachmarkStore;
     PresenceTypeStore = PresenceTypeStore;
+    FollowButton = FollowButton;
+    RecentNews = RecentNews;
     async start() {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));
         }
         const patcher = ReactUtils.createNodePatcher();
+        const settingsItem = await SettingsItem();
         //await Utils.forceLoad(Webpack.getBySource('openNativeAppModal', 'fingerprint', 'AGE_GATE_FAILURE_MODAL_OPEN', {raw: true}).id)
         //await Utils.forceLoad(Webpack.getBySource('handleUserContextMenu', {raw: true}).id);
         NewsStore.whitelist = Data.load('whitelist');
@@ -62,7 +65,8 @@ export default class ActivityFeed {
         const Route = Webpack.getByStrings('disableTrack', 'impressionName');
         let ContentInventoryCard = Webpack.getMangled(Webpack.Filters.bySource('disableGameProfileLinks', 'ANDROID'), {
             ContentInventoryCardHeader: x => String(x).includes('"ContentPopout"')
-        }, {mapDeclarations: true})
+        }, {mapDeclarations: true});
+        let GameProfileModal;
         const [appContentModule, appContentKey] = Webpack.getWithKey(Webpack.Filters.byStrings("GUILD_MEMBER_VERIFICATION"), {
             target: Webpack.getBySource("hasNotice", "AppView", {raw: true}).declarations
         })
@@ -126,7 +130,7 @@ export default class ActivityFeed {
             return args
         })
 
-        Patcher.after(Object.values(BdApi.Webpack.getBySource("handleHistoryChange", "ensureChannelMatchesGuild", {raw: true}).declarations).find(BdApi.Webpack.Filters.byPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild")).prototype, "render", (that, args, res) => {
+        Patcher.after(Object.values(Webpack.getBySource("handleHistoryChange", "ensureChannelMatchesGuild", {raw: true}).declarations).find(Webpack.Filters.byPrototypeKeys("handleHistoryChange", "ensureChannelMatchesGuild")).prototype, "render", (that, args, res) => {
             const channelRouteProps = Utils.findInTree(res, (node) => node && node.path?.length > 5, { walkable: [ "children", "props" ] });
 
             channelRouteProps.path = [
@@ -153,9 +157,29 @@ export default class ActivityFeed {
         })
 
         Patcher.after(ContentInventoryCard, 'ContentInventoryCardHeader', (that, [props], res) => {
-            const application = ApplicationStore.getApplication(res.props.children[0].props?.entry.extra.application_id) ?? ApplicationStore.getApplicationByName(res.props.children[0].props?.entry.extra.game_name);
-            res.props.children.push(createElement(FollowButton, { application, fullWidth: true }))
+            const entry = props.entry;
+            const application = ApplicationStore.getApplication(entry.extra.application_id) ?? ApplicationStore.getApplicationByName(entry.extra.application_id);
+            entry.extra.type === "played_game_extra" && res.props.children.push(createElement(FollowButton, { application, fullWidth: true }));
         })
+
+        await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')).then((e) => {
+            GameProfileModal = Webpack.getMangled(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2'), {
+                GameProfileV1Sidebar: x => String(x).includes('onSetInvite'),
+                GameProfileV2Trailing: x => String(x).includes('"game-profile-add-favorite-game"')
+            }, {mapDeclarations: true})
+
+            Patcher.after(GameProfileModal, 'GameProfileV1Sidebar', (that, [props], res) => {
+            const game = props.game;
+            const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);
+            res.props.children[0].props.children.splice(0, 0, createElement(FollowButton, { application, fullWidth: true }));
+            })
+
+            Patcher.after(GameProfileModal, "GameProfileV2Trailing", (that, [props], res) => {
+                const game = props.game;
+                const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);
+                res.props.children.splice(0, 0, createElement(FollowButton, { application, fullWidth: true }));
+            })
+        });
 
         /*Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 
             Patcher.after(res, "type", (that, [props], res) => { 

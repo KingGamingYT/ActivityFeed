@@ -277,14 +277,18 @@ export const extraCSS = webpackify(`
     }
 
     .popoutContentWrapper .button {
-        background: var(--control-secondary-background-default);
-        color: var(--white);
         margin-top: 16px;
+    }
+
+    [data-mana-component="layer-modal"] .followGameButtonActivityFeed {
+        background-color: var(--control-overlay-secondary-background-default);
+        border-color: var(--control-overlay-secondary-border-default);
+        color: var(--control-overlay-secondary-text-default);
         &:hover {
-            background-color: var(--control-secondary-background-hover) !important;
+            background-color: var(--control-overlay-secondary-background-hover) !important;
         }
         &:active {
-            background-color: var(--control-secondary-background-active) !important; 
+            background-color: var(--control-overlay-secondary-background-active) !important; 
         }
     }
 `);

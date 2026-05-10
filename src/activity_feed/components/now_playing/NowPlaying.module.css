@@ -396,6 +396,7 @@
 }
 
 .contents {
+    color: var(--text-strong);
     margin: 0 auto;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -720,6 +721,12 @@
 
 .soloAvatarTooltipTimestamp {
     opacity: 0.6;
+}
+
+.news {
+    background: var(--background-secondary-alt);
+    border-radius: 3px;
+    margin-top: 20px;
 }
 
 .followGameButtonActivityFeed {

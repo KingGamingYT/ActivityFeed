@@ -143,7 +143,7 @@ export const extraCSS = webpackify(`
                 mask: linear-gradient(0deg, transparent 10%, #000);
                 z-index: -1;
             }
-            .${FeedClasses.details} {
+            .${FeedClasses.body} {
                 display: flex;
                 flex-direction: column;
                 gap: var(--space-xs);

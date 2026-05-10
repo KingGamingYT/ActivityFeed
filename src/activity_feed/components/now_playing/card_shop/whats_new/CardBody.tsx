@@ -29,7 +29,7 @@ export function WhatsNewCardBody({players, news, v2Enabled}) {
                         <div className={NowPlayingClasses.sectionTitle}>News</div>
                         {!v2Enabled && <div className={`${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}`}></div>}
                     </div>
-                    <CardMiniNews currentArticle={news} />
+                    <CardMiniNews currentArticle={news} className={NowPlayingClasses.news} />
             </div>}
         </div>
     )

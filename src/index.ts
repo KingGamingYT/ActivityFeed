@@ -5,6 +5,7 @@ import { ApplicationStore } from "./modules/stores";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
 import { RecentNews } from "@application_news/components/GameProfileRecentNews";
+import { CardMiniNews } from "@now_playing/activities/components/CardMiniNews";
 import FollowButton from "@now_playing/activities/components/common/FollowButton";
 import { extraCSS } from "./activity_feed/extra";
 import styles from "styles";
@@ -48,6 +49,7 @@ export default class ActivityFeed {
     PresenceTypeStore = PresenceTypeStore;
     FollowButton = FollowButton;
     RecentNews = RecentNews;
+    NewsCard = CardMiniNews;
     async start() {
         if (window.document.location.pathname === "/app" ) {
             requestAnimationFrame(() => NavigationUtils.transitionTo('/activity-feed'));

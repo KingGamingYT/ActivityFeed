@@ -13,7 +13,7 @@ export interface ActivityProperties {
 export function NowPlayingCardBuilder({card, v2Enabled}) {
     const user = card.party.priorityMembers[0].user;
     const activities = card.party.currentActivities;
-    const currentGame = card.party.currentActivities[0]?.game;
+    const currentGame = card.party.currentActivities[0]?.application;
     const voice = card.party.voiceChannels;
     const streams = card.party.applicationStreams;
     const isSpotify = card.party.isSpotifyActivity;

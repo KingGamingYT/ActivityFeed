@@ -11,11 +11,11 @@ interface CardWrapper {
 }
 
 export function ActivityCardWrapper({user, activities, voice, streams, v2Enabled}: CardWrapper) {
-    if (!activities) return;
+    if (!activities || !activities.length) return;
 
     return activities.map(activity => {
         const currentActivity = activity?.activity || streams[0].activity;
-        const currentGame = activity?.game || GameStore.getDetectableGame(GameStore.searchGamesByName(streams[0].activity.name)[0]);
+        const currentGame = activity?.application || GameStore.getDetectableGame(GameStore.searchGamesByName(streams[0].activity.name)[0]);
         const players = activity.playingMembers;
         const server = voice[0]?.guild;
         const activityProperties = PresenceTypeStore.getActivityProperties(currentActivity);

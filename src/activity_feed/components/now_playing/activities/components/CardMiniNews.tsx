@@ -1,15 +1,15 @@
-import { ContextMenu } from "betterdiscord";
+import { ContextMenu, Utils } from "betterdiscord";
 import { Common } from "@modules/common";
 import { FeedPopout } from "@application_news/components/OverflowBuilder";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-export function CardMiniNews({currentArticle}) {
+export function CardMiniNews({currentArticle, className}) {
     const thumbnail = currentArticle.news?.thumbnail?.replace(/\s/g, "%20"); // fix for urls that have spaces in them thanks to lacking URI encoding
 
 	return (
 		<a
             tabindex={currentArticle.index}
-            className={`${Common.AnchorClasses.anchor} ${FeedClasses.newsLink} ${FeedClasses.news}`}
+            className={Utils.className(Common.AnchorClasses.anchor, FeedClasses.newsLink, FeedClasses.news, className)}
             href={currentArticle.news?.url || "#"}
             onContextMenu={e => ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} /> )}
             rel="noreferrer nopener"
@@ -26,7 +26,7 @@ export function CardMiniNews({currentArticle}) {
                     }}
                 />
             </div>
-            <div className={FeedClasses.details}>
+            <div className={FeedClasses.body}>
                 <div className={FeedClasses.title}>{currentArticle.news?.title || "No Title"}</div>
                 <div className={FeedClasses.description} dangerouslySetInnerHTML={{__html: currentArticle.news?.description || "No description available."}} />
                 <div className={FeedClasses.timestamp}>{Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>

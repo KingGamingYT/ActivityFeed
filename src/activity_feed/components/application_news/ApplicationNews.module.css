@@ -91,6 +91,11 @@
     overflow: hidden;
 }
 
+.body {
+    position: relative;
+    word-break: break-word;
+}
+
 .titleStandard {
     margin-top: 8px;
     overflow: hidden;
@@ -104,6 +109,10 @@
     color: var(--text-strong);
     display: block;
     font-weight: 500;
+}
+
+.body > .title {
+    line-height: 20px;
 }
 
 .description {
@@ -129,6 +138,10 @@
         all: inherit;
         display: contents;
     }
+}
+
+.body .description {
+    font-size: 14px;
 }
 
 .timestamp {
@@ -446,15 +459,12 @@ svg.arrow {
 
 .news {
     align-items: flex-end;
-    background-color: var(--background-secondary-alt);
-    border-radius: 3px;
     box-sizing: border-box;
     display: flex;
     overflow: hidden;
     padding: 20px;
     position: relative;
     height: 270px;
-    margin-top: 20px;
 }
 
 .newsLink {}

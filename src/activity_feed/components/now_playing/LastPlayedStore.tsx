@@ -10,7 +10,11 @@ const LastPlayedStore = (() => {
     let shouldPersistentlyFetch = false;
 
     function fetchLastPlayed() {
-        let seenGames = ContentInventoryStore.getFeeds().get("global feed").unranked_game_entries;
+        let seenGames = ContentInventoryStore.getFeeds().get("global feed")?.unranked_game_entries;
+        if (!seenGames) {
+            console.log("%c[LastPlayedStore]", "color: #800080; font-weight: 700;", "Failed to fetch content inventory feed data.");
+            throw new Error();
+        }
         const recentlySeenGames = seenGames.filter(entry => new Date(entry.content?.started_at) > new Date(Date.now() - 4.32e8)).map(item => item.content);
         const recentlySeenGameIds = recentlySeenGames.map(entry => entry?.extra?.application_id);
         const _recentlySeenGameIds = Array.from(new Set(recentlySeenGameIds.map(id => id)));

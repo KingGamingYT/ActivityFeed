@@ -41,7 +41,7 @@ const LastPlayedStore = (() => {
         }
         lastPlayedCards = g.map((id, index) => { return {
             application: NewGameStore.getGame(id) ?? ApplicationStore.getApplication(id),
-            players: playerList[index].map(player => { return {
+            players: playerList[index].map(player => {  return {
                 user: UserStore.getUser(player.author_id),
                 endedAt: player.ended_at ? player.ended_at : player.traits.find(trait => trait?.is_live === true) ? undefined : player.expires_at,
                 startedAt: player.started_at,

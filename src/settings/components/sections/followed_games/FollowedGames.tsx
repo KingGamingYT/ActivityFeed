@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { Common, ModalSystem } from "@modules/common";
 import { ApplicationStore, GameStore } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
+import locale from "@activity_feed/common/methods/locale";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
@@ -37,38 +38,38 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
                     onClick={() => ModalSystem.openModal(props => 
                         <Common.ModalRoot.Modal 
                             {...props}
-                            title="Are you sure?"
+                            title={locale.Strings.ARE_YOU_SURE()}
                             actions={[
-                                {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); updateBlacklist(blacklist.filter(item => item.applicationId !== game.applicationId)); props.onClose(); }}
+                                {text: locale.Strings.CANCEL(), variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
+                                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); updateBlacklist(blacklist.filter(item => item.applicationId !== game.applicationId)); props.onClose(); }}
                             ]}
                         >
                             <>
-                                <div className={MainClasses.emptyText}>Do you want to follow this game? Its announcements will appear in your Activity Feed.</div>
-                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
+                                <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_SUBSCRIBE_TO_GAME()}</div>
+                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
                             </> 
                         </Common.ModalRoot.Modal>
                     )}
-                >Follow</button>
+                >{locale.Strings.FOLLOW()}</button>
             :
                 <button
                     className={`${MainClasses.button} ${SettingsClasses.unhideBlacklisted} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorPrimary} ${Common.ButtonVoidClasses.sizeTiny} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
                     onClick={() => ModalSystem.openModal(props => 
                         <Common.ModalRoot.Modal 
                             {...props}
-                            title="Are you sure?"
+                            title={locale.Strings.ARE_YOU_SURE()}
                             actions={[
-                                {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                                {text: "Yes", fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, game?.gameId); updateBlacklist(blacklist.filter(item => item.applicationId !== game.applicationId)); props.onClose() }}
+                                {text: locale.Strings.CANCEL(), variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
+                                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, game?.gameId); updateBlacklist(blacklist.filter(item => item.applicationId !== game.applicationId)); props.onClose() }}
                             ]}
                         >
                             <>
-                                <div className={MainClasses.emptyText}>Do you want to unfollow this game? Its announcements will be removed from your Activity Feed.</div>
-                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
+                                <div className={MainClasses.emptyText}>{locale.Strings.ACTIVTIY_FEED_UNSUBSCRIBE_FROM_GAME()}</div>
+                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ATION_RESTART_REQUIRED()}</div>
                             </> 
                         </Common.ModalRoot.Modal>
                     )}
-                >Unfollow</button>
+                >{locale.Strings.UNFOLLOW()}</button>
             }
         </div>
     )
@@ -90,7 +91,7 @@ export function FollowedGameListBuilder() {
 
     return (
         <>
-            <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.target.value.toLowerCase())} placeholder="Search for Games" />
+            <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.target.value.toLowerCase())} placeholder={locale.Strings.SEARCH_FOR_GAMES()} />
             {filtered?.length ? <div className={SettingsClasses.blacklist}>{
                 filtered.sort((a, b) => a.name.localeCompare(b.name)).map(game => 
                     <>
@@ -101,7 +102,7 @@ export function FollowedGameListBuilder() {
             }</div>
             :
             <div className={`${SettingsClasses.blacklist} ${MainClasses.emptyState}`}>
-                <div className={MainClasses.emptyText}>No results.</div>
+                <div className={MainClasses.emptyText}>{locale.Strings.NO_RESULTS_FOUND()}</div>
             </div>}
         </>
     )

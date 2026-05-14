@@ -1,5 +1,6 @@
 import { WhatsNewListItem, WhatsNewListOverflow } from "@now_playing/activities/components/WhatsNewListItem";
 import { CardMiniNews } from "@now_playing/activities/components/CardMiniNews";
+import locale from "@activity_feed/common/methods/locale";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 
@@ -21,12 +22,14 @@ export function WhatsNewCardBody({players, news, v2Enabled}) {
                         return <WhatsNewListItem player={player} />
                     })
                 }
-                {overflowPlayers.length > 1 && <WhatsNewListOverflow players={overflowPlayers} v2Enabled={v2Enabled} />}
                 </div>
+                {overflowPlayers.length > 1 && <div className={NowPlayingClasses.lastPlayedSection}>
+                    <WhatsNewListOverflow players={overflowPlayers} v2Enabled={v2Enabled} />
+                </div>}
             </div>
             {news && <div className={NowPlayingClasses.section}>
                     <div className={NowPlayingClasses.sectionTitleWrapper}>
-                        <div className={NowPlayingClasses.sectionTitle}>News</div>
+                        <div className={NowPlayingClasses.sectionTitle}>{locale.Strings.NEWS()}</div>
                         {!v2Enabled && <div className={`${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}`}></div>}
                     </div>
                     <CardMiniNews currentArticle={news} className={NowPlayingClasses.news} />

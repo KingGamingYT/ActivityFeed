@@ -33,7 +33,7 @@ function WhatsNewOverflowUser({player}) {
 	)
 }
 
-export function WhatsNewListOverflow({players, v2Enabled}) {
+export function NowPlayingListOverflow({players, v2Enabled}) {
 	return (
 		<>
 			<div className={NowPlayingClasses.sectionTitleWrapper}>
@@ -47,7 +47,7 @@ export function WhatsNewListOverflow({players, v2Enabled}) {
 	)
 }
 
-export function WhatsNewListItem({player}) {
+export function NowPlayingListItem({player}) {
 	const user = player.user;
 	const status = player.status;
 	const channel = ChannelStore.getDMChannelFromUserId(user.id);
@@ -55,7 +55,7 @@ export function WhatsNewListItem({player}) {
 	return (
 		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => ContextMenu.open(e, (props) => {let Menus = ContextMenus(); return <Menus.ContextMenuUser.default {...props} channel={channel} user={user} />})}>
             <AvatarWithPopoutWrapper className={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} user={user} status={status} size="SIZE_40" />
-            <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
+            <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="NOW_PLAYING_GROUP" activity={player} streamUser={user} />
 			<MessageButton user={user} />
         </div>
 	)

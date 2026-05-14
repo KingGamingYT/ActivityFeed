@@ -58,8 +58,8 @@ function HeaderIcon({activities, isSpotify, currentGame}) {
     )
 }
 
-export function NowPlayingCardHeader({card, activities, game, splash, user, voice, isSpotify}) {
-    const status = card.party.priorityMembers[0].status;
+export function NowPlayingCardHeader({card, activities, game, splash, user, priorityMembers, partiedMembers, voice, isSpotify}) {
+    const status = priorityMembers[0].status;
     const channel = ChannelStore.getDMChannelFromUserId(user.id);
 
     return (
@@ -67,7 +67,7 @@ export function NowPlayingCardHeader({card, activities, game, splash, user, voic
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
                 <AvatarWithPopoutWrapper className={NowPlayingClasses.avatar} user={user} status={status} size="SIZE_40" />
-                <DiscordTag user={user} voice={voice} />
+                <DiscordTag user={user} partiedMembers={partiedMembers} voice={voice} />
                 <HeaderActions card={card} user={user} />
                 <HeaderIcon activities={activities} isSpotify={isSpotify} currentGame={game} />
             </div>

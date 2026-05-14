@@ -3,6 +3,7 @@ import { useState, useLayoutEffect } from "react";
 import { XMLParser } from "fast-xml-parser";
 import { Common } from '@modules/common';
 import { ChannelStore, UserStore, VoiceStateStore } from "@modules/stores";
+import locale from "./locale";
 
 export function chunkArray(cards, num) {
     let chunkLength = Math.max(cards.length / num, 1);
@@ -26,10 +27,10 @@ export function TimeClock({timestamp}) {
     const time = Math.floor((Date.now() - new Date(parseInt(timestamp)))/1000)
 
     switch(true) {
-        case !! ((time / 86400) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['2rUo/p'], { time: Math.floor(time / 86400) });
-        case !! ((time / 3600) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['eNoooU'], { time: Math.floor(time / 3600) });
-        case !! ((time / 60) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['03mIHW'], { time: Math.floor(time / 60) });
-        case !! ((time % 60 ) < 60): return Common.intl.intl.formatToPlainString(Common.intl.t['ahzZr+']);
+        case !! ((time / 86400) > 1): return locale.Strings.PLAYING_FOR_DAY({ time: Math.floor(time / 86400) });
+        case !! ((time / 3600) > 1): return locale.Strings.PLAYING_FOR_HOUR({ time: Math.floor(time / 3600) });
+        case !! ((time / 60) > 1): return locale.Strings.PLAYING_FOR_MINUTE({ time: Math.floor(time / 60) });
+        case !! ((time % 60 ) < 60): return locale.Strings.JUST_STARTED_PLAYING();
     }
 }
 
@@ -37,10 +38,10 @@ export function InactiveTimeClock({timestamp}) {
     const time = Math.floor((Date.now() - new Date(timestamp).getTime())/1000)
 
     switch(true) {
-        case !! ((time / 86400) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['yP1T84'], { time: Math.floor(time / 86400) });
-        case !! ((time / 3600) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['cRMUpw'], { time: Math.floor(time / 3600) });
-        case !! ((time / 60) > 1): return Common.intl.intl.formatToPlainString(Common.intl.t['BZxG8Z'], { time: Math.floor(time / 60) });
-        case !! ((time % 60 ) < 60): return Common.intl.intl.formatToPlainString(Common.intl.t['EluAd9']);
+        case !! ((time / 86400) > 1): return locale.Strings.PLAYED_DAYS_AGO({ time: Math.floor(time / 86400) });
+        case !! ((time / 3600) > 1): return locale.Strings.PLAYED_HOURS_AGO({ time: Math.floor(time / 3600) });
+        case !! ((time / 60) > 1): return locale.Strings.PLAYED_MINUTES_AGO({ time: Math.floor(time / 60) });
+        case !! ((time % 60 ) < 60): return locale.Strings.JUST_STOPPED_PLAYING();
         case !! (isNaN(time)): return TimeClock({timestamp});
     }
 }

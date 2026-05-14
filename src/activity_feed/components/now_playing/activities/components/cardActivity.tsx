@@ -4,6 +4,7 @@ import { Common } from "@modules/common";
 import { ApplicationStore } from "@modules/stores";
 import { RichActivityBuilder, RegularActivityBuilder } from "./InnerBuilder";
 import { PartyFooter } from "./common/CardTrailing";
+import locale from "@activity_feed/common/methods/locale";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
@@ -24,10 +25,10 @@ function ActivityCardContextMenu({currentActivity, currentGame}) {
 
             return (
                 <ContextMenu.Menu navId="activity-context" onClose={(e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e)}>
-                    <ContextMenu.Item id="open-game-profile" label={"Open Game Profile"} action={useGameProfile} disabled={!useGameProfile} />
+                    <ContextMenu.Item id="open-game-profile" label={locale.Strings.OPEN_GAME_PROFILE()} action={useGameProfile} disabled={!useGameProfile} />
                     <ContextMenu.CheckboxItem 
                         id="follow-game" 
-                        label={"Show on Activity Feed"} 
+                        label={locale.Strings.SHOW_ON_ACTIVITY_FEED()} 
                         checked={isFollowed || isWhitelisted} 
                         disabled={!currentGame || application.type == null}
                         action={

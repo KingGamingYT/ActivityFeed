@@ -2,6 +2,7 @@ import { ContextMenu, Data } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common, ModalSystem } from "@modules/common";
 import { UserSettingsProtoStore } from "@modules/stores";
+import locale from "@activity_feed/common/methods/locale";
 import NewsStore from "@activity_feed/Store";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
@@ -9,13 +10,11 @@ import Tooltip from "@common/components/TooltipBuilder";
 
 export function FeedPopout({application, gameId, articleUrl, close}) {
     const article = NewsStore.getByGameId(gameId);
-    const confirmOptions = ["Be rid of it", "Yes", "Proceed"];
-    const confirmText = confirmOptions[Math.floor(Math.random() * confirmOptions.length)];
 
     if (isNaN(application.id)) {
         return (
             <ContextMenu.Menu navId="feed-overflow" onClose={close ?? ((e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e))}>
-                <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
+                <ContextMenu.Item id="copy-article-link" label={locale.Strings.COPY_ARTICLE_LINK()} action={() => Common.Clipboard(articleUrl)} />
                 {!NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
                     id="lock-in-article" 
                     label="Lock In Article" 
@@ -32,21 +31,21 @@ export function FeedPopout({application, gameId, articleUrl, close}) {
 
     return (
         <ContextMenu.Menu navId="feed-overflow" onClose={close ?? ((e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e))}>
-            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label="Copy Application ID" action={() => Common.Clipboard(application.id)} />}
-            <ContextMenu.Item id="copy-article-link" label="Copy Article Link" action={() => Common.Clipboard(articleUrl)} />
+            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label={locale.Strings.COPY_APPLICATION_ID()} action={() => Common.Clipboard(application.id)} />}
+            <ContextMenu.Item id="copy-article-link" label={locale.Strings.COPY_ARTICLE_LINK()} action={() => Common.Clipboard(articleUrl)} />
             <ContextMenu.Item 
                 id="unfollow-game" 
                 label="Unfollow Game" 
                 action={() => ModalSystem.openModal(props => 
                     <Common.ModalRoot.Modal 
                         {...props} 
-                        title="Are you sure?"
+                        title={locale.Strings.ARE_YOU_SURE()}
                         actions={[
-                            {text: "Cancel", variant: "secondary", fullWidth: 0, onClick: () => props.onClose()}, 
-                            {text: confirmText, fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, gameId); props.onClose() }}
+                            {text: locale.Strings.CANCEL(), variant: "secondary", fullWidth: 0, onClick: () => props.onClose()}, 
+                            {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { NewsStore.blacklistGame(application, gameId); props.onClose() }}
                         ]}><>
-                            <div className={MainClasses.emptyText}>Do you want to hide this game from appearing in your Activity Feed? You can re-enable its visibility at any time in settings.</div>
-                            <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>This action will require you to restart Discord in order to see changes.</div>
+                            <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME()}</div>
+                            <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
                         </>    
                     </Common.ModalRoot.Modal>
             )} />

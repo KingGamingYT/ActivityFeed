@@ -38,41 +38,6 @@ export const extraCSS = webpackify(`
         flex-direction: column;
     }
 
-    .headerActions {
-        .button.lookFilled {
-            background: var(--control-secondary-background-default);
-            border: unset;
-            color: var(--white);
-            padding: 2px 16px;
-            width: unset;
-            svg {
-                display: none;
-            } 
-        }
-        .button.lookFilled:hover {
-            background-color: var(--control-secondary-background-hover) !important;
-        }
-        .button.lookFilled:active {
-            background-color: var(--control-secondary-background-active) !important; 
-        }
-        .lookFilled.colorPrimary {
-            background: unset !important;
-            border: unset !important;
-        }
-        .lookFilled.colorPrimary:hover {
-            color: var(--interactive-background-hover);
-            svg {
-                stroke: var(--interactive-background-hover);
-            }
-        }
-        .lookFilled.colorPrimary:active {
-            color: var(--interactive-background-active);
-            svg {
-                stroke: var(--interactive-background-active);
-            }
-        }
-    }
-
     .activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {
         display: none;
     }
@@ -99,18 +64,8 @@ export const extraCSS = webpackify(`
         width: 100%;
     }
 
-    .lastPlayedPlayer .button {
-        display: none;
-        width: unset;
-        align-self: center;
-    }
-
-    .lastPlayedPlayer:hover .button {
-        display: block;
-    }
-
     .cardV2 {
-        .headerActions .button.lookFilled, .cardBody button {
+        .headerActions :is([data-mana-component="button"], .button.lookFilled), .cardBody button {
             color: var(--white);
             background: var(--opacity-white-24) !important;
             &:hover {

@@ -1,6 +1,7 @@
 import { useWindowSize } from "@common/methods/common";
 import { Common } from "@modules/common";
 import { ActivityButtons, SpotifyButtons } from "./ActivityButtons";
+import locale from "@common/methods/locale";
 import AvatarWithPopoutWrapper from "./AvatarWithPopoutWrapper";
 import Tooltip from "@activity_feed/common/components/TooltipBuilder";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -50,7 +51,7 @@ function PartyMemberListBuilder({activity, users}) {
                             </svg>
                         </div>
                         case null: return <div className={NowPlayingClasses.emptyUser} />
-                        default: return <Tooltip note={player.globalName || player.username}>
+                        default: return <Tooltip note={Common.UsernameUtils.getName(player)}>
                             <div>
                                 <AvatarWithPopoutWrapper 
                                     className={NowPlayingClasses.player} 
@@ -142,7 +143,7 @@ export function PartyFooter({party, players, user, activity}) {
                 <div 
                     className={NowPlayingClasses.partyPlayerCount} 
                     style={{ flex: "1 1 100%" }}>
-                    {Common.intl.intl.formatToPlainString(Common.intl.t['gLu7NU'], { partySize: party.size[0], maxPartySize: party.size[1]})}
+                    {locale.Strings.PARTY_SIZE({ partySize: party.size[0], maxPartySize: party.size[1] })}
                 </div>
                 <ActivityButtons user={user} activity={activity} onAction={action} />
             </div>

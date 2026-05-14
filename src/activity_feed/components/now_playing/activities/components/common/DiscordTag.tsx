@@ -1,11 +1,20 @@
 import { Common } from "@modules/common";
+import locale from "@activity_feed/common/methods/locale";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-export default function ({user, voice}) {
+
+export default function ({user, partiedMembers, voice}) {
     let outputtedUsername;
-    switch (true) {
-        case !! (voice && voice[0]?.members.length > 2): outputtedUsername = `${user.globalName || user.username}, ${Common.intl.intl.formatToPlainString(Common.intl.t['zRRd8G'], { count: voice[0]?.members.length - 2, name: (voice[0]?.members[voice[0]?.members.length - 1].globalName ||  voice[0]?.members[voice[0]?.members.length - 1].username) })}`; break;
-        case !! (voice && voice[0]?.members.length > 1): outputtedUsername = Common.intl.intl.formatToPlainString(Common.intl.t['4SM/RX'], { user1: (user.globalName || user.username || voice[0]?.members[1].username), user2: (voice[0]?.members[1].globalName || voice[0]?.members[1].username) }); break;
-        default: outputtedUsername = user.globalName || user.username;
+    if (voice && voice[0]) {
+        const user1 = Common.UsernameUtils.getName(partiedMembers[0]);
+        const user2 = partiedMembers[1] && Common.UsernameUtils.getName(partiedMembers[1])
+        switch(partiedMembers.length) {
+            case 1: outputtedUsername = user1; break;
+            case 2: outputtedUsername = locale.Strings.USER_AND_USER({user1, user2}); break;
+            default: outputtedUsername = locale.Strings.USER_AND_USER_AND_OTHERS({user1, user2, extras: partiedMembers.length - 2}); break;
+        }
+    }
+    else {
+        outputtedUsername = Common.UsernameUtils.getName(user);
     }
 
     return (

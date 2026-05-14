@@ -1,8 +1,8 @@
-import { ReactUtils } from "betterdiscord";
 import { Common } from '@modules/common';
 import { GuildStore, UserStore, useStateFromStores } from '@modules/stores';
 import { TimeClock, InactiveTimeClock } from '@common/methods/common';
 import { OpenLinkClickHandler } from "./ActivityButtons";
+import locale from "@common/methods/locale";
 import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import PresenceTypeStore from "@now_playing/PresenceTypeStore";
@@ -72,24 +72,24 @@ function ActivityType(props) {
         case "TWITCH_OVERLAY": return (
             <>
                 <div className={NowPlayingClasses.streamName}>{activity.details}</div>
-                {activity.state && <div className={NowPlayingClasses.streamGame}>{Common.intl.intl.formatToPlainString(Common.intl.t['IGYgjl'], {gameName: activity.state})}</div>}
+                {activity.state && <div className={NowPlayingClasses.streamGame}>{locale.Strings.PLAYING_GAME({gameName: activity.state})}</div>}
             </>
         )
         case "VOICE": return (
             <>
-                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || streamUser?.globalName}</div>
+                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{server?.name || channel?.name || Common.UsernameUtils.getName(streamUser)}</div>
                 {server && <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{channel?.name}</div>}
             </>
         )
         case "STREAM": return (
             <>
                 <div style={{ display: "flex", alignItems: "flex-end" }}>
-                    <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{streamUser.globalName || streamUser.username}</div>
+                    <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionText}`}>{Common.UsernameUtils.getName(streamUser)}</div>
                     <Common.LiveBadge style={{ marginLeft: "5px" }} />
                 </div>
                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{
                     activity ? Common.intl.intl.format(Common.intl.t['0wJXSh'], {name: <strong>{stream.name}</strong>}) 
-                    : Common.intl.intl.formatToPlainString(Common.intl.t['KDdjou'])
+                    : locale.Strings.STREAMING()
                 }</div>
             </>
         )
@@ -99,7 +99,7 @@ function ActivityType(props) {
                 <div className={NowPlayingClasses.playTime}>
                     {
                         activity.endedAt ? <InactiveTimeClock timestamp={ activity?.endedAt } />
-                        : Common.intl.intl.formatToPlainString(Common.intl.t['3elwAB'])
+                        : locale.Strings.NOW_PLAYING()
                     }
                 </div>
             </>

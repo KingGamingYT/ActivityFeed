@@ -2,7 +2,7 @@ import { Common } from "@modules/common";
 import { ActivityCardWrapper, VoiceCard, TwitchCard } from "@now_playing/activities/index";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
-export function NowPlayingCardBody({activities, user, voice, streams, isSpotify, v2Enabled}) {
+export function NowPlayingCardBody({activities, user, voice, streams, v2Enabled}) {
     return (
         <div className={NowPlayingClasses.cardBody}>
             <div className={NowPlayingClasses.section}>

@@ -1,6 +1,6 @@
 import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
 import { createElement, useState, useEffect } from "react";
-import { container, Common, NavigationUtils, SettingsRoot, Router } from "./modules/common";
+import { container, Common, NavigationUtils, SettingsButton, SettingsRoot, Router } from "./modules/common";
 import { ApplicationStore } from "./modules/stores";
 import { TabBaseBuilder } from "./activity_feed/base.js";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
@@ -143,9 +143,7 @@ export default class ActivityFeed {
         });
 
         Patcher.after(await SettingsRoot, "buildLayout", (that, [props], res) => {
-            console.log(res)
             let index = res.findIndex((layout) => layout.key === "activity_section");
-            console.log(index)
             Patcher.after(res[index], "buildLayout", (that, [props], res) => {
                 if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
                     res.push(settingsItem);
@@ -153,8 +151,8 @@ export default class ActivityFeed {
                 return res;
             })
         })
-
-        Patcher.after(Common.SettingsButton, "A", (that, [props], res) => {
+        
+        Patcher.after(SettingsButton, "Button", (that, [props], res) => {
             return createElement(CoachmarkWrapper, {button: res})
         })
 

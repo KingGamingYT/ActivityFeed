@@ -692,6 +692,16 @@
     padding-top: 20px;
 }
 
+.lastPlayedPlayer button {
+    display: none;
+    width: unset;
+    align-self: center;
+}
+
+.lastPlayedPlayer:hover button {
+    display: block;
+}
+
 .lastPlayedDetails {
     display: flex;
     flex: 1;
@@ -844,6 +854,10 @@
         display: flex;
         flex-direction: column;
         gap: var(--space-lg);
+    }
+
+    .lastPlayedSection:last-child:not(:only-child) {
+        margin-top: var(--space-lg);
     }
 
     .lastPlayedPlayer {

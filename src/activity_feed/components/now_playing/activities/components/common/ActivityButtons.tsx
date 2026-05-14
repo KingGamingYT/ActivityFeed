@@ -1,6 +1,7 @@
 import { Webpack } from "betterdiscord";
 import { Common } from "@modules/common";
 import { AuthenticationStore, useStateFromStores } from "@modules/stores";
+import locale from "@common/methods/locale";
 
 const themeContext = Webpack.getBySource('themePreferenceForSystemTheme', 'createContext');
 const activityAuth = Webpack.getByStrings('alpha2', 'embeddedActivityConfig', {searchExports: true});
@@ -10,7 +11,7 @@ const fetchAuthorization = Webpack.getByStrings('parentId', 'disableFetch', {sea
 const CloudPlayButton = Webpack.getByStrings('"PRESS_CLOUD_PLAY_BUTTON"');
 const isEmbeddedActivity = Webpack.getByStrings(".EMBEDDED", "{return(0,");
 const isSupportedPlatform = Webpack.getByStrings('META_QUEST', 'supported_platforms');
-const CTAButton = Webpack.getByStrings('distributorCTAConfigs', '"noopener,noreferrer"');
+const CTAButton = Webpack.getByStrings('distributorCTAConfigs', 'PLAY_CTA_DISPLAYED');
 const isNonConsole = Webpack.getByStrings('.CUSTOM_STATUS&&(null');
 const isXbox = Webpack.getByStrings('platform===', '.XBOX');
 const isPlayStation = Webpack.getByStrings('platform===', '.PS5');
@@ -63,7 +64,7 @@ function CustomButton({user, activity, onAction}) {
     return themeType === "MODAL_V2" ? <div className={Common.ActivityCardClasses.customButtons}>{
         activity.buttons.map((button, index) => 
             <ManaButtons.FD 
-                text={isCrunchyroll ? Common.intl.intl.formatToPlainString(Common.intl.t[`I6JG46`]) : button} 
+                text={isCrunchyroll ? locale.Strings.WATCH() : button} 
                 onClick={(e) => {
                     e.stopPropagation();
                     onAction?.({
@@ -75,7 +76,7 @@ function CustomButton({user, activity, onAction}) {
     }</div> : <div className={Common.ActivityCardClasses.customButtons}>{
         activity.buttons.map((button, index) => 
         <ManaButtons.FD
-            text={isCrunchyroll ? Common.intl.intl.formatToPlainString(Common.intl.t[`I6JG46`]) : button}
+            text={isCrunchyroll ? locale.Strings.WATCH() : button}
             fullWidth={true}
             onClick={(e) => { 
                 e.stopPropagation();
@@ -108,7 +109,7 @@ function PlayButton({user, activity, onAction, onClose}) {
     const isPlayable = getPlayableGame(activity?.application_id)
     if (!isJoinable && activity && isEmbeddedActivity(activity)) return <ManaButtons.FD
         icon={<SlashCommandIcon />}
-        text={Common.intl.intl.formatToPlainString(Common.intl.t[`RscU7I`])}
+        text={locale.Strings.PLAY()}
         fullWidth={themeType !== "MODAL_V2"}
         onClick={(e) => {
             e.stopPropagation();
@@ -241,7 +242,7 @@ export function SpotifyButtons({user, activity, onAction}) {
     return themeType === "MODAL_V2" ? <>
         <ContainerTooltip text={trackSync.tooltip}>
             <ManaButtons.FD 
-                text={trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`])}
+                text={trackSync.label ?? locale.Strings.LISTEN_ALONG()}
                 onClick={handleListenAlongOnClick}
                 disabled={trackSync.disabled}
                 loading={trackSync.loading}
@@ -249,7 +250,7 @@ export function SpotifyButtons({user, activity, onAction}) {
         </ContainerTooltip>
         <ContainerTooltip text={track.tooltip}>
             <ManaButtons.FD 
-                text={track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`])}
+                text={track.label ?? locale.Strings.PLAY_ON_SPOTIFY()}
                 onClick={handlePlayOnClick}
                 disabled={track.disabled}
                 loading={track.loading}
@@ -260,7 +261,7 @@ export function SpotifyButtons({user, activity, onAction}) {
             <ContainerTooltip text={track.tooltip}>
                 <ManaButtons.FD
                     icon={() => <SpotifyIcon />} 
-                    text={track.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`rRffNz`])}
+                    text={track.label ?? locale.Strings.PLAY_ON_SPOTIFY()}
                     onClick={handlePlayOnClick}
                     disabled={track.disabled}
                     loading={track.loading}
@@ -270,8 +271,8 @@ export function SpotifyButtons({user, activity, onAction}) {
         </div>
         <ManaButtons.q3 
             icon={() => <ListenAlongIcon color={"currentColor"} />}
-            tooltipText={trackSync.tooltip ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`])}
-            ariaLabel={trackSync.label ?? Common.intl.intl.formatToPlainString(Common.intl.t[`eU3inB`])}
+            tooltipText={trackSync.tooltip ?? locale.Strings.LISTEN_ALONG()}
+            ariaLabel={trackSync.label ?? locale.Strings.LISTEN_ALONG()}
             disabled={trackSync.disabled}
             loading={trackSync.loading}
             fullWidth={true}

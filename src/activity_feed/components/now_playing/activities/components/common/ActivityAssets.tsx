@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Common } from "@modules/common";
+import locale from "@common/methods/locale";
 import Tooltip from '@common/components/TooltipBuilder';
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
 
@@ -86,7 +87,7 @@ export function GameIconAsset({url, id, name}: GameIconAsset) {
                 <img 
                     className={NowPlayingClasses.gameIcon}
                     style={{ width: "40px", height: "40px" }}
-                    aria-label={Common.intl.intl.formatToPlainString(Common.intl.t['nh+jWk'], {game: name})}
+                    aria-label={locale.Strings.GAME_ICON_FOR({game: name})}
                     src={`${url}`}
                     onClick={useGameProfile}
                     onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}

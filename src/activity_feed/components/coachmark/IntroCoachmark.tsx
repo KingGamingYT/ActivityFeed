@@ -1,6 +1,7 @@
 import { Hooks } from "betterdiscord"
 import { useState, useRef, useEffect } from "react";
 import { Common } from "@modules/common";
+import locale from "@activity_feed/common/methods/locale";
 import ActivityFeedSettingsCoachmarkStore from "./ActivityFeedSettingsCoachmarkStore";
 import CoachmarkClasses from "./IntroCoachmark.module.css";
 
@@ -12,24 +13,24 @@ export function IntroCoachmark({close}) {
             </div>
             <div className={CoachmarkClasses.body}>
                 <div className={CoachmarkClasses.bodyHeader}>
-                    <div className={CoachmarkClasses.title}>Activity Feed</div>
+                    <div className={CoachmarkClasses.title}>{locale.Strings.ACTIVITY_FEED()}</div>
                 </div>
                 <div className={CoachmarkClasses.bodyContent}>
-                    <div className={CoachmarkClasses.content}>You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!</div>
+                    <div className={CoachmarkClasses.content}>{locale.Strings.ACTIVITY_FEED_COACHMARK_CONTENT_BODY()}</div>
                 </div>
             </div>
             <div className={CoachmarkClasses.actions}>
                 <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`} type={"button"} onClick={() => {ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true); Common.OpenUserSettings.openUserSettings('activity_feed_panel', {section: 'activity_feed_sidebar_item'}); close}}>
                     <div className={`${Common.ButtonManaClasses.buttonChildrenWrapper}`}>
                         <div className={`${Common.ButtonManaClasses.buttonChildren}`}>
-                            <span className={CoachmarkClasses.buttonContent}>Take me there!</span>
+                            <span className={CoachmarkClasses.buttonContent}>{`${locale.Strings.TAKE_ME_THERE()}!`}</span>
                         </div>
                     </div>
                 </button>
                 <button className={`${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.secondary} ${CoachmarkClasses.closeButton}`} type={"button"} onClick={() => {ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true); close}}>
                     <div className={`${Common.ButtonManaClasses.buttonChildrenWrapper}`}>
                         <div className={`${Common.ButtonManaClasses.buttonChildren}`}>
-                            <span className={CoachmarkClasses.buttonContent}>Close</span>
+                            <span className={CoachmarkClasses.buttonContent}>{locale.Strings.CLOSE()}</span>
                         </div>
                     </div>
                 </button>
@@ -66,11 +67,7 @@ export function IntroCoachmarkPopout({button}) {
                 position="top"
                 targetElementRef={refDOM}
                 onRequestClose={() => {setShowPopout(false); ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true)}}
-                renderPopout={() => {
-                    return <Common.PopoutContainer>
-                        <IntroCoachmark close={() => setShowPopout(false)} />
-                    </Common.PopoutContainer>
-                }}
+                renderPopout={() => { return <IntroCoachmark close={() => setShowPopout(false)} /> }}
                 children={() => <div>
                     {button}
                 </div>}

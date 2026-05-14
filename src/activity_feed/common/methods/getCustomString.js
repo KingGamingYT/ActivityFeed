@@ -1,0 +1,78 @@
+import { Common } from "@modules/common";
+
+const i18n = {
+    "en-US": {
+        TEST: "hi! this is a test string for the i18n system! i am so tired!",
+        ACTIVITY_FEED: "Activity Feed",
+        ACTIVITY_FEED_ACTION_RESTART_REQUIRED: "This action will require you to restart Discord in order to see changes.",
+        ACTIVITY_FEED_COACHMARK_CONTENT_BODY: "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!",
+        ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: "News from external sources outside of your game library.",
+        ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.",
+        ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: "Modern styling toggles for each part of the Activity Feed.",
+        ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL: "Do you want to follow this source? Its announcements will appear in your Activity Feed.",
+        ACTIVITY_FEED_SUBSCRIBE_TO_GAME: "Do you want to follow this game? Its announcements will appear in your Activity Feed.",
+        ACTIVITY_FEED_UNAVAILABLE: "Activity Feed Unavailable",
+        ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC: "You've reached an ultra rare error! Reload Discord to try again.",
+        ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA: "You may not have enough game history to create an Activity Feed. Reload Discord to try again.",
+        ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL: "Do you want to unfollow this source? Its announcements will be hidden from your Activity Feed.",
+        ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME: "Do you want to unfollow this game? Its announcements will be removed from your Activity Feed.",
+        COPY_ARTICLE_LINK: "Copy Article Link",
+        EXTERNAL_SOURCES: "External Sources",
+        GAMES_YOU_FOLLOW: "Games You Follow",
+        MORE_RECENT_PLAYERS_SECTION_TITLE: ({playerCount}) => `+${playerCount} more recent players`,
+        NEWS: "News",
+        NOW_PLAYING_EMPTY_TITLE: "Nobody is playing anything right now...",
+        NOW_PLAYING_EMPTY_SUBTITLE: "When someone starts playing a game we'll show it here!",
+        QUICK_LAUNCHER: "Quick Launcher",
+        QUICK_LAUNCHER_EMPTY: "Discord can quickly launch most games you’ve recently played on this computer. Go ahead and launch one to see it appear here!",
+        RECENT_NEWS: "Recent News",
+        SEARCH_FOR_GAMES: "Search for Games",
+        SHOW_ON_ACTIVITY_FEED: "Show on Activity Feed",
+        VISUAL_REFRESH: "Visual Refresh"
+    },
+    "en-GB": {},
+    "zh-CN": {},
+    "zh-TW": {},
+    "cs": {},
+    "da": {},
+    "nl": {},
+    "fr": {},
+    "de": {},
+    "el": {},
+    "hu": {},
+    "it": {},
+    "ja": {},
+    "ko": {},
+    "pl": {},
+    "pt-PT": {},
+    "pt-BR": {},
+    "ru": {},
+    "sk": {},
+    "es-419": {},
+    "es-ES": {},
+    "sv-SE": {},
+    "tr": {},
+    "bg": {},
+    "uk": {},
+    "fi": {},
+    "no": {},
+    "hr": {}, 
+    "ro": {},
+    "lt": {},
+    "th": {},
+    "vi": {},
+    "hi": {},
+    "he": {},
+    "ar": {},
+    "id": {},
+}
+
+export function getCustomString(str, parameter) {
+    const locale = Common.intl.intl.currentLocale;
+    const defaultLocale = "en-US";
+    if (!i18n[locale]?.[str] || !i18n[defaultLocale]?.[str]) console.warn(`Requested message ${str} does not have a value in the requested locale ${locale} nor the default locale ${defaultLocale}`);
+    if (parameter && i18n[defaultLocale]?.[str] instanceof Function) {
+        return i18n[locale]?.[str](parameter) ?? i18n[defaultLocale]?.[str](parameter) ?? '';
+    }
+    return i18n[locale]?.[str] ?? i18n[defaultLocale]?.[str] ?? '';
+}

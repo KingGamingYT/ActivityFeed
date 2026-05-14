@@ -31,6 +31,7 @@ const Filters = [
     { name: "GradientComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('darken'), searchExports: true },
     { name: "HeaderBar", filter: /* @__PURE__ */ Webpack.Filters.byKeys("Icon", "Divider") }, 
     { name: "intl", filter: x=>x.t && x.t.formatToMarkdownString },
+    { name: "IsGameLaunchable", filter: /* @__PURE__ */ Webpack.Filters.byStrings('ConnectedAppsStore', 'branchId') },
     { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('user', 'activity', 'onAction', 'onClose', 'themeType', 'embeddedActivity') },
     { name: "LibraryApplicationUtils", filter: x => x.installApplication },
     { name: "LinkButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('route', 'iconClassName'), searchExports: true },
@@ -55,7 +56,6 @@ const Filters = [
     { name: "ReactSpring", filter: /* @__PURE__ */ Webpack.Filters.byKeys('useSpring', 'a') },
     { name: "RestAPI", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
-    { name: "SettingsButton", filter: /* @__PURE__ */ Webpack.Filters.bySource('webBuildOverride') },
     { name: "Spinner", filter: /* @__PURE__ */ Webpack.Filters.byStrings('="wanderingCubes'), searchExports:true },
     { name: "SpotifyButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('activity', 'PRESS_PLAY_ON_SPOTIFY_BUTTON') },
     { name: "TextFormatClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('defaultColor') },
@@ -65,6 +65,7 @@ const Filters = [
     { name: "UpperIconClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('icon', 'upperContainer') },
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
     { name: "UserProfileWrapperComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('onClickContainer:', 'user:', '.isNonUserBot()?') },
+    { name: "UsernameUtils", filter: x => x.humanizeStatus },
     { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId', 'getNickname') },
     { name: "XboxNeutralIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('22.95c-1.7-.16-3.4-.77-4.88-1.73-1.24-.8-1.52-1.13-1.52-1.8'), searchExports: true },
     { name: "ManaSwitch", filter: Webpack.Filters.byStrings('SWITCH_BACKGROUND_DEFAULT'), searchExports: true }
@@ -83,6 +84,7 @@ const CommonExport = () => {
 export const Common = CommonExport();
 
 export const { shell } = require('electron');
+export const fs = require('fs');
 export const { container } = /* @__PURE__ */ Webpack.getModule(m => m.container && m.panels);
 
 export const Title = /* @__PURE__ */ Webpack.getMangled('flashQueue', {
@@ -100,6 +102,9 @@ export const ContextMenus = () => {
 }
 
 export const CardPopout = Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: (x) => String(x)?.includes("ACTIVITY_FEED_GUILD_VISITED")});
+export const SettingsButton = Webpack.getMangled(Webpack.Filters.bySource('webBuildOverride'), {
+    Button: Webpack.Filters.byStrings('webBuildOverride')
+}, { mapDeclarations: true });
 
 export const GameProfileClasses = () => {
     let Classes = Webpack.getByKeys('sectionHeader', 'gameProfileModal');
@@ -130,6 +135,12 @@ export const ModalSystem = /* @__PURE__ */ Webpack.getMangled(".modalKey?", {
 export const FetchGameUtils = Webpack.getMangled('Error("Failed to fetch game data")', {
     fetchMultipleGames: BdApi.Webpack.Filters.byStrings('isLoading', 'Array.isArray')
 })
+
+export const ManaButtons = Webpack.getMangled(Webpack.Filters.bySource('SPINNING_CIRCLE', '__unsupportedReactNodeAsText', 'tooltipAlign', '"sm","aria-label"'), {
+    PrimaryButtonWithIcon: x => String(x).includes('"sm",.'),
+    PrimaryButtonLazy: x => String(x).includes('loading'),
+    IconOnlyButton: x => String(x).includes('targetElementRef')
+});
 
 export const SettingsRoot = Webpack.waitForModule((m) => m?.key === "$Root", { searchExports: true, searchDefault: false });
 export const RecentlyPlayedByApplicationId = Webpack.waitForModule(Webpack.Filters.byStrings('GLOBAL_FEED', 'application_id', 'useMemo'), {searchExports: true});

@@ -53,7 +53,7 @@ export function WhatsNewListItem({player}) {
 	const channel = ChannelStore.getDMChannelFromUserId(user.id);
 
 	return (
-		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => ContextMenu.open(e, (props) => {let Menus = ContextMenus(); return <Menus.ContextMenuUser.default {...props} channel={channel} user={user} />})}>
+		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => {let Menus = ContextMenus(); return Menus.ContextMenuUser(e, user, channel)}}>
             <AvatarWithPopoutWrapper className={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} user={user} status={status} size="SIZE_40" />
             <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
 			<MessageButton user={user} />

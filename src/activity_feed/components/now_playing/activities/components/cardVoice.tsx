@@ -21,7 +21,7 @@ export function VoiceCard({activities, voice, streams}) {
 
     return (
             <>
-                <div className={NowPlayingClasses.voiceSection} onContextMenu={e => ContextMenu.open(e, (props) => {let Menus = ContextMenus(); return <Menus.ContextMenuVoice.default {...props} channel={channel} />})}>
+                <div className={NowPlayingClasses.voiceSection} onContextMenu={e => {let Menus = ContextMenus(); return Menus.ContextMenuActivityFeed(e, channel)}}>
                     <div className={NowPlayingClasses.voiceSectionAssets}>
                         <VoiceGuildAsset channel={channel} streamUser={streamUsers[0]} server={server} />
                     </div>

@@ -70,7 +70,7 @@ const i18n = {
 export function getCustomString(str, parameter) {
     const locale = Common.intl.intl.currentLocale;
     const defaultLocale = "en-US";
-    if (!i18n[locale]?.[str] || !i18n[defaultLocale]?.[str]) console.warn(`Requested message ${str} does not have a value in the requested locale ${locale} nor the default locale ${defaultLocale}`);
+    if (!i18n[locale]?.[str] && !i18n[defaultLocale]?.[str]) console.warn(`Requested message ${str} does not have a value in the requested locale ${locale} nor the default locale ${defaultLocale}`);
     if (parameter && i18n[defaultLocale]?.[str] instanceof Function) {
         return i18n[locale]?.[str](parameter) ?? i18n[defaultLocale]?.[str](parameter) ?? '';
     }

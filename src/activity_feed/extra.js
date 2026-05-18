@@ -231,10 +231,6 @@ export const extraCSS = webpackify(`
         height: 30px !important;
     }
 
-    .popoutContentWrapper .button {
-        margin-top: 16px;
-    }
-
     [data-mana-component="layer-modal"] .followGameButtonActivityFeed {
         background-color: var(--control-overlay-secondary-background-default);
         border-color: var(--control-overlay-secondary-border-default);

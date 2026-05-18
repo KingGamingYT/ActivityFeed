@@ -92,13 +92,13 @@ export const Title = /* @__PURE__ */ Webpack.getMangled('flashQueue', {
 })
 
 export const ContextMenus = () => {
-    let ContextMenuUser = Webpack.getBySource('DMUserContextMenu', 'data-menu-migrated');
-    let ContextMenuVoice = Webpack.getBySource('channel-context', 'CHANNEL_ACTIVITY_FEED_VOICE_MENU');
+    let ContextMenuUser = Webpack.getByStrings('isGroupDM', 'targetIsUser', 'guildId', {searchExports: true});
+    let ContextMenuActivityFeed = Webpack.getBySource(".ACTIVITY_PANEL,\"NowPlaying\")", { declarationFilter: x => x?.displayName === "withAnalyticsContext()" }).render().props.children().type.prototype.handleChannelContextMenu;
     if (!ContextMenuUser) {
-        ContextMenuUser = Webpack.getBySource('DMUserContextMenu', 'data-menu-migrated');
-        ContextMenuVoice = Webpack.getBySource('channel-context', 'CHANNEL_ACTIVITY_FEED_VOICE_MENU');
+        ContextMenuUser = Webpack.getByStrings('isGroupDM', 'targetIsUser', 'guildId', {searchExports: true});
+        ContextMenuActivityFeed = Webpack.getBySource(".ACTIVITY_PANEL,\"NowPlaying\")", { declarationFilter: x => x?.displayName === "withAnalyticsContext()" }).render().props.children().type.prototype.handleChannelContextMenu;
     }
-    return {ContextMenuUser, ContextMenuVoice};
+    return {ContextMenuUser, ContextMenuActivityFeed};
 }
 
 export const CardPopout = Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: (x) => String(x)?.includes("ACTIVITY_FEED_GUILD_VISITED")});

@@ -375,10 +375,15 @@ class GameNewsStore extends Utils.Store {
         const analyticData = await Common.RestAPI.get('/users/@me/activities/statistics/applications');
         const manuallyFollowedGames = this.followedGames;
         const gameIds = analyticData.body.map(game => game.application_id).concat(manuallyFollowedGames);
-        if (gameIds.length > 112) {
-            const split = gameIds.splice(0, 112);
+        let idOverflow = []
+        if (gameIds.length  > 112) {
+            for (let i = 0; i < gameIds.length; i++) {
+                if (i % 112 === 0) {
+                    idOverflow.push(gameIds.splice(0, 112));
+                }
+            }
             await Common.FetchApplications.fetchApplications(gameIds);
-            await Common.FetchApplications.fetchApplications(split);
+            idOverflow.map(async idSplit => {return await Common.FetchApplications.fetchApplications(idSplit)});
         }
         else { await Common.FetchApplications.fetchApplications(gameIds); }
         const gameList = analyticData.body.filter(game => ApplicationStore.getApplication(game.application_id));

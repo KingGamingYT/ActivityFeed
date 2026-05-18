@@ -46,11 +46,7 @@ function ActivityCardContextMenu({currentActivity, currentGame}) {
                 </ContextMenu.Menu>
             )
         }
-        case 1: return;
-        case 2: return;
-        case 3: return;
-        case 4: return;
-        case 5: return;
+        default: Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }); return;
     }
 }
 

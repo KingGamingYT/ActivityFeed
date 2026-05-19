@@ -6,7 +6,7 @@ export function TwitchCard({user, activity}) {
     const currentActivity = activity?.activity;
     const activityProperties = PresenceTypeStore.getActivityProperties(currentActivity);
     if (!currentActivity || !activityProperties?.type === "STREAMING") return;
-    const currentGame = activity?.game;
+    const currentGame = activity?.application;
 
     return (
         <>

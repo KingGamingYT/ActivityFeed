@@ -138,17 +138,10 @@ export default class ActivityFeed {
             entry.extra.type === "played_game_extra" && hero.children.push(createElement(FollowButton, { application, fullWidth: true }));
         })
 
-        await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')).then((e) => {
-            GameProfileModal = Webpack.getMangled(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2'), {
-                GameProfileV1Sidebar: x => String(x).includes('onSetInvite'),
+        await Webpack.waitForModule(Webpack.Filters.bySource('"game_profile"', '.DISCORD')).then((e) => {
+            GameProfileModal = Webpack.getMangled(Webpack.Filters.bySource('"game_profile"', '.DISCORD'), {
                 GameProfileV2Trailing: x => String(x).includes('"game-profile-add-favorite-game"')
             }, {mapDeclarations: true})
-
-            Patcher.after(GameProfileModal, 'GameProfileV1Sidebar', (that, [props], res) => {
-            const game = props.game;
-            const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);
-            res.props.children[0].props.children.splice(0, 0, createElement(FollowButton, { application, fullWidth: true }));
-            })
 
             Patcher.after(GameProfileModal, "GameProfileV2Trailing", (that, [props], res) => {
                 const game = props.game;

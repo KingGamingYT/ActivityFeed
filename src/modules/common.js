@@ -101,7 +101,7 @@ export const ContextMenus = () => {
     return {ContextMenuUser, ContextMenuActivityFeed};
 }
 
-export const CardPopout = Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: (x) => String(x)?.includes("ACTIVITY_FEED_GUILD_VISITED")});
+export const CardPopout = Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: Webpack.Filters.byStrings("ACTIVITY_FEED_GUILD_VISITED") });
 export const SettingsButton = Webpack.getMangled(Webpack.Filters.bySource('webBuildOverride'), {
     Button: Webpack.Filters.byStrings('webBuildOverride')
 }, { mapDeclarations: true });

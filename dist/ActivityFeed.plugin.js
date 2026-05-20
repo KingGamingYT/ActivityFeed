@@ -129,7 +129,7 @@ const ContextMenus = () => {
 	}
 	return { ContextMenuUser, ContextMenuActivityFeed };
 };
-const CardPopout = betterdiscord.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: (x) => String(x)?.includes("ACTIVITY_FEED_GUILD_VISITED") });
+const CardPopout = betterdiscord.Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: betterdiscord.Webpack.Filters.byStrings("ACTIVITY_FEED_GUILD_VISITED") });
 const SettingsButton = betterdiscord.Webpack.getMangled(betterdiscord.Webpack.Filters.bySource("webBuildOverride"), {
 	Button: betterdiscord.Webpack.Filters.byStrings("webBuildOverride")
 }, { mapDeclarations: true });
@@ -8267,16 +8267,10 @@ class ActivityFeed {
 			const application = ApplicationStore.getApplication(entry.extra.application_id) ?? ApplicationStore.getApplicationByName(entry.extra.application_id);
 			entry.extra.type === "played_game_extra" && hero.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
 		});
-		await betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.bySource('"GameProfileModal"', "forceV2")).then((e) => {
-			GameProfileModal = betterdiscord.Webpack.getMangled(betterdiscord.Webpack.Filters.bySource('"GameProfileModal"', "forceV2"), {
-				GameProfileV1Sidebar: (x) => String(x).includes("onSetInvite"),
+		await betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.bySource('"game_profile"', ".DISCORD")).then((e) => {
+			GameProfileModal = betterdiscord.Webpack.getMangled(betterdiscord.Webpack.Filters.bySource('"game_profile"', ".DISCORD"), {
 				GameProfileV2Trailing: (x) => String(x).includes('"game-profile-add-favorite-game"')
 			}, { mapDeclarations: true });
-			betterdiscord.Patcher.after(GameProfileModal, "GameProfileV1Sidebar", (that, [props], res) => {
-				const game = props.game;
-				const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);
-				res.props.children[0].props.children.splice(0, 0, react.createElement(FollowButton, { application, fullWidth: true }));
-			});
 			betterdiscord.Patcher.after(GameProfileModal, "GameProfileV2Trailing", (that, [props], res) => {
 				const game = props.game;
 				const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);

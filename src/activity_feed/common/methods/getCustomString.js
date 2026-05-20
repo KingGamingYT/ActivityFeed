@@ -6,6 +6,8 @@ const i18n = {
         ACTIVITY_FEED: "Activity Feed",
         ACTIVITY_FEED_ACTION_RESTART_REQUIRED: "This action will require you to restart Discord in order to see changes.",
         ACTIVITY_FEED_COACHMARK_CONTENT_BODY: "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!",
+        ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: "You're not following any games",
+        ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: "Discord will automatically follow games that you play, but you can unfollow anytime.",
         ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: "News from external sources outside of your game library.",
         ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.",
         ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: "Modern styling toggles for each part of the Activity Feed.",

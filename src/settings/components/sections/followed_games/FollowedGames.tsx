@@ -13,8 +13,8 @@ function FollowedGameEmptyBuilder() {
     return (
         <div className={SettingsClasses.emptyApplications}>
             <div className={SettingsClasses.emptyApplicationsImage} />
-            <div className={`${Common.TextFormatClasses.defaultColor} ${SettingsClasses.emptyApplicationsTitle}`}>You're not following any games</div>
-            <div className={`${SettingsClasses.emptyApplicationsBody}`}>Discord will automatically follow games that you play, but you can unfollow anytime.</div>
+            <div className={`${Common.TextFormatClasses.defaultColor} ${SettingsClasses.emptyApplicationsTitle}`}>{locale.Strings.ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE()}</div>
+            <div className={`${SettingsClasses.emptyApplicationsBody}`}>{locale.Strings.ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE()}</div>
         </div>
     )
 }
@@ -64,8 +64,8 @@ function FollowedGameItemBuilder({game, blacklist, updateBlacklist}) {
                             ]}
                         >
                             <>
-                                <div className={MainClasses.emptyText}>{locale.Strings.ACTIVTIY_FEED_UNSUBSCRIBE_FROM_GAME()}</div>
-                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ATION_RESTART_REQUIRED()}</div>
+                                <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME()}</div>
+                                <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
                             </> 
                         </Common.ModalRoot.Modal>
                     )}

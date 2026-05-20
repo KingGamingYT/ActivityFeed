@@ -189,6 +189,8 @@ const i18n = {
 		ACTIVITY_FEED: "Activity Feed",
 		ACTIVITY_FEED_ACTION_RESTART_REQUIRED: "This action will require you to restart Discord in order to see changes.",
 		ACTIVITY_FEED_COACHMARK_CONTENT_BODY: "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!",
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: "You're not following any games",
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: "Discord will automatically follow games that you play, but you can unfollow anytime.",
 		ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: "News from external sources outside of your game library.",
 		ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.",
 		ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: "Modern styling toggles for each part of the Activity Feed.",
@@ -267,6 +269,8 @@ const locale = {
 		ACTIVITY_FEED: () => getCustomString("ACTIVITY_FEED"),
 		ACTIVITY_FEED_ACTION_RESTART_REQUIRED: () => getCustomString("ACTIVITY_FEED_ACTION_RESTART_REQUIRED"),
 		ACTIVITY_FEED_COACHMARK_CONTENT_BODY: () => getCustomString("ACTIVITY_FEED_COACHMARK_CONTENT_BODY"),
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: () => getCustomString("ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE"),
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: () => getCustomString("ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE"),
 		ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES"),
 		ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW"),
 		ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH"),
@@ -7926,7 +7930,7 @@ function ExternalSourcesListBuilder() {
 
 // settings/components/sections/followed_games/FollowedGames.tsx
 function FollowedGameEmptyBuilder() {
-	return BdApi.React.createElement("div", { className: SettingsClasses.emptyApplications }, BdApi.React.createElement("div", { className: SettingsClasses.emptyApplicationsImage }), BdApi.React.createElement("div", { className: `${Common.TextFormatClasses.defaultColor} ${SettingsClasses.emptyApplicationsTitle}` }, "You're not following any games"), BdApi.React.createElement("div", { className: `${SettingsClasses.emptyApplicationsBody}` }, "Discord will automatically follow games that you play, but you can unfollow anytime."));
+	return BdApi.React.createElement("div", { className: SettingsClasses.emptyApplications }, BdApi.React.createElement("div", { className: SettingsClasses.emptyApplicationsImage }), BdApi.React.createElement("div", { className: `${Common.TextFormatClasses.defaultColor} ${SettingsClasses.emptyApplicationsTitle}` }, locale.Strings.ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE()), BdApi.React.createElement("div", { className: `${SettingsClasses.emptyApplicationsBody}` }, locale.Strings.ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE()));
 }
 function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
@@ -7982,7 +7986,7 @@ function FollowedGameItemBuilder({ game, blacklist, updateBlacklist }) {
 							} }
 						]
 					},
-					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, locale.Strings.ACTIVTIY_FEED_UNSUBSCRIBE_FROM_GAME()), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, locale.Strings.ACTIVITY_FEED_ATION_RESTART_REQUIRED()))
+					BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: MainClasses.emptyText }, locale.Strings.ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME()), BdApi.React.createElement("div", { className: MainClasses.emptyText, style: { fontWeight: 600 } }, locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()))
 				)
 			)
 		},
@@ -8185,6 +8189,7 @@ class ActivityFeed {
 	PresenceTypeStore = PresenceTypeStore$1;
 	FollowButton = FollowButton;
 	NewsCard = CardMiniNews;
+	i18n = locale;
 	async start() {
 		const settingsItem = await SettingsItem();
 		NewsStore.whitelist = betterdiscord.Data.load("whitelist");

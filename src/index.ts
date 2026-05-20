@@ -49,6 +49,7 @@ export default class ActivityFeed {
     PresenceTypeStore = PresenceTypeStore;
     FollowButton = FollowButton;
     NewsCard = CardMiniNews;
+    i18n = locale;
     async start() {
         const settingsItem = await SettingsItem();
         NewsStore.whitelist = Data.load('whitelist');

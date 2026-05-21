@@ -25,7 +25,7 @@ export default function ({className, user, status, size}: AvatarWithPopoutWrappe
     		{(props) => <div
     			{...props}
     			ref={refDOM}
-    			onClick={() => { setShowPopout(true); console.log(user) } }
+    			onClick={() => { setShowPopout(true) } }
     			className={className}>
     			<Common.AvatarFetch imageClassName={className} src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} status={status} size={size} />
     		</div>}

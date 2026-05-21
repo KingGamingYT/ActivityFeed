@@ -6725,7 +6725,6 @@ function AvatarWithPopoutWrapper({ className, user, status, size }) {
 				ref: refDOM,
 				onClick: () => {
 					setShowPopout(true);
-					console.log(user);
 				},
 				className
 			},

@@ -1,27 +1,28 @@
-import { Common } from '@modules/common';
-import { GuildStore, UserStore, useStateFromStores } from '@modules/stores';
-import { TimeClock, InactiveTimeClock } from '@common/methods/common';
-import { OpenLinkClickHandler } from "./ActivityButtons";
+import { Hooks } from "betterdiscord";
+import { Common } from "@modules/common";
+import { useStateFromStores, UserStore } from "@modules/stores";
+import { TimeClock, InactiveTimeClock } from "@common/methods/common";
+import { handleApplicationClick } from "./ActivityButtons";
 import locale from "@common/methods/locale";
 import DiscordTag from "./DiscordTag";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import PresenceTypeStore from "@now_playing/PresenceTypeStore";
 
-function ActivityType(props) {
+function ActivityType(props: any) {
     const { activity, user, game, channel, stream, streamUser, server, type } = props
-    const guildChannel = useStateFromStores([ GuildStore ], () => GuildStore.getGuild(channel?.guild_id));
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
-    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
+    const currentUser = useStateFromStores([ UserStore ], () => UserStore.getCurrentUser());
+    const activityProperties = Hooks.useStateFromStores([ PresenceTypeStore ], () => PresenceTypeStore.getActivityProperties(activity));
 
     switch (type) {
-        case "REGULAR": return (
+        case "REGULAR": const handleClick = handleApplicationClick({user, currentUser, activity, application: game}); return (
             <>
                 <div className={NowPlayingClasses.gameNameWrapper}>
                     <div 
                         className={NowPlayingClasses.gameName}
-                        onClick={useGameProfile}
-                        onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                        onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                        onClick={handleClick ?? useGameProfile}
+                        onMouseOver={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                        onMouseLeave={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
                     >{game?.name}</div>
                 </div>
                 {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
@@ -31,23 +32,46 @@ function ActivityType(props) {
         )
         case "RICH": return (
             <>
-                <div 
-                    className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
-                    onClick={() => {switch(activityProperties?.platform) {
-                        case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
-                        case "CRUNCHYROLL": return OpenLinkClickHandler({user, currentUser: UserStore.getCurrentUser(), activity})
-                    }}}
-                    onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                    onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL", "YT_MUSIC"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
-                    >{activity.details || activity?.state}
-                </div>
-                {activity?.details && <div 
-                    className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
-                    onClick={() => activityProperties?.platform === "SPOTIFY" && Common.OpenArtist(activity, user.id, 0)}
-                    onMouseOver={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                    onMouseLeave={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
-                    >{activity?.state}
-                </div>}
+                {activityProperties?.platform === "YT_MUSIC" ?
+                    <>
+                        <Common.Link href={activity?.details_url}>
+                            <div 
+                                className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
+                                onMouseOver={(e) => e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                                onMouseLeave={(e) => e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                                >{activity.details || activity?.state}
+                            </div>
+                        </Common.Link>
+                        {activity?.details && <Common.Link href={activity?.state_url}>
+                            <div 
+                                className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
+                                onMouseOver={(e) => e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                                onMouseLeave={(e) => e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                                >{activity?.state}
+                            </div>
+                        </Common.Link>}
+                    </>
+                :
+                    <>
+                        <div 
+                            className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
+                            onClick={() => {switch(activityProperties?.platform) {
+                                case "SPOTIFY": return Common.OpenTrack(activity)
+                                case "CRUNCHYROLL": return handleApplicationClick({user, currentUser, activity})()
+                            }}}
+                            onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                            onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                            >{activity.details || activity?.state}
+                        </div>
+                        {activity?.details && <div 
+                            className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
+                            onClick={() => activityProperties?.platform === "SPOTIFY" && Common.OpenArtist(activity, user.id, 0)}
+                            onMouseOver={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
+                            onMouseLeave={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                            >{activity?.state}
+                        </div>}
+                    </>
+                }
                 {
                     activity?.timestamps?.end ? <div className="mediaProgressBarContainer">
                         <Common.MediaProgressBar start={activity?.timestamps?.start || activity?.created_at} end={activity?.timestamps?.end} />
@@ -107,7 +131,7 @@ function ActivityType(props) {
     }
 }
 
-export function FlexInfo(props) {
+export function FlexInfo(props: any) {
     const { className, style, onClick } = props
 
     return (

@@ -1,42 +1,44 @@
 import { ReactUtils } from "betterdiscord";
 import { Common } from "@modules/common";
-import { UserStore } from "@modules/stores";
+import { UserStore, useStateFromStores } from "@modules/stores";
 import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
 import { RichImageAsset, SpotifyAsset, GameIconAsset, XboxImageAsset, TwitchImageAsset } from "./common/ActivityAssets";
-import { OpenLinkClickHandler } from "./common/ActivityButtons";
+import { handleApplicationClick } from "./common/ActivityButtons";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function RegularActivityBuilder({activity, activityProperties, user, game, players, server, v2Enabled}) {
+    const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
+
     return (
-        <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex} ${NowPlayingClasses.activity}`} style={{ flex: "1 1 auto" }}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.activity}>
             {(() => {
                 switch (activityProperties.platform) {
                     case "SPOTIFY": return <SpotifyAsset activity={activity} user={user} />
                     case "XBOX": return <XboxImageAsset url={'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'}/>
-                    default: return <GameIconAsset url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`} id={activity?.application_id} name={game?.name} />
+                    case "TWITCH": return <GameIconAsset 
+                        url={activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`} 
+                        id={activity?.application_id} 
+                        name={activity?.name} 
+                    />
+                    default: return <GameIconAsset 
+                        url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`} 
+                        id={activity?.application_id} 
+                        name={game?.name} 
+                        onClick={handleApplicationClick({user, currentUser, activity, application: game})}
+                    />
                 }
             })()}
-            <FlexInfo className={NowPlayingClasses.gameInfo} activity={activity} game={game} type="REGULAR" />
+            <FlexInfo className={NowPlayingClasses.gameInfo} user={user} activity={activity} game={game} type={activityProperties.platform === "TWITCH" ? "TWITCH" : "REGULAR"} />
             <RegularCardTrailing activity={activity} user={user} server={server} players={players} v2Enabled={v2Enabled} />
-        </div>
-    )
-}
-
-export function RegularTwitchActivityBuilder({user, activity, game}) {
-    return (
-        <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter} ${Common.PositionClasses.flex}`} style={{ flex: "1 1 auto" }}>
-            <GameIconAsset url={ activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`} id={activity?.application_id} name={activity?.name} />
-            <FlexInfo className={`${NowPlayingClasses.gameInfoRich} ${NowPlayingClasses.gameInfo}`} activity={activity} game={game} type="TWITCH" />
-            <RichCardTrailing activity={activity} user={user} />
-        </div>
+        </Common.Flex>
     )
 }
 
 export function RichActivityBuilder({user, activity, activityProperties, v2Enabled}) {
-
+    const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
     return (
-        <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`} style={{ flex: "1 1 auto" }}>
+        <Common.Flex className={NowPlayingClasses.richActivity}>
             <div className={`${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}`}>
                 <div className={`${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}`}>
                     <div className={`${NowPlayingClasses.assets}`} >
@@ -51,7 +53,7 @@ export function RichActivityBuilder({user, activity, activityProperties, v2Enabl
                             tooltipText={activity.assets.large_text}
                             onClick={() => {switch(activityProperties?.platform) {
                                 case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
-                                case "CRUNCHYROLL": return OpenLinkClickHandler({user, currentUser: UserStore.getCurrentUser(), activity})
+                                case "CRUNCHYROLL": return handleApplicationClick({user, currentUser, activity})()
                             }}}
                             onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
                             onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
@@ -70,13 +72,13 @@ export function RichActivityBuilder({user, activity, activityProperties, v2Enabl
                     <RichCardTrailing activity={activity} user={user} v2Enabled={v2Enabled} />
                 </div>
             </div>
-        </div>
+        </Common.Flex>
     )
 }
 
 export function RichTwitchActivityBuilder({activity}) {
     return (
-        <div className={`${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignStretch} ${Common.PositionClasses.flex} ${NowPlayingClasses.richActivity}`} style={{ flex: "1 1 auto" }}>
+        <Common.Flex className={NowPlayingClasses.richActivity}>
             <div className={`${NowPlayingClasses.activityActivityFeed} ${NowPlayingClasses.activityFeed}`}>
                 <div className={`${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}`}>
                     <div className={NowPlayingClasses.assets}>
@@ -94,6 +96,6 @@ export function RichTwitchActivityBuilder({activity}) {
                     </div>
                 </div>
             </div>
-        </div>
+        </Common.Flex>
     )
 }

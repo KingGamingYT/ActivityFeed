@@ -1,18 +1,18 @@
-import { Utils } from "betterdiscord";
-import { useState } from "react";
+import { Utils, Hooks } from "betterdiscord";
 import { Common } from "@modules/common";
-import { ApplicationStore } from "@modules/stores";
+import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import locale from "@common/methods/locale";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 import NewsStore from "@activity_feed/Store";
 
 export default function ({application, fullWidth=false}) {
-    const [followedGames, updateFollowStatus] = useState(NewsStore.getManuallyFollowedGames());
-    const isFollowed = NewsStore.isGameFollowed(ApplicationStore.getApplicationByName(application.name)?.id ?? application.id);
+    const originalApplication = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplicationByName(application.name));
+    const isFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(originalApplication?.id ?? application.id));
+    const isWhitelisted = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(originalApplication?.id ?? application.id));
 
     return (
-        (isFollowed || NewsStore.isGameWhitelisted(ApplicationStore.getApplicationByName(application.name)?.id ?? application.id)) ? <button 
+        (isFollowed || isWhitelisted) ? <button 
             type="button" 
             className={Utils.className(NowPlayingClasses.followGameButtonActivityFeed, MainClasses.button, Common.ButtonVoidClasses.button, Common.ButtonVoidClasses.sizeSmall, fullWidth && Common.ButtonVoidClasses.fullWidth, Common.ButtonVoidClasses.lookFilled, Common.ButtonVoidClasses.grow )}
             disabled
@@ -20,7 +20,7 @@ export default function ({application, fullWidth=false}) {
         : <button 
             type="button" 
             className={Utils.className(NowPlayingClasses.followGameButtonActivityFeed, MainClasses.button, Common.ButtonVoidClasses.button, Common.ButtonVoidClasses.sizeSmall, fullWidth && Common.ButtonVoidClasses.fullWidth, Common.ButtonVoidClasses.lookFilled, Common.ButtonVoidClasses.grow )}
-            onClick={() => {NewsStore.followGame(application); updateFollowStatus(followedGames.filter(item => item.applicationId !== application.id))}}
+            onClick={() => NewsStore.followGame(application)}
         ><div className={NowPlayingClasses.contents}>{locale.Strings.FOLLOW()}</div></button>
     )
 }

@@ -1,3 +1,4 @@
+import { Hooks } from "betterdiscord";
 import { useWindowSize } from "@common/methods/common";
 import { Common } from "@modules/common";
 import { ActivityButtons, SpotifyButtons } from "./ActivityButtons";
@@ -13,7 +14,6 @@ interface RegularButtons {
     user: Object,
     server?: Object,
     players?: Object,
-    check: Object,
     v2Enabled?: boolean
 }
 
@@ -70,7 +70,7 @@ function PartyMemberListBuilder({activity, users}) {
 
 export function RegularCardTrailing({activity, user, server, players, v2Enabled}: RegularButtons) {
     const [width, height] = useWindowSize();
-    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
+    const activityProperties = Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getActivityProperties(activity));
     const action = Common.ActivityActions({display: "live", user, activity})
 
     if (width <= 1240 && width >= 1200) return;
@@ -87,28 +87,24 @@ export function RegularCardTrailing({activity, user, server, players, v2Enabled}
             {(activityProperties.platform === "SPOTIFY") && <div className={`${NowPlayingClasses.serviceButtonWrapper}`}>
                 <SpotifyButtons user={user} activity={activity} onAction={action} />
             </div>}
-            {activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : <div 
-                className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
-                style={{ flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}>
+            {activityProperties.platform !== "YT_MUSIC" && activity?.assets ? null : <Common.Flex align={Common.Flex.Align.END} className={NowPlayingClasses.actionsActivityFeed} direction={Common.Flex.Direction.VERTICAL} justify={Common.Flex.Justify.CENTER} style={{ flex: "0 1 auto", marginLeft: "20px" }}>
                 {v2Enabled && activity?.party && activity?.party?.size ? null : <ActivityButtons user={user} activity={activity} onAction={action} />}
-            </div>}
+            </Common.Flex>}
         </>
     )
 }
 
 export function RichCardTrailing({activity, user, v2Enabled}: RichButtons) {
     const [width, height] = useWindowSize();
-    const activityProperties = PresenceTypeStore.getActivityProperties(activity);
+    const activityProperties = Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getActivityProperties(activity));
     const action = Common.ActivityActions({display: "live", user, activity})
 
     if (width <= 1240 && width >= 1200) return;
     return (
         <>
-            {activityProperties.platform !== "YT_MUSIC" && <div 
-                className={`${MainClasses.button} ${NowPlayingClasses.actionsActivity} ${Common.ButtonVoidClasses.lookFilled} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}`}
-                style={{ flex: "0 1 auto", flexDirection: "column", alignItems: "flex-end", marginLeft: "20px" }}>
+            {activityProperties.platform !== "YT_MUSIC" && <Common.Flex align={Common.Flex.Align.END} className={NowPlayingClasses.actionsActivityFeed} direction={Common.Flex.Direction.VERTICAL} justify={Common.Flex.Justify.CENTER} style={{ flex: "0 1 auto", marginLeft: "20px" }}>
                 {v2Enabled && activity?.party && activity?.party?.size ? null : <ActivityButtons user={user} activity={activity} onAction={action} />}
-            </div>}
+            </Common.Flex>}
         </>
     )
 }

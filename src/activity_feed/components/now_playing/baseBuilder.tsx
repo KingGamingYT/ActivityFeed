@@ -14,12 +14,12 @@ import NowPlayingClasses from "./NowPlaying.module.css";
 function NowPlayingColumnBuilder({nowPlayingCards, type}) {
     return (
         type === "NOW_PLAYING" ? nowPlayingCards.map(card => ([
-            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards') ?? settings.default.v2Cards} />,
-            Data.load('cardTypeDebug') && <NowPlayingCardBuilder card={card} v2Enabled={false} />
+            <NowPlayingCardBuilder card={card} v2Enabled={Data.load('v2Cards') ?? settings.default.v2Cards} key={card.party.priorityMembers[0].user.id} />,
+            Data.load('cardTypeDebug') && <NowPlayingCardBuilder card={card} v2Enabled={false} key={`${card.party.priorityMembers[0].user.id}-debug`} />
         ]))
         : type === "WHATS_NEW" ? nowPlayingCards.map(card => ([
-            <WhatsNewCardBuilder card={card} v2Enabled={Data.load('v2Cards') ?? settings.default.v2Cards} />,
-            Data.load('cardTypeDebug') && <WhatsNewCardBuilder card={card} v2Enabled={false} />
+            <WhatsNewCardBuilder card={card} v2Enabled={Data.load('v2Cards') ?? settings.default.v2Cards} key={card.application.id} />,
+            Data.load('cardTypeDebug') && <WhatsNewCardBuilder card={card} v2Enabled={false} key={`${card.application.id}-index`} />
         ]))
         : console.warn('Invalid card type passed to ColumnBuilder')
 

@@ -414,6 +414,7 @@
 }
 
 .textRow {
+    color: var(--text-default);
     display: block;
     font-size: 14px;
     line-height: 16px;
@@ -607,7 +608,7 @@
     left: 0px;
 }
 
-.actionsActivity .buttonContainer {
+.actionsActivityFeed .buttonContainer {
     flex-direction: inherit;
 }
 
@@ -720,6 +721,23 @@
 
 .overflowUserOverflow {}
 
+.overflowExtraOverflow {}
+
+.overflowExtraText {
+    color: var(--text-default);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.avatarEmpty {
+    align-items: center;
+    background: var(--background-base-lowest);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
 .soloAvatar {
     height: 30px;
     width: 30px;
@@ -748,6 +766,26 @@
     &:active {
         background-color: var(--control-secondary-background-active) !important; 
     }
+}
+
+.popoutContainer {
+    box-shadow: inset 0 0 0 1px var(--border-subtle), var(--shadow-high);
+    display: flex;
+    flex-direction: column;
+    max-height: 40vh;
+    position: relative;
+    width: 200px;
+}
+
+.userListItem {
+    align-items: center;
+    display: flex;
+    margin: 8px -8px;
+    padding: 4px 8px;
+}
+
+.userListItem .lastPlayedDetails {
+    margin-left: 10px;
 }
 
 .cardV2 {
@@ -830,6 +868,9 @@
         font-size: 16px;
         line-height: 18px;
     }
+    .details {
+        color: var(--white);
+    }
     .state {
         color: var(--app-message-embed-secondary-text);
         font-size: 14px;
@@ -885,7 +926,23 @@
     }
 
     .overflownPlayers {
+        gap: 2.5px;
         margin-top: 0;
         padding-bottom: 0;
+    }
+
+    .overflowUserOverflow:not(:last-of-type) {
+        margin-inline-end: -6px;
+        mask: url(/assets/38fe464a6fea7d0e.svg);
+        mask-size: 100%;
+        mask-type: alpha;
+    }
+
+    .overflowExtraText {
+        color: var(--white);
+    }
+
+    .avatarEmpty {
+        background: var(--opacity-white-12);
     }
 }

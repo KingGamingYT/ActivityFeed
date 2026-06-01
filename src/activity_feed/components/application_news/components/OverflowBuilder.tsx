@@ -1,4 +1,4 @@
-import { ContextMenu, Data } from "betterdiscord";
+import { ContextMenu, Data, Hooks } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common, ModalSystem } from "@modules/common";
 import { UserSettingsProtoStore } from "@modules/stores";
@@ -9,18 +9,18 @@ import FeedClasses from "@application_news/ApplicationNews.module.css";
 import Tooltip from "@common/components/TooltipBuilder";
 
 export function FeedPopout({application, gameId, articleUrl, close}) {
-    const article = NewsStore.getByGameId(gameId);
+    const article = Hooks.useStateFromStores([NewsStore], () => NewsStore.getByGameId(gameId));
 
     if (isNaN(application.id)) {
         return (
             <ContextMenu.Menu navId="feed-overflow" onClose={close ?? ((e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e))}>
                 <ContextMenu.Item id="copy-article-link" label={locale.Strings.COPY_ARTICLE_LINK()} action={() => Common.Clipboard(articleUrl)} />
-                {!NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
+                {!Hooks.useStateFromStores([NewsStore], () => NewsStore.isArticleLockedIn(article)) && Data.load('lockingInArticles') && <ContextMenu.Item 
                     id="lock-in-article" 
                     label="Lock In Article" 
                     action={() => NewsStore.lockInArticle(article)}
                 />}
-                {NewsStore.isArticleLockedIn(article) && Data.load('lockingInArticles') && <ContextMenu.Item 
+                {Hooks.useStateFromStores([NewsStore], () => NewsStore.isArticleLockedIn(article)) && Data.load('lockingInArticles') && <ContextMenu.Item 
                     id="unlock-article" 
                     label="Unlock Article" 
                     action={() => NewsStore.releaseLockedArticle(article)}
@@ -49,12 +49,12 @@ export function FeedPopout({application, gameId, articleUrl, close}) {
                         </>    
                     </Common.ModalRoot.Modal>
             )} />
-            {!NewsStore.isArticleLockedIn(article) && Data.load('lockedInArticles') && <ContextMenu.Item 
+            {!Hooks.useStateFromStores([NewsStore], () => NewsStore.isArticleLockedIn(article)) && Data.load('lockedInArticles') && <ContextMenu.Item 
                 id="lock-in-article" 
                 label="Lock In Article" 
                 action={() => NewsStore.lockInArticle(article)}
             />}
-            {NewsStore.isArticleLockedIn(article) && Data.load('lockedInArticles') && <ContextMenu.Item 
+            {Hooks.useStateFromStores([NewsStore], () => NewsStore.isArticleLockedIn(article)) && Data.load('lockedInArticles') && <ContextMenu.Item 
                 id="unlock-article" 
                 label="Unlock Article" 
                 action={() => NewsStore.releaseLockedArticle(article)}

@@ -2,6 +2,7 @@ import { Utils, Webpack } from "betterdiscord";
 import { RefreshSection, AdvancedSection } from "./sections";
 import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./sections/followed_games";
 import { NewspaperIcon } from "./common/SidebarItemIcon";
+import locale from "@common/methods/locale";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
@@ -69,8 +70,8 @@ export default async () => {
                 ],
                 key: "activity_feed_advanced_accordion",
                 type: LayoutTypes.ACCORDION,
-                useTitle: (opened) =>  opened ? "Hide Advanced & Debug Settings for Activity Feed" : "View Advanced & Debug Settings for Activity Feed",
-                useCollapsedSubtitle: () => "Developer options only! Don't touch these unless you want to break the activity feed in some way."
+                useTitle: (opened) =>  opened ? locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN() : locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED(),
+                useCollapsedSubtitle: () => locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION()
             }
         )
 
@@ -79,10 +80,10 @@ export default async () => {
                 {
                     buildLayout: () => [refreshObj],
                     type: LayoutTypes.CATEGORY,
-                    useTitle: () => "Visual Refresh",
+                    useTitle: () => locale.Strings.VISUAL_REFRESH(),
                     useSubtitle: () => (
                         <div className={`${SettingsClasses.subtitleContainer}`}>
-                            <div className={MainClasses.emptyText}>Modern styling toggles for each part of the Activity Feed.</div>
+                            <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH()}</div>
                         </div>
                     )
                 }
@@ -91,10 +92,10 @@ export default async () => {
                 {
                     buildLayout: () => [gamesFollowedObj],
                     type: LayoutTypes.CATEGORY,
-                    useTitle: () => "Games You Follow",
+                    useTitle: () => locale.Strings.GAMES_YOU_FOLLOW(),
                     useSubtitle: () => (
                         <div className={`${SettingsClasses.subtitleContainer}`}>
-                            <div className={MainClasses.emptyText}>Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.</div>
+                            <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW()}</div>
                         </div>
                     )
                 }
@@ -103,10 +104,10 @@ export default async () => {
                 {
                     buildLayout: () => [externalNewsObj],
                     type: LayoutTypes.CATEGORY,
-                    useTitle: () => "External News",
+                    useTitle: () => locale.Strings.EXTERNAL_NEWS(),
                     useSubtitle: () => (
                         <div className={`${SettingsClasses.external} ${SettingsClasses.subtitleContainer}`}>
-                            <div className={MainClasses.emptyText}>News from external sources outside of your game library.</div>
+                            <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES()}</div>
                         </div>
                     )
                 }
@@ -115,7 +116,7 @@ export default async () => {
                 {
                     buildLayout: () => [advancedObj],
                     type: LayoutTypes.CATEGORY,
-                    useTitle: () => "Advanced"
+                    useTitle: () => locale.Strings.ADVANCED()
                 }
             )
         ])

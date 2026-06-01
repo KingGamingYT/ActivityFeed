@@ -7,7 +7,8 @@ import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
 interface GameIconAsset {
     url: string | (() => string),
     id: Number,
-    name: string
+    name: string,
+    onClick?: React.MouseEventHandler<HTMLImageElement>
 }
 interface RichImageAsset {
     url: string | (() => string),
@@ -75,7 +76,7 @@ export function SpotifyAsset({activity, user}) {
     )
 }
 
-export function GameIconAsset({url, id, name}: GameIconAsset) {
+export function GameIconAsset({url, id, name, onClick}: GameIconAsset) {
     const [shouldFallback, setShouldFallback] = useState(false);
     let appId = id;
     if (isNaN(appId)) appId = undefined; 
@@ -89,9 +90,9 @@ export function GameIconAsset({url, id, name}: GameIconAsset) {
                     style={{ width: "40px", height: "40px" }}
                     aria-label={locale.Strings.GAME_ICON_FOR({game: name})}
                     src={`${url}`}
-                    onClick={useGameProfile}
-                    onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                    onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                    onClick={onClick ?? useGameProfile}
+                    onMouseOver={(e) => Boolean(onClick ?? useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
+                    onMouseLeave={(e) => Boolean(onClick ?? useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
                     onError={() => (setShouldFallback(true))}
                 ></img>
             }

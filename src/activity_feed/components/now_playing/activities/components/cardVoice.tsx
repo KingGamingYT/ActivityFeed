@@ -38,7 +38,7 @@ export function VoiceCard({activities, voice, streams}) {
                 {stream && streams.map((stream, index) =>
                         <>
                             <div className={MainClasses.sectionDivider} />
-                            <StreamCard stream={streamsInfo[index]} streamUser={streamUsers[index]} streamActivity={streams[index]?.activity} />
+                            <StreamCard stream={streamsInfo[index]} streamUser={streamUsers[index]} streamActivity={streams[index]?.activity} key={`stream-${streamUsers[index].id}`} />
                         </>
                     )
                 }

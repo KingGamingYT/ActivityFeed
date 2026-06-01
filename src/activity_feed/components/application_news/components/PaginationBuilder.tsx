@@ -8,10 +8,10 @@ function Subpagination({article}) {
     const thumbnail = article.news?.thumbnail?.replace(/\s/g, "%20"); // fix for urls that have spaces in them thanks to lacking URI encoding
     return (
         <div 
-            className={article.index === NewsStore.getCurrentArticle().index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
+            className={article.index === Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle()).index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
             onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false); NewsStore.setDirection(article.index - currentArticle.index) }}
             onContextMenu={e => ContextMenu.open(e, (props) => <FeedPopout {...props} application={article.application} gameId={article.id} articleUrl={article.news?.url} /> )}
-            key={article}>
+            key={article.id}>
             <div 
                 className={FeedClasses.splashArt}
                 style={{ 
@@ -28,16 +28,11 @@ function Subpagination({article}) {
 }
 
 export function FeedPaginationBuilder({articleSet}) {
-
     return (
         <div className={FeedClasses.pagination}>
             <div className={FeedClasses.scrollerWrap}>
                 <div className={`${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}`}>{
-                    articleSet.map(article => {
-                        if (!article) return;
-
-                        return <Subpagination article={article} />
-                    })
+                    articleSet.map(article => article && <Subpagination article={article} />)
                 }</div>
             </div>
         </div>

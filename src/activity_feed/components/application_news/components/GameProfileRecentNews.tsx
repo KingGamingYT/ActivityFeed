@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Common, GameProfileClasses } from "@modules/common";
+import { useStateFromStores } from "@modules/stores";
 import { CardMiniNews } from "@activity_feed/components/now_playing/activities/components/CardMiniNews";
 import locale from "@activity_feed/common/methods/locale";
 import NewsStore from "@activity_feed/Store";
@@ -15,7 +16,7 @@ export function RecentNews({applicationId, type}) {
 
     useEffect(() => {
         (async () => {
-            const pendingArticle = await NewsStore.getDirectByApplicationId(applicationId, false);
+            const pendingArticle = await useStateFromStores([NewsStore], () => NewsStore.getDirectByApplicationId(applicationId, false));
             setArticle(pendingArticle)
         })()
     }, [applicationId])

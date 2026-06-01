@@ -1,17 +1,17 @@
 import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
 import { createElement } from "react";
-import { container, Common, NavigationUtils, SettingsButton, SettingsRoot, Router } from "./modules/common";
-import { ApplicationStore } from "./modules/stores";
-import { TabBaseBuilder } from "./activity_feed/base.js";
+import { container, Common, SettingsButton, SettingsRoot, Router } from "@modules/common";
+import { ApplicationStore } from "@modules/stores";
+import { TabBaseBuilder } from "@activity_feed/base";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
 import { CardMiniNews } from "@now_playing/activities/components/CardMiniNews";
-import { extraCSS } from "./activity_feed/extra";
+import { extraCSS } from "@activity_feed/extra";
 import locale from "@common/methods/locale";
 import FollowButton from "@now_playing/activities/components/common/FollowButton";
 import styles from "styles";
 import SettingsItem from "@settings/components/PanelBuilder";
-import NewsStore from "./activity_feed/Store";
-import NewsArticle from "@application_news/Article";
+import NewsStore from "@activity_feed/Store";
+import NewsArticle from "@application_news/components/Article";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 import PresenceTypeStore from "@now_playing/PresenceTypeStore";
@@ -87,8 +87,8 @@ export default class ActivityFeed {
             }
         }
 
-        DOM.addStyle('activityPanelCSS', styles());
-        DOM.addStyle('activityPanelSupplementalCSS', extraCSS)
+        DOM.addStyle('activityFeedCSS', styles());
+        DOM.addStyle('activityFeedSupplementalCSS', extraCSS)
 
         Patcher.after(Webpack.getBySource(".A.CONTACTS_LIST"), "A", (that, [props], res) => {
             const panel = Utils.findInTree(res, m => m?.homeLink, { walkable: [ "props", "children" ] });
@@ -182,6 +182,7 @@ export default class ActivityFeed {
         Common.FluxDispatcher.dispatch({type: 'LAST_PLAYED_UNMOUNTED'});
         Patcher.unpatchAll('ActivityFeed');
         DOM.removeStyle('activityFeedCSS');
+        DOM.removeStyle('activityFeedSupplementalCSS');
         ReactUtils.getOwnerInstance(document.querySelector(`.${container}`)).forceUpdate();
     }
 }

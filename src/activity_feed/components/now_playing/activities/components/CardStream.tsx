@@ -1,4 +1,4 @@
-import { ContextMenu } from "betterdiscord";
+import { ContextMenu, Utils } from "betterdiscord";
 import { Common } from "@modules/common";
 import { FlexInfo } from "./common/FlexInfo";
 import locale from "@activity_feed/common/methods/locale";
@@ -15,20 +15,18 @@ function StreamContextMenu({stream}) {
 
 function StreamFallback() {
     return (
-        <div className={`${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap}${Common.PositionClasses.alignCenter} ${Common.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`} 
-            style={{ flex: "1 1 auto"}}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={Utils.className(NowPlayingClasses.emptyPreviewContainer, NowPlayingClasses.applicationStreamingPreviewSize)} justify={Common.Flex.Justify.CENTER}>
             <Common.Spinner />
-        </div>
+        </Common.Flex>
     )
 }
 
 function StreamPlaceholder() {
     return (
-        <div className={`${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap}${Common.PositionClasses.alignCenter} ${Common.PositionClasses.justifyCenter} ${NowPlayingClasses.emptyPreviewContainer} ${NowPlayingClasses.applicationStreamingPreviewSize}`} 
-            style={{ flex: "1 1 auto"}}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={Utils.className(NowPlayingClasses.emptyPreviewContainer, NowPlayingClasses.applicationStreamingPreviewSize)} justify={Common.Flex.Justify.CENTER}>
             <div className={NowPlayingClasses.emptyPreviewImage} style={{ backgroundImage: "url(https://static.discord.com/assets/b93ef52d62a513a4f2127a6ca0c3208c.svg)" }}></div>
             <div className={NowPlayingClasses.emptyPreviewText}>{locale.Strings.STREAM_JUST_STARTED_PROMPT()}</div>
-        </div>
+        </Common.Flex>
     )
 }
 

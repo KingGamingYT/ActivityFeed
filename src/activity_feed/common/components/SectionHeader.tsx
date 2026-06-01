@@ -7,8 +7,8 @@ interface SectionHeader {
 
 export default ({ label }: SectionHeader) => {
 	return (
-		<div className={`${MainClasses.headerContainer} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyBetween} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}}>
-	        <div className={MainClasses.headerText}>{label}</div>
-	    </div>
+		<Common.Flex align={Common.Flex.Align.CENTER} className={MainClasses.headerContainer} justify={Common.Flex.Justify.BETWEEN}>
+			<div className={MainClasses.headerText}>{label}</div>
+		</Common.Flex>
 	)
 }

@@ -184,7 +184,7 @@ class GameNewsStore extends Utils.Store {
     isGameFollowed(applicationId) {
         let f = this.followedGames;
 
-        return f?.find(e => e.applicationId === applicationId) ?? false;
+        return Boolean(f?.find(e => e.applicationId === applicationId)) ?? false;
     }
 
     getManuallyFollowedGames() {
@@ -215,16 +215,19 @@ class GameNewsStore extends Utils.Store {
     }
 
     async fetchAnyFeed(url, options) {
-        const rssFeed = await Promise.all([ parseXML(Net.fetch(`${url}`, options).then(r => r.ok ? r.text() : null)) ]);
-        return rssFeed;
+        const rssFeed = await Promise.resolve(Net.fetch(`${url}`, options).then(r => r.ok ? r : null));
+        const feedClone = rssFeed?.clone();
+        const result = rssFeed?.json().catch(e => parseXML(feedClone?.text())) 
+        return result;
     }
 
     async #fetchDiscordFeeds() {
-        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://discord.com/blog/rss.xml`).then(r => r.ok ? r.text() : null)) ]);
+        const rssFeed = await Promise.resolve(parseXML(Net.fetch(`https://discord.com/blog/rss.xml`).then(r => r.ok ? r.text() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for Discord`, e))));
+        if (!rssFeed) return;
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
-                name: rssFeed[0]?.rss?.channel?.title,
+                name: rssFeed?.rss?.channel?.title,
                 id: "Discord"
             },
             appId: "Discord",
@@ -237,11 +240,12 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchNintendoFeeds() {
-        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://nintendoeverything.com/feed/`).then(r => r.ok ? r.text() : null)) ])
+        const rssFeed = await Promise.resolve(parseXML(Net.fetch(`https://nintendoeverything.com/feed/`).then(r => r.ok ? r.text() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for Nintendo`, e))));
+        if (!rssFeed) return;
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
-                name: rssFeed[0]?.rss?.channel?.title,
+                name: rssFeed?.rss?.channel?.title,
                 id: "Nintendo"
             },
             appId: "Nintendo",
@@ -254,11 +258,12 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchXboxFeeds() {
-        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://news.xbox.com/en-us/feed/`, {headers: {"User-Agent": "activity"}}).then(r => r.ok ? r.text() : null)) ])
+        const rssFeed = await Promise.resolve(parseXML(Net.fetch(`https://news.xbox.com/en-us/feed/`, {headers: {"User-Agent": "activity"}}).then(r => r.ok ? r.text() : null)).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for Xbox`, e)));
+        if (!rssFeed) return;
         const article = this.getRSSItem(rssFeed);
         return {
             application: {
-                name: rssFeed[0]?.rss?.channel?.title,
+                name: rssFeed?.rss?.channel?.title,
                 id: "Xbox"
             },
             appId: "Xbox",
@@ -271,8 +276,9 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchSubnauticaFeeds(application) {
-        const rssFeed = await Promise.all([ Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=4`).then(r => r.ok ? r.json() : null) ])
-        const article = rssFeed[0].data[0].attributes;
+        const rssFeed = await Promise.resolve(Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=4`).then(r => r.ok ? r.json() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
+        if (!rssFeed) return;
+        const article = rssFeed.data[0].attributes;
         return {
             application,
             appId: application.id,
@@ -285,8 +291,9 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchMinecraftFeeds(application) {
-        const rssFeed = await Promise.all([ Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null) ])
-        const article = rssFeed[0].result.results[0];
+        const rssFeed = await Promise.resolve(Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then(r => r.ok ? r.json() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
+        if (!rssFeed) return;
+        const article = rssFeed.result.results[0];
         return {
             application, 
             appId: application.id, 
@@ -299,20 +306,22 @@ class GameNewsStore extends Utils.Store {
     }
 
     async #fetchFortniteFeeds(application) {
-        const rssFeed = await Promise.all([ Net.fetch(`https://fortnite-api.com/v2/news`).then(r => r.ok ? r.json() : null) ])
-        const article = rssFeed[0].data.br.motds[0]
+        const rssFeed = await Promise.resolve(Net.fetch(`https://fortnite-api.com/v2/news`).then(r => r.ok ? r.json() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
+        if (!rssFeed) return;
+        const article = rssFeed.data.br.motds[0]
         return {
             application,
             appId: application.id,
             description: article?.body,
             thumbnail: article?.image,
-            timestamp: rssFeed[0].data.br.date,
+            timestamp: rssFeed.data.br.date,
             title: article?.title
         }
     }
 
     async #fetchSteamFeeds(gameId, application) {
-        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then(r => r.ok ? r.text() : null)) ])
+        const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then(r => r.ok ? r.text() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? gameId}`, e))) ]);
+        if (!rssFeed) return;
         const article = this.getRSSItem(rssFeed)
         return {
             application, 
@@ -503,8 +512,15 @@ class GameNewsStore extends Utils.Store {
     }
 
     getRSSItem(feed, itemIndex = 0) {
+        if (feed?.length) {
+            try {
+                return feed[0]?.rss?.channel?.item[itemIndex];
+            } catch (e) {
+                return null;
+            }
+        }
         try {
-            return feed[0]?.rss?.channel?.item[itemIndex];
+            return feed?.rss?.channel?.item[itemIndex];
         } catch (e) {
             return null;
         }

@@ -5,7 +5,6 @@ import NewsStore from "@activity_feed/Store";
 
 const LastPlayedStore = (() => {
     let lastPlayedCards = [];
-    let gameIds = Data.load('gameIds') ?? [];
     let lastFetched = Data.load('lastFetched') ?? undefined;
     let shouldPersistentlyFetch = false;
 
@@ -19,10 +18,8 @@ const LastPlayedStore = (() => {
         const recentlySeenGameIds = recentlySeenGames.map(entry => entry?.extra?.application_id);
         const _recentlySeenGameIds = Array.from(new Set(recentlySeenGameIds.map(id => id)));
 
-
         FetchGameUtils.fetchMultipleGames.fetchMany(_recentlySeenGameIds);
 
-        Data.save('gameIds', gameIds);
         lastFetched = Date.now();
         Data.save('lastFetched', lastFetched);
         setLastPlayed(_recentlySeenGameIds);
@@ -50,7 +47,6 @@ const LastPlayedStore = (() => {
             titleNews: titleNews[index]
         }})
         dispatchMethods.emitChange()
-        //Data.save('lastPlayedCards', lastPlayedCards);
     }
 
     function handleMount() {

@@ -1,4 +1,4 @@
-.blacklist {
+.container {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -17,32 +17,34 @@
     font-size: 14px;
 }
 
-.blacklistItem {
+.itemContainer {
     display: flex;
 }
 
-.blacklistItem .blacklistItemIcon {
+.itemContainer .itemIcon {
     border-radius: 8px;
     height: 32px;
     width: 32px;
 }
 
-.blacklistItem .blacklistItemName, .blacklistItem .blacklistItemTextContainer {
+.itemContainer .itemName, .itemContainer .itemTextContainer {
     margin-left: 20px;
     margin-bottom: 0;
     min-width: 0;
     font-weight: 500;
     align-content: center;
     flex: 1;
+    font-size: 14px;
+    line-height: 18px;
 }
 
-.blacklistItem .blacklistItemTextContainer > .blacklistItemName {
+.itemContainer .itemTextContainer > .itemName {
     margin-left: 0;
 }
 
-.blacklistItem .blacklistItemDescription {}
+.itemContainer .itemDescription {}
 
-.blacklistItem button {
+.unfollowButton {
     flex: 0 1 auto;
     font-weight: 400;
     align-self: center;
@@ -51,8 +53,6 @@
     border-radius: var(--radius-xs);
     color: var(--text-subtle) !important;
 }
-
-.unhideBlacklisted {}
 
 .search {
     padding: 12px;

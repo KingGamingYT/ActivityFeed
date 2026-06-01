@@ -18,7 +18,7 @@ I wasn't the only one who thought the idea of bringing back the activity feed ha
 **Testers** - Zrodevkaan, 11pixels, davart154, grasstm, poisonshroom101, starrush22, .snues
 
 External Libraries Used:\
-[**fast-xml-parser**](https://github.com/NaturalIntelligence/fast-xml-parser)\
+[**fast-xml-parser**](https://github.com/NaturalIntelligence/fast-xml-parser)@5.6.0\
 [**jitbit/HtmlSanitizer**](https://github.com/jitbit/HtmlSanitizer)\
 [**intrnl/xxhash64**](https://codeberg.org/intrnl/js-xxhash64)
 

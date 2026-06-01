@@ -15,7 +15,7 @@ function HeaderActions({card, user}) {
     const refDOM = useRef(null);
 
     return (
-        <div className={`${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "0" }} aria-expanded={showPopout}>
+        <Common.Flex align={Common.Flex.Align.CENTER} aria-expanded={showPopout} className={NowPlayingClasses.headerActions} grow={true}>
             <MessageButton user={user} />
             <Common.Popout
                 targetElementRef={refDOM}
@@ -40,7 +40,7 @@ function HeaderActions({card, user}) {
                     </Tooltip>
                 </span>}
             </Common.Popout>
-        </div>
+        </Common.Flex>
     )
 }
 
@@ -63,7 +63,7 @@ export function NowPlayingCardHeader({card, activities, game, splash, user, prio
     const channel = ChannelStore.getDMChannelFromUserId(user.id);
 
     return (
-        <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}} onContextMenu={e => {let Menus = ContextMenus(); return Menus.ContextMenuUser(e, user, channel)}}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.cardHeader} onContextMenu={e => {let Menus = ContextMenus(); return Menus.ContextMenuUser(e, user, channel)}}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
                 <AvatarWithPopoutWrapper className={NowPlayingClasses.avatar} user={user} status={status} size="SIZE_40" />
@@ -71,6 +71,6 @@ export function NowPlayingCardHeader({card, activities, game, splash, user, prio
                 <HeaderActions card={card} user={user} />
                 <HeaderIcon activities={activities} isSpotify={isSpotify} currentGame={game} />
             </div>
-        </div>
+        </Common.Flex>
     )
 }

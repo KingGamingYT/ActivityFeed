@@ -35,28 +35,18 @@ export function FeedMiniPaginationBuilder({articleSet, currentArticle}) {
                 type="button"
                 className={`${FeedClasses.prevButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`}
                 onClick={() => { NewsStore.setCurrentArticle(currentArticle.index === 0 ? 3 : currentArticle.index - 1); NewsStore.setIdling(false); NewsStore.setDirection(-1) }}
-            >
-                <div className={Common.ButtonVoidClasses.contents}>
-                    <ArrowIcon type={"left"} />
-                </div>
+                ><div className={Common.ButtonVoidClasses.contents}><ArrowIcon type={"left"} /></div>
             </button>
             <div className={FeedClasses.scrollerWrap}>
                 <div className={`${FeedClasses.scroller} ${FeedClasses.horizontalPaginationItemContainer} ${Common.PositionClasses.alignCenter}`}>{
-                    articleSet.map(article => {
-                        if (!article) return;
-
-                        return <MiniSubpagination article={article} currentArticle={currentArticle} />
-                    })
+                    articleSet.map(article => article && <MiniSubpagination article={article} currentArticle={currentArticle} />)
                 }</div>
             </div>
             <button 
                 type="button"
-            className={`${FeedClasses.nextButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`}
+                className={`${FeedClasses.nextButtonContainer} ${FeedClasses.arrowContainer} ${FeedClasses.arrow} ${MainClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.grow}`}
                 onClick={() => { NewsStore.setCurrentArticle(currentArticle.index === 3 ? 0 : currentArticle.index + 1); NewsStore.setIdling(false); NewsStore.setDirection(1) }}
-            >
-                <div className={Common.ButtonVoidClasses.contents}>
-                    <ArrowIcon type={"right"} />
-                </div>
+                ><div className={Common.ButtonVoidClasses.contents}><ArrowIcon type={"right"} /></div>
             </button>
         </div>
     )

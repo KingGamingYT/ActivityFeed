@@ -57,7 +57,7 @@ export function IntroCoachmarkPopout({button}) {
     const refDOM = useRef(null)
 
     useEffect(() => {
-        setShowPopout(!isShouldShow)
+        setShowPopout(!isShouldShow);
     })
 
     return (
@@ -67,7 +67,7 @@ export function IntroCoachmarkPopout({button}) {
                 position="top"
                 targetElementRef={refDOM}
                 onRequestClose={() => {setShowPopout(false); ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true)}}
-                renderPopout={() => { return <IntroCoachmark close={() => setShowPopout(false)} /> }}
+                renderPopout={() => <IntroCoachmark close={() => setShowPopout(false)} /> }
                 children={() => <div>
                     {button}
                 </div>}

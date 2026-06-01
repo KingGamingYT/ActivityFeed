@@ -2,7 +2,7 @@ import { Hooks, Utils, Data } from "betterdiscord";
 import { useState, useEffect } from "react";
 import { Common } from "@modules/common";
 import { FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
-import FeedArticle from "./Article";
+import FeedArticle from "./components/Article";
 import locale from "@activity_feed/common/methods/locale";
 import settings from "@settings/settings";
 import NewsStore from "@activity_feed/Store";
@@ -31,6 +31,15 @@ export function NewsFeedBuilder() {
 
         return () => clearInterval(inv)
     })
+    
+    useEffect(() => {
+        const delay = setTimeout(() => setWaitTime(false), 1e4);
+
+        return clearTimeout.bind(null, delay);
+    }, [setWaitTime]);
+    if ( waitTime && !Object.keys(articles).length ) {
+        return <FeedSkeletonBuilder />
+    }
 
     switch(Data.load("freezeNews") ?? Number(settings.default.freezeNews)) {
         case 0: break;
@@ -72,11 +81,6 @@ export function NewsFeedBuilder() {
             }</div>
         </>
     )
-    
-    setTimeout(() => setWaitTime(false), 10000);
-    if ( waitTime && !Object.keys(articles).length ) {
-        return <FeedSkeletonBuilder />
-    }
 
     return <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}>
         <FeedSkeletonErrorBuilder 

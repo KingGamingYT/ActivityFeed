@@ -51,7 +51,7 @@ export function GradGen(game, check, isSpotify, activity, voice, stream) {
     switch (true) {
         case !! check?.find(x => x.type === "STREAMING"): check?.find(x => x.plaform === "YOUTUBE") ? input = 'https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
-        case !! check?.find(x => x.platform === "YT_MUSIC"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
+        case !! check?.find(x => x.platform === "YT_MUSIC"): input = `https://media.discordapp.net/external${activity?.assets?.large_image?.substring(activity?.assets?.large_image?.indexOf('/'))}`; break;
         case !! check?.find(x => x.platform === "XBOX"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
         case !! (activity?.assets && activity?.assets.large_image?.includes('external')): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
         case !! (activity?.assets && activity?.assets.large_image): input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`; break;
@@ -134,7 +134,7 @@ export function useWindowSize() {
 export async function parseXML(xml) {
     let body = await xml;
     let result;
-    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}, {key: "#8220", value: "“" }, {key: "#8221", value: "”" }];
+    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}, {key: "#39", value: "'"}, {key: "#8220", value: "“" }, {key: "#8221", value: "”" }];
     const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
     for (let e in entities) { parser.addEntity(entities[e].key, entities[e].value) };
     try {

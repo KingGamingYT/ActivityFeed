@@ -1,14 +1,16 @@
+import { ContextMenu } from "betterdiscord";
 import { Common } from "@modules/common";
 import { GameIconAsset } from "@now_playing/activities/components/common/ActivityAssets";
+import { ActivityCardContextMenu } from "@now_playing/activities/components/common/ActivityCardContextMenu";
 import FollowButton from "@now_playing/activities/components/common/FollowButton";
 import Splash from "@now_playing/activities/components/common/Splash";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 function HeaderActions({game}) {
     return (
-        <div className={`${NowPlayingClasses.headerActions} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "0" }}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.headerActions} grow={true}>
             <FollowButton application={game} />
-        </div>
+        </Common.Flex>
     )
 }
 
@@ -20,8 +22,8 @@ function GameTag({game}) {
             <div className={NowPlayingClasses.headerTitle} 
                 onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
                 onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
-                onClick={useGameProfile}>{game?.name}
-            </div>
+                onClick={useGameProfile}
+            >{game?.name}</div>
         </div>
     )
 }
@@ -29,13 +31,13 @@ function GameTag({game}) {
 export function WhatsNewCardHeader({game, splash}) {
 
     return (
-        <div className={`${NowPlayingClasses.cardHeader} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart} ${Common.PositionClasses.alignCenter}`} style={{ flex: "1 1 auto"}}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.cardHeader} onContextMenu={e => ContextMenu.open(e, (props) => <ActivityCardContextMenu {...props} user={{id: 0}} currentActivity={{type: 0}} currentGame={game} />)}>
             <Splash splash={splash} className={NowPlayingClasses.splashArt} />
             <div className={NowPlayingClasses.header}>
                 <GameIconAsset url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon ?? game?.iconHash}.webp?size=64&keep_aspect_ratio=false`} id={game?.id} name={game?.name} />
                 <GameTag game={game} />
                 <HeaderActions game={game} />
             </div>
-        </div>
+        </Common.Flex>
     )
 }

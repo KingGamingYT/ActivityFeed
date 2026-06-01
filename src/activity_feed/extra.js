@@ -166,12 +166,12 @@ export const extraCSS = webpackify(`
         border-color: var(--background-mod-strong);
     }
 
-    .theme-light .quickLauncher .emptyState, .theme-light .blacklist.emptyState {
+    .theme-light .quickLauncher .emptyState, .theme-light .container.emptyState {
         border-color: rgba(220,221,222,.6);
         color: #b9bbbe;
     }
 
-    .theme-dark .quickLauncher .emptyState, .theme-dark .blacklist.emptyState {
+    .theme-dark .quickLauncher .emptyState, .theme-dark .container.emptyState {
         border-color: rgba(47,49,54,.6);
         color: #72767d;
     }
@@ -200,21 +200,21 @@ export const extraCSS = webpackify(`
         align-items: center;
     }
 
-    .blacklist.emptyState {
+    .container.emptyState {
         border-bottom: 1px solid;
         font-size: 14px;
         margin-bottom: 20px;
         justify-content: flex-start;
     }
 
-    .blackList .emptyState {
+    .container .emptyState {
         position: relative;
         padding: 0;
         border-bottom: unset; 
         line-height: 1.60;
     }
 
-    .blacklist .sectionDivider, .settingsDivider {
+    .container .sectionDivider, .settingsDivider {
         display: flex;
         width: 100%;
         border-bottom: 2px solid;
@@ -222,7 +222,7 @@ export const extraCSS = webpackify(`
         border-color: var(--background-mod-strong);
     }
 
-    .blacklist .sectionDivider:last-child {
+    .container .sectionDivider:last-child {
         display: none;
     }
 

@@ -1,9 +1,11 @@
-import { Webpack } from "betterdiscord";
-import { Common } from "@modules/common";
-import { AuthenticationStore, useStateFromStores } from "@modules/stores";
+import { Webpack, ReactUtils } from "betterdiscord";
+import { Common, ManaButtons } from "@modules/common";
+import { AuthenticationStore, GameStore, useStateFromStores } from "@modules/stores";
 import locale from "@common/methods/locale";
 
-const themeContext = Webpack.getBySource('themePreferenceForSystemTheme', 'createContext');
+const themeContext = Webpack.getMangled(Webpack.Filters.bySource('themePreferenceForSystemTheme', 'createContext'), {
+    ClientThemeContext: Webpack.Filters.byStrings('useContext')
+});
 const activityAuth = Webpack.getByStrings('alpha2', 'embeddedActivityConfig', {searchExports: true});
 const activityIdCheck = Webpack.getBySource('{return!!(0', ')(e)}}', {searchExports: true});
 const getCTA = Webpack.getByStrings('ctaConfig', 'flatMap');
@@ -21,7 +23,6 @@ const isStream = Webpack.getByStrings('Array.isArray(e)?e.some(');
 const isJoinable = Webpack.getByStrings("JOIN)&&", "&&!!(0,", {searchExports: true});
 const isInstance = Webpack.getByStrings('.INSTANCE&&null!=e');
 const isStageChannel = Webpack.getByStrings('e?.application_id===', 'SS', {searchExports: true});
-const ManaButtons = Webpack.getBySource('__unsupportedReactNodeAsText', 'SPINNING_CIRCLE', '"aria-busy"', 'ariaHidden', '="secondary"', {searchExports: true})
 const ActivityMetadataUpdate = Webpack.getByStrings('USER_ACTIVITY_METADATA', 'ACTIVITY_METADATA_UPDATE', {searchExports: true});
 const Parser = Webpack.getByKeys('formatPathWithQuery');
 const sanitize = Webpack.getByStrings('sanitizeUrl', 'contextKey', {searchExports: true});
@@ -32,7 +33,8 @@ const SlashCommandIcon = Webpack.getByStrings('7.61c-.25.95.31', {searchExports:
 const GameUtils = Webpack.getByKeys('launch', 'reportUnverifiedGame');
 const ContainerTooltip = Webpack.getByStrings('asContainer', 'keyboardShortcut', {searchExports: true});
 const DoorExitIcon = Webpack.getByStrings('"string"==typeof', '18.5V22a1', {searchExports: true});
-const GameControllerIcon = Webpack.getByStrings('.09v4.91a3.09', {searchExports: true})
+const GameControllerIcon = Webpack.getByStrings('.09v4.91a3.09', {searchExports: true});
+const ControllerLinkIcon = Webpack.getByStrings('2.4l.57-.58a.74.74', '14.99a3.17');
 
 const getTrack = Webpack.getByStrings('USER_ACTIVITY_PLAY', 'spotifyData', {searchExports: true});
 const getTrackSync = Webpack.getByStrings('USER_ACTIVITY_SYNC', 'spotifyData', {searchExports: true});
@@ -58,12 +60,12 @@ async function ParseCustomButton({activity, user, index}) {
 }
 
 function CustomButton({user, activity, onAction}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     if (!activity?.buttons || activity.buttons.length < 1) return;
     const isCrunchyroll = activity?.application_id === "981509069309354054";
     return themeType === "MODAL_V2" ? <div className={Common.ActivityCardClasses.customButtons}>{
         activity.buttons.map((button, index) => 
-            <ManaButtons.FD 
+            <ManaButtons.PrimaryButtonWithIcon 
                 text={isCrunchyroll ? locale.Strings.WATCH() : button} 
                 onClick={(e) => {
                     e.stopPropagation();
@@ -75,7 +77,7 @@ function CustomButton({user, activity, onAction}) {
             />)
     }</div> : <div className={Common.ActivityCardClasses.customButtons}>{
         activity.buttons.map((button, index) => 
-        <ManaButtons.FD
+        <ManaButtons.PrimaryButtonWithIcon
             text={isCrunchyroll ? locale.Strings.WATCH() : button}
             fullWidth={true}
             onClick={(e) => { 
@@ -90,7 +92,18 @@ function CustomButton({user, activity, onAction}) {
 }
 
 function ConnectAccountButton({startAuthorization, onAction}) {
-    return;
+    const {themeType} = themeContext.E();
+    const isModalV2 = themeType === "MODAL_V2";
+    return <ManaButtons.PrimaryButtonWithIcon 
+        icon={() => <ControllerLinkIcon color="currentColor" />}
+        text={locale.Strings.CONNECT_ACCOUNT()}
+        fullWidth={!isModalV2}
+        onClick={(e) => {
+            e.stopPropagation();
+            onAction?.({action: "PRESS_CONNECT_ACCOUNT_BUTTON"});
+            startAuthorization({})
+        }}
+    />
 }
 
 function ConsoleButton({platformType, icon, onAction}) {
@@ -98,16 +111,16 @@ function ConsoleButton({platformType, icon, onAction}) {
 }
 
 function WatchStreamButton({activity, onAction}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     return;
 }
 
 function PlayButton({user, activity, onAction, onClose}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     const channelContext = ChannelContext({applicationId: activity?.application_id, onClose});
     const isJoinable = joinProps({activity, user, onClose});
     const isPlayable = getPlayableGame(activity?.application_id)
-    if (!isJoinable && activity && isEmbeddedActivity(activity)) return <ManaButtons.FD
+    if (!isJoinable && activity && isEmbeddedActivity(activity)) return <ManaButtons.PrimaryButtonWithIcon
         icon={<SlashCommandIcon />}
         text={locale.Strings.PLAY()}
         fullWidth={themeType !== "MODAL_V2"}
@@ -121,7 +134,7 @@ function PlayButton({user, activity, onAction, onClose}) {
     const {isJoining, handleJoinRequest, buttonCTA, tooltip, isEnabled, isEmbedded} = isJoinable;
     return <>
         <ContainerTooltip text={tooltip} asContainer={!isEnabled}>
-            <ManaButtons.FD 
+            <ManaButtons.PrimaryButtonWithIcon 
                 icon={isEmbedded ? <DoorExitIcon /> : <GameControllerIcon />}
                 text={buttonCTA}
                 disabled={!isEnabled}
@@ -138,17 +151,17 @@ function PlayButton({user, activity, onAction, onClose}) {
 }
 
 function NotifyButton({user, activity, onAction}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     return;
 }
 
 function StageChannelListenButton({activity, onAction, onClose}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     return;
 }
 
 export function ActivityButtons({user, activity, onAction, onClose, application, containerClassName}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     const isSelf = useStateFromStores([AuthenticationStore], () => AuthenticationStore.getId() === user.id);
     const hasConfig = activityAuth(application);
     const idCheck = activityIdCheck.o(activity?.application_id ?? application?.id);
@@ -225,7 +238,7 @@ export function ActivityButtons({user, activity, onAction, onClose, application,
 }
 
 export function SpotifyButtons({user, activity, onAction}) {
-    const {themeType} = themeContext.E();
+    const {themeType} = themeContext.ClientThemeContext();
     const track = getTrack(activity, user);
     const trackSync = getTrackSync(activity, user);
     if (!hasParty(activity) || !isInstance(activity, 32) && !isInstance(activity, 16)) return;
@@ -241,7 +254,7 @@ export function SpotifyButtons({user, activity, onAction}) {
     }
     return themeType === "MODAL_V2" ? <>
         <ContainerTooltip text={trackSync.tooltip}>
-            <ManaButtons.FD 
+            <ManaButtons.PrimaryButtonWithIcon
                 text={trackSync.label ?? locale.Strings.LISTEN_ALONG()}
                 onClick={handleListenAlongOnClick}
                 disabled={trackSync.disabled}
@@ -249,7 +262,7 @@ export function SpotifyButtons({user, activity, onAction}) {
             />
         </ContainerTooltip>
         <ContainerTooltip text={track.tooltip}>
-            <ManaButtons.FD 
+            <ManaButtons.PrimaryButtonWithIcon 
                 text={track.label ?? locale.Strings.PLAY_ON_SPOTIFY()}
                 onClick={handlePlayOnClick}
                 disabled={track.disabled}
@@ -259,7 +272,7 @@ export function SpotifyButtons({user, activity, onAction}) {
     </> : <>
         <div className={Common.ActivityCardClasses.primaryButton}>
             <ContainerTooltip text={track.tooltip}>
-                <ManaButtons.FD
+                <ManaButtons.PrimaryButtonWithIcon
                     icon={() => <SpotifyIcon />} 
                     text={track.label ?? locale.Strings.PLAY_ON_SPOTIFY()}
                     onClick={handlePlayOnClick}
@@ -269,7 +282,7 @@ export function SpotifyButtons({user, activity, onAction}) {
                 />
             </ContainerTooltip>
         </div>
-        <ManaButtons.q3 
+        <ManaButtons.IconOnlyButton 
             icon={() => <ListenAlongIcon color={"currentColor"} />}
             tooltipText={trackSync.tooltip ?? locale.Strings.LISTEN_ALONG()}
             ariaLabel={trackSync.label ?? locale.Strings.LISTEN_ALONG()}
@@ -280,8 +293,18 @@ export function SpotifyButtons({user, activity, onAction}) {
     </>
 }
 
-export function OpenLinkClickHandler({location, user, currentUser, activity, application, entry, onClose}) {
+const handleGameProfileClick = Webpack.getByStrings('stopPropagation', 'gameProfileModalChecks');
+const handleEmbeddedApplicationClick = Webpack.getByStrings('POPOUT', '"contextless"');
+const isPlayingActivity = Webpack.getByStrings('entry', 'PLAYING', 'sourceUserId', {searchExports: true});
+const isTypePlayingActivity = Webpack.getByStrings('.PLAYING}');
+
+export function handleApplicationClick({user, currentUser, activity, application, onClose}) {
+    const gameId = GameStore.searchGamesByName(application?.name)?.[0];
+    const openGameProfile = ReactUtils.wrapInHooks(handleGameProfileClick)({trackEntryPointImpression: false, gameId, ...isPlayingActivity({activity, user})});
+    const openEmbeddedAppProfile = ReactUtils.wrapInHooks(handleEmbeddedApplicationClick)({applicationId: activity?.application_id});
+    const isEmbedded = isEmbeddedActivity(activity);
+    const isTypePlaying = isTypePlayingActivity(activity);
     const isCrunchyroll = activity?.application_id === "981509069309354054";
-    if (isCrunchyroll && user.id !== currentUser.id) return ParseCustomButton({user, activity, index: 0});
-    return;
+    return isEmbedded && !application ? openEmbeddedAppProfile : !isEmbedded && isTypePlaying ? openGameProfile : isCrunchyroll && user.id !== currentUser.id ? () => ParseCustomButton({user, activity, index: 0}) : null
 }
+

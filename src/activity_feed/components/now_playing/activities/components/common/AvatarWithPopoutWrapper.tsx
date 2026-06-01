@@ -1,7 +1,7 @@
 import { ContextMenu } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common } from "@modules/common";
-import { UserStore } from "@modules/stores"
+import { UserStore, useStateFromStores } from "@modules/stores"
 
 interface AvatarWithPopoutWrapper {
 	className: string,
@@ -13,13 +13,14 @@ interface AvatarWithPopoutWrapper {
 export default function ({className, user, status, size}: AvatarWithPopoutWrapper) {
 	const [showPopout, setShowPopout] = useState(false);
     const refDOM = useRef(null);
+	const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
 
 	return (
 		<Common.Popout
     		targetElementRef={refDOM}
     		clickTrap={true}
     		onRequestClose={() => setShowPopout(false)}
-    		renderPopout={() => <Common.UserProfileWrapperComponent currentUser={UserStore.getCurrentUser()} user={user} />}
+    		renderPopout={() => <Common.UserProfileWrapperComponent currentUser={currentUser} user={user} />}
     		position="right"
     		shouldShow={showPopout}>
     		{(props) => <div

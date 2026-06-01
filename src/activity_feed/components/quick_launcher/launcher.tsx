@@ -1,6 +1,6 @@
 import { Utils, Data, ContextMenu } from 'betterdiscord';
-import { useState, useRef, useMemo } from 'react';
-import { Common, shell, fs } from '@modules/common';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Common, shell } from '@modules/common';
 import { ConnectedAppsStore, DispatchApplicationStore, GameStore, LaunchableGameStore, LibraryApplicationStore, RunningGameStore, UserSettingsProtoStore, useStateFromStores } from '@modules/stores';
 import SectionHeader from '@activity_feed/common/components/SectionHeader';
 import locale from "@activity_feed/common/methods/locale";
@@ -8,21 +8,37 @@ import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import QuickLauncherClasses from "./QuickLauncher.module.css";
 
+function PlayPopout({close, launcher, game, state}) {
+    const setDisable = state;
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
+    return (
+        <ContextMenu.Menu navId="launcher-context-menu" onClose={close}>
+            <ContextMenu.Item id="play-game" label={locale.Strings.PLAY_GAME()} action={() => { setDisable(true); launcher(); }} />
+            <ContextMenu.Item id="open-game-profile" label={locale.Strings.OPEN_GAME_PROFILE()} action={useGameProfile} disabled={!useGameProfile} />
+            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label={locale.Strings.COPY_APPLICATION_ID()} action={() => Common.Clipboard(game.id)} />}
+        </ContextMenu.Menu>
+    )
+}
+
 export function LauncherGameBuilder({game, runningGames}) {
     const [shouldDisable, setDisable] = useState(false);
-    const timer = setTimeout(() => setDisable(false), 10000);
+    useEffect(() => {
+        const delay = setTimeout(() => setDisable(false), 1e4);
+
+        return clearTimeout.bind(null, delay);
+    });
     const disableCheck = useMemo(() => ~runningGames.findIndex(m => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
     const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
     const skuViaGame = fullGame.thirdPartySkus;
     const isSteam = Object.values(skuViaGame).find(x => x.distributor.toLowerCase().includes('steam'));
-    const steamLibraryPaths = fs.readFile("C:\\Program Files (x86)\\Steam\\steamapps\\libraryfolders.vdf",'utf8', (error, data) => {
+    /*const steamLibraryPaths = fs.readFile("C:\\Program Files (x86)\\Steam\\steamapps\\libraryfolders.vdf",'utf8', (error, data) => {
         const dataA = String(data);
         const found = [...dataA.matchAll(/"path"\s+"(.*?)"/g)].map(x => x[1].replaceAll('\\\\',"\\"));
         return found;
-    })
+    })*/
     const canPlay = Common.IsGameLaunchable({LibraryApplicationStore, LaunchableGameStore, DispatchApplicationStore, ConnectedAppsStore, applicationId: fullGame.id});
     const libraryApplication = new Common.BasicLibraryApplication({fullGame});
-    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: fullGame?.id ?? game?.id});
     const refDOM = useRef(null)
     const [showPopout, setShowPopout] = useState(false);
     //console.log(steamLibraryPaths)
@@ -33,17 +49,8 @@ export function LauncherGameBuilder({game, runningGames}) {
         switch(true) {
             case !! canPlay: Common.LibraryApplicationUtils.playApplication(game?.id, libraryApplication, {}); break;
             case !! !!isSteam && ["steamapps", "steamlibrary"].some(item => items.includes(item)): shell.openExternal(`steam://run/${isSteam.id}`); break;
-            default: shell.openExternal(game.exepath);
+            default: shell.openExternal(game.exePath);
         }
-    }
-
-    function PlayPopout({close}) {
-        return (
-            <ContextMenu.Menu navId="launcher-context-menu" onClose={close}>
-                <ContextMenu.Item id="play-game" label={locale.Strings.PLAY_GAME()} action={() => { setDisable(true); openGame(); timer }} />
-                {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label={locale.Strings.COPY_APPLICATION_ID()} action={() => Common.Clipboard(fullGame.id)} />}
-            </ContextMenu.Menu>
-        )
     }
 
     return (
@@ -51,25 +58,19 @@ export function LauncherGameBuilder({game, runningGames}) {
             targetElementRef={refDOM}
             clickTrap={true}
             onRequestClose={() => setShowPopout(false)}
-            renderPopout={() => <PlayPopout close={() => setShowPopout(false) } />}
+            renderPopout={() => <PlayPopout close={() => setShowPopout(false) } launcher={openGame} game={fullGame} state={setDisable} />}
             position={"right"}
             shouldShow={showPopout}
-        >{(props) => <div
-            {...props}
-            ref={refDOM}
-            onClick={(e) => e.shiftKey && !disableCheck && setShowPopout(true)}
-            >
-                <div className={`${QuickLauncherClasses.dockItem} ${Common.PositionClasses.flex} ${Common.PositionClasses.noWrap} ${Common.PositionClasses.justifyStart}, ${Common.PositionClasses.alignCenter}`} style={{ flex: "0 0 auto"}}>
-                    <div className={QuickLauncherClasses.dockIcon} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} onClick={useGameProfile} />
-                    <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
-                    <button 
-                        className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
-                        disabled={disableCheck}
-                        onClick={() => { setDisable(true); openGame(); timer }}>
-                        <div className={`${Common.ButtonVoidClasses.contents}`}>{locale.Strings.PLAY()}</div>
-                    </button>
-                </div>
-            </div>
+            >{(props) => <Common.Flex {...props} align={Common.Flex.Align.CENTER} className={QuickLauncherClasses.dockItem} direction={Common.Flex.Direction.VERTICAL} onClick={(e) => e.shiftKey && !disableCheck && setShowPopout(true)} ref={refDOM} style={{ flex: "0 0 auto" }}>
+                <div className={Utils.className(QuickLauncherClasses.dockIcon, disableCheck && QuickLauncherClasses.dockIconDisabled)} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} onClick={useGameProfile} />
+                <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
+                <button 
+                    className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
+                    disabled={disableCheck}
+                    onClick={() => { setDisable(true); openGame(); }}>
+                    <div className={`${Common.ButtonVoidClasses.contents}`}>{locale.Strings.PLAY()}</div>
+                </button>
+            </Common.Flex>
         }</Common.Popout>
     )
 }
@@ -99,7 +100,7 @@ export function QuickLauncherBuilder(props) {
                     <LauncherEmptyBuilder />
                 : 
                     <div className={Utils.className((Data.load('v2Dock') ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock)}>
-                        {_gameList.map(game => <LauncherGameBuilder game={game} runningGames={runningGames} />)}
+                        {_gameList.map(game => <LauncherGameBuilder game={game} runningGames={runningGames} key={game.id} />)}
                     </div>
             }
         </div>

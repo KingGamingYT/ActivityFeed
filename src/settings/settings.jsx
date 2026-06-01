@@ -1,27 +1,28 @@
 import { Common } from "@modules/common";
+import locale from "@common/methods/locale";
 import NewsStore from "@activity_feed/Store";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 
 export default {
     main: {
         v2Frame: {
-            name: "Refreshed Activity Feed",
-            note: "Enables basic modern styling for the Activity Feed. Below options are highly recommended.",
+            name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE(),
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION(),
             initial: true
         },
         v2News: {
-            name: "Refreshed Application News",
-            note: "Enables modern styling for news articles. Recommended.",
+            name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE(),
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION(),
             initial: true
         },
         v2Dock: {
-            name: "Refreshed Quick Launcher",
-            note: "Enables modern styling for the quick launcher. Recommended.",
+            name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE(),
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION(),
             initial: true
         },
         v2Cards: {
-            name: "Refreshed Activity Cards",
-            note: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
+            name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE(),
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION(),
             initial: true,
         }
     },
@@ -112,21 +113,21 @@ export default {
     external: {
         discord: {
             name: "Discord",
-            note: "News from Discord's blog.",
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION(),
             icon: Common.ClydeIcon,
             color: "var(--background-brand)",
             enabled: true
         },
         nintendo: {
             name: "Nintendo",
-            note: "Nintendo news sourced from nintendoeverything.com.",
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION(),
             icon: Common.NintendoSwitchNeutralIcon,
             color: "rgba(230, 0, 18, 1)",
             enabled: false
         },
         xbox: {
             name: "Xbox",
-            note: "News from Xbox's blog.",
+            note: locale.Strings.ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION(),
             icon: Common.XboxNeutralIcon,
             color: "var(--platform-xbox)",
             enabled: false

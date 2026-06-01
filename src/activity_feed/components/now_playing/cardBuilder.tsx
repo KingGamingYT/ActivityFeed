@@ -1,3 +1,4 @@
+import { Hooks } from "betterdiscord";
 import { Common } from "@modules/common";
 import { GradGen, SplashGen } from "@common/methods/common";
 import { ApplicationStore, NewGameStore, GameStore } from "@modules/stores";
@@ -32,7 +33,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const streams = card.party.applicationStreams;
     const isSpotify = card.party.isSpotifyActivity;
     const user = priorityMembers[0].user;
-    const activityProperties = PresenceTypeStore.getAllActivityProperties(activities, isSpotify);
+    const activityProperties = Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getAllActivityProperties(activities, isSpotify));
     const cardGrad = GradGen(currentGame, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
 
     (async () => {

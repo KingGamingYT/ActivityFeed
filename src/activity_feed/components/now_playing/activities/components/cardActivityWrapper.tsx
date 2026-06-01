@@ -1,3 +1,4 @@
+import { Hooks } from "betterdiscord";
 import { GameStore } from "@modules/stores";
 import { ActivityCard } from "./CardActivity";
 import PresenceTypeStore from "../../PresenceTypeStore";
@@ -19,9 +20,10 @@ export function ActivityCardWrapper({user, activities, voice, streams, v2Enabled
         const players = activity.playingMembers;
         const server = voice[0]?.guild;
         const activityProperties = PresenceTypeStore.getActivityProperties(currentActivity);
+        // wrapping this in useStateFromStores causes an issue where game icons will persist when the currently displayed card changes (e.g. if a person playing a game appears above someone listening to spotify, the game card will have spotify's icon)
 
         return (
-            <ActivityCard user={user} activities={activities} activityProperties={activityProperties} currentActivity={currentActivity} currentGame={currentGame} players={players} server={server} v2Enabled={v2Enabled} />
+            <ActivityCard user={user} activities={activities} activityProperties={activityProperties} currentActivity={currentActivity} currentGame={currentGame} players={players} server={server} v2Enabled={v2Enabled} key={currentActivity.application_id} />
         )
     })
 }

@@ -183,193 +183,6 @@ const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, 
 const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
 const WindowStore = betterdiscord.Webpack.getStore("WindowStore");
 
-// activity_feed/common/methods/getIntlString.js
-function getIntlString(hash, parameter) {
-	if (parameter) return Common.intl.intl.formatToPlainString(Common.intl.t[`${hash}`], parameter);
-	return Common.intl.intl.formatToPlainString(Common.intl.t[`${hash}`]);
-}
-
-// activity_feed/common/methods/getCustomString.js
-const i18n = {
-	"en-US": {
-		TEST: "hi! this is a test string for the i18n system! i am so tired!",
-		ACTIVITY_FEED: "Activity Feed",
-		ACTIVITY_FEED_ACTION_RESTART_REQUIRED: "This action will require you to restart Discord in order to see changes.",
-		ACTIVITY_FEED_COACHMARK_CONTENT_BODY: "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!",
-		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: "You're not following any games",
-		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: "Discord will automatically follow games that you play, but you can unfollow anytime.",
-		ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: "News from external sources outside of your game library.",
-		ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.",
-		ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: "Modern styling toggles for each part of the Activity Feed.",
-		ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION: "Developer options only! Don't touch these unless you want to break the activity feed in some way.",
-		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED: "View Advanced & Debug Settings for Activity Feed",
-		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN: "Hide Advanced & Debug Settings for Activity Feed",
-		ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION: "News from Discord's blog.",
-		ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION: "Nintendo news sourced from nintendoeverything.com.",
-		ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION: "News from Xbox's blog.",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION: "Enables basic modern styling for the Activity Feed. Below options are highly recommended.",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION: "Enables modern styling for news articles. Recommended.",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION: "Enables modern styling for the quick launcher. Recommended.",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE: "Refreshed Activity Cards",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE: "Refreshed Activity Feed",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE: "Refreshed Application News",
-		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE: "Refreshed Quick Launcher",
-		ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL: "Do you want to follow this source? Its announcements will appear in your Activity Feed.",
-		ACTIVITY_FEED_SUBSCRIBE_TO_GAME: "Do you want to follow this game? Its announcements will appear in your Activity Feed.",
-		ACTIVITY_FEED_UNAVAILABLE: "Activity Feed Unavailable",
-		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC: "You've reached an ultra rare error! Reload Discord to try again.",
-		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA: "You may not have enough game history to create an Activity Feed. Reload Discord to try again.",
-		ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL: "Do you want to unfollow this source? Its announcements will be hidden from your Activity Feed.",
-		ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME: "Do you want to unfollow this game? Its announcements will be removed from your Activity Feed.",
-		COPY_ARTICLE_LINK: "Copy Article Link",
-		EXTERNAL_NEWS: "External News",
-		GAMES_YOU_FOLLOW: "Games You Follow",
-		MORE_RECENT_PLAYERS_SECTION_TITLE: ({ playerCount }) => `+${playerCount} more recent players`,
-		NEWS: "News",
-		NOW_PLAYING_EMPTY_TITLE: "Nobody is playing anything right now...",
-		NOW_PLAYING_EMPTY_SUBTITLE: "When someone starts playing a game we'll show it here!",
-		QUICK_LAUNCHER: "Quick Launcher",
-		QUICK_LAUNCHER_EMPTY: "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!",
-		RECENT_NEWS: "Recent News",
-		SEARCH_FOR_GAMES: "Search for Games",
-		SHOW_ON_ACTIVITY_FEED: "Show on Activity Feed",
-		VISUAL_REFRESH: "Visual Refresh"
-	},
-	"en-GB": {},
-	"zh-CN": {},
-	"zh-TW": {},
-	"cs": {},
-	"da": {},
-	"nl": {},
-	"fr": {},
-	"de": {},
-	"el": {},
-	"hu": {},
-	"it": {},
-	"ja": {},
-	"ko": {},
-	"pl": {},
-	"pt-PT": {},
-	"pt-BR": {},
-	"ru": {},
-	"sk": {},
-	"es-419": {},
-	"es-ES": {},
-	"sv-SE": {},
-	"tr": {},
-	"bg": {},
-	"uk": {},
-	"fi": {},
-	"no": {},
-	"hr": {},
-	"ro": {},
-	"lt": {},
-	"th": {},
-	"vi": {},
-	"hi": {},
-	"he": {},
-	"ar": {},
-	"id": {}
-};
-function getCustomString(str, parameter) {
-	const locale = Common.intl.intl.currentLocale;
-	const defaultLocale = "en-US";
-	if (!i18n[locale]?.[str] && !i18n[defaultLocale]?.[str]) console.warn(`Requested message ${str} does not have a value in the requested locale ${locale} nor the default locale ${defaultLocale}`);
-	if (parameter && i18n[defaultLocale]?.[str] instanceof Function) {
-		return i18n[locale]?.[str]?.(parameter) ?? i18n[defaultLocale]?.[str]?.(parameter) ?? "";
-	}
-	return i18n[locale]?.[str] ?? i18n[defaultLocale]?.[str] ?? "";
-}
-
-// activity_feed/common/methods/locale.js
-const locale = {
-	Strings: {
-		TEST: () => getCustomString("TEST"),
-		ACTIVITY: () => getIntlString("IC5Ann"),
-		ACTIVITY_FEED: () => getCustomString("ACTIVITY_FEED"),
-		ACTIVITY_FEED_ACTION_RESTART_REQUIRED: () => getCustomString("ACTIVITY_FEED_ACTION_RESTART_REQUIRED"),
-		ACTIVITY_FEED_COACHMARK_CONTENT_BODY: () => getCustomString("ACTIVITY_FEED_COACHMARK_CONTENT_BODY"),
-		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: () => getCustomString("ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE"),
-		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: () => getCustomString("ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE"),
-		ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES"),
-		ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW"),
-		ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH"),
-		ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED: () => getCustomString("ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED"),
-		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN: () => getCustomString("ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN"),
-		ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE"),
-		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE"),
-		ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL: () => getCustomString("ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL"),
-		ACTIVITY_FEED_SUBSCRIBE_TO_GAME: () => getCustomString("ACTIVITY_FEED_SUBSCRIBE_TO_GAME"),
-		ACTIVITY_FEED_UNAVAILABLE: () => getCustomString("ACTIVITY_FEED_UNAVAILABLE"),
-		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC: () => getCustomString("ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC"),
-		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA: () => getCustomString("ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA"),
-		ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL: () => getCustomString("ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL"),
-		ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME: () => getCustomString("ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME"),
-		ADVANCED: () => getIntlString("x3t315"),
-		ARE_YOU_SURE: () => getIntlString("8ZRTsv"),
-		CANCEL: () => getIntlString("TQBY1J"),
-		CLOSE: () => getIntlString("cpT0Cq"),
-		COPY_APPLICATION_ID: () => getIntlString("FfCL+6"),
-		COPY_ARTICLE_LINK: () => getCustomString("COPY_ARTICLE_LINK"),
-		EXTERNAL_NEWS: () => getCustomString("EXTERNAL_NEWS"),
-		FOLLOW: () => getIntlString("3aOv+h"),
-		FOLLOWING: () => getIntlString("w1IVQk"),
-		GAME_ICON_FOR: (game) => getIntlString("nh+jWk", game),
-		GAMES_YOU_FOLLOW: () => getCustomString("GAMES_YOU_FOLLOW"),
-		JUST_STARTED_PLAYING: () => getIntlString("ahzZr+"),
-		JUST_STOPPED_PLAYING: () => getIntlString("EluAd9"),
-		LISTEN_ALONG: () => getIntlString("eU3inB"),
-		MESSAGE: () => getIntlString("zROXEV"),
-		MORE_RECENT_PLAYERS_SECTION_TITLE: (playerCount) => getCustomString("MORE_RECENT_PLAYERS_SECTION_TITLE", playerCount),
-		NEWS: () => getCustomString("NEWS"),
-		NO_RESULTS_FOUND: () => getIntlString("ojoWgX"),
-		NOW_PLAYING: () => getIntlString("3elwAB"),
-		NOW_PLAYING_EMPTY_TITLE: () => getCustomString("NOW_PLAYING_EMPTY_TITLE"),
-		NOW_PLAYING_EMPTY_SUBTITLE: () => getCustomString("NOW_PLAYING_EMPTY_SUBTITLE"),
-		OPEN_GAME_PROFILE: () => getIntlString("f7aVGn"),
-		PARTY_SIZE: ({ partySize, maxPartySize }) => getIntlString("gLu7NU", { partySize, maxPartySize }),
-		PLAY: () => getIntlString("RscU7I"),
-		PLAY_GAME: () => getIntlString("XKUw8m"),
-		PLAY_ON_SPOTIFY: () => getIntlString("rRffNz"),
-		PLAYED_DAYS_AGO: (time) => getIntlString("yP1T84", time),
-		PLAYED_HOURS_AGO: (time) => getIntlString("cRMUpw", time),
-		PLAYED_MINUTES_AGO: (time) => getIntlString("BZxG8Z", time),
-		PLAYING_FOR_DAY: (time) => getIntlString("2rUo/p", time),
-		PLAYING_FOR_HOUR: (time) => getIntlString("eNoooU", time),
-		PLAYING_FOR_MINUTE: (time) => getIntlString("03mIHW", time),
-		PLAYING_GAME: (gameName) => getIntlString("IGYgjl", gameName),
-		QUICK_LAUNCHER: () => getCustomString("QUICK_LAUNCHER"),
-		QUICK_LAUNCHER_EMPTY: () => getCustomString("QUICK_LAUNCHER_EMPTY"),
-		RECENT_NEWS: () => getCustomString("RECENT_NEWS"),
-		SEARCH_FOR_GAMES: () => getCustomString("SEARCH_FOR_GAMES"),
-		SHOW_ON_ACTIVITY_FEED: () => getCustomString("SHOW_ON_ACTIVITY_FEED"),
-		STREAM_JUST_STARTED_PROMPT: () => getIntlString("uQZTBV"),
-		STREAMING: () => getIntlString("KDdjou"),
-		STREAMING_CONTENT: (name) => getIntlString("0wJXSh"),
-		TAKE_ME_THERE: () => getIntlString("w7s5Qr"),
-		UNFOLLOW: () => getIntlString("CMy0Cj"),
-		UNKNOWN_GAME: () => getIntlString("GIWFlF"),
-		USER_AND_USER_AND_OTHERS: ({ user1, user2, extras }) => getIntlString("5CSEcJ", { user1, user2, extras }),
-		USER_AND_USER: ({ user1, user2 }) => getIntlString("4SM/RX", { user1, user2 }),
-		VISUAL_REFRESH: () => getCustomString("VISUAL_REFRESH"),
-		WATCH: () => getIntlString("I6JG46"),
-		WATCH_STREAM: () => getIntlString("7Xq/nV"),
-		WHATS_NEW: () => getIntlString("mfcR/v"),
-		YES: () => getIntlString("p89ACt")
-	}
-};
-
 // fast-xml-parser
 const nameStartChar = ':A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
 const nameChar = nameStartChar + '\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
@@ -2782,6 +2595,193 @@ class XMLParser {
 		}
 }
 
+// activity_feed/common/methods/getIntlString.js
+function getIntlString(hash, parameter) {
+	if (parameter) return Common.intl.intl.formatToPlainString(Common.intl.t[`${hash}`], parameter);
+	return Common.intl.intl.formatToPlainString(Common.intl.t[`${hash}`]);
+}
+
+// activity_feed/common/methods/getCustomString.js
+const i18n = {
+	"en-US": {
+		TEST: "hi! this is a test string for the i18n system! i am so tired!",
+		ACTIVITY_FEED: "Activity Feed",
+		ACTIVITY_FEED_ACTION_RESTART_REQUIRED: "This action will require you to restart Discord in order to see changes.",
+		ACTIVITY_FEED_COACHMARK_CONTENT_BODY: "You can customize which games appear on the Activity Feed and other fun toggles in settings. Look for the tab!",
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: "You're not following any games",
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: "Discord will automatically follow games that you play, but you can unfollow anytime.",
+		ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: "News from external sources outside of your game library.",
+		ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: "Discord will automatically fetch the latest news for games you've recently played and display them on the Activity Feed. Follow more games to get more cool news.",
+		ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: "Modern styling toggles for each part of the Activity Feed.",
+		ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION: "Developer options only! Don't touch these unless you want to break the activity feed in some way.",
+		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED: "View Advanced & Debug Settings for Activity Feed",
+		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN: "Hide Advanced & Debug Settings for Activity Feed",
+		ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION: "News from Discord's blog.",
+		ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION: "Nintendo news sourced from nintendoeverything.com.",
+		ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION: "News from Xbox's blog.",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION: "Enables the colorful visual refresh-inspired activity card designs. Recommended.",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION: "Enables basic modern styling for the Activity Feed. Below options are highly recommended.",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION: "Enables modern styling for news articles. Recommended.",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION: "Enables modern styling for the quick launcher. Recommended.",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE: "Refreshed Activity Cards",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE: "Refreshed Activity Feed",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE: "Refreshed Application News",
+		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE: "Refreshed Quick Launcher",
+		ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL: "Do you want to follow this source? Its announcements will appear in your Activity Feed.",
+		ACTIVITY_FEED_SUBSCRIBE_TO_GAME: "Do you want to follow this game? Its announcements will appear in your Activity Feed.",
+		ACTIVITY_FEED_UNAVAILABLE: "Activity Feed Unavailable",
+		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC: "You've reached an ultra rare error! Reload Discord to try again.",
+		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA: "You may not have enough game history to create an Activity Feed. Reload Discord to try again.",
+		ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL: "Do you want to unfollow this source? Its announcements will be hidden from your Activity Feed.",
+		ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME: "Do you want to unfollow this game? Its announcements will be removed from your Activity Feed.",
+		COPY_ARTICLE_LINK: "Copy Article Link",
+		EXTERNAL_NEWS: "External News",
+		GAMES_YOU_FOLLOW: "Games You Follow",
+		MORE_RECENT_PLAYERS_SECTION_TITLE: ({ playerCount }) => `+${playerCount} more recent players`,
+		NEWS: "News",
+		NOW_PLAYING_EMPTY_TITLE: "Nobody is playing anything right now...",
+		NOW_PLAYING_EMPTY_SUBTITLE: "When someone starts playing a game we'll show it here!",
+		QUICK_LAUNCHER: "Quick Launcher",
+		QUICK_LAUNCHER_EMPTY: "Discord can quickly launch most games you\u2019ve recently played on this computer. Go ahead and launch one to see it appear here!",
+		RECENT_NEWS: "Recent News",
+		SEARCH_FOR_GAMES: "Search for Games",
+		SHOW_ON_ACTIVITY_FEED: "Show on Activity Feed",
+		VISUAL_REFRESH: "Visual Refresh"
+	},
+	"en-GB": {},
+	"zh-CN": {},
+	"zh-TW": {},
+	"cs": {},
+	"da": {},
+	"nl": {},
+	"fr": {},
+	"de": {},
+	"el": {},
+	"hu": {},
+	"it": {},
+	"ja": {},
+	"ko": {},
+	"pl": {},
+	"pt-PT": {},
+	"pt-BR": {},
+	"ru": {},
+	"sk": {},
+	"es-419": {},
+	"es-ES": {},
+	"sv-SE": {},
+	"tr": {},
+	"bg": {},
+	"uk": {},
+	"fi": {},
+	"no": {},
+	"hr": {},
+	"ro": {},
+	"lt": {},
+	"th": {},
+	"vi": {},
+	"hi": {},
+	"he": {},
+	"ar": {},
+	"id": {}
+};
+function getCustomString(str, parameter) {
+	const locale = Common.intl.intl.currentLocale;
+	const defaultLocale = "en-US";
+	if (!i18n[locale]?.[str] && !i18n[defaultLocale]?.[str]) console.warn(`Requested message ${str} does not have a value in the requested locale ${locale} nor the default locale ${defaultLocale}`);
+	if (parameter && i18n[defaultLocale]?.[str] instanceof Function) {
+		return i18n[locale]?.[str]?.(parameter) ?? i18n[defaultLocale]?.[str]?.(parameter) ?? "";
+	}
+	return i18n[locale]?.[str] ?? i18n[defaultLocale]?.[str] ?? "";
+}
+
+// activity_feed/common/methods/locale.js
+const locale = {
+	Strings: {
+		TEST: () => getCustomString("TEST"),
+		ACTIVITY: () => getIntlString("IC5Ann"),
+		ACTIVITY_FEED: () => getCustomString("ACTIVITY_FEED"),
+		ACTIVITY_FEED_ACTION_RESTART_REQUIRED: () => getCustomString("ACTIVITY_FEED_ACTION_RESTART_REQUIRED"),
+		ACTIVITY_FEED_COACHMARK_CONTENT_BODY: () => getCustomString("ACTIVITY_FEED_COACHMARK_CONTENT_BODY"),
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE: () => getCustomString("ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE"),
+		ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE: () => getCustomString("ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE"),
+		ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_EXTERNAL_SOURCES"),
+		ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW"),
+		ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH: () => getCustomString("ACTIVITY_FEED_HEADER_DESCRIPTION_VISUAL_REFRESH"),
+		ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED: () => getCustomString("ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED"),
+		ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN: () => getCustomString("ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN"),
+		ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_EXTERNAL_DISCORD_BLOG_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_EXTERNAL_NINTENDO_BLOG_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_EXTERNAL_XBOX_BLOG_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE"),
+		ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE: () => getCustomString("ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE"),
+		ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL: () => getCustomString("ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL"),
+		ACTIVITY_FEED_SUBSCRIBE_TO_GAME: () => getCustomString("ACTIVITY_FEED_SUBSCRIBE_TO_GAME"),
+		ACTIVITY_FEED_UNAVAILABLE: () => getCustomString("ACTIVITY_FEED_UNAVAILABLE"),
+		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC: () => getCustomString("ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC"),
+		ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA: () => getCustomString("ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA"),
+		ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL: () => getCustomString("ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL"),
+		ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME: () => getCustomString("ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME"),
+		ADVANCED: () => getIntlString("x3t315"),
+		ARE_YOU_SURE: () => getIntlString("8ZRTsv"),
+		CANCEL: () => getIntlString("TQBY1J"),
+		CLOSE: () => getIntlString("cpT0Cq"),
+		COPY_APPLICATION_ID: () => getIntlString("FfCL+6"),
+		COPY_ARTICLE_LINK: () => getCustomString("COPY_ARTICLE_LINK"),
+		EXTERNAL_NEWS: () => getCustomString("EXTERNAL_NEWS"),
+		FOLLOW: () => getIntlString("3aOv+h"),
+		FOLLOWING: () => getIntlString("w1IVQk"),
+		GAME_ICON_FOR: (game) => getIntlString("nh+jWk", game),
+		GAMES_YOU_FOLLOW: () => getCustomString("GAMES_YOU_FOLLOW"),
+		JUST_STARTED_PLAYING: () => getIntlString("ahzZr+"),
+		JUST_STOPPED_PLAYING: () => getIntlString("EluAd9"),
+		LISTEN_ALONG: () => getIntlString("eU3inB"),
+		MESSAGE: () => getIntlString("zROXEV"),
+		MORE_RECENT_PLAYERS_SECTION_TITLE: (playerCount) => getCustomString("MORE_RECENT_PLAYERS_SECTION_TITLE", playerCount),
+		NEWS: () => getCustomString("NEWS"),
+		NO_RESULTS_FOUND: () => getIntlString("ojoWgX"),
+		NOW_PLAYING: () => getIntlString("3elwAB"),
+		NOW_PLAYING_EMPTY_TITLE: () => getCustomString("NOW_PLAYING_EMPTY_TITLE"),
+		NOW_PLAYING_EMPTY_SUBTITLE: () => getCustomString("NOW_PLAYING_EMPTY_SUBTITLE"),
+		OPEN_GAME_PROFILE: () => getIntlString("f7aVGn"),
+		PARTY_SIZE: ({ partySize, maxPartySize }) => getIntlString("gLu7NU", { partySize, maxPartySize }),
+		PLAY: () => getIntlString("RscU7I"),
+		PLAY_GAME: () => getIntlString("XKUw8m"),
+		PLAY_ON_SPOTIFY: () => getIntlString("rRffNz"),
+		PLAYED_DAYS_AGO: (time) => getIntlString("yP1T84", time),
+		PLAYED_HOURS_AGO: (time) => getIntlString("cRMUpw", time),
+		PLAYED_MINUTES_AGO: (time) => getIntlString("BZxG8Z", time),
+		PLAYING_FOR_DAY: (time) => getIntlString("2rUo/p", time),
+		PLAYING_FOR_HOUR: (time) => getIntlString("eNoooU", time),
+		PLAYING_FOR_MINUTE: (time) => getIntlString("03mIHW", time),
+		PLAYING_GAME: (gameName) => getIntlString("IGYgjl", gameName),
+		QUICK_LAUNCHER: () => getCustomString("QUICK_LAUNCHER"),
+		QUICK_LAUNCHER_EMPTY: () => getCustomString("QUICK_LAUNCHER_EMPTY"),
+		RECENT_NEWS: () => getCustomString("RECENT_NEWS"),
+		SEARCH_FOR_GAMES: () => getCustomString("SEARCH_FOR_GAMES"),
+		SHOW_ON_ACTIVITY_FEED: () => getCustomString("SHOW_ON_ACTIVITY_FEED"),
+		STREAM_JUST_STARTED_PROMPT: () => getIntlString("uQZTBV"),
+		STREAMING: () => getIntlString("KDdjou"),
+		STREAMING_CONTENT: (name) => getIntlString("0wJXSh"),
+		TAKE_ME_THERE: () => getIntlString("w7s5Qr"),
+		UNFOLLOW: () => getIntlString("CMy0Cj"),
+		UNKNOWN_GAME: () => getIntlString("GIWFlF"),
+		USER_AND_USER_AND_OTHERS: ({ user1, user2, extras }) => getIntlString("5CSEcJ", { user1, user2, extras }),
+		USER_AND_USER: ({ user1, user2 }) => getIntlString("4SM/RX", { user1, user2 }),
+		VISUAL_REFRESH: () => getCustomString("VISUAL_REFRESH"),
+		WATCH: () => getIntlString("I6JG46"),
+		WATCH_STREAM: () => getIntlString("7Xq/nV"),
+		WHATS_NEW: () => getIntlString("mfcR/v"),
+		YES: () => getIntlString("p89ACt")
+	}
+};
+
 // activity_feed/common/methods/common.js
 function chunkArray(cards, num) {
 	let chunkLength = Math.max(cards.length / num, 1);
@@ -2924,6 +2924,22 @@ async function parseXML(xml) {
 		return null;
 	}
 	return result;
+}
+function useEffectEvent(callback) {
+	const ref = react.useRef(callback);
+	ref.current = callback;
+	return react.useMemo(() => {
+		const handler = {
+			get [Symbol.for("callback")]() {
+				return ref.current;
+			}
+		};
+		for (const key of Reflect.ownKeys(Reflect)) {
+			if (typeof Reflect[key] !== "function") continue;
+			handler[key] = (_, ...args) => Reflect[key](ref.current, ...args);
+		}
+		return new Proxy(ref.current, handler);
+	}, []);
 }
 
 // activity_feed/components/coachmark/ActivityFeedSettingsCoachmarkStore.tsx
@@ -3618,10 +3634,10 @@ class GameNewsStore extends betterdiscord.Utils.Store {
 		return {
 			application,
 			appId: application.id,
-			description: article?.description,
+			description: article?.description && new DOMParser().parseFromString(article?.description, "text/html").body.innerHTML,
 			thumbnail: article?.image,
 			timestamp: article?.time * 1e3,
-			title: article?.title,
+			title: article?.title && new DOMParser().parseFromString(article?.title, "text/html").body.innerHTML,
 			url: article?.url
 		};
 	}
@@ -5044,20 +5060,18 @@ function NewsFeedBuilder() {
 	const [time, setTime] = react.useState(new Date());
 	const [waitTime, setWaitTime] = react.useState(true);
 	react.useEffect(() => {
-		const inv = setInterval(() => {
-			const newTime = Math.floor((Math.floor((new Date()).getTime()) - Math.floor(time.getTime())) / 1e3);
-			if (newTime > 0 && articles) {
-				if (Math.floor(newTime) % 8 == 0 && isIdling) {
-					NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
-				}
-			}
-		}, 8e3);
-		return () => clearInterval(inv);
-	});
-	react.useEffect(() => {
 		const delay = setTimeout(() => setWaitTime(false), 1e4);
 		return clearTimeout.bind(null, delay);
 	}, [setWaitTime]);
+	const timerCallback = useEffectEvent(() => {
+		const newTime = Math.floor((Math.floor((new Date()).getTime()) - Math.floor(time.getTime())) / 1e3);
+		if (newTime > 0 && articles) {
+			if (Math.floor(newTime) % 8 == 0 && isIdling) {
+				NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
+			}
+		}
+	});
+	react.useEffect(() => clearInterval.bind(null, setInterval(timerCallback, 8e3)), []);
 	if (waitTime && !Object.keys(articles).length) {
 		return BdApi.React.createElement(FeedSkeletonBuilder, null);
 	}
@@ -5444,7 +5458,7 @@ function ActivityButtons({ user, activity, onAction, onClose, application, conta
 	const isSelf = useStateFromStores([AuthenticationStore], () => AuthenticationStore.getId() === user.id);
 	const hasConfig = activityAuth(application);
 	const idCheck = activityIdCheck.o(activity?.application_id ?? application?.id);
-	const ctaButtons = getCTA("user_profile_activity_buttons", activity?.application_id);
+	const ctaButtons = getCTA(activity?.application_id);
 	const { fetched, canStartAuthorization, hasAlreadyLinked, startAuthorization } = fetchAuthorization(application);
 	const isModal = themeType === "MODAL" || themeType === "MODAL_V2";
 	const isPopout = themeType === "POPOUT";
@@ -7034,6 +7048,9 @@ function GameIconAsset({ url, id, name, onClick }) {
 }
 function RichImageAsset({ url, tooltipText, onClick, onMouseOver, onMouseLeave, type }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
+	{
+		betterdiscord.Plugins.get("ActivityFeed").version.includes("dev") && shouldFallback && console.log("rich image failed.", url);
+	}
 	return BdApi.React.createElement(Tooltip, { note: tooltipText }, shouldFallback ? BdApi.React.createElement(FallbackAsset, { className: `${NowPlayingClasses[`assets${type}Image`]} ${NowPlayingClasses[`assets${type}ImageActivityFeed`]}` }) : BdApi.React.createElement(
 		"img",
 		{

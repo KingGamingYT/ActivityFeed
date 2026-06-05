@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { Plugins } from "betterdiscord"
+import { useState } from "react";
 import { Common } from "@modules/common";
 import locale from "@common/methods/locale";
-import Tooltip from '@common/components/TooltipBuilder';
+import Tooltip from "@common/components/TooltipBuilder";
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
 
 interface GameIconAsset {
@@ -102,6 +103,7 @@ export function GameIconAsset({url, id, name, onClick}: GameIconAsset) {
 
 export function RichImageAsset({url, tooltipText, onClick, onMouseOver, onMouseLeave, type}: RichImageAsset) {
     const [shouldFallback, setShouldFallback] = useState(false);
+    {Plugins.get("ActivityFeed").version.includes("dev") && shouldFallback && console.log('rich image failed.', url)};
 
     return (
         <Tooltip note={tooltipText}>

@@ -297,10 +297,10 @@ class GameNewsStore extends Utils.Store {
         return {
             application, 
             appId: application.id, 
-            description: article?.description, 
+            description: article?.description && new DOMParser().parseFromString(article?.description, 'text/html').body.innerHTML, 
             thumbnail: article?.image, 
             timestamp: article?.time * 1000, 
-            title: article?.title, 
+            title: article?.title && new DOMParser().parseFromString(article?.title, 'text/html').body.innerHTML,
             url: article?.url
         }
     }

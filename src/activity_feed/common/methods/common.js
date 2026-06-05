@@ -1,5 +1,5 @@
 import { Net } from 'betterdiscord';
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useRef, useMemo } from "react";
 import { XMLParser } from "fast-xml-parser";
 import { Common } from '@modules/common';
 import { ChannelStore, UserStore, VoiceStateStore } from "@modules/stores";
@@ -143,4 +143,28 @@ export async function parseXML(xml) {
         return null;
     }
     return result
+}
+
+export function useEffectEvent(callback) {
+    const ref = useRef(callback);
+
+    ref.current = callback;
+
+    return useMemo(() => {            
+        const handler = {
+            get [Symbol.for("callback")]() {
+                return ref.current;
+            }
+        };
+
+        for (const key of Reflect.ownKeys(Reflect)) {
+            if (typeof Reflect[key] !== "function") continue;
+
+            handler[key] = (_, ...args) => (
+                Reflect[key](ref.current, ...args)
+            );
+        }
+
+        return new Proxy(ref.current, handler);
+    }, []);
 }

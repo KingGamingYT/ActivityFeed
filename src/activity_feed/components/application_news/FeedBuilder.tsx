@@ -1,5 +1,6 @@
 import { Hooks, Utils, Data } from "betterdiscord";
 import { useState, useEffect } from "react";
+import { useEffectEvent } from "@common/methods/common";
 import { Common } from "@modules/common";
 import { FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
 import FeedArticle from "./components/Article";
@@ -15,28 +16,26 @@ export function NewsFeedBuilder() {
     const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
     const [time, setTime] = useState<Date>(new Date());
     const [waitTime, setWaitTime] = useState(true);
-
-
-    useEffect(() => {
-        const inv = setInterval(() => {
-            const newTime = Math.floor((Math.floor(new Date().getTime()) - Math.floor(time.getTime())) / 1000)
-            if (newTime > 0 && articles)
-            {
-                if (Math.floor(newTime) % 8 == 0 && isIdling)
-                {
-                    NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
-                }
-            }
-        }, 8e3);
-
-        return () => clearInterval(inv)
-    })
     
     useEffect(() => {
         const delay = setTimeout(() => setWaitTime(false), 1e4);
 
         return clearTimeout.bind(null, delay);
     }, [setWaitTime]);
+
+    const timerCallback = useEffectEvent(() => {
+        const newTime = Math.floor((Math.floor(new Date().getTime()) - Math.floor(time.getTime())) / 1e3);
+        if (newTime > 0 && articles)
+        {
+            if (Math.floor(newTime) % 8 == 0 && isIdling)
+            {
+                NewsStore.setCurrentArticle(currentArticle.index === 3 ? currentArticle.index - 3 : currentArticle.index + 1);
+            }
+        }
+    })
+
+    useEffect(() => clearInterval.bind(null, setInterval(timerCallback, 8e3)), []);
+
     if ( waitTime && !Object.keys(articles).length ) {
         return <FeedSkeletonBuilder />
     }

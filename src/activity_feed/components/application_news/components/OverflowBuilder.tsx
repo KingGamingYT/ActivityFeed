@@ -1,6 +1,6 @@
 import { ContextMenu, Data, Hooks } from "betterdiscord";
 import { useState, useRef } from "react";
-import { Common, ModalSystem } from "@modules/common";
+import { Common } from "@modules/common";
 import { UserSettingsProtoStore } from "@modules/stores";
 import locale from "@activity_feed/common/methods/locale";
 import NewsStore from "@activity_feed/Store";
@@ -36,7 +36,7 @@ export function FeedPopout({application, gameId, articleUrl, close}) {
             <ContextMenu.Item 
                 id="unfollow-game" 
                 label="Unfollow Game" 
-                action={() => ModalSystem.openModal(props => 
+                action={() => Common.ModalSystem.openModal(props => 
                     <Common.ModalRoot.Modal 
                         {...props} 
                         title={locale.Strings.ARE_YOU_SURE()}

@@ -43,6 +43,7 @@ const Filters = [
     { name: "Lodash", filter: /* @__PURE__ */ Webpack.Filters.byKeys('throttle') },
     { name: "MediaProgressBar", filter: /* @__PURE__ */ Webpack.Filters.byStrings('start', 'end', 'duration', 'percentage'), searchExports: true },
     { name: "ModalAccessUtils", filter: x=>x.openUserProfileModal },
+    { name: "ModalSystem", filter: x=> x.openModal },
     { name: "NintendoSwitchNeutralIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M10.04'), searchExports: true },
     { name: "ModalRoot", filter: x => x.Modal },
     { name: "OpenAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.ALBUM', '.EPISODE'), searchExports: true },
@@ -92,7 +93,6 @@ const CommonExport = () => {
 export const Common = CommonExport();
 
 export const { shell } = require('electron');
-export const fs = require('fs');
 export const { container } = /* @__PURE__ */ Webpack.getModule(m => m.container && m.panels);
 
 export const Title = /* @__PURE__ */ Webpack.getMangled('flashQueue', {
@@ -132,12 +132,6 @@ export const NavigationUtils = /* @__PURE__ */ Webpack.getMangled("Transitioning
     goBack: /* @__PURE__ */ Webpack.Filters.byStrings(".goBack()"),
     goForward: /* @__PURE__ */ Webpack.Filters.byStrings(".goForward()"),
     transitionToGuild: /* @__PURE__ */ Webpack.Filters.byStrings("\"transitionToGuild - Transitioning to \"")
-});
-export const ModalSystem = /* @__PURE__ */ Webpack.getMangled(".modalKey?", {
-    openModalLazy: /* @__PURE__ */ Webpack.Filters.byStrings(".modalKey?"),
-    openModal: /* @__PURE__ */ Webpack.Filters.byStrings(",instant:"),
-    closeModal: /* @__PURE__ */ Webpack.Filters.byStrings(".onCloseCallback()"),
-    closeAllModals: /* @__PURE__ */ Webpack.Filters.byStrings(".getState();for")
 });
 
 export const FetchGameUtils = Webpack.getMangled('Error("Failed to fetch game data")', {

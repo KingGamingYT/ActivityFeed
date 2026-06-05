@@ -1,6 +1,6 @@
 import { Data } from "betterdiscord";
 import { useState } from "react";
-import { Common, ModalSystem } from "@modules/common";
+import { Common } from "@modules/common";
 import locale from "@activity_feed/common/methods/locale";
 import ActivityFeedSettingsButton from "@settings/components/common/ActivityFeedSettingsButton";
 import settings from "@settings/settings";
@@ -54,8 +54,8 @@ function ExternalItemBuilder({service}) {
                 {item.note && <div className={`${SettingsClasses.itemDescription} ${MainClasses.emptySubtitle}`}>{item.note}</div>}
             </div>
             {!state 
-                ? <ActivityFeedSettingsButton text={locale.Strings.FOLLOW()} color="text-subtle" onClick={() => ModalSystem.openModal(props => handleSubscribe(props))} />
-                : <ActivityFeedSettingsButton text={locale.Strings.UNFOLLOW()} color="text-subtle" onClick={() => ModalSystem.openModal(props => handleUnsubscribe(props))} />
+                ? <ActivityFeedSettingsButton text={locale.Strings.FOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleSubscribe(props))} />
+                : <ActivityFeedSettingsButton text={locale.Strings.UNFOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleUnsubscribe(props))} />
             }
         </div>
     )

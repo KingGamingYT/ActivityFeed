@@ -1,6 +1,6 @@
 import { Webpack, ReactUtils } from "betterdiscord";
 import { Common, ManaButtons } from "@modules/common";
-import { AuthenticationStore, GameStore, useStateFromStores } from "@modules/stores";
+import { GameStore, UserStore, useStateFromStores } from "@modules/stores";
 import locale from "@common/methods/locale";
 
 const themeContext = Webpack.getMangled(Webpack.Filters.bySource('themePreferenceForSystemTheme', 'createContext'), {
@@ -162,7 +162,7 @@ function StageChannelListenButton({activity, onAction, onClose}) {
 
 export function ActivityButtons({user, activity, onAction, onClose, application, containerClassName}) {
     const {themeType} = themeContext.ClientThemeContext();
-    const isSelf = useStateFromStores([AuthenticationStore], () => AuthenticationStore.getId() === user.id);
+    const isSelf = useStateFromStores([UserStore], () => UserStore.getCurrentUser().id === user.id);
     const hasConfig = activityAuth(application);
     const idCheck = activityIdCheck.o(activity?.application_id ?? application?.id);
     const ctaButtons = getCTA(activity?.application_id);

@@ -1,6 +1,6 @@
 import { Components, Hooks } from "betterdiscord";
 import { useState, useMemo } from "react";
-import { Common, ModalSystem } from "@modules/common";
+import { Common } from "@modules/common";
 import { ApplicationStore, GameStore } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
 import locale from "@activity_feed/common/methods/locale";
@@ -64,8 +64,8 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
             />}
             <div className={SettingsClasses.itemName}>{application?.name || "Unknown Game"}</div>
             {(isFollowed || isWhitelisted) 
-                ? <ActivityFeedSettingsButton text={locale.Strings.UNFOLLOW()} color="text-subtle" onClick={() => ModalSystem.openModal(props => handleUnsubscribe(props))} />
-                : <ActivityFeedSettingsButton text={locale.Strings.FOLLOW()} color="text-subtle" onClick={() => ModalSystem.openModal(props => handleSubscribe(props))} />
+                ? <ActivityFeedSettingsButton text={locale.Strings.UNFOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleUnsubscribe(props))} />
+                : <ActivityFeedSettingsButton text={locale.Strings.FOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleSubscribe(props))} />
             }
         </div>
     )

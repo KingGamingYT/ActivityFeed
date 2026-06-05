@@ -1,6 +1,6 @@
 import { Data, Utils } from "betterdiscord";
 
-class ActivityFeedSettingsCoachmarkStore extends Utils.Store {
+export default new class ActivityFeedSettingsCoachmarkStore extends Utils.Store {
     static displayName = "ActivityFeedSettingsCoachmarkStore";
     hasDismissedSettingsCoachmark;
     constructor() {
@@ -15,4 +15,3 @@ class ActivityFeedSettingsCoachmarkStore extends Utils.Store {
         return;
     }
 }
-export default new ActivityFeedSettingsCoachmarkStore();

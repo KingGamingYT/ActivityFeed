@@ -1,6 +1,6 @@
 import { Utils } from "betterdiscord";
 
-class PresenceTypeStore extends Utils.Store {
+export default new class PresenceTypeStore extends Utils.Store {
     static displayName = "PresenceTypeStore";
     types = {}
     constructor() {
@@ -55,4 +55,3 @@ class PresenceTypeStore extends Utils.Store {
         return {type: this.getActivityType(activity), platform: this.getActivityPlatform(activity, isSpotify)}
     }
 }
-export default new PresenceTypeStore();

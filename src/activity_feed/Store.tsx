@@ -1,12 +1,12 @@
 import { Data, Utils, Net } from "betterdiscord";
 import { parseXML } from "@activity_feed/common/methods/common";
-import { Common, ModalSystem } from "@modules/common";
+import { Common } from "@modules/common";
 import { ApplicationStore, GameStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
 import HtmlSanitizer from "@jitbit/htmlsanitizer";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 
-class GameNewsStore extends Utils.Store {
+export default new class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
     article = {};
     dataSet = {};
@@ -592,7 +592,7 @@ class GameNewsStore extends Utils.Store {
         }
         else {
             return (
-                ModalSystem.openModal(props => 
+                Common.ModalSystem.openModal(props => 
                     <Common.ModalRoot.Modal 
                         {...props} 
                         title="That didn't work"
@@ -623,7 +623,7 @@ class GameNewsStore extends Utils.Store {
         }
         else {
             return (
-                ModalSystem.openModal(props => 
+                Common.ModalSystem.openModal(props => 
                     <Common.ModalRoot.Modal 
                         {...props} 
                         title="That didn't work"
@@ -667,4 +667,3 @@ class GameNewsStore extends Utils.Store {
         return this.idling;
     }
 }
-export default new GameNewsStore();

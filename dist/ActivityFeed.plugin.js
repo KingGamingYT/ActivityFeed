@@ -3111,12 +3111,13 @@ function requireHtmlSanitizer () {
 			const _cssWhitelist = { 'background-color': true, 'color': true, 'font-size': true, 'font-weight': true, 'text-align': true, 'text-decoration': true, 'width': true };
 			const _schemaWhiteList = [ 'http:', 'https:', 'data:', 'm-files:', 'file:', 'ftp:', 'mailto:', 'pw:' ];
 			const _uriAttributes = { 'href': true, 'action': true };
-			const _parser = new DOMParser();
+			let _parser;
 			this.SanitizeHtml = function (input, extraSelector, callback) {
 				input = input.trim();
 				if (input == "") return "";
 				if (input == "<br>") return "";
-				if (input.indexOf("<body")==-1) input = "<body>" + input + "</body>";
+				if (!/<body/i.test(input)) input = "<body>" + input + "</body>";
+				_parser ||= new DOMParser();
 				let doc = _parser.parseFromString(input, "text/html");
 				if (doc.body.tagName !== 'BODY')
 					doc.body.remove();
@@ -3152,7 +3153,7 @@ function requireHtmlSanitizer () {
 						}
 						for (let i = 0; i < node.childNodes.length; i++) {
 							let subCopy = makeSanitizedCopy(node.childNodes[i]);
-							newNode.appendChild(subCopy, false);
+							newNode.appendChild(subCopy);
 						}
 						if ((newNode.tagName == "SPAN" || newNode.tagName == "B" || newNode.tagName == "I" || newNode.tagName == "U")
 							&& newNode.innerHTML.trim() == "") {
@@ -3626,10 +3627,10 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		return {
 			application,
 			appId: application.id,
-			description: article?.description && new DOMParser().parseFromString(article?.description, "text/html").body.innerHTML,
+			description: article?.description && new DOMParser().parseFromString(article?.description, "text/html").body.innerText,
 			thumbnail: article?.image,
 			timestamp: article?.time * 1e3,
-			title: article?.title && new DOMParser().parseFromString(article?.title, "text/html").body.innerHTML,
+			title: article?.title && new DOMParser().parseFromString(article?.title, "text/html").body.innerText,
 			url: article?.url
 		};
 	}
@@ -7544,7 +7545,7 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 }
 
 // activity_feed/components/now_playing/LastPlayedStore.tsx
-const LastPlayedStore = () => {
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
 	let shouldPersistentlyFetch = false;
@@ -7622,7 +7623,7 @@ const LastPlayedStore = () => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
 // activity_feed/components/now_playing/BaseBuilder.tsx

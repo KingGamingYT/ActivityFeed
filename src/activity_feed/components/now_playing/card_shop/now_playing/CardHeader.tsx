@@ -44,7 +44,7 @@ function HeaderActions({card, user}) {
     )
 }
 
-function HeaderIcon({activities, isSpotify, currentGame}) {
+function HeaderIcon({activities, isSpotify, application}) {
     return (
         <>{ 
             isSpotify ? <svg className={`${NowPlayingClasses.headerIcon}`} aria-hidden={true} role="image" width="16" height="16" viewBox="0 0 16 16">
@@ -53,12 +53,12 @@ function HeaderIcon({activities, isSpotify, currentGame}) {
                     <rect width="16" height="16" />
                 </g>
             </svg>
-            : activities.length !== 0 && <img className={`${NowPlayingClasses.headerIcon}`} alt="" src={`https://cdn.discordapp.com/app-icons/${currentGame?.id}/${currentGame?.icon}.png?size=64&keep_aspect_ratio=false`} />
+            : activities.length !== 0 && <img className={`${NowPlayingClasses.headerIcon}`} alt="" src={application.getIconURL(64, 'png')} />
         }</>
     )
 }
 
-export function NowPlayingCardHeader({card, activities, game, splash, user, priorityMembers, partiedMembers, voice, isSpotify}) {
+export function NowPlayingCardHeader({card, activities, application, splash, user, priorityMembers, partiedMembers, voice, isSpotify}) {
     const status = priorityMembers[0].status;
     const channel = ChannelStore.getDMChannelFromUserId(user.id);
 
@@ -69,7 +69,7 @@ export function NowPlayingCardHeader({card, activities, game, splash, user, prio
                 <AvatarWithPopoutWrapper className={NowPlayingClasses.avatar} user={user} status={status} size="SIZE_40" />
                 <DiscordTag user={user} partiedMembers={partiedMembers} voice={voice} />
                 <HeaderActions card={card} user={user} />
-                <HeaderIcon activities={activities} isSpotify={isSpotify} currentGame={game} />
+                <HeaderIcon activities={activities} isSpotify={isSpotify} application={application} />
             </div>
         </Common.Flex>
     )

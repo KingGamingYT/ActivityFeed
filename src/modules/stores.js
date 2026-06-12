@@ -11,6 +11,7 @@ export const FluxStore = /* @__PURE__ */ Webpack.getModule(x => typeof x.ZP?.Sto
 export const GameStore = /* @__PURE__ */ Webpack.getStore("GameStore");
 export const GuildStore = /* @__PURE__ */ Webpack.getStore("GuildStore");
 export const LaunchableGameStore = /* @__PURE__@ */ Webpack.getStore("LaunchableGameStore");
+export const LibraryApplicationStatisticsStore =  /* @__PURE__ */ Webpack.getStore("LibraryApplicationStatisticsStore");
 export const LibraryApplicationStore = /* @__PURE__@ */ Webpack.getStore("LibraryApplicationStore");
 export const NewGameStore = /* @__PURE__ */ Webpack.getStore("NewGameStore");
 export const NowPlayingViewStore = /* @__PURE__ */ Webpack.getStore("NowPlayingViewStore");

@@ -1,7 +1,7 @@
 import { Data, Utils, Net } from "betterdiscord";
 import { parseXML } from "@activity_feed/common/methods/common";
 import { Common } from "@modules/common";
-import { ApplicationStore, GameStore, WindowStore } from "@modules/stores";
+import { ApplicationStore, GameStore, LibraryApplicationStatisticsStore, WindowStore } from "@modules/stores";
 import settings from "@settings/settings";
 import HtmlSanitizer from "@jitbit/htmlsanitizer";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
@@ -214,6 +214,24 @@ export default new class GameNewsStore extends Utils.Store {
         return;
     }
 
+    sanitize(content) {
+        const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A'];
+        for (let i = 0; i < ignore.length; i++) {
+            delete HtmlSanitizer.AllowedTags[ignore[i]];
+        }
+        return HtmlSanitizer.SanitizeHtml(content);
+    }
+
+    sortFeeds(f) {
+        let a = this.getFeeds();
+        let da = f.map(k => a[k].news.timestamp).sort((n, o) => new Date(n) - new Date(o)).reverse();
+        let d = new Set();
+        for (let k in da) {
+            d.add(new Date(da[k]).toDateString());
+        }
+        return Array.from(d);
+    }
+
     async fetchAnyFeed(url, options) {
         const rssFeed = await Promise.resolve(Net.fetch(`${url}`, options).then(r => r.ok ? r : null));
         const feedClone = rssFeed?.clone();
@@ -352,24 +370,20 @@ export default new class GameNewsStore extends Utils.Store {
         this.lastTimeFetched = Date.now();
         Data.save('lastTimeFetched', this.lastTimeFetched);
         const gameData = await this.getFeedGameData();
-        const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A']
-        for (let i = 0; i < ignore.length; i++) {
-            delete HtmlSanitizer.AllowedTags[ignore[i]];
-        }
         for (const gameId of Object.keys(gameData)) {
             (async (gameId) => {
-                const feeds = await this.feedSelector(gameId, gameData[gameId]);
+                const feed = await this.feedSelector(gameId, gameData[gameId]);
                 if (this.filterFeeds(feeds)) {
                     this.dataSet[gameId] = {
                         id: gameId,
-                        application: feeds.application,
+                        application: feed.application,
                         news: {
-                            application_id: feeds.appId,
-                            description: HtmlSanitizer.SanitizeHtml(feeds.description),
-                            thumbnail: feeds.thumbnail,
-                            timestamp: feeds.timestamp,
-                            title: feeds.title,
-                            url: feeds?.url
+                            application_id: feed.appId,
+                            description: article.description && this.sanitize(feed.description),
+                            thumbnail: feed.thumbnail,
+                            timestamp: feed.timestamp,
+                            title: feed.title,
+                            url: feed?.url
                         },
                         type: "application_news"
                     }
@@ -381,9 +395,10 @@ export default new class GameNewsStore extends Utils.Store {
 
     async getFeedGameData() {
         const gameData = {}
-        const analyticData = await Common.RestAPI.get('/users/@me/activities/statistics/applications');
+        let analyticData;
+        await Common.FetchUserApplicationStatistics().then(analyticData = LibraryApplicationStatisticsStore.applicationStatistics);
         const manuallyFollowedGames = this.followedGames;
-        const gameIds = analyticData.body.map(game => game.application_id).concat(manuallyFollowedGames);
+        const gameIds = Object.values(analyticData).map(game => game.application_id).concat(manuallyFollowedGames);
         let idOverflow = []
         if (gameIds.length  > 112) {
             for (let i = 0; i < gameIds.length; i++) {
@@ -395,7 +410,7 @@ export default new class GameNewsStore extends Utils.Store {
             idOverflow.map(async idSplit => {return await Common.FetchApplications.fetchApplications(idSplit)});
         }
         else { await Common.FetchApplications.fetchApplications(gameIds); }
-        const gameList = analyticData.body.filter(game => ApplicationStore.getApplication(game.application_id));
+        const gameList = Object.values(analyticData).filter(game => ApplicationStore.getApplication(game.application_id));
         let applicationList;
             
         applicationList = gameList.map(game => ApplicationStore.getApplication(game.application_id)).filter(game => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"))
@@ -417,36 +432,6 @@ export default new class GameNewsStore extends Utils.Store {
 
         Data.save('whitelist', this.whitelist);
         return gameData;
-    }
-
-    shouldFetch() {
-        if (Object.keys(this.getFeeds()).length === 0) {
-            this.setFeeds();
-        }
-        let t = this.lastTimeFetched;
-        let p = Object.values(this.getFeeds()).length;
-        return null == t || Date.now() - t > 216e5;
-    }
-
-    isFetched() {
-        let b = Object.values(this.getFeeds()).length > 5;
-        return b;
-    }
-
-    filterFeeds(f) {
-        if (!f) return;
-        const oW = new Date(Date.now() - 12096e5);
-        return new Date(f.timestamp) > oW;
-    }
-
-    sortFeeds(f) {
-        let a = this.getFeeds();
-        let da = f.map(k => a[k].news.timestamp).sort((n, o) => new Date(n) - new Date(o)).reverse();
-        let d = new Set();
-        for (let k in da) {
-            d.add(new Date(da[k]).toDateString());
-        }
-        return Array.from(d);
     }
 
     getByGameId(id) {
@@ -477,10 +462,6 @@ export default new class GameNewsStore extends Utils.Store {
     }
 
     async getDirectByApplicationId(id, shouldSave) {
-        const ignore = ['IMG', 'VIDEO', 'LI', 'DIV', 'A']
-        for (let i = 0; i < ignore.length; i++) {
-            delete HtmlSanitizer.AllowedTags[ignore[i]];
-        }
         const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
         const articleId = game?.thirdPartySkus?.find(sku => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
         const article = await this.feedSelector(articleId, game);
@@ -490,7 +471,7 @@ export default new class GameNewsStore extends Utils.Store {
                 application: article.application,
             news: {
                 application_id: article.appId,
-                description: article.description && HtmlSanitizer.SanitizeHtml(article.description),
+                description: article.description && this.sanitize(article.description),
                 thumbnail: article.thumbnail,
                 timestamp: article.timestamp,
                 title: article.title,
@@ -498,7 +479,7 @@ export default new class GameNewsStore extends Utils.Store {
             },
             type: "application_news"
         }
-        if (this.filterFeeds(article)) {
+        if (this.isNewsInDate(article)) {
             if (shouldSave) {
                 Object.assign(this.dataSet[articleId], news)
                 this.whitelist.push({applicationId: article.appId, gameId: articleId})
@@ -531,7 +512,7 @@ export default new class GameNewsStore extends Utils.Store {
         let s = this.lockSet;
         t = t.concat(s);
         let keys = Object.keys(feeds);
-        let _keys = keys.filter((key) => !this.getBlacklistedGameByGameId(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
+        let _keys = keys.filter((key) => !this.isGameBlacklisted(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.isNewsInDate(feeds[key].news));
         let total = _keys.length;
         let sorted = this.sortFeeds(_keys);
 
@@ -665,5 +646,25 @@ export default new class GameNewsStore extends Utils.Store {
 
     isIdling() {
         return this.idling;
+    }
+
+    isFetched() {
+        let b = Object.values(this.getFeeds()).length > 5;
+        return b;
+    }
+
+    shouldFetch() {
+        if (Object.keys(this.getFeeds()).length === 0) {
+            this.setFeeds();
+        }
+        let t = this.lastTimeFetched;
+        let p = Object.values(this.getFeeds()).length;
+        return null == t || Date.now() - t > 216e5;
+    }
+
+    isNewsInDate(f) {
+        if (!f) return;
+        const oW = new Date(Date.now() - 12096e5);
+        return new Date(f.timestamp) > oW;
     }
 }

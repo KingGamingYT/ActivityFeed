@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.0
+ * @version 1.0.0-dev
  */
 
 /*@cc_on
@@ -55,8 +55,7 @@ const Filters = [
 	{ name: "DMSidebar", filter: betterdiscord.Webpack.Filters.bySource(".A.CONTACTS_LIST") },
 	{ name: "Endpoints", filter: betterdiscord.Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
 	{ name: "FetchApplications", filter: betterdiscord.Webpack.Filters.byKeys("getApplicationsForGuild") },
-	{ name: "FetchGames", filter: betterdiscord.Webpack.Filters.bySource(".GAME", "fetchMany"), searchExports: true },
-	{ name: "FetchUtils", filter: (x) => typeof x === "object" && x.del && x.put, searchExports: true },
+	{ name: "FetchUserApplicationStatistics", filter: betterdiscord.Webpack.Filters.byStrings('"USER_ACTIVITY_STATISTICS_FETCH_SUCCESS"'), searchExports: true },
 	{ name: "Flex", filter: betterdiscord.Webpack.Filters.byStrings("grow", "shrink", "align", "basis") },
 	{ name: "FluxDispatcher", filter: betterdiscord.Webpack.Filters.byKeys("dispatch", "subscribe", "register"), searchExports: true },
 	{ name: "FluxStore", filter: (x) => typeof x.Ay?.Store === "function", searchExports: false, searchDefault: false },
@@ -67,6 +66,7 @@ const Filters = [
 	{ name: "GameProfileCheck", filter: betterdiscord.Webpack.Filters.byStrings("gameProfileModalChecks", "onOpened") },
 	{ name: "GradientComponent", filter: betterdiscord.Webpack.Filters.byStrings("darken"), searchExports: true },
 	{ name: "HeaderBar", filter: betterdiscord.Webpack.Filters.byKeys("Icon", "Divider") },
+	{ name: "HTTPUtils", filter: (x) => typeof x === "object" && x.del && x.put, searchExports: true },
 	{ name: "intl", filter: (x) => x.t && x.t.formatToMarkdownString },
 	{ name: "IsGameLaunchable", filter: betterdiscord.Webpack.Filters.byStrings("ConnectedAppsStore", "branchId") },
 	{ name: "JoinButton", filter: betterdiscord.Webpack.Filters.byStrings("user", "activity", "onAction", "onClose", "themeType", "embeddedActivity") },
@@ -93,7 +93,6 @@ const Filters = [
 	{ name: "PopoverClasses", filter: (x) => x.graphic && x.closeButton },
 	{ name: "PositionClasses", filter: betterdiscord.Webpack.Filters.byKeys("noWrap") },
 	{ name: "ReactSpring", filter: betterdiscord.Webpack.Filters.byKeys("useSpring", "a") },
-	{ name: "RestAPI", filter: (x) => typeof x === "object" && x.del && x.put, searchExports: true },
 	{ name: "RootSectionModule", filter: (x) => x?.key === "$Root", searchExports: true },
 	{ name: "ScrollerClasses", filter: betterdiscord.Webpack.Filters.byKeys("customTheme", "thin") },
 	{ name: "ScrollerHandler", filter: betterdiscord.Webpack.Filters.byStrings('"rtl"', "getComputedStyle") },
@@ -145,7 +144,7 @@ const Router = betterdiscord.Webpack.getMangled("Router-History", {
 	useLocation: betterdiscord.Webpack.Filters.byRegex(/return .{1,4}.location/)
 });
 const FetchGameUtils = betterdiscord.Webpack.getMangled('Error("Failed to fetch game data")', {
-	fetchMultipleGames: BdApi.Webpack.Filters.byStrings("isLoading", "Array.isArray")
+	fetchGames: betterdiscord.Webpack.Filters.byStrings("isLoading", "Array.isArray")
 });
 const ManaButtons = betterdiscord.Webpack.getMangled(betterdiscord.Webpack.Filters.bySource("SPINNING_CIRCLE", "__unsupportedReactNodeAsText", "tooltipAlign", '"sm","aria-label"'), {
 	PrimaryButtonWithIcon: (x) => String(x).includes('"sm",.'),
@@ -162,8 +161,9 @@ const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
 const ConnectedAppsStore = betterdiscord.Webpack.getStore("ConnectedAppsStore");
 const ContentInventoryStore = betterdiscord.Webpack.getStore("ContentInventoryStore");
 const DispatchApplicationStore = betterdiscord.Webpack.getStore("DispatchApplicationStore");
-const GameStore = betterdiscord.Webpack.getStore("GameStore");
+const GameStore$1 = betterdiscord.Webpack.getStore("GameStore");
 const LaunchableGameStore = betterdiscord.Webpack.getStore("LaunchableGameStore");
+const LibraryApplicationStatisticsStore = betterdiscord.Webpack.getStore("LibraryApplicationStatisticsStore");
 const LibraryApplicationStore = betterdiscord.Webpack.getStore("LibraryApplicationStore");
 const NewGameStore = betterdiscord.Webpack.getStore("NewGameStore");
 const NowPlayingViewStore = betterdiscord.Webpack.getStore("NowPlayingViewStore");
@@ -2857,7 +2857,7 @@ function SplashGen(game, isSpotify, activity, voice, stream, check) {
 	let input;
 	switch (true) {
 		case !!game?.data?.bannerHash?.length:
-			input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.data?.bannerHash}.png?size=1024&keep_aspect_ratio=true`;
+			input = `https://cdn.discordapp.com/app-icons/${game?.application?.id}/${game?.data?.bannerHash}.png?size=1024&keep_aspect_ratio=true`;
 			break;
 		case !!isSpotify:
 			input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(":") + 1)}`;
@@ -2884,7 +2884,7 @@ function SplashGen(game, isSpotify, activity, voice, stream, check) {
 			input = game?.data?.screenshotUrls[0];
 			break;
 		case !!!game?.data?.screenshotUrls:
-			input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`;
+			input = `https://cdn.discordapp.com/app-icons/${game.application?.id}/${game?.application?.icon}.png?size=1024&keep_aspect_ratio=true`;
 			break;
 		default:
 			input = game?.data?.media?.artwork_urls[0];
@@ -2903,21 +2903,6 @@ function useWindowSize() {
 	}, []);
 	return size;
 }
-async function parseXML(xml) {
-	let body = await xml;
-	let result;
-	const entities = [{ key: "#8211", value: "\u2013" }, { key: "#8217", value: "'" }, { key: "#39", value: "'" }, { key: "#8220", value: "\u201C" }, { key: "#8221", value: "\u201D" }];
-	const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
-	for (let e in entities) {
-		parser.addEntity(entities[e].key, entities[e].value);
-	}
-	try {
-		result = await parser.parse(body);
-	} catch (e) {
-		return null;
-	}
-	return result;
-}
 function useEffectEvent(callback) {
 	const ref = react.useRef(callback);
 	ref.current = callback;
@@ -2933,6 +2918,21 @@ function useEffectEvent(callback) {
 		}
 		return new Proxy(ref.current, handler);
 	}, []);
+}
+async function parseXML(xml) {
+	let body = await xml;
+	let result;
+	const entities = [{ key: "#8211", value: "\u2013" }, { key: "#8217", value: "'" }, { key: "#39", value: "'" }, { key: "#8220", value: "\u201C" }, { key: "#8221", value: "\u201D" }];
+	const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
+	for (let e in entities) {
+		parser.addEntity(entities[e].key, entities[e].value);
+	}
+	try {
+		result = await parser.parse(body);
+	} catch (e) {
+		return null;
+	}
+	return result;
 }
 
 // activity_feed/components/coachmark/ActivityFeedSettingsCoachmarkStore.tsx
@@ -3549,6 +3549,22 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		betterdiscord.Data.save("followedGames", this.followedGames);
 		return;
 	}
+	sanitize(content) {
+		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
+		for (let i = 0; i < ignore.length; i++) {
+			delete HtmlSanitizer.AllowedTags[ignore[i]];
+		}
+		return HtmlSanitizer.SanitizeHtml(content);
+	}
+	sortFeeds(f) {
+		let a = this.getFeeds();
+		let da = f.map((k) => a[k].news.timestamp).sort((n, o) => new Date(n) - new Date(o)).reverse();
+		let d = new Set();
+		for (let k in da) {
+			d.add(new Date(da[k]).toDateString());
+		}
+		return Array.from(d);
+	}
 	async fetchAnyFeed(url, options) {
 		const rssFeed = await Promise.resolve(betterdiscord.Net.fetch(`${url}`, options).then((r) => r.ok ? r : null));
 		const feedClone = rssFeed?.clone();
@@ -3558,107 +3574,107 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 	async #fetchDiscordFeeds() {
 		const rssFeed = await Promise.resolve(parseXML(betterdiscord.Net.fetch(`https://discord.com/blog/rss.xml`).then((r) => r.ok ? r.text() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for Discord`, e))));
 		if (!rssFeed) return;
-		const article = this.getRSSItem(rssFeed);
+		const article2 = this.getRSSItem(rssFeed);
 		return {
 			application: {
 				name: rssFeed?.rss?.channel?.title,
 				id: "Discord"
 			},
 			appId: "Discord",
-			description: article?.description,
-			thumbnail: article?.["media:thumbnail"]?._url,
-			timestamp: article?.pubDate,
-			title: article?.title,
-			url: article?.link
+			description: article2?.description,
+			thumbnail: article2?.["media:thumbnail"]?._url,
+			timestamp: article2?.pubDate,
+			title: article2?.title,
+			url: article2?.link
 		};
 	}
 	async #fetchNintendoFeeds() {
 		const rssFeed = await Promise.resolve(parseXML(betterdiscord.Net.fetch(`https://nintendoeverything.com/feed/`).then((r) => r.ok ? r.text() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for Nintendo`, e))));
 		if (!rssFeed) return;
-		const article = this.getRSSItem(rssFeed);
+		const article2 = this.getRSSItem(rssFeed);
 		return {
 			application: {
 				name: rssFeed?.rss?.channel?.title,
 				id: "Nintendo"
 			},
 			appId: "Nintendo",
-			description: article?.description,
-			thumbnail: article?.["media:content"]?._url,
-			timestamp: article?.pubDate,
-			title: article?.title,
-			url: article?.link
+			description: article2?.description,
+			thumbnail: article2?.["media:content"]?._url,
+			timestamp: article2?.pubDate,
+			title: article2?.title,
+			url: article2?.link
 		};
 	}
 	async #fetchXboxFeeds() {
 		const rssFeed = await Promise.resolve(parseXML(betterdiscord.Net.fetch(`https://news.xbox.com/en-us/feed/`, { headers: { "User-Agent": "activity" } }).then((r) => r.ok ? r.text() : null)).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for Xbox`, e)));
 		if (!rssFeed) return;
-		const article = this.getRSSItem(rssFeed);
+		const article2 = this.getRSSItem(rssFeed);
 		return {
 			application: {
 				name: rssFeed?.rss?.channel?.title,
 				id: "Xbox"
 			},
 			appId: "Xbox",
-			description: article?.description,
-			thumbnail: article?.["content:encoded"]?.match(/\"(https:\/\/xboxwire.thesourcemediaassets.com\/sites\/\d+\/\d+\/\d+\/.*(?=).(jpg|jpeg|png))\"/)[1],
-			timestamp: article?.pubDate,
-			title: article?.title,
-			url: article?.link
+			description: article2?.description,
+			thumbnail: article2?.["content:encoded"]?.match(/\"(https:\/\/xboxwire.thesourcemediaassets.com\/sites\/\d+\/\d+\/\d+\/.*(?=).(jpg|jpeg|png))\"/)[1],
+			timestamp: article2?.pubDate,
+			title: article2?.title,
+			url: article2?.link
 		};
 	}
 	async #fetchSubnauticaFeeds(application) {
 		const rssFeed = await Promise.resolve(betterdiscord.Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=4`).then((r) => r.ok ? r.json() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
 		if (!rssFeed) return;
-		const article = rssFeed.data[0].attributes;
+		const article2 = rssFeed.data[0].attributes;
 		return {
 			application,
 			appId: application.id,
-			description: article.summary,
-			thumbnail: article.thumbnail_image.data.attributes.url,
-			timestamp: article.publishedAt,
-			title: article.title,
-			url: `https://unknownworlds.com/en/news/${article.slug}`
+			description: article2.summary,
+			thumbnail: article2.thumbnail_image.data.attributes.url,
+			timestamp: article2.publishedAt,
+			title: article2.title,
+			url: `https://unknownworlds.com/en/news/${article2.slug}`
 		};
 	}
 	async #fetchMinecraftFeeds(application) {
 		const rssFeed = await Promise.resolve(betterdiscord.Net.fetch(`https://net-secondary.web.minecraft-services.net/api/v1.0/en-us/search?pageSize=24&sortType=Recent&category=News&newsOnly=true`).then((r) => r.ok ? r.json() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
 		if (!rssFeed) return;
-		const article = rssFeed.result.results[0];
+		const article2 = rssFeed.result.results[0];
 		return {
 			application,
 			appId: application.id,
-			description: article?.description && new DOMParser().parseFromString(article?.description, "text/html").body.innerText,
-			thumbnail: article?.image,
-			timestamp: article?.time * 1e3,
-			title: article?.title && new DOMParser().parseFromString(article?.title, "text/html").body.innerText,
-			url: article?.url
+			description: article2?.description && new DOMParser().parseFromString(article2?.description, "text/html").body.innerText,
+			thumbnail: article2?.image,
+			timestamp: article2?.time * 1e3,
+			title: article2?.title && new DOMParser().parseFromString(article2?.title, "text/html").body.innerText,
+			url: article2?.url
 		};
 	}
 	async #fetchFortniteFeeds(application) {
 		const rssFeed = await Promise.resolve(betterdiscord.Net.fetch(`https://fortnite-api.com/v2/news`).then((r) => r.ok ? r.json() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
 		if (!rssFeed) return;
-		const article = rssFeed.data.br.motds[0];
+		const article2 = rssFeed.data.br.motds[0];
 		return {
 			application,
 			appId: application.id,
-			description: article?.body,
-			thumbnail: article?.image,
+			description: article2?.body,
+			thumbnail: article2?.image,
 			timestamp: rssFeed.data.br.date,
-			title: article?.title
+			title: article2?.title
 		};
 	}
 	async #fetchSteamFeeds(gameId, application) {
 		const rssFeed = await Promise.all([parseXML(betterdiscord.Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then((r) => r.ok ? r.text() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? gameId}`, e)))]);
 		if (!rssFeed) return;
-		const article = this.getRSSItem(rssFeed);
+		const article2 = this.getRSSItem(rssFeed);
 		return {
 			application,
 			appId: application.id,
-			description: article?.description,
-			thumbnail: article?.enclosure?._url,
-			timestamp: article?.pubDate,
-			title: article?.title,
-			url: article?.link
+			description: article2?.description,
+			thumbnail: article2?.enclosure?._url,
+			timestamp: article2?.pubDate,
+			title: article2?.title,
+			url: article2?.link
 		};
 	}
 	async feedSelector(g, s) {
@@ -3693,24 +3709,20 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		this.lastTimeFetched = Date.now();
 		betterdiscord.Data.save("lastTimeFetched", this.lastTimeFetched);
 		const gameData = await this.getFeedGameData();
-		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
-		for (let i = 0; i < ignore.length; i++) {
-			delete HtmlSanitizer.AllowedTags[ignore[i]];
-		}
 		for (const gameId of Object.keys(gameData)) {
 			(async (gameId2) => {
-				const feeds = await this.feedSelector(gameId2, gameData[gameId2]);
+				const feed = await this.feedSelector(gameId2, gameData[gameId2]);
 				if (this.filterFeeds(feeds)) {
 					this.dataSet[gameId2] = {
 						id: gameId2,
-						application: feeds.application,
+						application: feed.application,
 						news: {
-							application_id: feeds.appId,
-							description: HtmlSanitizer.SanitizeHtml(feeds.description),
-							thumbnail: feeds.thumbnail,
-							timestamp: feeds.timestamp,
-							title: feeds.title,
-							url: feeds?.url
+							application_id: feed.appId,
+							description: article.description && this.sanitize(feed.description),
+							thumbnail: feed.thumbnail,
+							timestamp: feed.timestamp,
+							title: feed.title,
+							url: feed?.url
 						},
 						type: "application_news"
 					};
@@ -3721,9 +3733,10 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	async getFeedGameData() {
 		const gameData = {};
-		const analyticData = await Common.RestAPI.get("/users/@me/activities/statistics/applications");
+		let analyticData;
+		await Common.FetchUserApplicationStatistics().then(analyticData = LibraryApplicationStatisticsStore.applicationStatistics);
 		const manuallyFollowedGames = this.followedGames;
-		const gameIds = analyticData.body.map((game) => game.application_id).concat(manuallyFollowedGames);
+		const gameIds = Object.values(analyticData).map((game) => game.application_id).concat(manuallyFollowedGames);
 		let idOverflow = [];
 		if (gameIds.length > 112) {
 			for (let i = 0; i < gameIds.length; i++) {
@@ -3738,7 +3751,7 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		} else {
 			await Common.FetchApplications.fetchApplications(gameIds);
 		}
-		const gameList = analyticData.body.filter((game) => ApplicationStore.getApplication(game.application_id));
+		const gameList = Object.values(analyticData).filter((game) => ApplicationStore.getApplication(game.application_id));
 		let applicationList;
 		applicationList = gameList.map((game) => ApplicationStore.getApplication(game.application_id)).filter((game) => game && game.thirdPartySkus.length > 0 && game.thirdPartySkus.some((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"));
 		const feedIds = applicationList.map((game) => {
@@ -3759,32 +3772,6 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 		betterdiscord.Data.save("whitelist", this.whitelist);
 		return gameData;
-	}
-	shouldFetch() {
-		if (Object.keys(this.getFeeds()).length === 0) {
-			this.setFeeds();
-		}
-		let t = this.lastTimeFetched;
-		Object.values(this.getFeeds()).length;
-		return null == t || Date.now() - t > 216e5;
-	}
-	isFetched() {
-		let b = Object.values(this.getFeeds()).length > 5;
-		return b;
-	}
-	filterFeeds(f) {
-		if (!f) return;
-		const oW = new Date(Date.now() - 12096e5);
-		return new Date(f.timestamp) > oW;
-	}
-	sortFeeds(f) {
-		let a = this.getFeeds();
-		let da = f.map((k) => a[k].news.timestamp).sort((n, o) => new Date(n) - new Date(o)).reverse();
-		let d = new Set();
-		for (let k in da) {
-			d.add(new Date(da[k]).toDateString());
-		}
-		return Array.from(d);
 	}
 	getByGameId(id) {
 		let d = this.dataSet;
@@ -3812,31 +3799,27 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		return r;
 	}
 	async getDirectByApplicationId(id, shouldSave) {
-		const ignore = ["IMG", "VIDEO", "LI", "DIV", "A"];
-		for (let i = 0; i < ignore.length; i++) {
-			delete HtmlSanitizer.AllowedTags[ignore[i]];
-		}
-		const game = GameStore.getGameByApplication(ApplicationStore.getApplication(id));
+		const game = GameStore$1.getGameByApplication(ApplicationStore.getApplication(id));
 		const articleId = game?.thirdPartySkus?.find((sku) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite")?.id || game.name;
-		const article = await this.feedSelector(articleId, game);
-		if (!article) return;
+		const article2 = await this.feedSelector(articleId, game);
+		if (!article2) return;
 		const news = {
 			id: articleId,
-			application: article.application,
+			application: article2.application,
 			news: {
-				application_id: article.appId,
-				description: article.description && HtmlSanitizer.SanitizeHtml(article.description),
-				thumbnail: article.thumbnail,
-				timestamp: article.timestamp,
-				title: article.title,
-				url: article?.url
+				application_id: article2.appId,
+				description: article2.description && this.sanitize(article2.description),
+				thumbnail: article2.thumbnail,
+				timestamp: article2.timestamp,
+				title: article2.title,
+				url: article2?.url
 			},
 			type: "application_news"
 		};
-		if (this.filterFeeds(article)) {
+		if (this.isNewsInDate(article2)) {
 			if (shouldSave) {
 				Object.assign(this.dataSet[articleId], news);
-				this.whitelist.push({ applicationId: article.appId, gameId: articleId });
+				this.whitelist.push({ applicationId: article2.appId, gameId: articleId });
 				betterdiscord.Data.save("whitelist", this.whitelist);
 				betterdiscord.Data.save("dataSet", this.dataSet);
 			}
@@ -3858,22 +3841,22 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 			return null;
 		}
 	}
-	getRandomFeeds(feeds) {
+	getRandomFeeds(feeds2) {
 		let t = [];
 		let s = this.lockSet;
 		t = t.concat(s);
-		let keys = Object.keys(feeds);
-		let _keys = keys.filter((key) => !this.getBlacklistedGameByGameId(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.filterFeeds(feeds[key].news));
+		let keys = Object.keys(feeds2);
+		let _keys = keys.filter((key) => !this.isGameBlacklisted(feeds2[key].id) && !this.isArticleLockedIn(feeds2[key]) && this.isNewsInDate(feeds2[key].news));
 		let total = _keys.length;
 		let sorted = this.sortFeeds(_keys);
 		if (!_keys.length) return;
 		ld: for (let d in sorted) {
-			let f = _keys.filter((k) => new Date(feeds[k].news.timestamp).toDateString() === sorted[d]);
+			let f = _keys.filter((k) => new Date(feeds2[k].news.timestamp).toDateString() === sorted[d]);
 			for (let g = 0; g <= 4 - s.length; g++) {
 				if (g > f.length) break;
 				if (g > total - 1 || t.length > 3) break ld;
 				let rand = f.length * Math.random() << 0;
-				t.push(feeds[f[rand]]);
+				t.push(feeds2[f[rand]]);
 				f.splice(rand, 1);
 			}
 		}
@@ -3905,10 +3888,10 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 		this.emitChange();
 	}
-	lockInArticle(article) {
+	lockInArticle(article2) {
 		let l = this.lockSet;
-		if (!this.isArticleLockedIn(article) || l.length < 4) {
-			l.push(article);
+		if (!this.isArticleLockedIn(article2) || l.length < 4) {
+			l.push(article2);
 			betterdiscord.Data.save("lockSet", l);
 			this.emitChange();
 		} else {
@@ -3928,14 +3911,14 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		}
 		return;
 	}
-	isArticleLockedIn(article) {
+	isArticleLockedIn(article2) {
 		let s = this.lockSet;
-		return Boolean(s.find((entry) => entry.id === article.id));
+		return Boolean(s.find((entry) => entry.id === article2.id));
 	}
-	releaseLockedArticle(article) {
+	releaseLockedArticle(article2) {
 		let l = this.lockSet;
-		if (this.isArticleLockedIn(article)) {
-			l.splice(l.indexOf(article), 1);
+		if (this.isArticleLockedIn(article2)) {
+			l.splice(l.indexOf(article2), 1);
 			this.emitChange();
 			betterdiscord.Data.save("lockList", l);
 		} else {
@@ -3976,6 +3959,23 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	isIdling() {
 		return this.idling;
+	}
+	isFetched() {
+		let b = Object.values(this.getFeeds()).length > 5;
+		return b;
+	}
+	shouldFetch() {
+		if (Object.keys(this.getFeeds()).length === 0) {
+			this.setFeeds();
+		}
+		let t = this.lastTimeFetched;
+		Object.values(this.getFeeds()).length;
+		return null == t || Date.now() - t > 216e5;
+	}
+	isNewsInDate(f) {
+		if (!f) return;
+		const oW = new Date(Date.now() - 12096e5);
+		return new Date(f.timestamp) > oW;
 	}
 }();
 
@@ -5238,7 +5238,7 @@ function LauncherGameBuilder({ game, runningGames }) {
 		return clearTimeout.bind(null, delay);
 	});
 	const disableCheck = react.useMemo(() => ~runningGames.findIndex((m) => m.name === game.name) || shouldDisable, [runningGames, shouldDisable]);
-	const fullGame = GameStore.getDetectableGame(GameStore.searchGamesByName(game.name)[0]);
+	const fullGame = GameStore$1.getDetectableGame(GameStore$1.searchGamesByName(game.name)[0]);
 	const skuViaGame = fullGame.thirdPartySkus;
 	const isSteam = Object.values(skuViaGame).find((x) => x.distributor.toLowerCase().includes("steam"));
 	const canPlay = Common.IsGameLaunchable({ LibraryApplicationStore, LaunchableGameStore, DispatchApplicationStore, ConnectedAppsStore, applicationId: fullGame.id });
@@ -5289,7 +5289,7 @@ function LauncherEmptyBuilder() {
 function QuickLauncherBuilder(props) {
 	const runningGames = useStateFromStores([RunningGameStore], () => RunningGameStore.getRunningGames());
 	const gameList = useStateFromStores([RunningGameStore], () => RunningGameStore.getGamesSeen());
-	const _gameList = gameList.filter((game) => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0])).slice(0, 12);
+	const _gameList = gameList.filter((game) => GameStore$1.getDetectableGame([...GameStore$1.searchGamesByName(game.name)].reverse()[0])).slice(0, 12);
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: locale.Strings.QUICK_LAUNCHER() }), gameList.length === 0 || (betterdiscord.Data.load("freezeDock") ?? settings.default.freezeDock) ? BdApi.React.createElement(LauncherEmptyBuilder, null) : BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Dock") ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock) }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames, key: game.id }))));
 }
 
@@ -5608,12 +5608,12 @@ function SpotifyButtons({ user, activity, onAction }) {
 		}
 	));
 }
-const handleGameProfileClick = betterdiscord.Webpack.getByStrings("stopPropagation", "gameProfileModalChecks");
+const handleGameProfileClick = betterdiscord.Webpack.getByStrings("stopPropagation", "gameProfileModalChecks", "onOpened");
 const handleEmbeddedApplicationClick = betterdiscord.Webpack.getByStrings("POPOUT", '"contextless"');
 const isPlayingActivity = betterdiscord.Webpack.getByStrings("entry", "PLAYING", "sourceUserId", { searchExports: true });
 const isTypePlayingActivity = betterdiscord.Webpack.getByStrings(".PLAYING}");
 function handleApplicationClick({ user, currentUser, activity, application, onClose }) {
-	const gameId = GameStore.searchGamesByName(application?.name)?.[0];
+	const gameId = GameStore$1.searchGamesByName(application?.name)?.[0];
 	const openGameProfile = betterdiscord.ReactUtils.wrapInHooks(handleGameProfileClick)({ trackEntryPointImpression: false, gameId, ...isPlayingActivity({ activity, user }) });
 	const openEmbeddedAppProfile = betterdiscord.ReactUtils.wrapInHooks(handleEmbeddedApplicationClick)({ applicationId: activity?.application_id });
 	const isEmbedded = isEmbeddedActivity(activity);
@@ -6786,7 +6786,7 @@ function ActivityType(props) {
 					onMouseLeave: (e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)
 				},
 				game?.name
-			)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity?.timestamps?.start || activity.created_at })));
+			)), !activity?.assets?.large_image && BdApi.React.createElement("div", { className: NowPlayingClasses.playTime }, BdApi.React.createElement(TimeClock, { timestamp: activity?.timestamps?.start || activity?.created_at })));
 		case "RICH":
 			return BdApi.React.createElement(BdApi.React.Fragment, null, activityProperties?.platform === "YT_MUSIC" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(Common.Link, { href: activity?.details_url }, BdApi.React.createElement(
 				"div",
@@ -7098,6 +7098,8 @@ function VoiceGuildAsset({ channel, server, streamUser }) {
 // activity_feed/components/now_playing/activities/components/InnerBuilder.tsx
 function RegularActivityBuilder({ activity, activityProperties, user, game, players, server, v2Enabled }) {
 	const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
+	const isTwitch = ["TWITCH", "YOUTUBE"].includes(activityProperties.platform);
+	console.log(activity);
 	return BdApi.React.createElement(Common.Flex, { align: Common.Flex.Align.CENTER, className: NowPlayingClasses.activity }, (() => {
 		switch (activityProperties.platform) {
 			case "SPOTIFY":
@@ -7105,6 +7107,7 @@ function RegularActivityBuilder({ activity, activityProperties, user, game, play
 			case "XBOX":
 				return BdApi.React.createElement(XboxImageAsset, { url: "https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png" });
 			case "TWITCH":
+			case "YOUTUBE":
 				return BdApi.React.createElement(
 					GameIconAsset,
 					{
@@ -7117,14 +7120,14 @@ function RegularActivityBuilder({ activity, activityProperties, user, game, play
 				return BdApi.React.createElement(
 					GameIconAsset,
 					{
-						url: `https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`,
+						url: game?.getIconURL(64, "webp"),
 						id: activity?.application_id,
 						name: game?.name,
 						onClick: handleApplicationClick({ user, currentUser, activity, application: game })
 					}
 				);
 		}
-	})(), BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.gameInfo, user, activity, game, type: activityProperties.platform === "TWITCH" ? "TWITCH" : "REGULAR" }), BdApi.React.createElement(RegularCardTrailing, { activity, user, server, players, v2Enabled }));
+	})(), BdApi.React.createElement(FlexInfo, { className: NowPlayingClasses.gameInfo, user, activity, game, type: isTwitch ? "TWITCH" : "REGULAR" }), BdApi.React.createElement(RegularCardTrailing, { activity, user, server, players, v2Enabled }));
 }
 function RichActivityBuilder({ user, activity, activityProperties, v2Enabled }) {
 	const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
@@ -7228,6 +7231,7 @@ function TwitchCard({ user, activity }) {
 	const currentActivity = activity?.activity;
 	const activityProperties = betterdiscord.Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getActivityProperties(currentActivity));
 	const currentGame = activity?.application;
+	console.log(activity);
 	return !currentActivity || !activityProperties?.type === "STREAMING" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, activityProperties, game: currentGame }), BdApi.React.createElement(RichTwitchActivityBuilder, { activity: currentActivity }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider })) : null;
 }
 
@@ -7283,6 +7287,7 @@ function VoiceCard({ activities, voice, streams }) {
 // activity_feed/components/now_playing/card_shop/now_playing/CardBody.tsx
 function NowPlayingCardBody({ activities, user, voice, streams, v2Enabled }) {
 	const twitchActivity = activities.find((entry) => entry.activity?.type == 1) || streams.find((entry) => entry.activity?.type == 1);
+	console.log(activities, twitchActivity);
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement(Common.Flex, { className: NowPlayingClasses.gameBody }, voice && BdApi.React.createElement(VoiceCard, { activities, voice, streams, key: `voice-${voice[0]?.guild?.id || voice[0]?.channel?.id}` }), twitchActivity && BdApi.React.createElement(TwitchCard, { user, activity: twitchActivity, key: `twitch-${user.id}` }), activities && BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, v2Enabled })))));
 }
 
@@ -7330,16 +7335,16 @@ function HeaderActions$1({ card, user }) {
 		)
 	));
 }
-function HeaderIcon({ activities, isSpotify, currentGame }) {
-	return BdApi.React.createElement(BdApi.React.Fragment, null, isSpotify ? BdApi.React.createElement("svg", { className: `${NowPlayingClasses.headerIcon}`, "aria-hidden": true, role: "image", width: "16", height: "16", viewBox: "0 0 16 16" }, BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement("path", { fill: "var(--platform-spotify)", d: "M12.7609503,7.08043507 C10.1796226,5.54647845 5.92178025,5.40543597 3.45759439,6.15380317 C3.06179846,6.27398591 2.64333918,6.05046133 2.5234242,5.65450895 C2.40350922,5.25826952 2.62670026,4.83983073 3.02268744,4.71945662 C5.85139953,3.86028398 10.5538071,4.02620506 13.52548,5.79134121 C13.8813999,6.00280925 13.9981592,6.46277616 13.7872083,6.81834866 C13.5760661,7.17449528 13.1160095,7.2919031 12.7609503,7.08043507 Z M12.7456938,9.37785148 C12.5639139,9.67256952 12.1782795,9.76502256 11.883727,9.58404861 C9.72377106,8.25738585 6.4301382,7.87299604 3.87475822,8.64810544 C3.54335063,8.74813503 3.19341953,8.56150265 3.09273996,8.2309159 C2.99292418,7.89984962 3.17979084,7.55075308 3.51062257,7.45005215 C6.42975429,6.56484307 10.0587298,6.99354129 12.5395359,8.51700243 C12.8340884,8.69826409 12.9268019,9.08380478 12.7456938,9.37785148 Z M11.7108365,11.5428368 C11.566471,11.780912 11.2582675,11.8554793 11.0223905,11.7103962 C9.13604653,10.5509855 6.76173752,10.28918 3.96555508,10.9314428 C3.69610478,10.9935661 3.42751778,10.823788 3.36603055,10.5528184 C3.30435146,10.2819451 3.47260203,10.0118436 3.74262788,9.95000969 C6.80260111,9.2465882 9.42736749,9.54929481 11.5446963,10.8504123 C11.7807651,10.995399 11.8551061,11.3055334 11.7108365,11.5428368 Z M0,7.99990447 C0,12.4185663 3.58181579,16 8,16 C12.4183753,16 16,12.4185663 16,7.99990447 C16,3.58172026 12.4183753,0 8,0 C3.58181579,0 0,3.58172026 0,7.99990447 Z" }), BdApi.React.createElement("rect", { width: "16", height: "16" }))) : activities.length !== 0 && BdApi.React.createElement("img", { className: `${NowPlayingClasses.headerIcon}`, alt: "", src: `https://cdn.discordapp.com/app-icons/${currentGame?.id}/${currentGame?.icon}.png?size=64&keep_aspect_ratio=false` }));
+function HeaderIcon({ activities, isSpotify, application }) {
+	return BdApi.React.createElement(BdApi.React.Fragment, null, isSpotify ? BdApi.React.createElement("svg", { className: `${NowPlayingClasses.headerIcon}`, "aria-hidden": true, role: "image", width: "16", height: "16", viewBox: "0 0 16 16" }, BdApi.React.createElement("g", { fill: "none", fillRule: "evenodd" }, BdApi.React.createElement("path", { fill: "var(--platform-spotify)", d: "M12.7609503,7.08043507 C10.1796226,5.54647845 5.92178025,5.40543597 3.45759439,6.15380317 C3.06179846,6.27398591 2.64333918,6.05046133 2.5234242,5.65450895 C2.40350922,5.25826952 2.62670026,4.83983073 3.02268744,4.71945662 C5.85139953,3.86028398 10.5538071,4.02620506 13.52548,5.79134121 C13.8813999,6.00280925 13.9981592,6.46277616 13.7872083,6.81834866 C13.5760661,7.17449528 13.1160095,7.2919031 12.7609503,7.08043507 Z M12.7456938,9.37785148 C12.5639139,9.67256952 12.1782795,9.76502256 11.883727,9.58404861 C9.72377106,8.25738585 6.4301382,7.87299604 3.87475822,8.64810544 C3.54335063,8.74813503 3.19341953,8.56150265 3.09273996,8.2309159 C2.99292418,7.89984962 3.17979084,7.55075308 3.51062257,7.45005215 C6.42975429,6.56484307 10.0587298,6.99354129 12.5395359,8.51700243 C12.8340884,8.69826409 12.9268019,9.08380478 12.7456938,9.37785148 Z M11.7108365,11.5428368 C11.566471,11.780912 11.2582675,11.8554793 11.0223905,11.7103962 C9.13604653,10.5509855 6.76173752,10.28918 3.96555508,10.9314428 C3.69610478,10.9935661 3.42751778,10.823788 3.36603055,10.5528184 C3.30435146,10.2819451 3.47260203,10.0118436 3.74262788,9.95000969 C6.80260111,9.2465882 9.42736749,9.54929481 11.5446963,10.8504123 C11.7807651,10.995399 11.8551061,11.3055334 11.7108365,11.5428368 Z M0,7.99990447 C0,12.4185663 3.58181579,16 8,16 C12.4183753,16 16,12.4185663 16,7.99990447 C16,3.58172026 12.4183753,0 8,0 C3.58181579,0 0,3.58172026 0,7.99990447 Z" }), BdApi.React.createElement("rect", { width: "16", height: "16" }))) : activities.length !== 0 && BdApi.React.createElement("img", { className: `${NowPlayingClasses.headerIcon}`, alt: "", src: application.getIconURL(64, "png") }));
 }
-function NowPlayingCardHeader({ card, activities, game, splash, user, priorityMembers, partiedMembers, voice, isSpotify }) {
+function NowPlayingCardHeader({ card, activities, application, splash, user, priorityMembers, partiedMembers, voice, isSpotify }) {
 	const status = priorityMembers[0].status;
 	const channel = ChannelStore.getDMChannelFromUserId(user.id);
 	return BdApi.React.createElement(Common.Flex, { align: Common.Flex.Align.CENTER, className: NowPlayingClasses.cardHeader, onContextMenu: (e) => {
 		let Menus = ContextMenus();
 		return Menus.ContextMenuUser(e, user, channel);
-	} }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.avatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, partiedMembers, voice }), BdApi.React.createElement(HeaderActions$1, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, currentGame: game })));
+	} }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.avatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, partiedMembers, voice }), BdApi.React.createElement(HeaderActions$1, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, application })));
 }
 
 // activity_feed/common/components/Scroller.tsx
@@ -7523,22 +7528,22 @@ function NowPlayingCardBuilder({ card, v2Enabled }) {
 	const priorityMembers = card.party.priorityMembers;
 	const partiedMembers = card.party.partiedMembers;
 	const activities = card.party.currentActivities;
-	const currentGame = card.party.currentActivities[0]?.application;
+	const application = card.party.currentActivities[0]?.application;
 	const voice = card.party.voiceChannels;
 	const streams = card.party.applicationStreams;
 	const isSpotify = card.party.isSpotifyActivity;
 	const user = priorityMembers[0].user;
 	const activityProperties = betterdiscord.Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getAllActivityProperties(activities, isSpotify));
-	const cardGrad = GradGen(currentGame, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
-	const game = NewGameStore.getGame(currentGame?.id) || ApplicationStore.getApplication(currentGame?.id) && NewGameStore?.getGame(GameStore.getGameByApplication(ApplicationStore.getApplication(currentGame?.id))?.id);
-	const splash = SplashGen({ currentGame, data: game }, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, activityProperties);
-	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(NowPlayingCardHeader, { card, activities, game: currentGame, splash, user, priorityMembers, partiedMembers, voice, isSpotify }), BdApi.React.createElement(NowPlayingCardBody, { activities, user, voice, streams, isSpotify, v2Enabled }));
+	const cardGrad = GradGen(application, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
+	const { data, error, isLoading, refetch } = betterdiscord.ReactUtils.wrapInHooks(FetchGameUtils.fetchGames)(application.linkedGames?.[0]?.id || application.id);
+	const splash = SplashGen({ application, data }, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, activityProperties);
+	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(NowPlayingCardHeader, { card, activities, application, splash, user, priorityMembers, partiedMembers, voice, isSpotify }), BdApi.React.createElement(NowPlayingCardBody, { activities, user, voice, streams, isSpotify, v2Enabled }));
 }
 function WhatsNewCardBuilder({ card, v2Enabled }) {
 	const players = card.players;
 	const game = card.application;
 	const titleNews = card.titleNews;
-	const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application?.id) ?? card.application.id);
+	const currentGame = GameStore$1.getGameByApplication(ApplicationStore.getApplication(card.application?.id) ?? card.application.id);
 	const cardGrad = GradGen(currentGame ?? game);
 	const splash = SplashGen({ currentGame, data: game });
 	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(WhatsNewCardHeader, { game, splash }), BdApi.React.createElement(WhatsNewCardBody, { players, news: titleNews, v2Enabled }));
@@ -7570,7 +7575,7 @@ const LastPlayedStore = (() => {
 		let playerList = [];
 		for (let id of g) {
 			const presentNews = await NewsStore.getDirectByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
-			const isNewNews = NewsStore.filterFeeds(presentNews?.news);
+			const isNewNews = NewsStore.isNewsInDate(presentNews?.news);
 			titleNews.push(isNewNews && presentNews);
 			playerList.push(betterdiscord.ReactUtils.wrapInHooks(await RecentlyPlayedByApplicationId)(id));
 		}
@@ -8121,7 +8126,9 @@ function FollowedGameEmptyBuilder() {
 }
 function FollowedGameItemBuilder({ game, gameList, updateGameList }) {
 	const [shouldFallback, setShouldFallback] = react.useState(false);
-	const application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]) ?? GameStore.getDetectableGame(game.applicationId) ?? ApplicationStore.getApplication(game.applicationId);
+	let application;
+	react.useEffect(() => {
+	}, [game]);
 	const isFollowed = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(game?.applicationId));
 	const isWhitelisted = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(game?.applicationId));
 	const handleUnsubscribe = (props) => BdApi.React.createElement(
@@ -8419,7 +8426,7 @@ class ActivityFeed {
 			args[0] = filtered;
 			return args;
 		});
-		betterdiscord.Patcher.after(await SettingsRoot, "buildLayout", (that, [props], res) => {
+		await SettingsRoot.then((e) => betterdiscord.Patcher.after(e, "buildLayout", (that, [props], res) => {
 			let index = res.findIndex((layout) => layout.key === "activity_section");
 			betterdiscord.Patcher.after(res[index], "buildLayout", (that2, [props2], res2) => {
 				if (!betterdiscord.Utils.findInTree(res2, (tree) => Object.values(tree).includes("activity_feed_sidebar_item", { walkable: ["props", "children"] }))) {
@@ -8427,14 +8434,14 @@ class ActivityFeed {
 				}
 				return res2;
 			});
-		});
+		}));
 		betterdiscord.Patcher.after(SettingsButton, "Button", (that, [props], res) => {
 			return react.createElement(CoachmarkWrapper, { button: res });
 		});
 		betterdiscord.Patcher.after(ContentInventoryCard, "ContentInventoryCardHeader", (that, [props], res) => {
 			const hero = betterdiscord.Utils.findInTree(res, (tree) => tree && tree.backgroundImgSrc);
 			const entry = props.entry;
-			const application = ApplicationStore.getApplication(entry.extra.application_id) ?? ApplicationStore.getApplicationByName(entry.extra.application_id);
+			const application = ApplicationStore.getApplication(entry.extra.application_id);
 			entry.extra.type === "played_game_extra" && hero.children.push(react.createElement(FollowButton, { application, fullWidth: true }));
 		});
 		await betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.bySource('"game_profile"', ".DISCORD")).then((e) => {

@@ -20,8 +20,7 @@ const Filters = [
     { name: "DMSidebar", filter: /* @__PURE__ */ Webpack.Filters.bySource(".A.CONTACTS_LIST") },
     { name: "Endpoints", filter: /* @__PURE__ */ Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("getApplicationsForGuild") },
-    { name: "FetchGames", filter: /* @__PURE__ */ Webpack.Filters.bySource('.GAME', 'fetchMany'), searchExports: true },
-    { name: "FetchUtils", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
+    { name: "FetchUserApplicationStatistics", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"USER_ACTIVITY_STATISTICS_FETCH_SUCCESS"'), searchExports: true },
     { name: "Flex", filter: /* @__PURE__ */ Webpack.Filters.byStrings('grow', 'shrink', 'align', 'basis') },
     { name: "FluxDispatcher", filter: /* @__PURE__ */ Webpack.Filters.byKeys('dispatch', 'subscribe', 'register'), searchExports: true },
     { name: "FluxStore", filter: x => typeof x.Ay?.Store === 'function', searchExports: false, searchDefault: false },
@@ -32,6 +31,7 @@ const Filters = [
     { name: "GameProfileCheck", filter: /* @__PURE__ */ Webpack.Filters.byStrings('gameProfileModalChecks',  'onOpened') },
     { name: "GradientComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('darken'), searchExports: true },
     { name: "HeaderBar", filter: /* @__PURE__ */ Webpack.Filters.byKeys("Icon", "Divider") }, 
+    { name: "HTTPUtils", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "intl", filter: x=>x.t && x.t.formatToMarkdownString },
     { name: "IsGameLaunchable", filter: /* @__PURE__ */ Webpack.Filters.byStrings('ConnectedAppsStore', 'branchId') },
     { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('user', 'activity', 'onAction', 'onClose', 'themeType', 'embeddedActivity') },
@@ -58,7 +58,6 @@ const Filters = [
     { name: "PopoverClasses", filter: x => x.graphic && x.closeButton },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
     { name: "ReactSpring", filter: /* @__PURE__ */ Webpack.Filters.byKeys('useSpring', 'a') },
-    { name: "RestAPI", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
     { name: "RootSectionModule", filter: x => x?.key === "$Root", searchExports: true },
     { name: "ScrollerClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('customTheme', 'thin') },
     { name: "ScrollerHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"rtl"', 'getComputedStyle') },
@@ -135,7 +134,7 @@ export const NavigationUtils = /* @__PURE__ */ Webpack.getMangled("Transitioning
 });
 
 export const FetchGameUtils = Webpack.getMangled('Error("Failed to fetch game data")', {
-    fetchMultipleGames: BdApi.Webpack.Filters.byStrings('isLoading', 'Array.isArray')
+    fetchGames: Webpack.Filters.byStrings('isLoading', 'Array.isArray')
 })
 
 export const ManaButtons = Webpack.getMangled(Webpack.Filters.bySource('SPINNING_CIRCLE', '__unsupportedReactNodeAsText', 'tooltipAlign', '"sm","aria-label"'), {

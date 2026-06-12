@@ -293,7 +293,7 @@ export function SpotifyButtons({user, activity, onAction}) {
     </>
 }
 
-const handleGameProfileClick = Webpack.getByStrings('stopPropagation', 'gameProfileModalChecks');
+const handleGameProfileClick = Webpack.getByStrings('stopPropagation', 'gameProfileModalChecks', 'onOpened');
 const handleEmbeddedApplicationClick = Webpack.getByStrings('POPOUT', '"contextless"');
 const isPlayingActivity = Webpack.getByStrings('entry', 'PLAYING', 'sourceUserId', {searchExports: true});
 const isTypePlayingActivity = Webpack.getByStrings('.PLAYING}');

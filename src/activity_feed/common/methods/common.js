@@ -65,7 +65,7 @@ export function GradGen(game, check, isSpotify, activity, voice, stream) {
 export function SplashGen(game, isSpotify, activity, voice, stream, check) {
     let input;
     switch (true) {
-        case !! game?.data?.bannerHash?.length: input = `https://cdn.discordapp.com/app-icons/${game?.currentGame?.id}/${game?.data?.bannerHash}.png?size=1024&keep_aspect_ratio=true`; break;
+        case !! game?.data?.bannerHash?.length: input = `https://cdn.discordapp.com/app-icons/${game?.application?.id}/${game?.data?.bannerHash}.png?size=1024&keep_aspect_ratio=true`; break;
         case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
         case !! check?.find(x => x.platform === "XBOX"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
         case !! check?.find(x => x.platform === "YT_MUSIC" || x.platform === "CRUNCHYROLL"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
@@ -74,48 +74,10 @@ export function SplashGen(game, isSpotify, activity, voice, stream, check) {
         case !! (voice && !activity): input = `https://cdn.discordapp.com/icons/${voice[0]?.guild?.id}/${voice[0]?.guild?.icon}.png?size=1024`; break;
         case !! check?.find(x => x.type === "STREAMING"): check?.find(x => x.plaform === "YOUTUBE") ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`; break;
         case !! (!game?.data?.media?.artwork_urls && game?.data?.screenshotUrls): input = game?.data?.screenshotUrls[0]; break;
-        case !! (!game?.data?.screenshotUrls): input = `https://cdn.discordapp.com/app-icons/${game.currentGame?.id}/${game?.currentGame?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
+        case !! (!game?.data?.screenshotUrls): input = `https://cdn.discordapp.com/app-icons/${game.application?.id}/${game?.application?.icon}.png?size=1024&keep_aspect_ratio=true`; break;
         default: input = game?.data?.media?.artwork_urls[0];
     }
     return input || null;
-}
-
-export function activityCheck(activities, isSpotify) {
-    if (!activities) return;
-    let pass = {
-        playing: 0,
-        xbox: 0,
-        playstation: 0,
-        streaming: 0,
-        listening: 0,
-        spotify: 0,
-        watching: 0,
-        competing: 0,
-        custom: 0
-    };
-    for (let i = 0; i < activities.length; i++) {
-        if (!activities[i]) {
-            return;
-        }
-        switch (activities[i]?.activity?.type) {
-            case 0: pass.playing = 1; break;
-            case 1: pass.streaming = 1; break;
-            case 2: pass.listening = 1; break;
-            case 3: pass.watching = 1; break;
-            case 4: pass.custom = 1; break;
-            case 5: pass.competing = 1; break;
-        }
-        if (activities[i]?.activity?.platform?.includes("xbox")) {
-            pass.xbox = 1;
-        }
-        if (activities[i]?.activity?.platform?.includes("playstation") || activities[i]?.platform?.includes("ps5")) {
-            pass.playstation = 1;
-        }
-        if (isSpotify) {
-            pass.spotify = 1;
-        }
-    }
-    return pass;
 }
 
 export function useWindowSize() {
@@ -129,20 +91,6 @@ export function useWindowSize() {
         return () => window.removeEventListener('resize', updateSize);
     }, []);
     return size;
-}
-
-export async function parseXML(xml) {
-    let body = await xml;
-    let result;
-    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}, {key: "#39", value: "'"}, {key: "#8220", value: "“" }, {key: "#8221", value: "”" }];
-    const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
-    for (let e in entities) { parser.addEntity(entities[e].key, entities[e].value) };
-    try {
-        result = await parser.parse(body);
-    } catch (e) {
-        return null;
-    }
-    return result
 }
 
 export function useEffectEvent(callback) {
@@ -167,4 +115,18 @@ export function useEffectEvent(callback) {
 
         return new Proxy(ref.current, handler);
     }, []);
+}
+
+export async function parseXML(xml) {
+    let body = await xml;
+    let result;
+    const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}, {key: "#39", value: "'"}, {key: "#8220", value: "“" }, {key: "#8221", value: "”" }];
+    const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
+    for (let e in entities) { parser.addEntity(entities[e].key, entities[e].value) };
+    try {
+        result = await parser.parse(body);
+    } catch (e) {
+        return null;
+    }
+    return result
 }

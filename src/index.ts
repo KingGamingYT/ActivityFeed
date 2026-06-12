@@ -16,7 +16,6 @@ import LastPlayedStore from "@now_playing/LastPlayedStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 import PresenceTypeStore from "@now_playing/PresenceTypeStore";
 
-
 function useSelectedState() {
     return Router.useLocation().pathname.startsWith("/activity");
 }
@@ -117,7 +116,7 @@ export default class ActivityFeed {
             return args
         })
 
-        Patcher.after(await SettingsRoot, "buildLayout", (that, [props], res) => {
+        await SettingsRoot.then(e => Patcher.after(e, "buildLayout", (that, [props], res) => {
             let index = res.findIndex((layout) => layout.key === "activity_section");
             Patcher.after(res[index], "buildLayout", (that, [props], res) => {
                 if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
@@ -125,7 +124,7 @@ export default class ActivityFeed {
                 }
                 return res;
             })
-        })
+        }))
         
         Patcher.after(SettingsButton, "Button", (that, [props], res) => {
             return createElement(CoachmarkWrapper, {button: res})
@@ -134,7 +133,7 @@ export default class ActivityFeed {
         Patcher.after(ContentInventoryCard, 'ContentInventoryCardHeader', (that, [props], res) => {
             const hero = Utils.findInTree(res, (tree) => tree && tree.backgroundImgSrc);
             const entry = props.entry;
-            const application = ApplicationStore.getApplication(entry.extra.application_id) ?? ApplicationStore.getApplicationByName(entry.extra.application_id);
+            const application = ApplicationStore.getApplication(entry.extra.application_id);
             entry.extra.type === "played_game_extra" && hero.children.push(createElement(FollowButton, { application, fullWidth: true }));
         })
 

@@ -1,5 +1,5 @@
 import { Components, Hooks } from "betterdiscord";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Common } from "@modules/common";
 import { ApplicationStore, GameStore } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
@@ -21,7 +21,14 @@ function FollowedGameEmptyBuilder() {
 
 function FollowedGameItemBuilder({game, gameList, updateGameList}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    const application = GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0]) ?? GameStore.getDetectableGame(game.applicationId) ?? ApplicationStore.getApplication(game.applicationId);
+    let application;
+    useEffect(() => {
+        (async () => {
+            await Common.FetchApplications.fetchApplication(game?.applicationId).then(r => application = r).catch(
+                e => console.log("%c[FetchApplication]", "color: #800080; font-weight: 700;", `Failed to fetch data for ${game?.name ?? game?.applicationId}`, e)
+            )
+        })
+    }, [game]);
     const isFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(game?.applicationId));
     const isWhitelisted = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(game?.applicationId));
 

@@ -32,7 +32,7 @@ const LastPlayedStore = (() => {
         let playerList = [];
         for (let id of g) {
             const presentNews = await NewsStore.getDirectByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
-            const isNewNews = NewsStore.filterFeeds(presentNews?.news);
+            const isNewNews = NewsStore.isNewsInDate(presentNews?.news);
             titleNews.push(isNewNews && presentNews);
             playerList.push(ReactUtils.wrapInHooks(await RecentlyPlayedByApplicationId)(id));
         }

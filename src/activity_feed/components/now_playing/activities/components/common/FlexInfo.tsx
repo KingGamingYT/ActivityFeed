@@ -26,7 +26,7 @@ function ActivityType(props: any) {
                     >{game?.name}</div>
                 </div>
                 {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
-                    <TimeClock timestamp={ activity?.timestamps?.start || activity.created_at } />
+                    <TimeClock timestamp={ activity?.timestamps?.start || activity?.created_at } />
                 </div>}
             </>
         )

@@ -9,6 +9,7 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 
 export function RegularActivityBuilder({activity, activityProperties, user, game, players, server, v2Enabled}) {
     const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
+    const isTwitch = ["TWITCH", "YOUTUBE"].includes(activityProperties.platform);
 
     return (
         <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.activity}>
@@ -16,20 +17,20 @@ export function RegularActivityBuilder({activity, activityProperties, user, game
                 switch (activityProperties.platform) {
                     case "SPOTIFY": return <SpotifyAsset activity={activity} user={user} />
                     case "XBOX": return <XboxImageAsset url={'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'}/>
-                    case "TWITCH": return <GameIconAsset 
+                    case "TWITCH": case "YOUTUBE": return <GameIconAsset 
                         url={activity.name.toLowerCase().includes("youtube") ? `https://discord.com/assets/0fa530ba9c04ac32.svg` : `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`} 
                         id={activity?.application_id} 
                         name={activity?.name} 
                     />
                     default: return <GameIconAsset 
-                        url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game.icon}.webp?size=64&keep_aspect_ratio=false`} 
+                        url={game?.getIconURL(64, 'webp')} 
                         id={activity?.application_id} 
                         name={game?.name} 
                         onClick={handleApplicationClick({user, currentUser, activity, application: game})}
                     />
                 }
             })()}
-            <FlexInfo className={NowPlayingClasses.gameInfo} user={user} activity={activity} game={game} type={activityProperties.platform === "TWITCH" ? "TWITCH" : "REGULAR"} />
+            <FlexInfo className={NowPlayingClasses.gameInfo} user={user} activity={activity} game={game} type={isTwitch ? "TWITCH" : "REGULAR"} />
             <RegularCardTrailing activity={activity} user={user} server={server} players={players} v2Enabled={v2Enabled} />
         </Common.Flex>
     )

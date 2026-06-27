@@ -37,7 +37,7 @@ export function NowPlayingCardBuilder({card, v2Enabled}) {
     const activityProperties = Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getAllActivityProperties(activities, isSpotify));
     const cardGrad = GradGen(application, activityProperties, isSpotify, activities[0]?.activity, voice, streams[0]?.stream);
     
-    const {data, error, isLoading, refetch} = ReactUtils.wrapInHooks(FetchGameUtils.fetchGames)(application.linkedGames?.[0]?.id || application.id);
+    const {data, error, isLoading, refetch} = ReactUtils.wrapInHooks(FetchGameUtils.fetchGames)(application?.linkedGames?.[0]?.id || application?.id);
     const splash = SplashGen({application, data}, isSpotify, activities[0]?.activity, voice, streams[0]?.stream, activityProperties);
 
     return (
@@ -52,9 +52,9 @@ export function WhatsNewCardBuilder({card, v2Enabled}) {
     const players = card.players;
     const game = card.application;
     const titleNews = card.titleNews;
-    const currentGame = GameStore.getGameByApplication(ApplicationStore.getApplication(card.application?.id) ?? card.application.id);
-    const cardGrad = GradGen(currentGame ?? game);
-    const splash = SplashGen({currentGame: currentGame, data: game});
+    const application = ApplicationStore.getApplication(game?.linkedApplications?.[0]?.id || game.id);
+    const cardGrad = GradGen(application ?? game);
+    const splash = SplashGen({application, data: game});
 
     return (
         <div className={v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card} style={{ background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` }}>

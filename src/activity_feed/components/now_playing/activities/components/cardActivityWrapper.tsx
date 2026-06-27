@@ -1,5 +1,5 @@
 import { Hooks } from "betterdiscord";
-import { NewGameStore } from "@modules/stores";
+import { GameStore } from "@modules/stores";
 import { ActivityCard } from "./CardActivity";
 import PresenceTypeStore from "../../PresenceTypeStore";
 

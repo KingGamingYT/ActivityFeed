@@ -18,6 +18,7 @@ export const NowPlayingViewStore = /* @__PURE__ */ Webpack.getStore("NowPlayingV
 export const PresenceStore = /* @__PURE__ */ Webpack.getStore("PresenceStore");
 export const RunningGameStore = /* @__PURE__ */ Webpack.getStore("RunningGameStore");
 export const ThemeStore = /* @__PURE__ */ Webpack.getStore("ThemeStore");
+export const UserProfileStore = /* @__PURE__ */ Webpack.getStore("UserProfileStore");
 export const UserSettingsProtoStore = /* @__PURE__ */ Webpack.getStore("UserSettingsProtoStore");
 export const UserStore = /* @__PURE__ */ Webpack.getStore("UserStore");
 export const { useStateFromStores } = /* @__PURE__ */ Webpack.getMangled(m => m.Store, { useStateFromStores: /* @__PURE__ */ Webpack.Filters.byStrings("useStateFromStores")}, { raw: true });

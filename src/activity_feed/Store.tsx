@@ -16,6 +16,7 @@ export default new class GameNewsStore extends Utils.Store {
     whitelist = [];
     followedGames = [];
     state = [];
+    settingsOpened = false;
     lastTimeFetched;
     idling;
     direction;
@@ -28,6 +29,7 @@ export default new class GameNewsStore extends Utils.Store {
         this.blacklist = [];
         this.whitelist = [];
         this.followedGames = [];
+        this.settingsOpened = false;
         this.lastTimeFetched;
         this.direction = 1;
         this.idling = true;
@@ -143,15 +145,15 @@ export default new class GameNewsStore extends Utils.Store {
         let b = this.blacklist;
         let g;
 
-        if (this.isGameFollowed(application.id)) {
-            this.unfollowGame(application.id);
+        if (this.isGameFollowed(application?.linkedApplications?.[0]?.id ?? application.id)) {
+            this.unfollowGame(application?.linkedApplications?.[0]?.id ?? application.id);
             return;
         }
 
         if (!gameId) g = this.getWhitelistedGameByApplicationId(application.id);
 
         if (!this.getBlacklistedGameByGameId(gameId ?? g?.gameId)) {
-            b.push({applicationId: application.id, gameId: gameId ?? g?.gameId, name: application.name});
+            b.push({applicationId: application?.linkedApplications?.[0]?.id ?? application.id, gameId: gameId ?? g?.gameId, name: application.name});
             this.emitChange();
             Data.save('blacklist', this.blacklist);
         }
@@ -296,12 +298,12 @@ export default new class GameNewsStore extends Utils.Store {
     async #fetchSubnauticaFeeds(application) {
         const rssFeed = await Promise.resolve(Net.fetch(`https://unknownworlds-strapi.live.kraftonamericas.com/api/articles?sort[0]=published_date%3Adesc&sort[1]=id%3Adesc&sort[2]=published_date%3Adesc&start=0&limit=4`).then(r => r.ok ? r.json() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? "game"}`, e)));
         if (!rssFeed) return;
-        const article = rssFeed.data[0].attributes;
+        const article = rssFeed.data[0];
         return {
             application,
             appId: application.id,
             description: article.summary,
-            thumbnail: article.thumbnail_image.data.attributes.url,
+            thumbnail: article.thumbnail_image.url,
             timestamp: article.publishedAt,
             title: article.title,
             url: `https://unknownworlds.com/en/news/${article.slug}`
@@ -344,8 +346,8 @@ export default new class GameNewsStore extends Utils.Store {
         return {
             application, 
             appId: application.id, 
-            description: article?.description,
-            thumbnail: article?.enclosure?._url, 
+            description: article?.description && new DOMParser().parseFromString(article?.description, 'text/html').body.innerText.replaceAll(/(^| )([^. ]+)\.([^. ]+)(?= |$)/g, "$1$2. $3"),
+            thumbnail: article?.enclosure?._url ?? `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${gameId}/capsule_616x353.jpg`, 
             timestamp: article?.pubDate, 
             title: article?.title, 
             url: article?.link
@@ -372,18 +374,18 @@ export default new class GameNewsStore extends Utils.Store {
         const gameData = await this.getFeedGameData();
         for (const gameId of Object.keys(gameData)) {
             (async (gameId) => {
-                const feed = await this.feedSelector(gameId, gameData[gameId]);
-                if (this.filterFeeds(feeds)) {
+                const {application, appId, description, thumbnail, timestamp, title, url} = await this.feedSelector(gameId, gameData[gameId]);
+                if (this.isNewsInDate({timestamp})) {
                     this.dataSet[gameId] = {
                         id: gameId,
-                        application: feed.application,
+                        application,
                         news: {
-                            application_id: feed.appId,
-                            description: article.description && this.sanitize(feed.description),
-                            thumbnail: feed.thumbnail,
-                            timestamp: feed.timestamp,
-                            title: feed.title,
-                            url: feed?.url
+                            application_id: appId,
+                            description: description && this.sanitize(description),
+                            thumbnail,
+                            timestamp,
+                            title,
+                            url
                         },
                         type: "application_news"
                     }
@@ -512,10 +514,9 @@ export default new class GameNewsStore extends Utils.Store {
         let s = this.lockSet;
         t = t.concat(s);
         let keys = Object.keys(feeds);
-        let _keys = keys.filter((key) => !this.isGameBlacklisted(feeds[key].id) && !this.isArticleLockedIn(feeds[key]) && this.isNewsInDate(feeds[key].news));
+        let _keys = keys.filter((key) => !this.isGameBlacklisted(feeds[key].application?.id) && !this.isArticleLockedIn(feeds[key]) && this.isNewsInDate(feeds[key].news));
         let total = _keys.length;
         let sorted = this.sortFeeds(_keys);
-
         if (!_keys.length) return; 
         ld: for (let d in sorted) {
             let f = _keys.filter(k => new Date(feeds[k].news.timestamp).toDateString() === sorted[d])
@@ -666,5 +667,14 @@ export default new class GameNewsStore extends Utils.Store {
         if (!f) return;
         const oW = new Date(Date.now() - 12096e5);
         return new Date(f.timestamp) > oW;
+    }
+
+    haveSettingsBeenOpened() {
+        return this.settingsOpened;
+    }
+
+    setHaveSettingsBeenOpened(e) {
+        this.settingsOpened = e;
+        this.emitChange();
     }
 }

@@ -1,11 +1,10 @@
-import { ContextMenu } from "betterdiscord";
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Common } from "@modules/common";
-import { UserStore, useStateFromStores } from "@modules/stores"
+import { UserProfileStore, UserStore, useStateFromStores } from "@modules/stores"
 
 interface AvatarWithPopoutWrapper {
 	className: string,
-	user: Object,
+	user: any,
 	status?: string,
 	size: string;
 }
@@ -26,7 +25,12 @@ export default function ({className, user, status, size}: AvatarWithPopoutWrappe
     		{(props) => <div
     			{...props}
     			ref={refDOM}
-    			onClick={() => { setShowPopout(true) } }
+    			onClick={async () => {	
+					if (!UserProfileStore.getUserProfile(user.id)) {
+						await Common.FetchUserProfile(user.id, { withMutualGuilds: true, withMutualFriends: true });
+					} 
+					setShowPopout(true); 
+				}}
     			className={className}>
     			<Common.AvatarFetch imageClassName={className} src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} status={status} size={size} />
     		</div>}

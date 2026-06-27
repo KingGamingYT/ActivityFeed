@@ -1,7 +1,7 @@
 import { Components, Hooks } from "betterdiscord";
 import { useState, useEffect, useMemo } from "react";
 import { Common } from "@modules/common";
-import { ApplicationStore, GameStore } from "@modules/stores";
+import { ApplicationStore, GameStore, useStateFromStores } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
 import locale from "@activity_feed/common/methods/locale";
 import ActivityFeedSettingsButton from "@settings/components/common/ActivityFeedSettingsButton";
@@ -21,16 +21,9 @@ function FollowedGameEmptyBuilder() {
 
 function FollowedGameItemBuilder({game, gameList, updateGameList}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    let application;
-    useEffect(() => {
-        (async () => {
-            await Common.FetchApplications.fetchApplication(game?.applicationId).then(r => application = r).catch(
-                e => console.log("%c[FetchApplication]", "color: #800080; font-weight: 700;", `Failed to fetch data for ${game?.name ?? game?.applicationId}`, e)
-            )
-        })
-    }, [game]);
     const isFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(game?.applicationId));
     const isWhitelisted = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(game?.applicationId));
+    const application = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplication(game.applicationId));
 
     const handleUnsubscribe = (props) =>
         <Common.ModalRoot.Modal 
@@ -64,9 +57,9 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
 
     return (
         <div className={SettingsClasses.itemContainer} style={{ display: "flex" }}>
-            { shouldFallback ? ( <FallbackAsset className={SettingsClasses.itemIcon} /> ) : <img 
+            { shouldFallback && !application ? ( <FallbackAsset className={SettingsClasses.itemIcon} /> ) : <img 
                 className={SettingsClasses.itemIcon} 
-                src={`https://cdn.discordapp.com/app-icons/${application?.id}/${application?.icon}.webp?size=64&keep_aspect_ratio=false`}
+                src={application?.getIconURL(64, 'webp')}
                 onError={() => setShouldFallback(true)}
             />}
             <div className={SettingsClasses.itemName}>{application?.name || "Unknown Game"}</div>
@@ -81,15 +74,33 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
 export function FollowedGameListBuilder() {
     const whitelist = Hooks.useStateFromStores([NewsStore], () => NewsStore.getWhitelist());
     const followedGames = Hooks.useStateFromStores([NewsStore], () => NewsStore.getManuallyFollowedGames());
+    const areGamesLoaded = Hooks.useStateFromStores([NewsStore], () => NewsStore.haveSettingsBeenOpened());
     const [allGames, updateAllGames] = useState(whitelist.concat(followedGames));
     const [query, setQuery] = useState("");
-
-    if (!allGames || !allGames.length) return <FollowedGameEmptyBuilder />
+    useEffect(() => {
+        (async () => {
+            const gameIds = allGames.map(game => game.applicationId)
+            let idOverflow = []
+            if (gameIds.length  > 112) {
+                for (let i = 0; i < gameIds.length; i++) {
+                    if (i % 112 === 0) {
+                        idOverflow.push(gameIds.splice(0, 112));
+                    }
+                }
+                await Common.FetchApplications.fetchApplications(gameIds);
+                idOverflow.map(async idSplit => {return await Common.FetchApplications.fetchApplications(idSplit)});
+            }
+            else { await Common.FetchApplications.fetchApplications(gameIds); }
+            NewsStore.setHaveSettingsBeenOpened(true);
+        })()
+    }, [allGames]);
 
     const filtered = useMemo(() => {
         const _query = query.toLowerCase();
         return allGames?.filter(item => item?.name?.toLowerCase().includes(_query));
     }, [allGames, query]);
+
+    if (!allGames || !allGames.length || !areGamesLoaded) return <FollowedGameEmptyBuilder />
 
     return (
         <>

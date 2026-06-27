@@ -62,7 +62,7 @@ export function LauncherGameBuilder({game, runningGames}) {
             position={"right"}
             shouldShow={showPopout}
             >{(props) => <Common.Flex {...props} align={Common.Flex.Align.CENTER} className={QuickLauncherClasses.dockItem} direction={Common.Flex.Direction.VERTICAL} onClick={(e) => e.shiftKey && !disableCheck && setShowPopout(true)} ref={refDOM} style={{ flex: "0 0 auto" }}>
-                <div className={Utils.className(QuickLauncherClasses.dockIcon, disableCheck && QuickLauncherClasses.dockIconDisabled)} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp'})` }} onClick={useGameProfile} />
+                <div className={Utils.className(QuickLauncherClasses.dockIcon, disableCheck && QuickLauncherClasses.dockIconDisabled)} style={{ backgroundImage: `url(${'https://cdn.discordapp.com/app-icons/' + fullGame.id + '/' + fullGame.icon + '.webp?size=56'})` }} onClick={useGameProfile} />
                 <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
                 <button 
                     className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
@@ -89,7 +89,7 @@ export function LauncherEmptyBuilder() {
 export function QuickLauncherBuilder(props) {
     const runningGames = useStateFromStores([ RunningGameStore ], () => RunningGameStore.getRunningGames());
     const gameList = useStateFromStores([ RunningGameStore ], () => RunningGameStore.getGamesSeen());
-    const _gameList = gameList.filter(game => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0])).slice(0, 12);
+    const _gameList = gameList.filter(game => GameStore.getDetectableGame([...GameStore.searchGamesByName(game.name)].reverse()[0])).slice(0, 14);
 
     return (
         <div {...props}>

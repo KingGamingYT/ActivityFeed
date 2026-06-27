@@ -29,7 +29,7 @@ export function TabBaseBuilder() {
                     <div className={MainClasses.title}>{locale.Strings.ACTIVITY()}</div>
                 </div>
             </Common.HeaderBar>
-            <Scroller ref={refDOM} fade={true} type="auto">
+            <Scroller className={MainClasses.scrollerBase} ref={refDOM} fade={true} type="auto">
                 <div className={MainClasses.centerContainer}>
                     <NewsFeedBuilder />
                     <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" }} />

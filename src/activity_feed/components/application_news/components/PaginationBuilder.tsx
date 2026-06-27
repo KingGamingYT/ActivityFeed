@@ -14,10 +14,7 @@ function Subpagination({article}) {
             key={article.id}>
             <div 
                 className={FeedClasses.splashArt}
-                style={{ 
-                    backgroundImage: article.news?.thumbnail ? `url(${thumbnail})`
-                    : `url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${article.id}/capsule_616x353.jpg)`
-                }}
+                style={{backgroundImage: article.news?.thumbnail && `url(${thumbnail})`}}
             />
             <div className={FeedClasses.paginationText}>
                 <div className={`${FeedClasses.paginationTitle} ${FeedClasses.paginationContent}`}>{article.news?.title || "No Title"}</div>

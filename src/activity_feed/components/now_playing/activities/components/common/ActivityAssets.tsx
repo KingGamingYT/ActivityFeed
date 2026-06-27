@@ -61,8 +61,8 @@ export function SpotifyAsset({activity, user}) {
                     height="40" 
                     viewBox="0 0 16 16" 
                     onClick={(e) => {activity.name.toLowerCase().includes('spotify') && e.stopPropagation(), Common.OpenAlbum(activity, user.id);}}
-                    onMouseOver={(e) =>  activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                    onMouseOver={(e) =>  activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.add(NowPlayingClasses.clickableIcon)}
+                    onMouseLeave={(e) => activity.name.toLowerCase().includes('spotify') && e.currentTarget.classList.remove(NowPlayingClasses.clickableIcon)}
                     onError={() => (setShouldFallback(true))}>
                     <g fill="none" fillRule="evenodd">
                         <path 
@@ -92,8 +92,8 @@ export function GameIconAsset({url, id, name, onClick}: GameIconAsset) {
                     aria-label={locale.Strings.GAME_ICON_FOR({game: name})}
                     src={`${url}`}
                     onClick={onClick ?? useGameProfile}
-                    onMouseOver={(e) => Boolean(onClick ?? useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableIcon}`)}
-                    onMouseLeave={(e) => Boolean(onClick ?? useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableIcon}`)}
+                    onMouseOver={(e) => Boolean(onClick ?? useGameProfile) && e.currentTarget.classList.add(NowPlayingClasses.clickableIcon)}
+                    onMouseLeave={(e) => Boolean(onClick ?? useGameProfile) && e.currentTarget.classList.remove(NowPlayingClasses.clickableIcon)}
                     onError={() => (setShouldFallback(true))}
                 ></img>
             }

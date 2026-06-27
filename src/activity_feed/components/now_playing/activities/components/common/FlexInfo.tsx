@@ -21,8 +21,8 @@ function ActivityType(props: any) {
                     <div 
                         className={NowPlayingClasses.gameName}
                         onClick={handleClick ?? useGameProfile}
-                        onMouseOver={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                        onMouseLeave={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                        onMouseOver={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.add(NowPlayingClasses.clickableText)}
+                        onMouseLeave={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                     >{game?.name}</div>
                 </div>
                 {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
@@ -37,16 +37,16 @@ function ActivityType(props: any) {
                         <Common.Link href={activity?.details_url}>
                             <div 
                                 className={`${NowPlayingClasses.details} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
-                                onMouseOver={(e) => e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                                onMouseLeave={(e) => e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                                onMouseOver={(e) => e.currentTarget.classList.add(NowPlayingClasses.clickableText)}
+                                onMouseLeave={(e) => e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                                 >{activity.details || activity?.state}
                             </div>
                         </Common.Link>
                         {activity?.details && <Common.Link href={activity?.state_url}>
                             <div 
                                 className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
-                                onMouseOver={(e) => e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                                onMouseLeave={(e) => e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                                onMouseOver={(e) => e.currentTarget.classList.add(NowPlayingClasses.clickableText)}
+                                onMouseLeave={(e) => e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                                 >{activity?.state}
                             </div>
                         </Common.Link>}
@@ -59,15 +59,15 @@ function ActivityType(props: any) {
                                 case "SPOTIFY": return Common.OpenTrack(activity)
                                 case "CRUNCHYROLL": return handleApplicationClick({user, currentUser, activity})()
                             }}}
-                            onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                            onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                            onMouseOver={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.add(NowPlayingClasses.clickableText)}
+                            onMouseLeave={(e) => ["SPOTIFY", "CRUNCHYROLL"].includes(activityProperties?.platform) && e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                             >{activity.details || activity?.state}
                         </div>
                         {activity?.details && <div 
                             className={`${NowPlayingClasses.state} ${NowPlayingClasses.textRow} ${NowPlayingClasses.ellipsis}`}
                             onClick={() => activityProperties?.platform === "SPOTIFY" && Common.OpenArtist(activity, user.id, 0)}
-                            onMouseOver={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                            onMouseLeave={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                            onMouseOver={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.add(NowPlayingClasses.clickableText)}
+                            onMouseLeave={(e) => activityProperties?.platform === "SPOTIFY" && e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                             >{activity?.state}
                         </div>}
                     </>

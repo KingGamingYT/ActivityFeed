@@ -18,7 +18,7 @@ const LastPlayedStore = (() => {
         const recentlySeenGameIds = recentlySeenGames.map(entry => entry?.extra?.application_id);
         const _recentlySeenGameIds = Array.from(new Set(recentlySeenGameIds.map(id => id)));
 
-        FetchGameUtils.fetchMultipleGames.fetchMany(_recentlySeenGameIds);
+        FetchGameUtils.fetchGames.fetchMany(_recentlySeenGameIds);
 
         lastFetched = Date.now();
         Data.save('lastFetched', lastFetched);

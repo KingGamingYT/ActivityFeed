@@ -20,8 +20,8 @@ function GameTag({game}) {
     return (
         <div className={NowPlayingClasses.nameTag} style={{ flex: 1 }}>
             <div className={NowPlayingClasses.headerTitle} 
-                onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(`${NowPlayingClasses.clickableText}`)}
-                onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(`${NowPlayingClasses.clickableText}`)}
+                onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(NowPlayingClasses.clickableText)}
+                onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                 onClick={useGameProfile}
             >{game?.name}</div>
         </div>

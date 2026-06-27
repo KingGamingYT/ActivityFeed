@@ -21,6 +21,7 @@ const Filters = [
     { name: "Endpoints", filter: /* @__PURE__ */ Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("getApplicationsForGuild") },
     { name: "FetchUserApplicationStatistics", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"USER_ACTIVITY_STATISTICS_FETCH_SUCCESS"'), searchExports: true },
+    { name: "FetchUserProfile", filter: /* @__PURE__ */ Webpack.Filters.byStrings("fetchProfile error", "USER_PROFILE_FETCH_FAILURE"), searchExports: true },
     { name: "Flex", filter: /* @__PURE__ */ Webpack.Filters.byStrings('grow', 'shrink', 'align', 'basis') },
     { name: "FluxDispatcher", filter: /* @__PURE__ */ Webpack.Filters.byKeys('dispatch', 'subscribe', 'register'), searchExports: true },
     { name: "FluxStore", filter: x => typeof x.Ay?.Store === 'function', searchExports: false, searchDefault: false },

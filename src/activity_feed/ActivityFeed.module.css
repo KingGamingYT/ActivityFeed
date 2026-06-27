@@ -8,30 +8,15 @@
 }
 
 .scrollerBase {
-    contain: layout size;
-    height: 100%;
     background: no-repeat bottom;
     background-size: 100%;
     background-image: url(https://discord.com/assets/c486dc65ce2877eeb18e4c39bb49507a.svg);
-    &::-webkit-scrollbar {
-    background: none;
-    border-radius: 8px;
-    width: 16px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background-clip: padding-box;
-        border: solid 4px #0000;
-        border-radius: 8px;
-    }
-    &:hover::-webkit-scrollbar-thumb {
-        background-color: var(--scrollbar-auto-thumb);
-    }
 }
 
 .centerContainer {
     display: flex;
     flex-direction: column;
-    width: 1280px;
+    width: 1284px;
     max-width: 100%;
     min-width: 245px;
     margin: 0 auto;

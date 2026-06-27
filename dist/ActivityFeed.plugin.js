@@ -3654,12 +3654,13 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 	async #fetchSteamFeeds(gameId, application) {
 		const rssFeed = await Promise.all([parseXML(betterdiscord.Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then((r) => r.ok ? r.text() : null).catch((e) => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? gameId}`, e)))]);
 		if (!rssFeed) return;
+		const backupThumbnail = await Promise.resolve(betterdiscord.Net.fetch(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${gameId}/capsule_616x353.jpg`).then((r) => r.ok ? r.url : null));
 		const article = this.getRSSItem(rssFeed);
 		return {
 			application,
 			appId: application.id,
 			description: article?.description && new DOMParser().parseFromString(article?.description, "text/html").body.innerText.replaceAll(/(^| )([^. ]+)\.([^. ]+)(?= |$)/g, "$1$2. $3"),
-			thumbnail: article?.enclosure?._url ?? `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${gameId}/capsule_616x353.jpg`,
+			thumbnail: article?.enclosure?._url || backupThumbnail,
 			timestamp: article?.pubDate,
 			title: article?.title,
 			url: article?.link

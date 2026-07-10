@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.0
+ * @version 1.0.1-dev
  */
 
 /*@cc_on
@@ -3292,6 +3292,20 @@ function getRandomArticles(numArticles) {
 	}
 	return articles;
 }
+function setDisplayedArticles() {
+	const randomArticles = getRandomArticles(4);
+	if (randomArticles && randomArticles !== null) {
+		displaySet.push.apply(displaySet, randomArticles);
+		for (let i = 0; i < displaySet.length; i++) {
+			displaySet[i] = {
+				...displaySet[i],
+				index: i
+			};
+		}
+		article = displaySet[0];
+	}
+	return;
+}
 async function parseXML(xml) {
 	let body = await xml;
 	let result;
@@ -3417,7 +3431,7 @@ async function getFeedGameData() {
 	const idOverflow = [];
 	let analyticData;
 	await Common.FetchUserApplicationStatistics().then(analyticData = LibraryApplicationStatisticsStore.applicationStatistics);
-	const gameIds = Object.values(analyticData).map((app) => app.application_id).concat(Object.values(followedGames).map((app) => app.application_id));
+	const gameIds = Object.values(analyticData).map((app) => app?.application_id).concat(Object.values(followedGames).map((app) => app.applicationId));
 	if (gameIds.length > 112) {
 		for (let i = 0; i < gameIds.length; i++) {
 			if (i % 112 === 0) {
@@ -3515,6 +3529,7 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		blacklist = betterdiscord.Data.load("blacklist") || [];
 		followedGames = betterdiscord.Data.load("followedGames") || [];
 		lastTimeFetched = betterdiscord.Data.load("lastTimeFetched");
+		setDisplayedArticles();
 		this.emitChange();
 	}
 	setDebugFeed(num) {
@@ -3547,7 +3562,7 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 	rerollFeed() {
 		displaySet = [];
-		this.getArticlesForDisplay();
+		setDisplayedArticles();
 	}
 	refreshFeed() {
 		lastTimeFetched = 0;
@@ -3671,17 +3686,6 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		this.emitChange();
 	}
 	getArticlesForDisplay() {
-		const randomArticles = getRandomArticles(4);
-		if (!this.shouldFetch() && !displaySet.length && randomArticles && randomArticles !== null) {
-			displaySet.push.apply(displaySet, randomArticles);
-			for (let i = 0; i < displaySet.length; i++) {
-				displaySet[i] = {
-					...displaySet[i],
-					index: i
-				};
-			}
-			article = displaySet[0];
-		}
 		return displaySet;
 	}
 	shouldFetch() {
@@ -3751,6 +3755,7 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 				}
 			})(gameId);
 		}
+		setDisplayedArticles();
 	}
 	get lastFetched() {
 		return lastTimeFetched;

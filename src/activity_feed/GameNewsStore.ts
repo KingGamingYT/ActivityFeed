@@ -188,6 +188,22 @@ function getRandomArticles(numArticles: number) {
     return articles;
 }
 
+function setDisplayedArticles() {
+    const randomArticles = getRandomArticles(4);
+
+    if (randomArticles && randomArticles !== null) {
+        displaySet.push.apply(displaySet, randomArticles);
+        for (let i = 0; i < displaySet.length; i++) {
+            displaySet[i] = {
+                ...displaySet[i],
+                index: i
+            };
+        }
+        article = displaySet[0];
+    }
+    return;
+}
+
 async function parseXML(xml: Promise<string | void | null> | undefined) {
     let body = await xml;
     let result;
@@ -323,7 +339,7 @@ async function getFeedGameData() {
     // load user application statistics, then fetch them
     await Common.FetchUserApplicationStatistics().then(analyticData = LibraryApplicationStatisticsStore.applicationStatistics);
 
-    const gameIds = Object.values(analyticData).map((app: any) => app.application_id).concat(Object.values(followedGames).map((app: any) => app.application_id));
+    const gameIds = Object.values(analyticData).map((app: any) => app?.application_id).concat(Object.values(followedGames).map((app: any) => app.applicationId));
     // only 112 applications can be fetched at one time, so the ids are split into 112-item chunks
     if (gameIds.length > 112) {
         for (let i = 0; i < gameIds.length; i++) {
@@ -416,6 +432,7 @@ export default new class GameNewsStore extends Utils.Store {
         blacklist = Data.load('blacklist') || [];
         followedGames = Data.load('followedGames') || [];
         lastTimeFetched = Data.load('lastTimeFetched');
+        setDisplayedArticles();
         this.emitChange();
     }
 
@@ -447,7 +464,7 @@ export default new class GameNewsStore extends Utils.Store {
 
     rerollFeed() {
         displaySet = [];
-        this.getArticlesForDisplay();
+        setDisplayedArticles();
     }
 
     refreshFeed() {
@@ -598,19 +615,6 @@ export default new class GameNewsStore extends Utils.Store {
     }
 
     getArticlesForDisplay() {
-        const randomArticles = getRandomArticles(4);
-
-        if (!this.shouldFetch() && !displaySet.length && randomArticles && randomArticles !== null) {
-            displaySet.push.apply(displaySet, randomArticles);
-            for (let i = 0; i < displaySet.length; i++) {
-                displaySet[i] = {
-                    ...displaySet[i],
-                    index: i
-                };
-            }
-            article = displaySet[0];
-        }
-
         return displaySet;
     }
 
@@ -689,6 +693,7 @@ export default new class GameNewsStore extends Utils.Store {
                 }
             })(gameId)
         }
+        setDisplayedArticles();
     }
 
     get lastFetched() {

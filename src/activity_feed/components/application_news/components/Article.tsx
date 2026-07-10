@@ -5,7 +5,7 @@ import { FeedOverflowBuilder } from "@application_news/components";
 import { FeedPopout } from "@application_news/components/OverflowBuilder";
 import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 
 export function FeedArticle(Article) {
     return function WrappedComponent(props) {
@@ -103,7 +103,7 @@ class Article extends React.PureComponent {
     handleRightClick(e) {
         let currentArticle = this.props.article;
 
-        return ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} /> )
+        return ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} articleUrl={currentArticle.news?.url} /> )
     }
 
     renderBackground() {
@@ -126,7 +126,7 @@ class Article extends React.PureComponent {
         const useGameProfile = this.props.useGameProfile;
 
         return (
-            isNaN(currentArticle.news?.application_id) ? <External.icon className={FeedClasses.gameIcon} color="WHITE" style={{ backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" }} />
+            isNaN(currentArticle.application?.id) ? <External.icon className={FeedClasses.gameIcon} color="WHITE" style={{ backgroundColor: External.color, padding: "5px", width: "30px", height: "30px" }} />
             : <img
                 className={FeedClasses.gameIcon}
                 onClick={useGameProfile}

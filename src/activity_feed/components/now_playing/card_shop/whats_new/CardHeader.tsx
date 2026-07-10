@@ -34,7 +34,7 @@ export function WhatsNewCardHeader({game, splash}) {
         <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.cardHeader} onContextMenu={e => ContextMenu.open(e, (props) => <ActivityCardContextMenu {...props} user={{id: 0}} currentActivity={{type: 0}} currentGame={game} />)}>
             <Splash splash={splash} className={NowPlayingClasses.splashArt} />
             <div className={NowPlayingClasses.header}>
-                <GameIconAsset url={`https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon ?? game?.iconHash}.webp?size=64&keep_aspect_ratio=false`} id={game?.id} name={game?.name} />
+                <GameIconAsset url={game?.getIconURL(64, 'webp')} id={game?.id} name={game?.name} />
                 <GameTag game={game} />
                 <HeaderActions game={game} />
             </div>

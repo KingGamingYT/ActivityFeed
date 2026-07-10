@@ -1,11 +1,11 @@
 import { Components, Hooks } from "betterdiscord";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Common } from "@modules/common";
-import { ApplicationStore, GameStore, useStateFromStores } from "@modules/stores";
+import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
 import locale from "@activity_feed/common/methods/locale";
 import ActivityFeedSettingsButton from "@settings/components/common/ActivityFeedSettingsButton";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
 
@@ -21,17 +21,17 @@ function FollowedGameEmptyBuilder() {
 
 function FollowedGameItemBuilder({game, gameList, updateGameList}) {
     const [shouldFallback, setShouldFallback] = useState(false);
-    const isFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(game?.applicationId));
-    const isWhitelisted = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(game?.applicationId));
     const application = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplication(game.applicationId));
+    const followed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(application?.id ?? game?.application_id));
+    const manuallyFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameManuallyFollowed(application?.id ?? game?.application_id));
 
-    const handleUnsubscribe = (props) =>
+    const handleUnsubscribe = (props: any) => (
         <Common.ModalRoot.Modal 
             {...props}
             title={locale.Strings.ARE_YOU_SURE()}
             actions={[
                 {text: locale.Strings.CANCEL(), variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { isFollowed && updateGameList(gameList.filter(item => item.applicationId !== game.applicationId)); NewsStore.blacklistGame(application, game?.gameId); props.onClose() }}
+                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { manuallyFollowed && updateGameList(gameList.filter(item => item.applicationId !== game.applicationId)); NewsStore.unfollowGame(application); props.onClose() }}
             ]}
         >
             <>
@@ -39,14 +39,15 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
             </> 
         </Common.ModalRoot.Modal>
+    )
 
-    const handleSubscribe = (props) =>  
+    const handleSubscribe = (props: any) => ( 
         <Common.ModalRoot.Modal 
             {...props}
             title={locale.Strings.ARE_YOU_SURE()}
             actions={[
                 {text: locale.Strings.CANCEL(), variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { NewsStore.whitelistGame(game.gameId); props.onClose(); }}
+                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { NewsStore.followGame(application); props.onClose(); }}
             ]}
         >
             <>
@@ -54,6 +55,7 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
             </> 
         </Common.ModalRoot.Modal>
+    )
 
     return (
         <div className={SettingsClasses.itemContainer} style={{ display: "flex" }}>
@@ -63,7 +65,7 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
                 onError={() => setShouldFallback(true)}
             />}
             <div className={SettingsClasses.itemName}>{application?.name || "Unknown Game"}</div>
-            {(isFollowed || isWhitelisted) 
+            { followed 
                 ? <ActivityFeedSettingsButton text={locale.Strings.UNFOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleUnsubscribe(props))} />
                 : <ActivityFeedSettingsButton text={locale.Strings.FOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleSubscribe(props))} />
             }
@@ -72,10 +74,9 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
 }
 
 export function FollowedGameListBuilder() {
-    const whitelist = Hooks.useStateFromStores([NewsStore], () => NewsStore.getWhitelist());
-    const followedGames = Hooks.useStateFromStores([NewsStore], () => NewsStore.getManuallyFollowedGames());
+    const followedGames = Hooks.useStateFromStores([NewsStore], () => NewsStore.getAllFollowedGames());
     const areGamesLoaded = Hooks.useStateFromStores([NewsStore], () => NewsStore.haveSettingsBeenOpened());
-    const [allGames, updateAllGames] = useState(whitelist.concat(followedGames));
+    const [allGames, updateAllGames] = useState(followedGames);
     const [query, setQuery] = useState("");
     useEffect(() => {
         (async () => {

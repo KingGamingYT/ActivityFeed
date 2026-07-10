@@ -6,14 +6,14 @@ import { FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, 
 import FeedArticle from "./components/Article";
 import locale from "@activity_feed/common/methods/locale";
 import settings from "@settings/settings";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function NewsFeedBuilder() {
-	const articles = Hooks.useStateFromStores([NewsStore], () => NewsStore.getFeedsForDisplay());
+	const articles = Hooks.useStateFromStores([NewsStore], () => NewsStore.getArticlesForDisplay());
     const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
     const orientation = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
-    const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.isIdling())
+    const isIdling = Hooks.useStateFromStores([NewsStore], () => NewsStore.idling);
     const [time, setTime] = useState<Date>(new Date());
     const [waitTime, setWaitTime] = useState(true);
     
@@ -34,7 +34,7 @@ export function NewsFeedBuilder() {
         }
     })
 
-    useEffect(() => clearInterval.bind(null, setInterval(timerCallback, 8e3)), []);
+    useEffect(() => clearInterval.bind(null, setInterval(timerCallback, 8e3)), [isIdling]);
 
     if ( waitTime && !Object.keys(articles).length ) {
         return <FeedSkeletonBuilder />

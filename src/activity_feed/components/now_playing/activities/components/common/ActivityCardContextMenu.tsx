@@ -3,7 +3,7 @@ import { Common } from "@modules/common";
 import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import { handleApplicationClick } from "./ActivityButtons";
 import locale from "@activity_feed/common/methods/locale";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 
 export function ActivityCardContextMenu({user, currentActivity, currentGame}) {
     switch(currentActivity.type) {
@@ -14,9 +14,7 @@ export function ActivityCardContextMenu({user, currentActivity, currentGame}) {
             let application = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplicationByName(currentGame.name));
             if (application.type == null) application = ApplicationStore.getApplication(id);
             const handleClick = handleApplicationClick({user, activity: currentActivity, application: currentGame});
-
-            const isFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(application.id ?? currentActivity?.application_id));
-            const isWhitelisted = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(application.id ?? currentActivity?.application_id));
+            const followed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(application.id ?? currentActivity?.application_id));
 
             return (
                 <ContextMenu.Menu navId="activity-context" onClose={(e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e)}>
@@ -24,10 +22,10 @@ export function ActivityCardContextMenu({user, currentActivity, currentGame}) {
                     <ContextMenu.CheckboxItem 
                         id="follow-game" 
                         label={locale.Strings.SHOW_ON_ACTIVITY_FEED()} 
-                        checked={isFollowed || isWhitelisted} 
+                        checked={followed} 
                         disabled={!currentGame || application.type == null}
                         action={
-                            (isFollowed || isWhitelisted) ? () => NewsStore.blacklistGame(application ?? {id: currentActivity?.application_id})
+                            followed ? () => NewsStore.unfollowGame(application ?? {id: currentActivity?.application_id})
                             : () => NewsStore.followGame(application ?? currentGame)
                         } 
                     />

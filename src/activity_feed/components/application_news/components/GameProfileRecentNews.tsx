@@ -3,7 +3,7 @@ import { Common, GameProfileClasses } from "@modules/common";
 import { useStateFromStores } from "@modules/stores";
 import { CardMiniNews } from "@activity_feed/components/now_playing/activities/components/CardMiniNews";
 import locale from "@activity_feed/common/methods/locale";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 
 const GameProfileTypes = {
     GAME_PROFILE: 0,
@@ -16,7 +16,7 @@ export function RecentNews({applicationId, type}) {
 
     useEffect(() => {
         (async () => {
-            const pendingArticle = await useStateFromStores([NewsStore], () => NewsStore.getDirectByApplicationId(applicationId, false));
+            const pendingArticle = await useStateFromStores([NewsStore], () => NewsStore.fetchArticleByApplicationId(applicationId, false));
             setArticle(pendingArticle)
         })()
     }, [applicationId])

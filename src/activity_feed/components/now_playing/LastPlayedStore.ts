@@ -1,7 +1,7 @@
 import { Data, ReactUtils } from "betterdiscord";
 import { Common, FetchGameUtils, RecentlyPlayedByApplicationId } from "@modules/common";
 import { ApplicationStore, ContentInventoryStore, PresenceStore, NewGameStore, UserStore } from "@modules/stores";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 
 const LastPlayedStore = (() => {
     let lastPlayedCards = [];
@@ -31,7 +31,7 @@ const LastPlayedStore = (() => {
         let titleNews = [];
         let playerList = [];
         for (let id of g) {
-            const presentNews = await NewsStore.getDirectByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
+            const presentNews = await NewsStore.fetchArticleByApplicationId(id === "1402418491272986635" ? "356875570916753438" : id);
             const isNewNews = NewsStore.isNewsInDate(presentNews?.news);
             titleNews.push(isNewNews && presentNews);
             playerList.push(ReactUtils.wrapInHooks(await RecentlyPlayedByApplicationId)(id));
@@ -64,7 +64,7 @@ const LastPlayedStore = (() => {
         lastPlayedCards = [];
     }
 
-    class LastPlayedStore extends Common.FluxStore.Ay.Store {
+    class LastPlayedStore extends Common.Flux.Store {
         static displayName = "LastPlayedStore";
 
         get lastPlayedCards() {

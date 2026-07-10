@@ -2,7 +2,7 @@ import { Common } from "@modules/common";
 import { FeedOverflowBuilder } from "./OverflowBuilder";
 import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
-import NewsStore from "@activity_feed/Store.js";
+import NewsStore from "@activity_feed/GameNewsStore";
 
 export function FeedCarouselBuilder({currentArticle}) {
     const External = settings.external[currentArticle.id];

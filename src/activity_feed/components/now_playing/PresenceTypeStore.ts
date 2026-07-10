@@ -24,7 +24,7 @@ export default new class PresenceTypeStore extends Utils.Store {
         return f;
     } 
 
-    getAllActivityProperties(activities: Array<Object>, isSpotify?: Boolean) {
+    getAllActivityProperties(activities: Array<any>, isSpotify?: Boolean) {
         let d = []
         for (let a of activities) {
             if (!a) return;
@@ -33,12 +33,12 @@ export default new class PresenceTypeStore extends Utils.Store {
         return d;
     }
 
-    getActivityType(activity: Object) {
+    getActivityType(activity: any) {
         if (activity?.activity) activity = activity?.activity;
         return this.types[activity?.type as keyof Object];
     }
 
-    getActivityPlatform(activity: Object, isSpotify?: Boolean) {
+    getActivityPlatform(activity: any, isSpotify?: Boolean) {
         if (activity?.activity) activity = activity?.activity;
         switch(true) {
             case !! (isSpotify || activity?.name?.toLowerCase()?.includes("spotify")): return "SPOTIFY";
@@ -51,7 +51,7 @@ export default new class PresenceTypeStore extends Utils.Store {
         }
     }
 
-    getActivityProperties(activity: Object, isSpotify?: Boolean) {
+    getActivityProperties(activity: any, isSpotify?: Boolean) {
         return {type: this.getActivityType(activity), platform: this.getActivityPlatform(activity, isSpotify)}
     }
 }

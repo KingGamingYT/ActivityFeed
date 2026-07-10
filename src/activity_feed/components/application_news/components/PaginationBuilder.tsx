@@ -1,6 +1,6 @@
 import { ContextMenu, Hooks } from "betterdiscord";
 import { FeedPopout } from "@application_news/components/OverflowBuilder";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 function Subpagination({article}) {
@@ -10,7 +10,7 @@ function Subpagination({article}) {
         <div 
             className={article.index === Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle()).index ? `${FeedClasses.paginationItem} ${FeedClasses.selectedPage}` : FeedClasses.paginationItem}
             onClick={() => { NewsStore.setCurrentArticle(article.index); NewsStore.setIdling(false); NewsStore.setDirection(article.index - currentArticle.index) }}
-            onContextMenu={e => ContextMenu.open(e, (props) => <FeedPopout {...props} application={article.application} gameId={article.id} articleUrl={article.news?.url} /> )}
+            onContextMenu={e => ContextMenu.open(e, (props) => <FeedPopout {...props} application={article.application} articleUrl={article.news?.url} /> )}
             key={article.id}>
             <div 
                 className={FeedClasses.splashArt}

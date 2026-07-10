@@ -1,5 +1,5 @@
 import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
-import { createElement } from "react";
+import { createElement, useEffect } from "react";
 import { container, Common, SettingsButton, SettingsRoot, Router } from "@modules/common";
 import { ApplicationStore } from "@modules/stores";
 import { TabBaseBuilder } from "@activity_feed/base";
@@ -10,7 +10,7 @@ import locale from "@common/methods/locale";
 import FollowButton from "@now_playing/activities/components/common/FollowButton";
 import styles from "styles";
 import SettingsItem from "@settings/components/PanelBuilder";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 import NewsArticle from "@application_news/components/Article";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
@@ -51,8 +51,6 @@ export default class ActivityFeed {
     i18n = locale;
     async start() {
         const settingsItem = await SettingsItem();
-        NewsStore.whitelist = Data.load('whitelist');
-        NewsStore.blacklist = Data.load('blacklist') || [];
         setInterval(async () => {
             if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
         }, 100)
@@ -69,9 +67,9 @@ export default class ActivityFeed {
                 const { children } = Utils.findInTree(ret, (node) => node && node.children?.length > 5 && node.children.some(c => c?.props?.path), { walkable: ["children", "props"] }) ?? {};
                 children[0].props = {
                     disableTrack: true,
-                        path: "/activity",
-                        render: () => createElement(TabBaseBuilder),
-                        exact: true,
+                    path: "/activity",
+                    render: () => createElement(TabBaseBuilder),
+                    exact: true,
                 }
             });
             const patchedFn = appContentModule[appContentKey];

@@ -1,7 +1,7 @@
 import { Data } from "betterdiscord";
 import { Common } from "@modules/common";
 import settings from "@settings/settings";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 

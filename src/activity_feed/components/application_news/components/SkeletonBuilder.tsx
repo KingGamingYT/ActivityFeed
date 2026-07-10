@@ -1,6 +1,6 @@
 import { Hooks, Utils, Data } from "betterdiscord";
 import settings from "@settings/settings";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
 export function FeedSkeletonBuilder() {

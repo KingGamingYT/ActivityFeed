@@ -4,15 +4,19 @@ import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import locale from "@common/methods/locale";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
-import NewsStore from "@activity_feed/Store";
+import NewsStore from "@activity_feed/GameNewsStore";
 
-export default function ({application, fullWidth=false}) {
+interface FollowButton {
+    application: any,
+    fullWidth?: boolean
+}
+
+export default function ({application, fullWidth=false}: FollowButton) {
     const originalApplication = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplicationByName(application.name));
-    const isFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(originalApplication?.id ?? application.id));
-    const isWhitelisted = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameWhitelisted(originalApplication?.id ?? application.id));
+    const followed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(originalApplication?.id ?? application?.id));
 
     return (
-        (isFollowed || isWhitelisted) ? <button 
+        followed ? <button 
             type="button" 
             className={Utils.className(NowPlayingClasses.followGameButtonActivityFeed, MainClasses.button, Common.ButtonVoidClasses.button, Common.ButtonVoidClasses.sizeSmall, fullWidth && Common.ButtonVoidClasses.fullWidth, Common.ButtonVoidClasses.lookFilled, Common.ButtonVoidClasses.grow )}
             disabled

@@ -192,6 +192,8 @@ function setDisplayedArticles() {
     const randomArticles = getRandomArticles(4);
 
     if (randomArticles && randomArticles !== null) {
+        // clear displayed articles in case this ends up running multiple times, for whatever reason
+        displaySet = [];
         displaySet.push.apply(displaySet, randomArticles);
         for (let i = 0; i < displaySet.length; i++) {
             displaySet[i] = {

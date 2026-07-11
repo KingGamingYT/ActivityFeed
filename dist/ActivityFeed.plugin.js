@@ -2,7 +2,7 @@
  * @name ActivityFeed
  * @author KingGamingYT
  * @description A from-the-ground-up recreation of Discord's Activity Feed tab circa late 2018-early 2019, featuring game news, a quick launcher, and friend activity with modern touches.
- * @version 1.0.1
+ * @version 1.0.2
  */
 
 /*@cc_on
@@ -3295,6 +3295,7 @@ function getRandomArticles(numArticles) {
 function setDisplayedArticles() {
 	const randomArticles = getRandomArticles(4);
 	if (randomArticles && randomArticles !== null) {
+		displaySet = [];
 		displaySet.push.apply(displaySet, randomArticles);
 		for (let i = 0; i < displaySet.length; i++) {
 			displaySet[i] = {

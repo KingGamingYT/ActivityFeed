@@ -3737,8 +3737,7 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 		for (const gameId of Object.keys(gameData)) {
 			(async (gameId2) => {
 				const article2 = await feedSelector(gameId2, gameData[gameId2]);
-				if (!article2) return;
-				if (isNewsInDate(article2)) {
+				if (article2 && isNewsInDate(article2)) {
 					dataSet[gameId2] = {
 						id: gameId2,
 						application: article2.application,

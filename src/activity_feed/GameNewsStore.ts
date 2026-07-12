@@ -675,9 +675,7 @@ export default new class GameNewsStore extends Utils.Store {
         for (const gameId of Object.keys(gameData)) {
             (async (gameId) => {
                 const article = await feedSelector(gameId, gameData[gameId]);
-                // if by some chance no article data comes back
-                if (!article) return;
-                if (isNewsInDate(article)) {
+                if (article && isNewsInDate(article)) {
                     dataSet[gameId] = {
                         id: gameId,
                         application: article.application,

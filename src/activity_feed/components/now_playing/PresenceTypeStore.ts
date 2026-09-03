@@ -1,18 +1,24 @@
 import { Utils } from "betterdiscord";
 
+export interface ActivityProperties {
+    type: String,
+    platform?: String | undefined;
+}
+
+const ActivityTypes = {
+    PLAYING: 0,
+    STREAMING: 1,
+    LISTENING: 2,
+    WATCHING: 3,
+    CUSTOM: 4,
+    COMPETING: 5
+}
+
 export default new class PresenceTypeStore extends Utils.Store {
     static displayName = "PresenceTypeStore";
     types = {}
     constructor() {
         super();
-        this.types = {
-            0: "PLAYING",
-            1: "STREAMING",
-            2: "LISTENING",
-            3: "WATCHING",
-            4: "CUSTOM",
-            5: "COMPETING"
-        }
     }
 
     getAllActivityTypes(activities: Array<Object>) {
@@ -35,7 +41,7 @@ export default new class PresenceTypeStore extends Utils.Store {
 
     getActivityType(activity: any) {
         if (activity?.activity) activity = activity?.activity;
-        return this.types[activity?.type as keyof Object];
+        return Object.keys(ActivityTypes)[activity?.type];
     }
 
     getActivityPlatform(activity: any, isSpotify?: Boolean) {
@@ -45,8 +51,8 @@ export default new class PresenceTypeStore extends Utils.Store {
             case !! activity?.platform?.includes("xbox"): return "XBOX";
             case !! (activity?.platform?.includes("playstation") || activity?.platform?.includes("ps5")): return "PLAYSTATION";
             case !! (activity?.name?.toLowerCase().includes("youtube music")): return "YT_MUSIC";
-            case !! (activity?.name?.toLowerCase().endsWith("youtube")): return "YOUTUBE";
-            case !! (activity?.name?.toLowerCase().includes("twitch")): return "TWITCH";
+            case !! (activity?.name?.toLowerCase().endsWith("youtube") && activity?.type === ActivityTypes.STREAMING): return "YOUTUBE";
+            case !! (activity?.name?.toLowerCase().includes("twitch") && activity?.type === ActivityTypes.STREAMING): return "TWITCH";
             case !! (activity?.name?.toLowerCase().includes("crunchyroll")): return "CRUNCHYROLL";
         }
     }

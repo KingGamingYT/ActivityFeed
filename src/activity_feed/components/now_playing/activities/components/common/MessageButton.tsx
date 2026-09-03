@@ -5,7 +5,7 @@ export default function ({user}) {
     return (
         <ManaButtons.PrimaryButtonWithIcon 
             text={locale.Strings.MESSAGE()}
-            onClick={() => Common.OpenDM.openPrivateChannel({recipientIds: user.id})}
+            onClick={() => Common.ChannelActionCreators.openPrivateChannel({recipientIds: user.id})}
         />
     )
 }

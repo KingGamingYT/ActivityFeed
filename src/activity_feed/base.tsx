@@ -2,7 +2,7 @@ import { Data, Plugins, Utils } from "betterdiscord";
 import { useEffect, useRef } from "react";
 import { Common, Title } from "@modules/common";
 import { UserStore } from "@modules/stores";
-import { NewsFeedBuilder } from "./components/application_news/FeedBuilder";
+import { FeedCarousel } from "./components/application_news/FeedCarousel";
 import { QuickLauncherBuilder } from "./components/quick_launcher/launcher";
 import { NowPlayingBuilder, WhatsNewBuilder } from "./components/now_playing/BaseBuilder";
 import settings from "@settings/settings";
@@ -22,19 +22,15 @@ export function TabBaseBuilder() {
         <Title.WindowTitle location={locale.Strings.ACTIVITY()} />,
         <div className={Utils.className((Data.load('v2Frame') ?? settings.default.v2Frame) && MainClasses.activityFeedV2, MainClasses.activityFeed)}>
             <Common.HeaderBar className={MainClasses.headerBar} aria-label={locale.Strings.ACTIVITY()}>
-                <div className={MainClasses.iconWrapper}>
-                    <Common.GameControllerIcon />
-                </div>
-                <div className={MainClasses.titleWrapper}>
-                    <div className={MainClasses.title}>{locale.Strings.ACTIVITY()}</div>
-                </div>
+                <Common.HeaderBar.Icon icon={Common.GameControllerIcon} />
+                <Common.HeaderBar.Title>{locale.Strings.ACTIVITY()}</Common.HeaderBar.Title>
             </Common.HeaderBar>
             <Scroller className={MainClasses.scrollerBase} ref={refDOM} fade={true} type="auto">
                 <div className={MainClasses.centerContainer}>
-                    <NewsFeedBuilder />
-                    <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} style={{ position: "relative", padding: "0 20px 0 20px", paddingRight: "4px" }} />
-                    <NowPlayingBuilder className={NowPlayingClasses.nowPlaying} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
-                    <WhatsNewBuilder className={NowPlayingClasses.whatsNew} style={{ position: "relative", padding: "0 20px 20px 20px", paddingRight: "4px" }} />
+                    <FeedCarousel />
+                    <QuickLauncherBuilder className={QuickLauncherClasses.quickLauncher} />
+                    <NowPlayingBuilder className={NowPlayingClasses.nowPlaying} />
+                    <WhatsNewBuilder className={NowPlayingClasses.whatsNew} />
                     {Plugins.get("ActivityFeed").version.includes("dev") && <div style={{ color: "red" }}>{`Activity Feed Test Build - ${gags[Math.floor(Math.random() * gags.length)]}`}</div>}
                 </div>
             </Scroller>

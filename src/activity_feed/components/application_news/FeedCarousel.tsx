@@ -2,14 +2,14 @@ import { Hooks, Utils, Data } from "betterdiscord";
 import { useState, useEffect } from "react";
 import { useEffectEvent } from "@common/methods/common";
 import { Common } from "@modules/common";
-import { FeedMiniPaginationBuilder, FeedPaginationBuilder, FeedSkeletonBuilder, FeedSkeletonErrorBuilder } from "./components";
-import FeedArticle from "./components/Article";
+import { HorizontalFeedPagination, VerticalFeedPagination, FeedSkeleton, FeedSkeletonError } from "./components";
+import FeedCarouselItem from "./components/Article";
 import locale from "@activity_feed/common/methods/locale";
 import settings from "@settings/settings";
 import NewsStore from "@activity_feed/GameNewsStore";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-export function NewsFeedBuilder() {
+export function FeedCarousel() {
 	const articles = Hooks.useStateFromStores([NewsStore], () => NewsStore.getArticlesForDisplay());
     const currentArticle = Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
     const orientation = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
@@ -37,16 +37,16 @@ export function NewsFeedBuilder() {
     useEffect(() => clearInterval.bind(null, setInterval(timerCallback, 8e3)), [isIdling]);
 
     if ( waitTime && !Object.keys(articles).length ) {
-        return <FeedSkeletonBuilder />
+        return <FeedSkeleton />
     }
 
     switch(Data.load("freezeNews") ?? Number(settings.default.freezeNews)) {
         case 0: break;
-        case 1: return <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}><FeedSkeletonErrorBuilder 
+        case 1: return <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}><FeedSkeletonError 
             errorText={locale.Strings.ACTIVITY_FEED_UNAVAILABLE()}
             errorDescription="If you're seeing this, you've manually triggered this error. Welcome to the club!"
         /></div>
-        case 2: return <FeedSkeletonBuilder />
+        case 2: return <FeedSkeleton />
     }
 
     if (Object.keys(articles).length) return (
@@ -61,19 +61,19 @@ export function NewsFeedBuilder() {
                 orientation === "vertical" ? 
                     <>
                         <Common.TransitionGroup component="span" className={FeedClasses.carousel} transitionEnter={true} transitionAppear={true} transitionLeave={true}>
-                            <FeedArticle article={currentArticle} key={`${currentArticle.index}`} />
+                            <FeedCarouselItem article={currentArticle} key={`${currentArticle.index}`} />
                         </Common.TransitionGroup>
-                        <FeedPaginationBuilder articleSet={articles} />
+                        <VerticalFeedPagination articleSet={articles} />
                     </>
                 : orientation === "horizontal" ?
                     <>
                         <Common.TransitionGroup component="span" className={FeedClasses.smallCarousel} transitionEnter={true} transitionAppear={true} transitionLeave={true}>
-                            <FeedArticle article={currentArticle} key={`${currentArticle.index}`} />
+                            <FeedCarouselItem article={currentArticle} key={`${currentArticle.index}`} />
                         </Common.TransitionGroup>
-                        <FeedMiniPaginationBuilder articleSet={articles} currentArticle={currentArticle} />
+                        <HorizontalFeedPagination articleSet={articles} currentArticle={currentArticle} />
                     </>
                 :
-                    <FeedSkeletonErrorBuilder 
+                    <FeedSkeletonError
                         errorText={locale.Strings.ACTIVITY_FEED_UNAVAILABLE()}
                         errorDescription={locale.Strings.ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_GENERIC()}
                     />
@@ -82,7 +82,7 @@ export function NewsFeedBuilder() {
     )
 
     return <div className={Utils.className((Data.load('v2News') ?? settings.default.v2News) && FeedClasses.feedCarouselV2, FeedClasses.feedCarousel)}>
-        <FeedSkeletonErrorBuilder 
+        <FeedSkeletonError 
             errorText={locale.Strings.ACTIVITY_FEED_UNAVAILABLE()}
             errorDescription={locale.Strings.ACTIVITY_FEED_UNAVAILABLE_DESCRIPTION_NO_DATA()}
         />

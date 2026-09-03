@@ -3,7 +3,12 @@ import { ThemeStore } from "@modules/stores";
 import NewsStore from "@activity_feed/GameNewsStore";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-export function FeedSkeletonErrorBuilder({errorText, errorDescription}) {
+interface FeedSkeletonError {
+	errorText: string,
+	errorDescription: string
+}
+
+export function FeedSkeletonError({errorText, errorDescription}: FeedSkeletonError) {
 	const type = Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 
 	if (type === "vertical") {

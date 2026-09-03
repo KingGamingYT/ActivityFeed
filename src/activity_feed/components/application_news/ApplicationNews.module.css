@@ -477,6 +477,43 @@ svg.arrow {
 
 .newsLink {}
 
+.newsLink:not([href]) {
+    cursor: default;
+}
+
+.recentNewsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    .news {
+        background: var(--background-surface-high);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+    }
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+    .title {
+        color: var(--white);
+    }
+    .description {
+        color: var(--white);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.2857142857142858;
+        margin: 0;
+    }
+    .timestamp {
+        color: var(--app-message-embed-secondary-text);
+        font-size: 12px;
+        font-weight: 400;
+        margin: 0;
+        text-transform: unset;
+    }
+}
+
 .feedCarouselV2 {
     .carousel {
         background-color: var(--background-surface-high);

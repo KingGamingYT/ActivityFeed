@@ -1,11 +1,21 @@
 import { Data } from "betterdiscord";
 import { Common } from "@modules/common";
 import settings from "@settings/settings";
-import NewsStore from "@activity_feed/GameNewsStore";
+import NewsStore, { type Article } from "@activity_feed/GameNewsStore";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-export function ArrowIcon({type}: {type: "left" | "right"}) {
+interface HorizontalFeedPagination {
+    articleSet: Article[],
+    currentArticle: Article
+}
+
+interface Subpagination {
+    article: Article,
+    currentArticle: Article
+}
+
+function ArrowIcon({type}: {type: "left" | "right"}) {
     return (
         <svg width="24" height="24" className={`${FeedClasses.arrow} ${FeedClasses[type]}`}>
             <path 
@@ -19,7 +29,7 @@ export function ArrowIcon({type}: {type: "left" | "right"}) {
     )
 }
 
-export function MiniSubpagination({article, currentArticle}) {
+function Subpagination({article, currentArticle}: Subpagination) {
     return (
         <div
             className={article.index === currentArticle.index ? `${FeedClasses.dotSelected} ${FeedClasses.dot}` : `${FeedClasses.dotNormal} ${FeedClasses.dot}`}
@@ -28,7 +38,7 @@ export function MiniSubpagination({article, currentArticle}) {
     )
 }
 
-export function FeedMiniPaginationBuilder({articleSet, currentArticle}) {
+export function HorizontalFeedPagination({articleSet, currentArticle}: HorizontalFeedPagination) {
     return (
         <div className={FeedClasses.paginationSmall}>
             <button 
@@ -39,7 +49,7 @@ export function FeedMiniPaginationBuilder({articleSet, currentArticle}) {
             </button>
             <div className={FeedClasses.scrollerWrap}>
                 <div className={`${FeedClasses.scroller} ${FeedClasses.horizontalPaginationItemContainer} ${Common.PositionClasses.alignCenter}`}>{
-                    articleSet.map(article => article && <MiniSubpagination article={article} currentArticle={currentArticle} />)
+                    articleSet.map((article: Article) => article && <Subpagination article={article} currentArticle={currentArticle} />)
                 }</div>
             </div>
             <button 

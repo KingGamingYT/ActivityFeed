@@ -1,4 +1,5 @@
 import { Utils, Hooks } from "betterdiscord";
+import { useState, useEffect } from "react";
 import { Common } from "@modules/common";
 import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import locale from "@common/methods/locale";
@@ -12,6 +13,7 @@ interface FollowButton {
 }
 
 export default function ({application, fullWidth=false}: FollowButton) {
+    if (!application) return;
     const originalApplication = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplicationByName(application.name));
     const followed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(originalApplication?.id ?? application?.id));
 

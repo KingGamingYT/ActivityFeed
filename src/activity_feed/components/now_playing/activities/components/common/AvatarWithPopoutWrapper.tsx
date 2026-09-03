@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Common } from "@modules/common";
+import { useState, useRef } from "react";
+import { Common, AvatarUtils } from "@modules/common";
 import { UserProfileStore, UserStore, useStateFromStores } from "@modules/stores"
 
 interface AvatarWithPopoutWrapper {
@@ -32,7 +32,7 @@ export default function ({className, user, status, size}: AvatarWithPopoutWrappe
 					setShowPopout(true); 
 				}}
     			className={className}>
-    			<Common.AvatarFetch imageClassName={className} src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} status={status} size={size} />
+    			<Common.AvatarFetch imageClassName={className} src={AvatarUtils.getUserAvatarURL({id: user.id, avatar: user.avatar})} status={status} size={size} />
     		</div>}
     	</Common.Popout>
 	)

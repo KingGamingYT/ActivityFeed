@@ -1,4 +1,4 @@
-import { ContextMenu, Data, Hooks } from "betterdiscord";
+import { ContextMenu, ContextMenuCallback, Data, Hooks } from "betterdiscord";
 import { useState, useRef } from "react";
 import { Common } from "@modules/common";
 import { UserSettingsProtoStore } from "@modules/stores";
@@ -8,7 +8,19 @@ import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 import Tooltip from "@common/components/TooltipBuilder";
 
-export function FeedPopout({application, articleUrl, close}) {
+interface FeedCarouselItemPopout {
+    application: any,
+    articleUrl: string,
+    close: ContextMenuCallback
+}
+
+interface FeedCarouselItemOverflow {
+    application: any,
+    articleUrl: string,
+    position: string
+}
+
+export function FeedCarouselItemPopout({application, articleUrl, close}: FeedCarouselItemPopout) {
     const article = Hooks.useStateFromStores([NewsStore], () => NewsStore.getArticleByApplicationId(application.id));
 
     if (isNaN(application.id)) {
@@ -36,7 +48,7 @@ export function FeedPopout({application, articleUrl, close}) {
             <ContextMenu.Item 
                 id="unfollow-game" 
                 label="Unfollow Game" 
-                action={() => Common.ModalSystem.openModal(props => 
+                action={() => Common.ModalSystem.openModal((props: any) => 
                     <Common.ModalRoot.Modal 
                         {...props} 
                         title={locale.Strings.ARE_YOU_SURE()}
@@ -63,7 +75,7 @@ export function FeedPopout({application, articleUrl, close}) {
     )
 }
 
-export function FeedOverflowBuilder({application, gameId, articleUrl, position}) {
+export function FeedCarouselItemOverflow({application, articleUrl, position}: FeedCarouselItemOverflow) {
     const [showPopout, setShowPopout] = useState(false);
     const refDOM = useRef(null);
 
@@ -73,11 +85,11 @@ export function FeedOverflowBuilder({application, gameId, articleUrl, position})
             clickTrap={true}
             onRequestClose={() => setShowPopout(false)}
             renderPopout={() => 
-                <FeedPopout application={application} gameId={gameId} articleUrl={articleUrl} close={() => setShowPopout(false) } />
+                <FeedCarouselItemPopout application={application} articleUrl={articleUrl} close={() => setShowPopout(false) } />
             }
             position={position}
             shouldShow={showPopout}
-        >{(props) => <div
+        >{(props: any) => <div
             {...props}
             ref={refDOM}
             onClick={() => setShowPopout(true)}

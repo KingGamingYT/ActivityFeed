@@ -8,7 +8,7 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 function StreamContextMenu({stream}) {
     return (
         <ContextMenu.Menu navId="watch-stream-context" onClose={(e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e)}>
-            <ContextMenu.Item id="watch-stream" label={locale.Strings.WATCH_STREAM()} action={() => {return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }} />
+            <ContextMenu.Item id="watch-stream" label={locale.Strings.WATCH_STREAM()} action={() => {return Common.SelectedChannelActionCreators.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }} />
         </ContextMenu.Menu>
     )
 }
@@ -45,7 +45,7 @@ function StreamPreview({stream}) {
                     <img className={NowPlayingClasses.applicationStreamingPreview} src={previewUrl} />
                 </div>
             }
-            <div className={NowPlayingClasses.applicationStreamingHoverWrapper} onClick={() => {return Common.OpenVoiceChannel.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }}>
+            <div className={NowPlayingClasses.applicationStreamingHoverWrapper} onClick={() => {return Common.SelectedChannelActionCreators.selectVoiceChannel(stream.channelId), Common.OpenStream(stream) }}>
                 <div className={NowPlayingClasses.applicationStreamingHoverText}>{locale.Strings.WATCH_STREAM()}</div>
             </div>
         </div>

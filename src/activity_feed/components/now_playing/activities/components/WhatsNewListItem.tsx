@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Common, ContextMenus } from "@modules/common";
+import { Common, ContextMenus, AvatarUtils } from "@modules/common";
 import { ChannelStore, UserStore, useStateFromStores } from "@modules/stores";
 import { FlexInfo } from "@now_playing/activities/components/common/FlexInfo";
 import { InactiveTimeClock } from "@common/methods/common";
@@ -45,7 +45,7 @@ function WhatsNewOverflowExtraPopout({players}) {
 							onRequestClose={() => setShowPopout(false)}
 							renderPopout={() => <Common.UserProfileWrapperComponent currentUser={currentUser} user={user} />}>
 							{(props) => <div {...props} ref={popoutRef} className={NowPlayingClasses.userListItem}>
-								<Common.AvatarFetch imageClassName={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=48`} size={"SIZE_32"} />
+								<Common.AvatarFetch imageClassName={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} src={AvatarUtils.getUserAvatarURL({id: user.id, avatar: user.avatar})} size={"SIZE_32"} />
 								<FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
 							</div>}
 						</Common.Popout>

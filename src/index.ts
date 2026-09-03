@@ -1,6 +1,6 @@
-import { Webpack, Data, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
-import { createElement, useEffect } from "react";
-import { container, Common, SettingsButton, SettingsRoot, Router } from "@modules/common";
+import { Webpack, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
+import { createElement } from "react";
+import { container, AccountPanel, Common, SettingsRoot, Router } from "@modules/common";
 import { ApplicationStore } from "@modules/stores";
 import { TabBaseBuilder } from "@activity_feed/base";
 import { IntroCoachmarkPopout } from "@coachmark/IntroCoachmark";
@@ -11,7 +11,7 @@ import FollowButton from "@now_playing/activities/components/common/FollowButton
 import styles from "styles";
 import SettingsItem from "@settings/components/PanelBuilder";
 import NewsStore from "@activity_feed/GameNewsStore";
-import NewsArticle from "@application_news/components/Article";
+import RecentNewsSection from "@application_news/components/GameProfileRecentNews";
 import LastPlayedStore from "@now_playing/LastPlayedStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 import PresenceTypeStore from "@now_playing/PresenceTypeStore";
@@ -42,13 +42,11 @@ function CoachmarkWrapper({button})
 
 export default class ActivityFeed {
     GameNewsStore = NewsStore;
-    NewsArticle = NewsArticle;
     LastPlayedStore = LastPlayedStore;
     ActivityFeedSettingsCoachmarkStore = ActivityFeedSettingsCoachmarkStore;
     PresenceTypeStore = PresenceTypeStore;
     FollowButton = FollowButton;
     NewsCard = CardMiniNews;
-    i18n = locale;
     async start() {
         const settingsItem = await SettingsItem();
         setInterval(async () => {
@@ -115,16 +113,16 @@ export default class ActivityFeed {
         })
 
         await SettingsRoot.then(e => Patcher.after(e, "buildLayout", (that, [props], res) => {
-            let index = res.findIndex((layout) => layout.key === "activity_section");
+            let index = res.findIndex((layout) => layout.key === "games_and_apps_section");
             Patcher.after(res[index], "buildLayout", (that, [props], res) => {
                 if (!Utils.findInTree(res, (tree) => Object.values(tree).includes('activity_feed_sidebar_item', { walkable: ['props', 'children'] } ))) {
-                    res.push(settingsItem);
+                    res.splice(3, 0, (settingsItem));
                 }
                 return res;
             })
         }))
         
-        Patcher.after(SettingsButton, "Button", (that, [props], res) => {
+        Patcher.after(AccountPanel, "Settings", (that, [props], res) => {
             return createElement(CoachmarkWrapper, {button: res})
         })
 
@@ -135,44 +133,26 @@ export default class ActivityFeed {
             entry.extra.type === "played_game_extra" && hero.children.push(createElement(FollowButton, { application, fullWidth: true }));
         })
 
-        await Webpack.waitForModule(Webpack.Filters.bySource('"game_profile"', '.DISCORD')).then((e) => {
-            GameProfileModal = Webpack.getMangled(Webpack.Filters.bySource('"game_profile"', '.DISCORD'), {
-                GameProfileV2Trailing: x => String(x).includes('"game-profile-add-favorite-game"')
+        await Webpack.waitForModule(Webpack.Filters.bySource('"GAME_PROFILE_GET_SHOP_COLLECTION_START"')).then(() => {
+            GameProfileModal = Webpack.getMangled(Webpack.Filters.bySource('"GAME_PROFILE_GET_SHOP_COLLECTION_START"'), {
+                GameProfileV2Trailing: x => String(x).includes('"game-profile-add-favorite-game"'),
+                GameProfileLeftColumn: x => Webpack.Filters.byRegex(/trackAction:.}\)/)(x.type)
             }, {mapDeclarations: true})
 
             Patcher.after(GameProfileModal, "GameProfileV2Trailing", (that, [props], res) => {
+                console.log(props)
                 const game = props.game;
                 const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);
-                res.props.children.splice(0, 0, createElement(FollowButton, { application, fullWidth: true }));
+                !Object.values(res.props.children).find(x => String(x?.type)?.includes('follow')) && res.props.children.splice(0, 0, createElement(FollowButton, { application, fullWidth: true }));
+            })
+
+            Patcher.after(GameProfileModal.GameProfileLeftColumn, "type", (that, [props], res) => {
+                const game = props.game;
+                !Object.values(res.props.children).find(x => String(x?.type).includes('RECENT_NEWS')) && res.props.children.splice(1, 0,
+                    createElement(RecentNewsSection, { applicationId: game.id, type: 0 })
+                )
             })
         });
-
-        /*Patcher.after(await Webpack.waitForModule(Webpack.Filters.bySource('"GameProfileModal"', 'forceV2')), "default", (that, [props], res) => { 
-            Patcher.after(res, "type", (that, [props], res) => { 
-                const options = {
-                    walkable: [
-                        'props',
-                        'children'
-                    ],
-                    ignore: []
-                };
-                const v1Data = Utils.findInTree(res, (tree) => tree?.className?.includes("mainContent"), options); 
-                const v2Data = Utils.findInTree(res, (tree) => tree?.className?.includes("twoColumnMainContent"), options);
-                v1Data ? Patcher.after(v1Data.children[0], "type", (that, [props], res) => { 
-                    const game = res.props.children[1].props.game;
-
-                    res.props.children.push(
-                        createElement(RecentNews, { applicationId: game.id, type: "GAME_PROFILE" })
-                    )
-                }) : Patcher.after(v2Data.children[0], "type", (that, [props], res) => {
-                    const game = Utils.findInTree(res, (tree) => tree && Object.hasOwn(tree, "game"), options).game;
-
-                    res.props.children.push(
-                        createElement(RecentNews, { applicationId: game.id, type: "GAME_PROFILE_V2" })
-                    )
-                })
-            }) 
-        })*/
     }
     stop() {
         Common.FluxDispatcher.dispatch({type: 'NOW_PLAYING_UNMOUNTED'});

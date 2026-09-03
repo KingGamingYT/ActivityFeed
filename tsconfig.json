@@ -3,6 +3,7 @@
         "types": ["node", "bundlebd"],
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
+        "strictNullChecks": false,
 		"jsx": "react-jsx",
         "baseUrl": ".",
         "paths": {

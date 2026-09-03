@@ -32,7 +32,7 @@ function ActivityType(props: any) {
         )
         case "RICH": return (
             <>
-                {activityProperties?.platform === "YT_MUSIC" ?
+                {activity?.details_url && activity?.state_url ?
                     <>
                         <Common.Link href={activity?.details_url}>
                             <div 
@@ -83,14 +83,13 @@ function ActivityType(props: any) {
         case "TWITCH": return (
             <div className={NowPlayingClasses.streamInfo}>
                 <div className={NowPlayingClasses.gameName}>{activity?.name.toLowerCase().includes('twitch') ? game?.name : game?.name.substring(0, 13) + activity?.name}</div>
-                <a
-                    className={`${Common.ButtonVoidClasses.lookLink} ${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.playTime}`}
+                <Common.Anchor
+                    className={`${Common.ButtonVoidClasses.lookLink} ${NowPlayingClasses.playTime}`}
                     href={activity.url}
-                    rel="noreferrer nopener"
                     target="_blank"
                     role="button">
                     {activity.url}
-                </a>
+                </Common.Anchor>
             </div>
         )
         case "TWITCH_OVERLAY": return (

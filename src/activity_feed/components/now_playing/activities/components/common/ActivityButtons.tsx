@@ -1,5 +1,5 @@
 import { Webpack, ReactUtils } from "betterdiscord";
-import { Common, ManaButtons } from "@modules/common";
+import { Common, ManaButtons, LaunchableGameUtils } from "@modules/common";
 import { GameStore, UserStore, useStateFromStores } from "@modules/stores";
 import locale from "@common/methods/locale";
 
@@ -27,8 +27,7 @@ const ActivityMetadataUpdate = Webpack.getByStrings('USER_ACTIVITY_METADATA', 'A
 const Parser = Webpack.getByKeys('formatPathWithQuery');
 const sanitize = Webpack.getByStrings('sanitizeUrl', 'contextKey', {searchExports: true});
 const ChannelContext = Webpack.getByStrings('.POPOUT', 'onClose', 'contextless');
-const joinProps = Webpack.getByStrings('DispatchApplicationStore', 'embeddedActivity', {searchExports: true});
-const getPlayableGame = Webpack.getByStrings('data', 'getOfficialGame' , ':null!', {searchExports: true});
+const joinProps = Webpack.getByStrings('SUPPORTS_JOIN_URL', 'embeddedActivity', {searchExports: true});
 const SlashCommandIcon = Webpack.getByStrings('7.61c-.25.95.31', {searchExports: true});
 const GameUtils = Webpack.getByKeys('launch', 'reportUnverifiedGame');
 const ContainerTooltip = Webpack.getByStrings('asContainer', 'keyboardShortcut', {searchExports: true});
@@ -119,7 +118,7 @@ function PlayButton({user, activity, onAction, onClose}) {
     const {themeType} = themeContext.ClientThemeContext();
     const channelContext = ChannelContext({applicationId: activity?.application_id, onClose});
     const isJoinable = joinProps({activity, user, onClose});
-    const isPlayable = getPlayableGame(activity?.application_id)
+    const isPlayable = LaunchableGameUtils.useLaunchableApplicationId(activity?.application_id);
     if (!isJoinable && activity && isEmbeddedActivity(activity)) return <ManaButtons.PrimaryButtonWithIcon
         icon={<SlashCommandIcon />}
         text={locale.Strings.PLAY()}

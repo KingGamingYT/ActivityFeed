@@ -2,10 +2,11 @@ import { Data, Utils, Net } from "betterdiscord";
 import { XMLParser } from "fast-xml-parser";
 import { Common } from "@modules/common";
 import { ApplicationStore, LibraryApplicationStatisticsStore, WindowStore } from "@modules/stores";
+import { chunkArrayBySize } from "@common/methods/common";
 import settings from "@settings/settings";
 import HtmlSanitizer from "@jitbit/htmlsanitizer";
 
-interface Article {
+export interface Article {
     application: any,
     id: number | string,
     index?: number,
@@ -49,7 +50,7 @@ let direction = 1;
 let idling = true;
 
 function sanitize(content: string) {
-    const ignore = ['IMG', 'VIDEO', 'DIV', 'A'];
+    const ignore = ['IMG', 'VIDEO', 'A'];
     for (let i = 0; i < ignore.length; i++) {
         delete HtmlSanitizer.AllowedTags[ignore[i]];
     }
@@ -189,11 +190,14 @@ function getRandomArticles(numArticles: number) {
 }
 
 function setDisplayedArticles() {
+    console.log("setDisplayedArticles")
     const randomArticles = getRandomArticles(4);
-
+    console.log("got random articles")
     if (randomArticles && randomArticles !== null) {
         // clear displayed articles in case this ends up running multiple times, for whatever reason
+        console.log("pre-reset", displaySet)
         displaySet = [];
+        console.log("post-reset", displaySet)
         displaySet.push.apply(displaySet, randomArticles);
         for (let i = 0; i < displaySet.length; i++) {
             displaySet[i] = {
@@ -201,6 +205,7 @@ function setDisplayedArticles() {
                 index: i
             };
         }
+        console.log("post-loop", displaySet)
         article = displaySet[0];
     }
     return;
@@ -210,7 +215,7 @@ async function parseXML(xml: Promise<string | void | null> | undefined) {
     let body = await xml;
     let result;
     const entities = [{key: "#8211", value: "–"}, {key: "#8217", value: "'"}, {key: "#39", value: "'"}, {key: "#8220", value: "“" }, {key: "#8221", value: "”" }];
-    const parser = new XMLParser({ ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
+    const parser = new XMLParser({ processEntities: true, htmlEntities: true, ignoreDeclaration: true, ignoreAttributes: false, attributeNamePrefix: "_", numberParseOptions: { leadingZeros: false, hex: true } });
     for (let e in entities) { parser.addEntity(entities[e].key, entities[e].value) };
     try {
         result = await parser.parse(body);
@@ -318,6 +323,7 @@ async function fetchFortniteFeed(application: any) {
 async function fetchSteamFeeds(gameId: number | string, application: any) {
     const rssFeed = await Promise.all([ parseXML(Net.fetch(`https://store.steampowered.com/feeds/news/app/${gameId}`).then(r => r.ok ? r.text() : null).catch(e => console.log("%c[GameNewsStore]", "color: #800080; font-weight: 700;", `Failed to fetch news for ${application?.name ?? gameId}`, e))) ]);
     if (!rssFeed) return;
+    const splash = application.getSplashURL('2048', 'png');
     const backupThumbnail = await Promise.resolve(Net.fetch(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${gameId}/capsule_616x353.jpg`).then(r => r.ok ? r.url : null));
     const article = getRSSItem(rssFeed);
     // sanitize description html before converting to plaintext
@@ -327,7 +333,7 @@ async function fetchSteamFeeds(gameId: number | string, application: any) {
         application, 
         appId: application.id, 
         description: sanitizedDescription && new DOMParser().parseFromString(sanitizedDescription, 'text/html').body.innerText.replaceAll(/(^| )([^. ]+)\.([^. ]+)(?= |$)/g, "$1$2. $3").replaceAll(/([,!?;:])([^ ])/g, "$1 $2"),
-        thumbnail: article?.enclosure?._url || backupThumbnail, 
+        thumbnail: article?.enclosure?._url || splash || backupThumbnail, 
         timestamp: article?.pubDate, 
         title: article?.title, 
         url: article?.link
@@ -336,27 +342,15 @@ async function fetchSteamFeeds(gameId: number | string, application: any) {
 
 async function getFeedGameData() {
     const gameData: Record<number | string, any> = {};
-    const idOverflow = [];
     let analyticData;
     // load user application statistics, then fetch them
     await Common.FetchUserApplicationStatistics().then(analyticData = LibraryApplicationStatisticsStore.applicationStatistics);
 
     const gameIds = Object.values(analyticData).map((app: any) => app?.application_id).concat(Object.values(followedGames).map((app: any) => app.applicationId));
     // only 112 applications can be fetched at one time, so the ids are split into 112-item chunks
-    if (gameIds.length > 112) {
-        for (let i = 0; i < gameIds.length; i++) {
-            if (i % 112 === 0) {
-                idOverflow.push(gameIds.splice(0, 112))
-            }
-        }
-        await Common.FetchApplications.fetchApplications(gameIds);
-        idOverflow.map(async idSplit => {
-            return await Common.FetchApplications.fetchApplications(idSplit);
-        })
-    } else {
-        await Common.FetchApplications.fetchApplications(gameIds);
+    for (const batch of chunkArrayBySize(gameIds, 112)) {
+        await Common.FetchApplications.fetchApplications(batch);
     }
-
     // get all applications and filter all which don't match criteria  
     const applicationList = Object.values(analyticData).flatMap((app: any) => { 
         const application = ApplicationStore.getApplication(app.application_id);
@@ -378,7 +372,7 @@ async function getFeedGameData() {
         }
     }
 
-    // prevent duplicates, i think
+    // prevent duplicates
     whitelist = whitelist.filter((item, index, array) => { return array.findIndex(x => x?.gameId === item.gameId) === index; });
 
     // specify external news sources
@@ -408,19 +402,22 @@ async function feedSelector(gameId: number | string, application: any) {
 
 export default new class GameNewsStore extends Utils.Store {
     static displayName = "GameNewsStore";
-    state = [];
+    state: {size?: number[], isFetching?: boolean} = {
+        size: [],
+        isFetching: false
+    };
     whitelist = whitelist;
     blacklist = blacklist;
     dataSet = dataSet;
-    displaySet = displaySet
-    followedGames = followedGames
+    displaySet = displaySet;
+    followedGames = followedGames;
     constructor() {
         super();
         window.addEventListener("resize", this.listener);
     }
 
     listener = () => {
-        this.state = { size: [window.innerWidth, window.innerHeight] };
+        this.state = {...this.state, size: [window.innerWidth, window.innerHeight] };
         this.emitChange();
     }
 
@@ -465,7 +462,6 @@ export default new class GameNewsStore extends Utils.Store {
     }
 
     rerollFeed() {
-        displaySet = [];
         setDisplayedArticles();
     }
 
@@ -668,11 +664,12 @@ export default new class GameNewsStore extends Utils.Store {
     }
 
     async fetchFeeds() {
+        this.state = {...this.state, isFetching: true};
         lastTimeFetched = Date.now();
         Data.save('lastTimeFetched', lastTimeFetched);
         // get game ids and application entries of games to fetch news for
         const gameData = await getFeedGameData();
-        for (const gameId of Object.keys(gameData)) {
+        for (const [index, gameId] of Object.keys(gameData).entries()) {
             (async (gameId) => {
                 const article = await feedSelector(gameId, gameData[gameId]);
                 if (article && isNewsInDate(article)) {
@@ -692,8 +689,10 @@ export default new class GameNewsStore extends Utils.Store {
                     Data.save('dataSet', dataSet);
                 }
             })(gameId)
+            if (index === Object.keys(gameData).length - 1) this.state = {...this.state, isFetching: false};
         }
-        setDisplayedArticles();
+        console.log("fetch loop finished")
+        if (this.state.isFetching === false) setDisplayedArticles();
     }
 
     get lastFetched() {

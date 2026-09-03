@@ -63,6 +63,7 @@ export default {
         PLAYED_DAYS_AGO: (time) => getIntlString('yP1T84', time),
         PLAYED_HOURS_AGO: (time) => getIntlString('cRMUpw', time),
         PLAYED_MINUTES_AGO: (time) => getIntlString('BZxG8Z', time),
+        PLAYING_COUNT: (count) => getIntlString('yJj035', count),
         PLAYING_FOR_DAY: (time) => getIntlString('2rUo/p', time),
         PLAYING_FOR_HOUR: (time) => getIntlString('eNoooU', time),
         PLAYING_FOR_MINUTE: (time) => getIntlString('03mIHW', time),

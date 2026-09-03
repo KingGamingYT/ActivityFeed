@@ -13,17 +13,20 @@ export default {
         v2News: {
             name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_TITLE(),
             note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_APPLICATION_NEWS_DESCRIPTION(),
-            initial: true
+            initial: true,
+            parent: 'v2Frame'
         },
         v2Dock: {
             name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_TITLE(),
             note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_QUICK_LAUNCHER_DESCRIPTION(),
-            initial: true
+            initial: true,
+            parent: 'v2Frame'
         },
         v2Cards: {
             name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_TITLE(),
             note: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_CARDS_DESCRIPTION(),
             initial: true,
+            parent: 'v2Frame'
         }
     },
     debug: {

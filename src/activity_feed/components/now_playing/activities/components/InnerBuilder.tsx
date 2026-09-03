@@ -1,5 +1,4 @@
-import { ReactUtils } from "betterdiscord";
-import { Common } from "@modules/common";
+import { Common, ApplicationAssetUtils } from "@modules/common";
 import { UserStore, useStateFromStores } from "@modules/stores";
 import { FlexInfo } from "./common/FlexInfo";
 import { RichCardTrailing, RegularCardTrailing } from "./common/CardTrailing";
@@ -44,13 +43,7 @@ export function RichActivityBuilder({user, activity, activityProperties, v2Enabl
                 <div className={`${NowPlayingClasses.bodyNormal} ${NowPlayingClasses.body} ${Common.PositionClasses.flex}`}>
                     <div className={`${NowPlayingClasses.assets}`} >
                         <RichImageAsset
-                            url={(() => {
-                                switch (true) {
-                                    case !! activity?.assets?.large_image?.includes('spotify'): return `https://i.scdn.co/image/${activity.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`;
-                                    case !! activity?.assets?.large_image?.includes('external'): return `https://media.discordapp.net/${activity.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`;
-                                    default: return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
-                                }
-                            })()}
+                            url={ApplicationAssetUtils.getAssetImage(activity?.application_id, activity.assets.large_image, 'png')}
                             tooltipText={activity.assets.large_text}
                             onClick={() => {switch(activityProperties?.platform) {
                                 case "SPOTIFY": case "YT_MUSIC": return Common.OpenTrack(activity)
@@ -61,10 +54,7 @@ export function RichActivityBuilder({user, activity, activityProperties, v2Enabl
                             type="Large"
                         />
                         {activity?.assets && activity?.assets.small_image && <RichImageAsset
-                            url={
-                                activity?.assets?.small_image?.includes('external') ? `https://media.discordapp.net/${activity.assets.small_image?.substring(activity.assets.small_image.indexOf(':')+1)}`
-                                : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png`
-                            }
+                            url={ApplicationAssetUtils.getAssetImage(activity?.application_id, activity.assets.small_image, 'png')}
                             tooltipText={activity.assets.small_text}
                             type="Small"
                         />}
@@ -86,10 +76,7 @@ export function RichTwitchActivityBuilder({activity}) {
                         <div className={NowPlayingClasses.twitchImageContainer}>
                             <FlexInfo className={NowPlayingClasses.twitchImageOverlay} activity={activity} type="TWITCH_OVERLAY" />
                             <TwitchImageAsset
-                                url={
-                                    activity.name.includes('YouTube') ? `https://i.ytimg.com/vi/${activity.assets?.large_image.substring(activity.assets?.large_image.indexOf(':')+1)}/hqdefault_live.jpg`
-                                    : `https://static-cdn.jtvnw.net/previews-ttv/live_user_${activity.assets?.large_image.substring(activity.assets?.large_image.indexOf(':')+1)}-900x500.jpg`
-                                }
+                                url={ApplicationAssetUtils.getAssetImage(activity?.application_id, activity.assets?.large_image, 'jpg')}
                                 imageId={activity.assets?.large_image}
                                 streamUrl={activity.url}
                             />

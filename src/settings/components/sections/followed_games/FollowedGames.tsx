@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Common } from "@modules/common";
 import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
+import { chunkArrayBySize } from "@activity_feed/common/methods/common";
 import locale from "@activity_feed/common/methods/locale";
 import ActivityFeedSettingsButton from "@settings/components/common/ActivityFeedSettingsButton";
 import NewsStore from "@activity_feed/GameNewsStore";
@@ -81,17 +82,9 @@ export function FollowedGameListBuilder() {
     useEffect(() => {
         (async () => {
             const gameIds = allGames.map(game => game.applicationId)
-            let idOverflow = []
-            if (gameIds.length  > 112) {
-                for (let i = 0; i < gameIds.length; i++) {
-                    if (i % 112 === 0) {
-                        idOverflow.push(gameIds.splice(0, 112));
-                    }
-                }
-                await Common.FetchApplications.fetchApplications(gameIds);
-                idOverflow.map(async idSplit => {return await Common.FetchApplications.fetchApplications(idSplit)});
+            for (const batch of chunkArrayBySize(gameIds, 112)) {
+                await Common.FetchApplications.fetchApplications(batch);
             }
-            else { await Common.FetchApplications.fetchApplications(gameIds); }
             NewsStore.setHaveSettingsBeenOpened(true);
         })()
     }, [allGames]);
@@ -105,7 +98,7 @@ export function FollowedGameListBuilder() {
 
     return (
         <>
-            <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.target.value.toLowerCase())} placeholder={locale.Strings.SEARCH_FOR_GAMES()} />
+            <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.toLowerCase())} placeholder={locale.Strings.SEARCH_FOR_GAMES()} />
             {filtered?.length ? <div className={SettingsClasses.container}>{
                 filtered.sort((a, b) => a.name.localeCompare(b.name)).map(game => 
                     <>

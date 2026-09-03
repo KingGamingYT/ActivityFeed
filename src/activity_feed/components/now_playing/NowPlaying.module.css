@@ -1,4 +1,8 @@
-.nowPlaying, .whatsNew {}
+.nowPlaying, .whatsNew {
+    position: relative;
+    padding: 0 20px 20px 20px;
+    padding-right: 4px;
+}
 
 .nowPlayingContainer {
     display: flex;
@@ -457,9 +461,11 @@
 
 .voiceSectionGuildImage {
     border-radius: 50%;
+    height: 40px;
     mask: url('https://discord.com/assets/a90b040155ee449f.svg');
     mask-size: 100%;
     mask-type: luminance;
+    width: 40px;
 }
 
 .voiceSection .details {
@@ -630,10 +636,6 @@
     display: flex;
 }
 
-.player:first-of-type {
-    mask: url(#svg-mask-voice-user-summary-item);
-}
-
 .userOverflow {
     display: flex;
     flex-wrap: wrap;
@@ -644,18 +646,17 @@
     margin-right: 8px;
 }
 
-.emptyUser:not(:first-of-type), .player:not(:first-of-type) {
+.maskStack:not(:first-child) {
     margin-left: -4px;
-}
-
-.emptyUser:not(:last-of-type), .player:not(:last-of-type) {
-    mask: url(#svg-mask-voice-user-summary-item);
 }
 
 .emptyUser, .player {
     width: 16px;
     height: 16px;
     border-radius: 50%;
+}
+
+.emptyUser {
     background: var(--experimental-avatar-embed-bg);
 }
 

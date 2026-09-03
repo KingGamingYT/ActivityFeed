@@ -1,11 +1,8 @@
-import { Net } from 'betterdiscord';
 import { useState, useLayoutEffect, useRef, useMemo } from "react";
-import { XMLParser } from "fast-xml-parser";
-import { Common } from '@modules/common';
-import { ChannelStore, UserStore, VoiceStateStore } from "@modules/stores";
 import locale from "./locale";
 
-export function chunkArray(cards, num) {
+// splits arrays into the number of arrays specified by num
+export function chunkArrayByNumber(cards, num) {
     let chunkLength = Math.max(cards.length / num, 1);
     const chunks = [];
     for (let i = 0; i < num; i++) {
@@ -14,13 +11,16 @@ export function chunkArray(cards, num) {
     return chunks; 
 }
 
-export function getVoiceParticipants({voice}) {
-    let participants = [];
-    const channelParticipants = Object.keys(VoiceStateStore.getVoiceStatesForChannel(voice));
-    for (let i = 0; i < channelParticipants.length; i++) {
-        participants.push(UserStore.getUser(channelParticipants[i]))
+// splits arrays into however many arrays of size length can contain the original array
+export function chunkArrayBySize(array, size) {
+    const result = [];
+    for(let i = 0; i < array.length; i += size)
+    {
+        // [1,99]
+        // slice(i = 0,+112) [1,99]
+        result.push(array.slice(i, i + size))
     }
-    return participants;
+    return result;
 }
 
 export function TimeClock({timestamp}) {
@@ -44,40 +44,6 @@ export function InactiveTimeClock({timestamp}) {
         case !! ((time % 60 ) < 60): return locale.Strings.JUST_STOPPED_PLAYING();
         case !! (isNaN(time)): return TimeClock({timestamp});
     }
-}
-
-export function GradGen(game, check, isSpotify, activity, voice, stream) {
-    let input;
-    switch (true) {
-        case !! check?.find(x => x.type === "STREAMING"): check?.find(x => x.plaform === "YOUTUBE") ? input = 'https://discord.com/assets/ff3516ac66b71ef616b1df63e20fee65.png' : input = 'https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg'; break;
-        case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
-        case !! check?.find(x => x.platform === "YT_MUSIC"): input = `https://media.discordapp.net/external${activity?.assets?.large_image?.substring(activity?.assets?.large_image?.indexOf('/'))}`; break;
-        case !! check?.find(x => x.platform === "XBOX"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
-        case !! (activity?.assets && activity?.assets.large_image?.includes('external')): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
-        case !! (activity?.assets && activity?.assets.large_image): input = `https://cdn.discordapp.com/app-assets/${activity?.application_id}/${activity?.assets?.large_image}.png`; break;
-        case !! (game?.icon || game?.iconHash): input = `https://cdn.discordapp.com/app-icons/${game?.id}/${game?.icon || game?.supplementalData?.iconHash}.png?size=1024&keep_aspect_ratio=true`; break;
-        case !! (voice && voice[0]?.guild): input = `https://cdn.discordapp.com/icons/${voice[0]?.guild.id}/${voice[0]?.guild.icon}.png?size=1024`; break; 
-        case !! voice && stream: input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
-    }
-    return Common.GradientComponent(input || null);
-}
-
-export function SplashGen(game, isSpotify, activity, voice, stream, check) {
-    let input;
-    switch (true) {
-        case !! game?.data?.bannerHash?.length: input = game.data.getArtworkURLs()[0]; break;
-        case !! isSpotify: input = `https://i.scdn.co/image/${activity?.assets.large_image?.substring(activity.assets.large_image.indexOf(':')+1)}`; break;
-        case !! check?.find(x => x.platform === "XBOX"): input = 'https://discord.com/assets/d8e257d7526932dcf7f88e8816a49b30.png'; break;
-        case !! check?.find(x => x.platform === "YT_MUSIC" || x.platform === "CRUNCHYROLL"): input = `https://media.discordapp.net/external${activity?.assets.large_image.substring(activity?.assets.large_image.indexOf('/'))}`; break;
-        case !! (voice && voice[0]?.guild?.banner && !activity): input = 'https://cdn.discordapp.com/banners/' + voice[0]?.guild?.id + '/' + voice[0]?.guild?.banner + '.webp?size=1024&keep_aspect_ratio=true'; break;
-        case !! (voice && stream): stream.guildId ? input = `https://cdn.discordapp.com/icons/${stream.guildId}/${voice[0]?.guild?.icon}.png?size=1024` : input = `https://cdn.discordapp.com/channel-icons/${stream.channelId}/${ChannelStore.getChannel(stream.channelId)?.icon}.png?size=1024`; break;
-        case !! (voice && !activity): input = `https://cdn.discordapp.com/icons/${voice[0]?.guild?.id}/${voice[0]?.guild?.icon}.png?size=1024`; break;
-        case !! check?.find(x => x.type === "STREAMING"): check?.find(x => x.plaform === "YOUTUBE") ? input = `https://discord.com/assets/0fa530ba9c04ac32.svg` : input = `https://discord.com/assets/d5c9d174036ef1b010d2812352393788.svg`; break;
-        case !! (!game?.data?.media?.artwork_urls && game?.data?.screenshotUrls): input = game?.data?.screenshotUrls[0]; break;
-        case !! (!game?.data?.screenshotUrls): input = game?.application?.getIconURL(1024, 'webp'); break;
-        default: input = game?.data?.media?.artwork_urls[0];
-    }
-    return input || null;
 }
 
 export function useWindowSize() {

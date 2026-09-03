@@ -1,13 +1,20 @@
-import { ContextMenu } from "betterdiscord";
 import { Common, ContextMenus } from "@modules/common";
-import { ChannelStore } from "@modules/stores";
+import { ChannelStore, UserStore, VoiceStateStore } from "@modules/stores";
 import { StreamCard } from "./CardStream";
 import { FlexInfo } from "./common/FlexInfo";
 import { VoiceGuildAsset } from "./common/ActivityAssets";
 import { VoiceCardTrailing } from "./common/CardTrailing";
-import { getVoiceParticipants } from "@common/methods/common";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
+
+function getVoiceParticipants({voice}) {
+    let participants = [];
+    const channelParticipants = Object.keys(VoiceStateStore.getVoiceStatesForChannel(voice));
+    for (let i = 0; i < channelParticipants.length; i++) {
+        participants.push(UserStore.getUser(channelParticipants[i]))
+    }
+    return participants;
+}
 
 export function VoiceCard({activities, voice, streams}) {
     if (!voice.length && !streams.length) return;
@@ -27,7 +34,7 @@ export function VoiceCard({activities, voice, streams}) {
                     </div>
                     <FlexInfo 
                         className={`${NowPlayingClasses.details} ${NowPlayingClasses.voiceSectionDetails}`} 
-                        onClick={() => Common.OpenVoiceChannel.selectVoiceChannel(channel.id)} 
+                        onClick={() => Common.SelectedChannelActionCreators.selectVoiceChannel(channel.id)} 
                         channel={channel} 
                         streamUser={streamUsers[0]} 
                         server={server} 
@@ -38,7 +45,7 @@ export function VoiceCard({activities, voice, streams}) {
                 {stream && streams.map((stream, index) =>
                         <>
                             <div className={MainClasses.sectionDivider} />
-                            <StreamCard stream={streamsInfo[index]} streamUser={streamUsers[index]} streamActivity={streams[index]?.activity} key={`stream-${streamUsers[index].id}`} />
+                            <StreamCard stream={streamsInfo[index]} streamUser={streamUsers[index]} streamActivity={stream?.activity} key={`stream-${streamUsers[index].id}`} />
                         </>
                     )
                 }

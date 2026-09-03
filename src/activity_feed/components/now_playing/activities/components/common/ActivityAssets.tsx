@@ -1,6 +1,6 @@
 import { Plugins } from "betterdiscord"
 import { useState } from "react";
-import { Common } from "@modules/common";
+import { Common, AvatarUtils } from "@modules/common";
 import locale from "@common/methods/locale";
 import Tooltip from "@common/components/TooltipBuilder";
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
@@ -125,10 +125,9 @@ export function RichImageAsset({url, tooltipText, onClick, onMouseOver, onMouseL
 
 export function TwitchImageAsset({url, imageId, streamUrl}: TwitchImageAsset) {
     return (
-        <a
-            className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover} ${NowPlayingClasses.twitchBackgroundImage}`}
+        <Common.Anchor
+            className={`${NowPlayingClasses.twitchBackgroundImage}`}
             href={streamUrl}
-            rel="noreferrer nopener"
             target="_blank"
             >
                 { !imageId ? ( <FallbackAsset className={`${NowPlayingClasses.assetsLargeImageActivityFeedTwitch} ${NowPlayingClasses.assetsLargeImage}`} /> ) :
@@ -139,7 +138,7 @@ export function TwitchImageAsset({url, imageId, streamUrl}: TwitchImageAsset) {
                         onError={(e) => e.currentTarget.src = 'https://static-cdn.jtvnw.net/ttv-static/404_preview-900x500.jpg'}
                     ></img>
                 }
-        </a> 
+        </Common.Anchor> 
     )
 }   
 
@@ -149,9 +148,9 @@ export function VoiceGuildAsset({channel, server, streamUser}) {
             <img className={NowPlayingClasses.voiceSectionGuildImage} src=
                 {(() => {
                     switch (true) {
-                        case !! server: return `https://cdn.discordapp.com/icons/${server.id}/${server.icon}.png?size=40`
-                        case !! (channel && channel?.icon): return `https://cdn.discordapp.com/channel-icons/${channel.id}/${channel.icon}.png?size=40`
-                        case !! streamUser: return `https://cdn.discordapp.com/avatars/${streamUser.id}/${streamUser.avatar}.webp?size=40`
+                        case !! server: return AvatarUtils.getGuildIconURL({id: server.id, icon: server.icon, size: 40})
+                        case !! (channel && channel?.icon): return AvatarUtils.getChannelIconURL({id: channel.id, icon: channel.icon, size: 40})
+                        case !! streamUser: return AvatarUtils.getUserAvatarURL({id: streamUser.id, avatar: streamUser.avatar})
                     }
                 })()} 
             />

@@ -1,17 +1,13 @@
-import { FeedCarouselBuilder } from "./CarouselBuilder";
-import { FeedMiniCarouselBuilder } from "./MiniCarouselBuilder";
-import { FeedMiniPaginationBuilder } from "./MiniPaginationBuilder";
-import { FeedOverflowBuilder } from "./OverflowBuilder";
-import { FeedPaginationBuilder } from "./PaginationBuilder"
-import { FeedSkeletonBuilder } from "./SkeletonBuilder";
-import { FeedSkeletonErrorBuilder } from "./SkeletonErrorBuilder";
+import { HorizontalFeedPagination } from "./HorizontalFeedPagination";
+import { VerticalFeedPagination } from "./VerticalFeedPagination";
+import { FeedCarouselItemOverflow } from "./FeedCarouselItemOverflow";
+import { FeedSkeleton } from "./FeedSkeleton";
+import { FeedSkeletonError } from "./FeedSkeletonError";
 
 export {
-    FeedCarouselBuilder,
-    FeedMiniCarouselBuilder,
-    FeedMiniPaginationBuilder,
-    FeedOverflowBuilder,
-    FeedPaginationBuilder,
-    FeedSkeletonBuilder,
-    FeedSkeletonErrorBuilder
+    HorizontalFeedPagination,
+    VerticalFeedPagination,
+    FeedCarouselItemOverflow,
+    FeedSkeleton,
+    FeedSkeletonError
 }

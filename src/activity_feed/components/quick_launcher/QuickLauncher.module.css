@@ -1,5 +1,8 @@
 .quickLauncher {
     display: block;
+    position: relative;
+    padding: 0 20px 0 20px;
+    padding-right: 4px;
 }
 
 .dock {

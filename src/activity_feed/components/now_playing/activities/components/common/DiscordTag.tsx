@@ -25,7 +25,7 @@ export default function ({user, partiedMembers, voice}: DiscordTag) {
 
     return (
         <div className={NowPlayingClasses.nameTag} style={{ display: "flex", flex: 1 }}>
-            <span className={`${NowPlayingClasses.username} username`} onClick={() => Common.ModalAccessUtils.openUserProfileModal({ userId: user.id })}>{outputtedUsername}</span>
+            <span className={`${NowPlayingClasses.username} username`} onClick={() => Common.UserProfileModalActionCreators.openUserProfileModal({ userId: user.id })}>{outputtedUsername}</span>
         </div>
     )
 }

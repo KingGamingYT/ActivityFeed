@@ -1,14 +1,19 @@
 
 import { ContextMenu, Hooks, Utils, React } from 'betterdiscord';
-import { Common } from "@modules/common";
-import { FeedOverflowBuilder } from "@application_news/components";
-import { FeedPopout } from "@application_news/components/OverflowBuilder";
+import { Common, AvatarUtils } from "@modules/common";
+import { FeedCarouselItemOverflow, FeedCarouselItemPopout } from "@application_news/components/FeedCarouselItemOverflow";
 import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
-import NewsStore from "@activity_feed/GameNewsStore";
+import NewsStore, { type Article as NewsItem } from "@activity_feed/GameNewsStore";
 
-export function FeedArticle(Article) {
-    return function WrappedComponent(props) {
+interface CarouselItem {
+    article: NewsItem
+    orientation: string,
+    useGameProfile: any
+}
+
+function FeedCarouselItem(Article: any) {
+    return function WrappedComponent(props: any) {
         let id = props.article.application.id;
         if (isNaN(id)) id = undefined; 
         const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: id});
@@ -17,20 +22,20 @@ export function FeedArticle(Article) {
     }
 }
 
-class Article extends React.PureComponent {
-    static displayName = "FeedArticle";
-    state;
+class Article extends React.PureComponent<CarouselItem> {
+    static displayName = "FeedCarouselItem";
+    declare state;
     _animatedBackground = new Common.Animated.Value(0);
     _animatedText = new Common.Animated.Value(0);
     _zIndex = new Common.Animated.Value(1);
-    constructor(article) {
-        super(article);
+    constructor(props: any) {
+        super(props);
         this.state = {
             getDirection: () => NewsStore.getDirection(),
         }
     }
 
-    componentWillEnter(e) {
+    componentWillEnter(e: any) {
         let direction = this.state.getDirection();
         this._zIndex.setValue(direction === 1 ? 2 : 1),
         direction === 1 && (this._animatedBackground.setValue(-1), 
@@ -47,7 +52,7 @@ class Article extends React.PureComponent {
         }).start(e)
     }
 
-    componentWillLeave(e) {
+    componentWillLeave(e: any) {
         let direction = this.state.getDirection();
         this._zIndex.setValue(direction === 1 ? 1 : 2),
         Common.Animated.timing(this._animatedText, {
@@ -100,10 +105,10 @@ class Article extends React.PureComponent {
         }
     }
 
-    handleRightClick(e) {
+    handleRightClick(e: React.MouseEvent<HTMLElement>) {
         let currentArticle = this.props.article;
 
-        return ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} articleUrl={currentArticle.news?.url} /> )
+        return ContextMenu.open(e, (props) => <FeedCarouselItemPopout {...props} application={currentArticle.application} articleUrl={currentArticle.news?.url} /> )
     }
 
     renderBackground() {
@@ -133,7 +138,7 @@ class Article extends React.PureComponent {
                 onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(FeedClasses.clickableIcon)}
                 onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(FeedClasses.clickableIcon)}
                 src={currentArticle.news?.application_id && currentArticle.application?.icon
-                    ? `https://cdn.discordapp.com/app-icons/${currentArticle.news.application_id}/${currentArticle.application?.icon}.webp?size=64&keep_aspect_ratio=false`
+                    ? AvatarUtils.getApplicationIconURL({id: currentArticle.news.application_id, icon: currentArticle.application?.icon, size: 64, keepAspectRatio: false})
                     : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
                 }
             />
@@ -147,16 +152,13 @@ class Article extends React.PureComponent {
         
         return (
             <>
-                <FeedOverflowBuilder application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} position="right" />
-                <a
-                    tabindex={currentArticle.index}
-                    className={`${Common.AnchorClasses.anchor} ${Common.AnchorClasses.anchorUnderlineOnHover}`}
-                    href={currentArticle.news?.url || "#"}
-                    rel="noreferrer nopener"
+                <FeedCarouselItemOverflow application={currentArticle.application} articleUrl={currentArticle.news?.url} position="right" />
+                <Common.Anchor
+                    tabIndex={currentArticle.index}
+                    href={currentArticle.news?.url || undefined}
                     target="_blank"
-                    role="button"
                 >
-                    <Common.Animated.div className={Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article)} style={this.getRootStyle()} onContextMenu={e => this.handleRightClick(e)}>
+                    <Common.Animated.div className={Utils.className(simple ? FeedClasses.articleSimple : FeedClasses.articleStandard, FeedClasses.article)} style={this.getRootStyle()} onContextMenu={(e: React.MouseEvent<HTMLElement>) => this.handleRightClick(e)}>
                         {this.renderBackground()}
                         <Common.Animated.div className={FeedClasses.detailsContainer} style={this.getTextStyle()}>
                             <div className={FeedClasses.applicationArea}>
@@ -171,9 +173,9 @@ class Article extends React.PureComponent {
                             </div>
                         </Common.Animated.div>
                     </Common.Animated.div>
-                </a>
+                </Common.Anchor>
             </>
         )
     }
 }
-export default FeedArticle(Article);
+export default FeedCarouselItem(Article);

@@ -22,43 +22,6 @@
     margin: 0 auto;
 }
 
-.title {
-    align-items: center;
-    display: flex;
-    justify-content: flex-start;
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 1.25;
-    color: var(--text-strong);
-}
-
-.titleWrapper {
-    flex: 0 0 auto;
-    margin: 0 8px 0 0;
-    min-width: auto;
-}
-
-.iconWrapper {
-    align-items: center;
-    display: flex;
-    flex: 0 0 auto;
-    height: var(--space-32);
-    justify-content: center;
-    margin: 0;
-    position: relative;
-    width: var(--space-32);
-    path {
-        fill: currentColor;
-    }
-    svg {
-        color: var(--channel-icon);
-        height: var(--chat-input-icon-size);
-        width: var(--chat-input-icon-size);
-    }
-}
-
 .headerBar {
     height: var(--custom-channel-header-height);
     min-height: var(--custom-channel-header-height);

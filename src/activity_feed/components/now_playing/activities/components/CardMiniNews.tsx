@@ -1,29 +1,30 @@
 import { ContextMenu, Utils } from "betterdiscord";
 import { Common } from "@modules/common";
-import { FeedPopout } from "@application_news/components/OverflowBuilder";
+import { FeedCarouselItemPopout } from "@application_news/components/FeedCarouselItemOverflow";
+import type { Article } from "@activity_feed/GameNewsStore";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
 
-export function CardMiniNews({currentArticle, className}) {
+interface CardMiniNews {
+    currentArticle: Article,
+    className?: string
+}
+
+export function CardMiniNews({currentArticle, className}: CardMiniNews) {
     const thumbnail = currentArticle.news?.thumbnail?.replace(/\s/g, "%20"); // fix for urls that have spaces in them thanks to lacking URI encoding
 
 	return (
-		<a
-            tabindex={currentArticle.index}
-            className={Utils.className(Common.AnchorClasses.anchor, FeedClasses.newsLink, FeedClasses.news, className)}
-            href={currentArticle.news?.url || "#"}
-            onContextMenu={e => ContextMenu.open(e, (props) => <FeedPopout {...props} application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} /> )}
-            rel="noreferrer nopener"
+		<Common.Anchor
+            tabIndex={currentArticle.index}
+            className={Utils.className(FeedClasses.newsLink, FeedClasses.news, className)}
+            href={currentArticle.news?.url || undefined}
+            onContextMenu={(e: React.MouseEvent) => ContextMenu.open(e, (props) => <FeedCarouselItemPopout {...props} application={currentArticle.application} gameId={currentArticle.id} articleUrl={currentArticle.news?.url} /> )}
             target="_blank"
-            role="button"
+            useDefaultUnderlineStyles={false}
         >
             <div className={FeedClasses.background}>
                 <div 
-                    className={FeedClasses.backgroundImage}
-                    style={{ 
-                        backgroundImage: `url(${thumbnail}), 
-                        url(https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.id}/capsule_616x353.jpg),
-                        url(https://static.discord.com/assets/6a0d045ec452de05f71ee63fece2327f.svg)`
-                    }}
+                    className={Utils.className(FeedClasses.backgroundImage, !thumbnail && FeedClasses.backgroundBackup)}
+                    style={{ backgroundImage: thumbnail && `url(${thumbnail})` }}
                 />
             </div>
             <div className={FeedClasses.body}>
@@ -31,6 +32,6 @@ export function CardMiniNews({currentArticle, className}) {
                 <div className={FeedClasses.description} dangerouslySetInnerHTML={{__html: currentArticle.news?.description || "No description available."}} />
                 <div className={FeedClasses.timestamp}>{Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>
             </div>
-        </a>
+        </Common.Anchor>
 	)
 }

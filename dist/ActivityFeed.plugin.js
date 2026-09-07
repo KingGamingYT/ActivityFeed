@@ -34,7 +34,7 @@
 const betterdiscord = new BdApi("ActivityFeed");
 const react = BdApi.React;
 
-// ./modules/common.js
+// modules/common.js
 const Filters = [
 	{ name: "ActivityActions", filter: betterdiscord.Webpack.Filters.byStrings("display", "getUserOutbox") },
 	{ name: "ActivityCardClasses", filter: betterdiscord.Webpack.Filters.byKeys("gameState", "clickableImage") },
@@ -50,7 +50,7 @@ const Filters = [
 	{ name: "ChannelActionCreators", filter: (x) => x.openPrivateChannel },
 	{ name: "Clipboard", filter: betterdiscord.Webpack.Filters.byStrings("navigator.clipboard.write", "Clipboard API not supported."), searchExports: true },
 	{ name: "ClydeIcon", filter: betterdiscord.Webpack.Filters.byStrings("colorClass", "M19.73"), searchExports: true },
-	{ name: "ContainerRefProvider", filter: betterdiscord.Webpack.Filters.byStrings("disableFocusRingScope", "containerRef"), searchExports: true },
+	{ name: "ContainerRefProvider", filter: betterdiscord.Webpack.Filters.byStrings("let{disableFocusRingScope", "containerRef"), searchExports: true },
 	{ name: "Endpoints", filter: betterdiscord.Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
 	{ name: "FetchApplications", filter: betterdiscord.Webpack.Filters.byKeys("getApplicationsForGuild") },
 	{ name: "FetchUserApplicationStatistics", filter: betterdiscord.Webpack.Filters.byStrings('"USER_ACTIVITY_STATISTICS_FETCH_SUCCESS"'), searchExports: true },
@@ -162,7 +162,7 @@ const SettingsRoot = betterdiscord.Webpack.waitForModule((m) => m?.key === "$Roo
 const RecentlyPlayedByApplicationId = betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.byStrings("GLOBAL_FEED", "application_id", "useMemo"), { searchExports: true });
 betterdiscord.Webpack.waitForModule(betterdiscord.Webpack.Filters.bySource('"GameProfileModal"', "forceV2"));
 
-// ./modules/stores.js
+// modules/stores.js
 const ApplicationStore = betterdiscord.Webpack.getStore("ApplicationStore");
 const ChannelStore = betterdiscord.Webpack.getStore("ChannelStore");
 const ConnectedAppsStore = betterdiscord.Webpack.getStore("ConnectedAppsStore");
@@ -184,13 +184,13 @@ const { useStateFromStores } = betterdiscord.Webpack.getMangled((m) => m.Store, 
 const VoiceStateStore = betterdiscord.Webpack.getStore("VoiceStateStore");
 const WindowStore = betterdiscord.Webpack.getStore("WindowStore");
 
-// ./activity_feed/common/methods/getIntlString.js
+// activity_feed/common/methods/getIntlString.js
 function getIntlString(hash, parameter) {
 	if (parameter) return Common.intl.intl.formatToPlainString(Common.intl.t[`${hash}`], parameter);
 	return Common.intl.intl.formatToPlainString(Common.intl.t[`${hash}`]);
 }
 
-// ./activity_feed/common/methods/getCustomString.js
+// activity_feed/common/methods/getCustomString.js
 const i18n = {
 	"en-US": {
 		TEST: "hi! this is a test string for the i18n system! i am so tired!",
@@ -283,7 +283,7 @@ function getCustomString(str, parameter) {
 	return i18n[locale]?.[str] ?? i18n[defaultLocale]?.[str] ?? "";
 }
 
-// ./activity_feed/common/methods/locale.js
+// activity_feed/common/methods/locale.js
 const locale = {
 	Strings: {
 		TEST: () => getCustomString("TEST"),
@@ -372,7 +372,7 @@ const locale = {
 	}
 };
 
-// ./activity_feed/common/methods/common.js
+// activity_feed/common/methods/common.js
 function chunkArrayByNumber(cards, num) {
 	let chunkLength = Math.max(cards.length / num, 1);
 	const chunks = [];
@@ -445,7 +445,7 @@ function useEffectEvent(callback) {
 	}, []);
 }
 
-// fast-xml-parser\src\util.js
+// fast-xml-parser
 const nameStartChar = ':A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
 const nameChar = nameStartChar + '\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
 const nameRegexp = '[' + nameStartChar + '][' + nameChar + ']*';
@@ -483,7 +483,7 @@ const DANGEROUS_PROPERTY_NAMES = [
 ];
 const criticalProperties = ["__proto__", "constructor", "prototype"];
 
-// fast-xml-parser\src\validator.js
+// fast-xml-parser
 const defaultOptions$1 = {
 	allowBooleanAttributes: false,
 	unpairedTags: []
@@ -808,331 +808,7 @@ function getPositionFromMatch(match) {
 	return match.startIndex + match[1].length;
 }
 
-// @nodable\entities\src\entities.js
-const CURRENCY = {
-	cent: '¢',
-	pound: '£',
-	curren: '¤',
-	yen: '¥',
-	euro: '€',
-	dollar: '$',
-	fnof: 'ƒ',
-	inr: '₹',
-	af: '؋',
-	birr: 'ብር',
-	peso: '₱',
-	rub: '₽',
-	won: '₩',
-	yuan: '¥',
-	cedil: '¸',
-};
-const XML = {
-	amp: "&",
-	apos: "'",
-	gt: ">",
-	lt: "<",
-	quot: "\""
-};
-const COMMON_HTML = {
-	nbsp: '\u00a0',
-	copy: '\u00a9',
-	reg: '\u00ae',
-	trade: '\u2122',
-	mdash: '\u2014',
-	ndash: '\u2013',
-	hellip: '\u2026',
-	laquo: '\u00ab',
-	raquo: '\u00bb',
-	lsquo: '\u2018',
-	rsquo: '\u2019',
-	ldquo: '\u201c',
-	rdquo: '\u201d',
-	bull: '\u2022',
-	para: '\u00b6',
-	sect: '\u00a7',
-	deg: '\u00b0',
-	frac12: '\u00bd',
-	frac14: '\u00bc',
-	frac34: '\u00be',
-};
-
-// @nodable\entities\src\EntityDecoder.js
-const ENTITY_ACTION = Object.freeze({
-	ALLOW: 'allow',
-	BLOCK: 'block',
-	THROW: 'throw',
-});
-const SPECIAL_CHARS = new Set('!?\\\\/[]$%{}^&*()<>|+');
-function validateEntityName$1(name) {
-	if (name[0] === '#') {
-		throw new Error(`[EntityReplacer] Invalid character '#' in entity name: "${name}"`);
-	}
-	for (const ch of name) {
-		if (SPECIAL_CHARS.has(ch)) {
-			throw new Error(`[EntityReplacer] Invalid character '${ch}' in entity name: "${name}"`);
-		}
-	}
-	return name;
-}
-function mergeEntityMaps(...maps) {
-	const out = Object.create(null);
-	for (const map of maps) {
-		if (!map) continue;
-		for (const key of Object.keys(map)) {
-			const raw = map[key];
-			if (typeof raw === 'string') {
-				out[key] = raw;
-			} else if (raw && typeof raw === 'object' && raw.val !== undefined) {
-				const val = raw.val;
-				if (typeof val === 'string') {
-					out[key] = val;
-				}
-			}
-		}
-	}
-	return out;
-}
-const LIMIT_TIER_EXTERNAL = 'external';
-const LIMIT_TIER_BASE = 'base';
-const LIMIT_TIER_ALL = 'all';
-function parseLimitTiers(raw) {
-	if (!raw || raw === LIMIT_TIER_EXTERNAL) return new Set([LIMIT_TIER_EXTERNAL]);
-	if (raw === LIMIT_TIER_ALL) return new Set([LIMIT_TIER_ALL]);
-	if (raw === LIMIT_TIER_BASE) return new Set([LIMIT_TIER_BASE]);
-	if (Array.isArray(raw)) return new Set(raw);
-	return new Set([LIMIT_TIER_EXTERNAL]);
-}
-const NCR_LEVEL = Object.freeze({ allow: 0, leave: 1, remove: 2, throw: 3 });
-const XML10_ALLOWED_C0 = new Set([0x09, 0x0A, 0x0D]);
-function parseNCRConfig(ncr) {
-	if (!ncr) {
-		return { xmlVersion: 1.0, onLevel: NCR_LEVEL.allow, nullLevel: NCR_LEVEL.remove };
-	}
-	const xmlVersion = ncr.xmlVersion === 1.1 ? 1.1 : 1.0;
-	const onLevel = NCR_LEVEL[ncr.onNCR] ?? NCR_LEVEL.allow;
-	const nullLevel = NCR_LEVEL[ncr.nullNCR] ?? NCR_LEVEL.remove;
-	const clampedNull = Math.max(nullLevel, NCR_LEVEL.remove);
-	return { xmlVersion, onLevel, nullLevel: clampedNull };
-}
-class EntityDecoder {
-	constructor(options = {}) {
-		this._limit = options.limit || {};
-		this._maxTotalExpansions = this._limit.maxTotalExpansions || 0;
-		this._maxExpandedLength = this._limit.maxExpandedLength || 0;
-		this._postCheck = typeof options.postCheck === 'function' ? options.postCheck : r => r;
-		this._limitTiers = parseLimitTiers(this._limit.applyLimitsTo ?? LIMIT_TIER_EXTERNAL);
-		this._numericAllowed = options.numericAllowed ?? true;
-		this._baseMap = mergeEntityMaps(XML, options.namedEntities || null);
-		this._externalMap = Object.create(null);
-		this._inputMap = Object.create(null);
-		this._totalExpansions = 0;
-		this._expandedLength = 0;
-		this._removeSet = new Set(options.remove && Array.isArray(options.remove) ? options.remove : []);
-		this._leaveSet = new Set(options.leave && Array.isArray(options.leave) ? options.leave : []);
-		const ncrCfg = parseNCRConfig(options.ncr);
-		this._ncrXmlVersion = ncrCfg.xmlVersion;
-		this._ncrOnLevel = ncrCfg.onLevel;
-		this._ncrNullLevel = ncrCfg.nullLevel;
-		this._onExternalEntity = typeof options.onExternalEntity === 'function'
-			? options.onExternalEntity
-			: null;
-		this._onInputEntity = typeof options.onInputEntity === 'function'
-			? options.onInputEntity
-			: null;
-	}
-	_applyRegistrationHook(hook, name, value, context) {
-		if (!hook) return true;
-		const action = hook(name, value);
-		if (action === ENTITY_ACTION.BLOCK) return false;
-		if (action === ENTITY_ACTION.THROW) {
-			throw new Error(
-				`[EntityDecoder] Registration of ${context} entity "&${name};" was rejected by hook`
-			);
-		}
-		return true;
-	}
-	setExternalEntities(map) {
-		if (map) {
-			for (const key of Object.keys(map)) {
-				validateEntityName$1(key);
-			}
-		}
-		if (!this._onExternalEntity) {
-			this._externalMap = mergeEntityMaps(map);
-			return;
-		}
-		const flat = mergeEntityMaps(map);
-		const filtered = Object.create(null);
-		for (const [name, value] of Object.entries(flat)) {
-			if (this._applyRegistrationHook(this._onExternalEntity, name, value, 'external')) {
-				filtered[name] = value;
-			}
-		}
-		this._externalMap = filtered;
-	}
-	addExternalEntity(key, value) {
-		validateEntityName$1(key);
-		if (typeof value === 'string' && value.indexOf('&') === -1) {
-			if (this._applyRegistrationHook(this._onExternalEntity, key, value, 'external')) {
-				this._externalMap[key] = value;
-			}
-		}
-	}
-	addInputEntities(map) {
-		this._totalExpansions = 0;
-		this._expandedLength = 0;
-		if (!this._onInputEntity) {
-			this._inputMap = mergeEntityMaps(map);
-			return;
-		}
-		const flat = mergeEntityMaps(map);
-		const filtered = Object.create(null);
-		for (const [name, value] of Object.entries(flat)) {
-			if (this._applyRegistrationHook(this._onInputEntity, name, value, 'input')) {
-				filtered[name] = value;
-			}
-		}
-		this._inputMap = filtered;
-	}
-	reset() {
-		this._inputMap = Object.create(null);
-		this._totalExpansions = 0;
-		this._expandedLength = 0;
-		return this;
-	}
-	setXmlVersion(version) {
-		this._ncrXmlVersion = version === 1.1 ? 1.1 : 1.0;
-	}
-	decode(str) {
-		if (typeof str !== 'string' || str.length === 0) return str;
-		if (str.indexOf('&') === -1) return str;
-		const original = str;
-		const chunks = [];
-		const len = str.length;
-		let last = 0;
-		let i = 0;
-		const limitExpansions = this._maxTotalExpansions > 0;
-		const limitLength = this._maxExpandedLength > 0;
-		const checkLimits = limitExpansions || limitLength;
-		while (i < len) {
-			if (str.charCodeAt(i) !== 38 ) { i++; continue; }
-			let j = i + 1;
-			while (j < len && str.charCodeAt(j) !== 59  && (j - i) <= 32) j++;
-			if (j >= len || str.charCodeAt(j) !== 59) {
-				i++;
-				continue;
-			}
-			const token = str.slice(i + 1, j);
-			if (token.length === 0) { i++; continue; }
-			let replacement;
-			let tier;
-			if (this._removeSet.has(token)) {
-				replacement = '';
-				if (tier === undefined) {
-					tier = LIMIT_TIER_EXTERNAL;
-				}
-			} else if (this._leaveSet.has(token)) {
-				i++;
-				continue;
-			} else if (token.charCodeAt(0) === 35 ) {
-				const ncrResult = this._resolveNCR(token);
-				if (ncrResult === undefined) {
-					i++;
-					continue;
-				}
-				replacement = ncrResult;
-				tier = LIMIT_TIER_BASE;
-			} else {
-				const resolved = this._resolveName(token);
-				replacement = resolved?.value;
-				tier = resolved?.tier;
-			}
-			if (replacement === undefined) {
-				i++;
-				continue;
-			}
-			if (i > last) chunks.push(str.slice(last, i));
-			chunks.push(replacement);
-			last = j + 1;
-			i = last;
-			if (checkLimits && this._tierCounts(tier)) {
-				if (limitExpansions) {
-					this._totalExpansions++;
-					if (this._totalExpansions > this._maxTotalExpansions) {
-						throw new Error(
-							`[EntityReplacer] Entity expansion count limit exceeded: ` +
-							`${this._totalExpansions} > ${this._maxTotalExpansions}`
-						);
-					}
-				}
-				if (limitLength) {
-					const delta = replacement.length - (token.length + 2);
-					if (delta > 0) {
-						this._expandedLength += delta;
-						if (this._expandedLength > this._maxExpandedLength) {
-							throw new Error(
-								`[EntityReplacer] Expanded content length limit exceeded: ` +
-								`${this._expandedLength} > ${this._maxExpandedLength}`
-							);
-						}
-					}
-				}
-			}
-		}
-		if (last < len) chunks.push(str.slice(last));
-		const result = chunks.length === 0 ? str : chunks.join('');
-		return this._postCheck(result, original);
-	}
-	_tierCounts(tier) {
-		if (this._limitTiers.has(LIMIT_TIER_ALL)) return true;
-		return this._limitTiers.has(tier);
-	}
-	_resolveName(name) {
-		if (name in this._inputMap) return { value: this._inputMap[name], tier: LIMIT_TIER_EXTERNAL };
-		if (name in this._externalMap) return { value: this._externalMap[name], tier: LIMIT_TIER_EXTERNAL };
-		if (name in this._baseMap) return { value: this._baseMap[name], tier: LIMIT_TIER_BASE };
-		return undefined;
-	}
-	_classifyNCR(cp) {
-		if (cp === 0) return this._ncrNullLevel;
-		if (cp >= 0xD800 && cp <= 0xDFFF) return NCR_LEVEL.remove;
-		if (this._ncrXmlVersion === 1.0) {
-			if (cp >= 0x01 && cp <= 0x1F && !XML10_ALLOWED_C0.has(cp)) return NCR_LEVEL.remove;
-		}
-		return -1;
-	}
-	_applyNCRAction(action, token, cp) {
-		switch (action) {
-			case NCR_LEVEL.allow: return String.fromCodePoint(cp);
-			case NCR_LEVEL.remove: return '';
-			case NCR_LEVEL.leave: return undefined;
-			case NCR_LEVEL.throw:
-				throw new Error(
-					`[EntityDecoder] Prohibited numeric character reference ` +
-					`&${token}; (U+${cp.toString(16).toUpperCase().padStart(4, '0')})`
-				);
-			default: return String.fromCodePoint(cp);
-		}
-	}
-	_resolveNCR(token) {
-		const second = token.charCodeAt(1);
-		let cp;
-		if (second === 120  || second === 88 ) {
-			cp = parseInt(token.slice(2), 16);
-		} else {
-			cp = parseInt(token.slice(1), 10);
-		}
-		if (Number.isNaN(cp) || cp < 0 || cp > 0x10FFFF) return undefined;
-		const minimum = this._classifyNCR(cp);
-		if (!this._numericAllowed && minimum < NCR_LEVEL.remove) return undefined;
-		const effective = minimum === -1
-			? this._ncrOnLevel
-			: Math.max(this._ncrOnLevel, minimum);
-		return this._applyNCRAction(effective, token, cp);
-	}
-}
-
-// fast-xml-parser\src\xmlparser\OptionsBuilder.js
+// fast-xml-parser
 const defaultOnDangerousProperty = (name) => {
 	if (DANGEROUS_PROPERTY_NAMES.includes(name)) {
 		return "__" + name;
@@ -1154,8 +830,7 @@ const defaultOptions = {
 	numberParseOptions: {
 		hex: true,
 		leadingZeros: true,
-		eNotation: true,
-		unicode: false
+		eNotation: true
 	},
 	tagValueProcessor: function (tagName, val) {
 		return val;
@@ -1170,7 +845,6 @@ const defaultOptions = {
 	unpairedTags: [],
 	processEntities: true,
 	htmlEntities: false,
-	entityDecoder: null,
 	ignoreDeclaration: false,
 	ignorePiTags: false,
 	transformTagName: false,
@@ -1200,18 +874,17 @@ function validatePropertyName(propertyName, optionName) {
 		);
 	}
 }
-function normalizeProcessEntities(value, htmlEntities) {
+function normalizeProcessEntities(value) {
 	if (typeof value === 'boolean') {
 		return {
 			enabled: value,
 			maxEntitySize: 10000,
-			maxExpansionDepth: 10000,
-			maxTotalExpansions: Infinity,
+			maxExpansionDepth: 10,
+			maxTotalExpansions: 1000,
 			maxExpandedLength: 100000,
-			maxEntityCount: 1000,
+			maxEntityCount: 100,
 			allowedTags: null,
-			tagFilter: null,
-			appliesTo: "all",
+			tagFilter: null
 		};
 	}
 	if (typeof value === 'object' && value !== null) {
@@ -1223,8 +896,7 @@ function normalizeProcessEntities(value, htmlEntities) {
 			maxExpandedLength: Math.max(1, value.maxExpandedLength ?? 100000),
 			maxEntityCount: Math.max(1, value.maxEntityCount ?? 1000),
 			allowedTags: value.allowedTags ?? null,
-			tagFilter: value.tagFilter ?? null,
-			appliesTo: value.appliesTo ?? "all",
+			tagFilter: value.tagFilter ?? null
 		};
 	}
 	return normalizeProcessEntities(true);
@@ -1246,7 +918,7 @@ const buildOptions = function (options) {
 	if (built.onDangerousProperty === null) {
 		built.onDangerousProperty = defaultOnDangerousProperty;
 	}
-	built.processEntities = normalizeProcessEntities(built.processEntities, built.htmlEntities);
+	built.processEntities = normalizeProcessEntities(built.processEntities);
 	built.unpairedTagsSet = new Set(built.unpairedTags);
 	if (built.stopNodes && Array.isArray(built.stopNodes)) {
 		built.stopNodes = built.stopNodes.map(node => {
@@ -1259,7 +931,7 @@ const buildOptions = function (options) {
 	return built;
 };
 
-// fast-xml-parser\src\xmlparser\xmlNode.js
+// fast-xml-parser
 let METADATA_SYMBOL$1;
 if (typeof Symbol !== "function") {
 	METADATA_SYMBOL$1 = "@@xmlMetadata";
@@ -1292,76 +964,11 @@ class XmlNode {
 	}
 }
 
-// fast-xml-parser\node_modules\xml-naming\src\index.js
-const nameStartChar10 =
-	':A-Za-z_' +
-	'\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF' +
-	'\u0370-\u037D' +
-	'\u037F-\u0486\u0488-\u1FFF' +
-	'\u200C-\u200D' +
-	'\u2070-\u218F' +
-	'\u2C00-\u2FEF' +
-	'\u3001-\uD7FF' +
-	'\uF900-\uFDCF' +
-	'\uFDF0-\uFFFD';
-const nameChar10 =
-	nameStartChar10 +
-	'\\-\\.\\d' +
-	'\u00B7' +
-	'\u0300-\u036F' +
-	'\u203F-\u2040';
-const nameStartChar11 =
-	':A-Za-z_' +
-	'\u00C0-\u02FF' +
-	'\u0370-\u037D' +
-	'\u037F-\u0486\u0488-\u1FFF' +
-	'\u200C-\u200D' +
-	'\u2070-\u218F' +
-	'\u2C00-\u2FEF' +
-	'\u3001-\uD7FF' +
-	'\uF900-\uFDCF' +
-	'\uFDF0-\uFFFD' +
-	'\u{10000}-\u{EFFFF}';
-const nameChar11 =
-	nameStartChar11 +
-	'\\-\\.\\d' +
-	'\u00B7' +
-	'\u0300-\u036F' +
-	'\u0487' +
-	'\u203F-\u2040';
-const buildRegexes = (startChar, char, flags = '') => {
-	const ncStart = startChar.replace(':', '');
-	const ncChar = char.replace(':', '');
-	const ncNamePat = `[${ncStart}][${ncChar}]*`;
-	return {
-		name: new RegExp(`^[${startChar}][${char}]*$`, flags),
-		ncName: new RegExp(`^${ncNamePat}$`, flags),
-		qName: new RegExp(`^${ncNamePat}(?::${ncNamePat})?$`, flags),
-		nmToken: new RegExp(`^[${char}]+$`, flags),
-		nmTokens: new RegExp(`^[${char}]+(?:\\s+[${char}]+)*$`, flags),
-	};
-};
-const regexes10 = buildRegexes(nameStartChar10, nameChar10);
-const regexes11 = buildRegexes(nameStartChar11, nameChar11, 'u');
-const nameStartCharAscii = ':A-Za-z_';
-const nameCharAscii = nameStartCharAscii + '\\-\\.\\d';
-const regexesAscii = buildRegexes(nameStartCharAscii, nameCharAscii);
-const getRegexes = (xmlVersion = '1.0', asciiOnly = false) => {
-	if (asciiOnly) return regexesAscii;
-	return xmlVersion === '1.1' ? regexes11 : regexes10;
-};
-const qName = (str, { xmlVersion = '1.0', asciiOnly = false } = {}) =>
-	getRegexes(xmlVersion, asciiOnly).qName.test(str);
-
-// fast-xml-parser\src\xmlparser\DocTypeReader.js
+// fast-xml-parser
 class DocTypeReader {
-		constructor(options, xmlVersion) {
+		constructor(options) {
 				this.suppressValidationErr = !options;
 				this.options = options;
-				this.xmlVersion = xmlVersion || 1.0;
-		}
-		setXmlVersion(xmlVersion = 1.0) {
-				this.xmlVersion = xmlVersion;
 		}
 		readDocType(xmlData, i) {
 				const entities = Object.create(null);
@@ -1390,7 +997,11 @@ class DocTypeReader {
 																		`Entity count (${entityCount + 1}) exceeds maximum allowed (${this.options.maxEntityCount})`
 																);
 														}
-														entities[entityName] = val;
+														const escaped = entityName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+														entities[entityName] = {
+																regx: RegExp(`&${escaped};`, "g"),
+																val: val
+														};
 														entityCount++;
 												}
 										}
@@ -1441,7 +1052,7 @@ class DocTypeReader {
 						i++;
 				}
 				let entityName = xmlData.substring(startIndex, i);
-				validateEntityName(entityName, { xmlVersion: this.xmlVersion });
+				validateEntityName$1(entityName);
 				i = skipWhitespace(xmlData, i);
 				if (!this.suppressValidationErr) {
 						if (xmlData.substring(i, i + 6).toUpperCase() === "SYSTEM") {
@@ -1469,7 +1080,7 @@ class DocTypeReader {
 						i++;
 				}
 				let notationName = xmlData.substring(startIndex, i);
-				!this.suppressValidationErr && validateEntityName(notationName, { xmlVersion: this.xmlVersion });
+				!this.suppressValidationErr && validateEntityName$1(notationName);
 				i = skipWhitespace(xmlData, i);
 				const identifierType = xmlData.substring(i, i + 6).toUpperCase();
 				if (!this.suppressValidationErr && identifierType !== "SYSTEM" && identifierType !== "PUBLIC") {
@@ -1518,7 +1129,7 @@ class DocTypeReader {
 						i++;
 				}
 				let elementName = xmlData.substring(startIndex, i);
-				if (!this.suppressValidationErr && !qName(elementName, { xmlVersion: this.xmlVersion })) {
+				if (!this.suppressValidationErr && !isName(elementName)) {
 						throw new Error(`Invalid element name: "${elementName}"`);
 				}
 				i = skipWhitespace(xmlData, i);
@@ -1551,14 +1162,14 @@ class DocTypeReader {
 						i++;
 				}
 				let elementName = xmlData.substring(startIndex, i);
-				validateEntityName(elementName, { xmlVersion: this.xmlVersion });
+				validateEntityName$1(elementName);
 				i = skipWhitespace(xmlData, i);
 				startIndex = i;
 				while (i < xmlData.length && !/\s/.test(xmlData[i])) {
 						i++;
 				}
 				let attributeName = xmlData.substring(startIndex, i);
-				if (!validateEntityName(attributeName, { xmlVersion: this.xmlVersion })) {
+				if (!validateEntityName$1(attributeName)) {
 						throw new Error(`Invalid attribute name: "${attributeName}"`);
 				}
 				i = skipWhitespace(xmlData, i);
@@ -1579,7 +1190,7 @@ class DocTypeReader {
 								}
 								let notation = xmlData.substring(startIndex, i);
 								notation = notation.trim();
-								if (!validateEntityName(notation, { xmlVersion: this.xmlVersion })) {
+								if (!validateEntityName$1(notation)) {
 										throw new Error(`Invalid notation name: "${notation}"`);
 								}
 								allowedNotations.push(notation);
@@ -1636,167 +1247,14 @@ function hasSeq(data, seq, i) {
 		}
 		return true;
 }
-function validateEntityName(name, xmlVersion) {
-		if (qName(name, { xmlVersion: xmlVersion }))
+function validateEntityName$1(name) {
+		if (isName(name))
 				return name;
 		else
 				throw new Error(`Invalid entity name ${name}`);
 }
 
-// anynum\digitTable.js
-const SCRIPT_ZEROS = [
-	0x0030,
-	0x0660,
-	0x06F0,
-	0x0966,
-	0x09E6,
-	0x0A66,
-	0x0AE6,
-	0x0B66,
-	0x0BE6,
-	0x0C66,
-	0x0CE6,
-	0x0D66,
-	0x0DE6,
-	0x0E50,
-	0x0ED0,
-	0x0F20,
-	0x1040,
-	0x1090,
-	0x17E0,
-	0x1810,
-	0x1946,
-	0x19D0,
-	0x1A80,
-	0x1A90,
-	0x1B50,
-	0x1BB0,
-	0x1C40,
-	0x1C50,
-	0xFF10,
-	0x1D7CE,
-	0x1D7D8,
-	0x1D7E2,
-	0x1D7EC,
-	0x1D7F6,
-	0x104A0,
-	0x10D30,
-	0x11066,
-	0x110F0,
-	0x11136,
-	0x111D0,
-	0x112F0,
-	0x11450,
-	0x114D0,
-	0x11650,
-	0x116C0,
-	0x11730,
-	0x118E0,
-	0x11950,
-	0x11BF0,
-	0x11C50,
-	0x11D50,
-	0x11DA0,
-	0x11F50,
-	0x16A60,
-	0x16AC0,
-	0x16B50,
-	0x1E140,
-	0x1E2F0,
-	0x1E4F0,
-	0x1E950,
-	0x1FBF0,
-];
-const NOT_DIGIT = 0xFF;
-const HIGH_MAP = new Map();
-const LOW_MAX = 0xFFFF;
-const LOW_MIN = 0x0660;
-const TABLE_OFFSET = LOW_MIN;
-const TABLE_SIZE = LOW_MAX - LOW_MIN + 1;
-const TABLE = new Uint8Array(TABLE_SIZE).fill(NOT_DIGIT);
-for (const zero of SCRIPT_ZEROS) {
-	for (let d = 0; d < 10; d++) {
-		const cp = zero + d;
-		if (cp <= LOW_MAX) {
-			TABLE[cp - TABLE_OFFSET] = d;
-		} else {
-			HIGH_MAP.set(cp, d);
-		}
-	}
-}
-
-// anynum\anynum.js
-const CHAR_0 = 48;
-const CHAR_9 = 57;
-const CHAR_MINUS = 45;
-const MINUS_SET = new Set([0x2212, 0xFF0D, 0xFE63]);
-function anynum(str) {
-	if (typeof str !== 'string') return str;
-	const len = str.length;
-	if (len === 0) return str;
-	let firstHit = -1;
-	for (let i = 0; i < len; i++) {
-		const cc = str.charCodeAt(i);
-		if ((cc >= CHAR_0 && cc <= CHAR_9) || cc === CHAR_MINUS) continue;
-		if (cc < TABLE_OFFSET) {
-			if (MINUS_SET.has(cc)) { firstHit = i; break; }
-			continue;
-		}
-		if (cc >= 0xD800 && cc <= 0xDBFF) {
-			if (i + 1 < len) {
-				const low = str.charCodeAt(i + 1);
-				if (low >= 0xDC00 && low <= 0xDFFF) {
-					const cp = 0x10000 + ((cc - 0xD800) << 10) + (low - 0xDC00);
-					if (HIGH_MAP.has(cp)) { firstHit = i; break; }
-				}
-			}
-			continue;
-		}
-		if (TABLE[cc - TABLE_OFFSET] !== NOT_DIGIT || MINUS_SET.has(cc)) {
-			firstHit = i;
-			break;
-		}
-	}
-	if (firstHit === -1) return str;
-	const chars = [];
-	if (firstHit > 0) chars.push(str.slice(0, firstHit));
-	for (let i = firstHit; i < len; i++) {
-		const cc = str.charCodeAt(i);
-		if ((cc >= CHAR_0 && cc <= CHAR_9) || cc === CHAR_MINUS) {
-			chars.push(str[i]);
-			continue;
-		}
-		if (cc < TABLE_OFFSET) {
-			chars.push(MINUS_SET.has(cc) ? '-' : str[i]);
-			continue;
-		}
-		if (cc >= 0xD800 && cc <= 0xDBFF) {
-			if (i + 1 < len) {
-				const low = str.charCodeAt(i + 1);
-				if (low >= 0xDC00 && low <= 0xDFFF) {
-					const cp = 0x10000 + ((cc - 0xD800) << 10) + (low - 0xDC00);
-					const d = HIGH_MAP.get(cp);
-					if (d !== undefined) {
-						chars.push(String.fromCharCode(d + 48));
-						i++;
-						continue;
-					}
-				}
-			}
-			chars.push(str[i]);
-			continue;
-		}
-		if (MINUS_SET.has(cc)) {
-			chars.push('-');
-			continue;
-		}
-		const d = TABLE[cc - TABLE_OFFSET];
-		chars.push(d !== NOT_DIGIT ? String.fromCharCode(d + 48) : str[i]);
-	}
-	return chars.join('');
-}
-
-// strnum\strnum.js
+// strnum
 const hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
 const binRegex = /^0b[01]+$/;
 const octRegex = /^0o[0-7]+$/;
@@ -1809,7 +1267,6 @@ const consider = {
 		decimalPoint: "\.",
 		eNotation: true,
 		infinity: "original",
-		unicode: false,
 };
 function toNumber(str, options = {}) {
 		options = Object.assign({}, consider, options);
@@ -1818,11 +1275,7 @@ function toNumber(str, options = {}) {
 		if (trimmedStr.length === 0) return str;
 		else if (options.skipLike !== undefined && options.skipLike.test(trimmedStr)) return str;
 		else if (trimmedStr === "0") return 0;
-		if (options.unicode) {
-				trimmedStr = anynum(trimmedStr);
-				if (trimmedStr === "0") return 0;
-		}
-		if (options.hex && hexRegex.test(trimmedStr)) {
+		else if (options.hex && hexRegex.test(trimmedStr)) {
 				return parse_int(trimmedStr, 16);
 		} else if (options.binary && binRegex.test(trimmedStr)) {
 				return parse_int(trimmedStr, 2);
@@ -1931,7 +1384,7 @@ function handleInfinity(str, num, options) {
 		}
 }
 
-// fast-xml-parser\src\ignoreAttributes.js
+// fast-xml-parser
 function getIgnoreAttributesFn(ignoreAttributes) {
 		if (typeof ignoreAttributes === 'function') {
 				return ignoreAttributes
@@ -1951,7 +1404,7 @@ function getIgnoreAttributesFn(ignoreAttributes) {
 		return () => false
 }
 
-// path-expression-matcher\src\Expression.js
+// path-expression-matcher
 class Expression {
 	constructor(pattern, options = {}, data) {
 		this.pattern = pattern;
@@ -2077,13 +1530,12 @@ class Expression {
 	}
 }
 
-// path-expression-matcher\src\ExpressionSet.js
+// path-expression-matcher
 class ExpressionSet {
 	constructor() {
 		this._byDepthAndTag = new Map();
 		this._wildcardByDepth = new Map();
 		this._deepWildcards = [];
-		this._deepByTerminalTag = new Map();
 		this._patterns = new Set();
 		this._sealed = false;
 	}
@@ -2096,14 +1548,7 @@ class ExpressionSet {
 		if (this._patterns.has(expression.pattern)) return this;
 		this._patterns.add(expression.pattern);
 		if (expression.hasDeepWildcard()) {
-			const lastSeg = expression.segments[expression.segments.length - 1];
-			if (lastSeg && lastSeg.type !== 'deep-wildcard' && lastSeg.tag !== '*') {
-				const tag = lastSeg.tag;
-				if (!this._deepByTerminalTag.has(tag)) this._deepByTerminalTag.set(tag, []);
-				this._deepByTerminalTag.get(tag).push(expression);
-			} else {
-				this._deepWildcards.push(expression);
-			}
+			this._deepWildcards.push(expression);
 			return this;
 		}
 		const depth = expression.length;
@@ -2155,12 +1600,6 @@ class ExpressionSet {
 				if (matcher.matches(wildcardBucket[i])) return wildcardBucket[i];
 			}
 		}
-		const deepBucket = this._deepByTerminalTag.get(tag);
-		if (deepBucket) {
-			for (let i = 0; i < deepBucket.length; i++) {
-				if (matcher.matches(deepBucket[i])) return deepBucket[i];
-			}
-		}
 		for (let i = 0; i < this._deepWildcards.length; i++) {
 			if (matcher.matches(this._deepWildcards[i])) return this._deepWildcards[i];
 		}
@@ -2168,7 +1607,7 @@ class ExpressionSet {
 	}
 }
 
-// path-expression-matcher\src\Matcher.js
+// path-expression-matcher
 class MatcherView {
 	constructor(matcher) {
 		this._matcher = matcher;
@@ -2194,12 +1633,6 @@ class MatcherView {
 		if (path.length === 0) return false;
 		const current = path[path.length - 1];
 		return current.values !== undefined && attrName in current.values;
-	}
-	getAnyParentAttr(attrName) {
-		return this._matcher.getAnyParentAttr(attrName);
-	}
-	hasAnyParentAttr(attrName) {
-		return this._matcher.hasAnyParentAttr(attrName);
 	}
 	getPosition() {
 		const path = this._matcher.path;
@@ -2237,24 +1670,24 @@ class Matcher {
 		this.siblingStacks = [];
 		this._pathStringCache = null;
 		this._view = new MatcherView(this);
-		this._keptAttrs = [];
 	}
-	push(tagName, attrValues = null, namespace = null, options = null) {
+	push(tagName, attrValues = null, namespace = null) {
 		this._pathStringCache = null;
 		if (this.path.length > 0) {
 			this.path[this.path.length - 1].values = undefined;
 		}
 		const currentLevel = this.path.length;
-		let level = this.siblingStacks[currentLevel];
-		if (!level) {
-			level = { counts: new Map(), total: 0 };
-			this.siblingStacks[currentLevel] = level;
+		if (!this.siblingStacks[currentLevel]) {
+			this.siblingStacks[currentLevel] = new Map();
 		}
+		const siblings = this.siblingStacks[currentLevel];
 		const siblingKey = namespace ? `${namespace}:${tagName}` : tagName;
-		const counter = level.counts.get(siblingKey) || 0;
-		const position = level.total;
-		level.counts.set(siblingKey, counter + 1);
-		level.total++;
+		const counter = siblings.get(siblingKey) || 0;
+		let position = 0;
+		for (const count of siblings.values()) {
+			position += count;
+		}
+		siblings.set(siblingKey, counter + 1);
 		const node = {
 			tag: tagName,
 			position: position,
@@ -2267,16 +1700,6 @@ class Matcher {
 			node.values = attrValues;
 		}
 		this.path.push(node);
-		const depth = this.path.length;
-		const keep = options !== null ? options.keep : null;
-		if (keep !== null && keep !== undefined && keep.length > 0 && attrValues) {
-			for (let i = 0; i < keep.length; i++) {
-				const name = keep[i];
-				if (attrValues[name] !== undefined) {
-					this._keptAttrs.push({ depth, name, value: attrValues[name] });
-				}
-			}
-		}
 	}
 	pop() {
 		if (this.path.length === 0) return undefined;
@@ -2284,13 +1707,6 @@ class Matcher {
 		const node = this.path.pop();
 		if (this.siblingStacks.length > this.path.length + 1) {
 			this.siblingStacks.length = this.path.length + 1;
-		}
-		const poppedDepth = this.path.length + 1;
-		while (
-			this._keptAttrs.length > 0 &&
-			this._keptAttrs[this._keptAttrs.length - 1].depth >= poppedDepth
-		) {
-			this._keptAttrs.pop();
 		}
 		return node;
 	}
@@ -2316,20 +1732,6 @@ class Matcher {
 		if (this.path.length === 0) return false;
 		const current = this.path[this.path.length - 1];
 		return current.values !== undefined && attrName in current.values;
-	}
-	getAnyParentAttr(attrName) {
-		const kept = this._keptAttrs;
-		for (let i = kept.length - 1; i >= 0; i--) {
-			if (kept[i].name === attrName) return kept[i].value;
-		}
-		return undefined;
-	}
-	hasAnyParentAttr(attrName) {
-		const kept = this._keptAttrs;
-		for (let i = kept.length - 1; i >= 0; i--) {
-			if (kept[i].name === attrName) return true;
-		}
-		return false;
 	}
 	getPosition() {
 		if (this.path.length === 0) return -1;
@@ -2369,7 +1771,6 @@ class Matcher {
 		this._pathStringCache = null;
 		this.path = [];
 		this.siblingStacks = [];
-		this._keptAttrs = [];
 	}
 	matches(expression) {
 		const segments = expression.segments;
@@ -2470,714 +1871,259 @@ class Matcher {
 	snapshot() {
 		return {
 			path: this.path.map(node => ({ ...node })),
-			siblingStacks: this.siblingStacks.map(level => level ? { counts: new Map(level.counts), total: level.total } : level),
-			keptAttrs: this._keptAttrs.map(entry => ({ ...entry }))
+			siblingStacks: this.siblingStacks.map(map => new Map(map))
 		};
 	}
 	restore(snapshot) {
 		this._pathStringCache = null;
 		this.path = snapshot.path.map(node => ({ ...node }));
-		this.siblingStacks = snapshot.siblingStacks.map(level => level ? { counts: new Map(level.counts), total: level.total } : level);
-		this._keptAttrs = (snapshot.keptAttrs || []).map(entry => ({ ...entry }));
+		this.siblingStacks = snapshot.siblingStacks.map(map => new Map(map));
 	}
 	readOnly() {
 		return this._view;
 	}
 }
 
-// is-unsafe\src\contexts\html.js
-const HTML_PATTERNS = [
-	{
-		id: 'html-script-open',
-		description: '<script opening tag',
-		pattern: /<script[\s>/]/i,
-	},
-	{
-		id: 'html-script-close',
-		description: '</script closing tag',
-		pattern: /<\/script[\s>]/i,
-	},
-	{
-		id: 'html-javascript-protocol',
-		description: 'javascript: URI scheme (with optional whitespace/encoding)',
-		pattern: /j[\t\n\r ]*a[\t\n\r ]*v[\t\n\r ]*a[\t\n\r ]*s[\t\n\r ]*c[\t\n\r ]*r[\t\n\r ]*i[\t\n\r ]*p[\t\n\r ]*t[\t\n\r ]*:/i,
-	},
-	{
-		id: 'html-vbscript-protocol',
-		description: 'vbscript: URI scheme',
-		pattern: /vbscript[\t\n\r ]*:/i,
-	},
-	{
-		id: 'html-data-html',
-		description: 'data:text/html URI — can execute scripts in browsers',
-		pattern: /data[\t\n\r ]*:[\t\n\r ]*text\/html/i,
-	},
-	{
-		id: 'html-data-xhtml',
-		description: 'data:application/xhtml+xml URI',
-		pattern: /data[\t\n\r ]*:[\t\n\r ]*application\/xhtml/i,
-	},
-	{
-		id: 'html-data-svg',
-		description: 'data:image/svg+xml URI — can execute scripts',
-		pattern: /data[\t\n\r ]*:[\t\n\r ]*image\/svg\+xml/i,
-	},
-	{
-		id: 'html-inline-event-handler',
-		description: 'Inline event handler attributes: onclick=, onerror=, onload=, etc.',
-		pattern: /\bon\w{1,30}\s*=/i,
-	},
-	{
-		id: 'html-entity-obfuscated-script',
-		description: 'HTML-entity-encoded <script (e.g. &#x3C;script or &lt;script)',
-		pattern: /(?:&#x0*3[Cc];?|&#0*60;?|&lt;)\s*script/i,
-	},
-	{
-		id: 'html-entity-obfuscated-javascript',
-		description: 'HTML-entity-encoded javascript: (partial — catches common &#106; or &#x6a; for "j")',
-		pattern: /(?:&#x0*6[Aa];?|&#0*106;?)\s*(?:&#x0*61;?|a)[\s\S]{0,80}script\s*:/i,
-	},
-	{
-		id: 'html-style-expression',
-		description: 'CSS expression() — IE-era code execution in style attributes',
-		pattern: /style[\s\S]{0,20}expression\s*\(/i,
-	},
-	{
-		id: 'html-object-embed',
-		description: '<object or <embed tags that can load active content',
-		pattern: /<(?:object|embed)[\s>/]/i,
-	},
-	{
-		id: 'html-base-tag',
-		description: '<base href= — can hijack all relative URLs on a page',
-		pattern: /<base[\s>]/i,
-	},
-	{
-		id: 'html-meta-refresh',
-		description: '<meta http-equiv="refresh" — can redirect users',
-		pattern: /<meta[\s\S]{0,40}http-equiv[\s\S]{0,20}refresh/i,
-	},
-	{
-		id: 'html-srcdoc',
-		description: 'srcdoc= attribute on iframes — embeds HTML that can run scripts',
-		pattern: /srcdoc\s*=/i,
-	},
-	{
-		id: 'html-iframe',
-		description: '<iframe tag',
-		pattern: /<iframe[\s>/]/i,
-	},
-	{
-		id: 'html-form',
-		description: '<form tag — can be used for phishing / credential harvesting injection',
-		pattern: /<form[\s>/]/i,
-	},
-];
-const HTML_CONTEXT = HTML_PATTERNS;
-
-// is-unsafe\src\contexts\xml.js
-const XML_PATTERNS = [
-	{
-		id: 'xml-cdata-injection',
-		description: 'CDATA section injection: <![CDATA[ breaks out of text node context',
-		pattern: /<!\[CDATA\[/i,
-	},
-	{
-		id: 'xml-cdata-close',
-		description: 'CDATA close sequence: ]]> can terminate an enclosing CDATA section',
-		pattern: /\]\]>/,
-	},
-	{
-		id: 'xml-processing-instruction',
-		description: 'XML processing instruction: <?xml-stylesheet or <?php etc.',
-		pattern: /<\?(?:xml[\- ]|php|asp)/i,
-	},
-	{
-		id: 'xml-doctype-injection',
-		description: 'DOCTYPE declaration embedded in content — can define entities',
-		pattern: /<!DOCTYPE(?:[\s[]|$)/i,
-	},
-	{
-		id: 'xml-entity-system',
-		description: 'SYSTEM keyword — used in external entity declarations (XXE)',
-		pattern: /\bSYSTEM\s+["']/i,
-	},
-	{
-		id: 'xml-entity-public',
-		description: 'PUBLIC keyword — used in external entity declarations (XXE)',
-		pattern: /\bPUBLIC\s+["']/i,
-	},
-	{
-		id: 'xml-entity-declaration',
-		description: '<!ENTITY declaration — defines entities, potential XXE or entity expansion',
-		pattern: /<!ENTITY[\s%]/i,
-	},
-	{
-		id: 'xml-billion-laughs',
-		description: 'Entity reference chaining / billion laughs: repeated &eX; style references',
-		pattern: /(?:&\w{1,20};){3,}/,
-	},
-	{
-		id: 'xml-namespace-confusion',
-		description: 'xmlns: attribute injection — can redefine namespaces to confuse parsers',
-		pattern: /\bxmlns\s*(?::\w{1,40})?\s*=/i,
-	},
-	{
-		id: 'xml-comment-injection',
-		description: '<!-- comment injection — can hide content from some parsers',
-		pattern: /<!--/,
-	},
-	{
-		id: 'xml-comment-close',
-		description: '--> closes an enclosing XML comment',
-		pattern: /-->/,
-	},
-	{
-		id: 'xml-pi-close',
-		description: '?> closes an enclosing processing instruction',
-		pattern: /\?>/,
-	},
-];
-const XML_CONTEXT = XML_PATTERNS;
-
-// is-unsafe\src\contexts\svg.js
-const SVG_PATTERNS = [
-	{
-		id: 'svg-script-element',
-		description: '<script element inside SVG executes JavaScript',
-		pattern: /<script[\s>/]/i,
-	},
-	{
-		id: 'svg-xlink-href-javascript',
-		description: 'xlink:href with javascript: — classic SVG XSS via <a> or <use>',
-		pattern: /xlink\s*:\s*href\s*=\s*["']?\s*javascript\s*:/i,
-	},
-	{
-		id: 'svg-href-javascript',
-		description: 'href= with javascript: in SVG context (<a>, <animate>, etc.)',
-		pattern: /href\s*=\s*["']?\s*javascript\s*:/i,
-	},
-	{
-		id: 'svg-foreignobject',
-		description: '<foreignObject embeds HTML inside SVG — can execute scripts',
-		pattern: /<foreignObject[\s>/]/i,
-	},
-	{
-		id: 'svg-use-external',
-		description: '<use xlink:href or href pointing to external resource (non-fragment URL)',
-		pattern: /<use[\s\S]{0,60}(?:xlink\s*:\s*)?href\s*=\s*(?:["'][^#]|[^"'#\s>])/i,
-	},
-	{
-		id: 'svg-animate-href',
-		description: '<animate attributeName="href" — can dynamically change href to javascript:',
-		pattern: /<animate[\s\S]{0,80}attributeName\s*=\s*["'][\s]*href["']/i,
-	},
-	{
-		id: 'svg-animate-xlinkhref',
-		description: '<animate attributeName="xlink:href"',
-		pattern: /<animate[\s\S]{0,80}attributeName\s*=\s*["'][\s]*xlink\s*:\s*href["']/i,
-	},
-	{
-		id: 'svg-set-javascript',
-		description: '<set to="javascript:..." — sets an attribute to a javascript: URI',
-		pattern: /<set[\s\S]{0,80}to\s*=\s*["']?\s*javascript\s*:/i,
-	},
-	{
-		id: 'svg-event-handler',
-		description: 'SVG-specific event handler attributes: onload=, onerror=, onactivate=, etc.',
-		pattern: /\bon(?:load|error|activate|begin|end|repeat|focus|blur|click|mouse\w{1,20}|key\w{1,20})\s*=/i,
-	},
-	{
-		id: 'svg-handler-generic',
-		description: 'Generic on* handler catch-all for SVG attributes',
-		pattern: /\bon\w{1,30}\s*=/i,
-	},
-	{
-		id: 'svg-filter-feimage',
-		description: '<feImage href= — filter primitive that can load external resources',
-		pattern: /<feImage[\s\S]{0,80}(?:xlink\s*:\s*)?href\s*=/i,
-	},
-	{
-		id: 'svg-image-external',
-		description: '<image xlink:href with http/https or javascript protocol',
-		pattern: /<image[\s\S]{0,80}(?:xlink\s*:\s*)?href\s*=\s*["']?\s*(?:https?|javascript)\s*:/i,
-	},
-	{
-		id: 'svg-style-javascript',
-		description: 'style= attribute containing javascript: (e.g. background:url(javascript:...))',
-		pattern: /style\s*=[\s\S]{0,60}javascript\s*:/i,
-	},
-];
-const SVG = SVG_PATTERNS;
-
-// is-unsafe\src\contexts\sql.js
-const SQL_PATTERNS = [
-	{
-		id: 'sql-block-comment-open',
-		description: 'SQL block comment open: /* ... */ — unusual in legitimate user text',
-		pattern: /\/\*/,
-	},
-	{
-		id: 'sql-union-select',
-		description: 'UNION SELECT — most common SQL injection aggregation attack',
-		pattern: /\bUNION\s{1,20}(?:ALL\s{1,20})?SELECT\b/i,
-	},
-	{
-		id: 'sql-drop-table',
-		description: 'DROP TABLE — destructive DDL injection',
-		pattern: /\bDROP\s{1,20}TABLE\b/i,
-	},
-	{
-		id: 'sql-drop-database',
-		description: 'DROP DATABASE — destructive DDL injection',
-		pattern: /\bDROP\s{1,20}DATABASE\b/i,
-	},
-	{
-		id: 'sql-insert-into',
-		description: 'INSERT INTO — data injection',
-		pattern: /\bINSERT\s{1,20}INTO\b/i,
-	},
-	{
-		id: 'sql-delete-from',
-		description: 'DELETE FROM — data deletion injection',
-		pattern: /\bDELETE\s{1,20}FROM\b/i,
-	},
-	{
-		id: 'sql-update-set',
-		description: 'UPDATE ... SET — data modification injection',
-		pattern: /\bUPDATE\b[\s\S]{1,60}\bSET\b/i,
-	},
-	{
-		id: 'sql-exec-xp',
-		description: 'EXEC xp_ — MSSQL extended stored procedure execution',
-		pattern: /\bEXEC(?:UTE)?\s{1,20}xp_/i,
-	},
-	{
-		id: 'sql-tautology-string',
-		description: "Classic string tautology: ' OR '1'='1 or \" OR \"1\"=\"1\"",
-		pattern: /'\s{0,10}OR\s{0,10}'[^']{0,20}'\s*=\s*'[^']{0,20}/i,
-	},
-	{
-		id: 'sql-tautology-numeric',
-		description: 'Numeric tautology: OR 1=1',
-		pattern: /\bOR\s{1,10}1\s*=\s*1\b/i,
-	},
-	{
-		id: 'sql-always-true-zero',
-		description: 'Numeric tautology: OR 0=0',
-		pattern: /\bOR\s{1,10}0\s*=\s*0\b/i,
-	},
-	{
-		id: 'sql-sleep-benchmark',
-		description: 'Time-based blind injection: SLEEP() or BENCHMARK()',
-		pattern: /\b(?:SLEEP|BENCHMARK)\s*\(/i,
-	},
-	{
-		id: 'sql-waitfor-delay',
-		description: 'MSSQL time-based blind injection: WAITFOR DELAY',
-		pattern: /\bWAITFOR\s{1,20}DELAY\b/i,
-	},
-	{
-		id: 'sql-char-function',
-		description: 'CHAR() function — used to obfuscate injected strings',
-		pattern: /\bCHAR\s*\(\s*\d{1,3}/i,
-	},
-	{
-		id: 'sql-information-schema',
-		description: 'INFORMATION_SCHEMA — reconnaissance query for table/column enumeration',
-		pattern: /\bINFORMATION_SCHEMA\b/i,
-	},
-];
-const SQL = SQL_PATTERNS;
-
-// is-unsafe\src\contexts\shell.js
-const SHELL_PATTERNS = [
-	{
-		id: 'shell-path-traversal-unix',
-		description: 'Unix path traversal: ../  — climbing the directory tree',
-		pattern: /\.\.\//,
-	},
-	{
-		id: 'shell-path-traversal-windows',
-		description: 'Windows path traversal: ..\\ — climbing the directory tree',
-		pattern: /\.\.\\/,
-	},
-	{
-		id: 'shell-path-traversal-encoded',
-		description: 'URL-encoded path traversal: %2e%2e or %2f variants',
-		pattern: /%2e%2e|%2f\.\.|\.\.%2f/i,
-	},
-	{
-		id: 'shell-null-byte',
-		description: 'Null byte injection: \\x00 or %00 — truncates strings in C-backed functions',
-		pattern: /\x00|%00/,
-	},
-	{
-		id: 'shell-semicolon',
-		description: 'Semicolon command separator: cmd1; cmd2',
-		pattern: /;/,
-	},
-	{
-		id: 'shell-pipe',
-		description: 'Pipe operator: cmd1 | cmd2',
-		pattern: /\|/,
-	},
-	{
-		id: 'shell-and-operator',
-		description: 'AND operator: cmd1 && cmd2',
-		pattern: /&&/,
-	},
-	{
-		id: 'shell-or-operator',
-		description: 'OR operator: cmd1 || cmd2',
-		pattern: /\|\|/,
-	},
-	{
-		id: 'shell-backtick',
-		description: 'Backtick command substitution: `cmd`',
-		pattern: /`/,
-	},
-	{
-		id: 'shell-dollar-paren',
-		description: 'Dollar-paren command substitution: $(cmd)',
-		pattern: /\$\(/,
-	},
-	{
-		id: 'shell-dollar-brace',
-		description: 'Dollar-brace variable expansion: ${var} — can be abused for injection',
-		pattern: /\$\{/,
-	},
-	{
-		id: 'shell-redirect-out',
-		description: 'Output redirection: cmd > file or cmd >> file',
-		pattern: />{1,2}/,
-	},
-	{
-		id: 'shell-redirect-in',
-		description: 'Input redirection: cmd < file',
-		pattern: /</,
-	},
-	{
-		id: 'shell-newline-injection',
-		description: 'Newline injection: \\n or \\r — can inject new shell commands',
-		pattern: /[\n\r]/,
-	},
-	{
-		id: 'shell-glob-star',
-		description: 'Glob expansion: * or ? — can expand to unintended files',
-		pattern: /[/\\][*?]/,
-	},
-	{
-		id: 'shell-absolute-root',
-		description: 'Absolute root path injection: string starting with / or \\ (Windows UNC)',
-		pattern: /^(?:\/|\\\\)/,
-	},
-	{
-		id: 'shell-windows-drive',
-		description: 'Windows drive letter path injection: C:\\ or D:/',
-		pattern: /^[a-zA-Z]:[/\\]/,
-	},
-	{
-		id: 'shell-curl-wget',
-		description: 'curl/wget with URL or flags — can exfiltrate data or download payloads',
-		pattern: /\b(?:curl|wget)\s+(?:https?:\/\/|ftp:\/\/|-)/i,
-	},
-];
-const SHELL = SHELL_PATTERNS;
-
-// is-unsafe\src\contexts\redos.js
-const REDOS_PATTERNS = [
-	{
-		id: 'redos-nested-quantifier-plus',
-		description: 'Nested + quantifier inside a group with outer quantifier: (a+)+, (.+b)*, etc.',
-		pattern: /\([^)]*\+[^)]*\)[+*]/,
-	},
-	{
-		id: 'redos-nested-quantifier-star',
-		description: 'Nested * quantifier: (a*)* or (a*)+ — catastrophic backtracking',
-		pattern: /\([^)]*\*[^)]*\)[*+]/,
-	},
-	{
-		id: 'redos-nested-groups',
-		description: 'Doubly nested quantified groups: ((a+)+) — guaranteed catastrophic',
-		pattern: /\(\([^)]{0,40}\)[+*]\)[+*]/,
-	},
-	{
-		id: 'redos-alternation-overlap',
-		description: 'Overlapping alternation under quantifier: (a|a)+ — ambiguous NFA paths',
-		pattern: /\(([^|()]{1,20})\|(?:\1)(?:\|[^|()]{1,20}){0,5}\)[+*?]{1,2}/,
-	},
-	{
-		id: 'redos-star-plus-concat',
-		description: '(x*x)+ pattern — triggers super-linear backtracking',
-		pattern: /\([^)]{0,10}\*[^)]{0,10}\)[+*]/,
-	},
-	{
-		id: 'redos-dot-star-greedy',
-		description: '(.*){n,} or (.+){n,} — repeated greedy dot quantifiers',
-		pattern: /\(\.[*+]\)\{?\d/,
-	},
-	{
-		id: 'redos-large-repetition',
-		description: 'Very large fixed or range repetition count {1000,} or {1000,n} — denial of service via backtracking',
-		pattern: /\{\d{4,}(?:,\d*)?\}/,
-	},
-	{
-		id: 'redos-catastrophic-alternation',
-		description: 'Long alternation with many similar branches — polynomial backtracking risk',
-		pattern: /\([^)]{0,200}(?:\|[^|)]{0,50}){9,}\)/,
-	},
-];
-const REDOS = REDOS_PATTERNS;
-
-// is-unsafe\src\contexts\nosql.js
-const sep = '["\'\\s]*:';
-const NOSQL_PATTERNS = [
-	{
-		id: 'nosql-where-operator',
-		description: '$where — executes arbitrary JavaScript server-side in MongoDB',
-		pattern: new RegExp(`\\$where${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-ne-operator',
-		description: '$ne — "not equal" operator used to bypass equality checks',
-		pattern: new RegExp(`\\$ne${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-gt-operator',
-		description: '$gt — "greater than" used to bypass password/value checks',
-		pattern: new RegExp(`\\$gte?${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-lt-operator',
-		description: '$lt / $lte — "less than" bypass variants',
-		pattern: new RegExp(`\\$lte?${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-regex-operator',
-		description: '$regex — can be used to extract data character by character (blind injection)',
-		pattern: new RegExp(`\\$regex${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-or-operator',
-		description: '$or — logical OR; used to create always-true conditions',
-		pattern: new RegExp(`\\$or${sep}\\s*\\[`, 'i'),
-	},
-	{
-		id: 'nosql-and-operator',
-		description: '$and — logical AND operator injection',
-		pattern: new RegExp(`\\$and${sep}\\s*\\[`, 'i'),
-	},
-	{
-		id: 'nosql-nor-operator',
-		description: '$nor — logical NOR operator injection',
-		pattern: new RegExp(`\\$nor${sep}\\s*\\[`, 'i'),
-	},
-	{
-		id: 'nosql-exists-operator',
-		description: '$exists — can enumerate fields to determine schema',
-		pattern: new RegExp(`\\$exists${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-in-operator',
-		description: '$in — matches any value in a list; can enumerate values',
-		pattern: new RegExp(`\\$in${sep}\\s*\\[`, 'i'),
-	},
-	{
-		id: 'nosql-expr-operator',
-		description: '$expr — allows aggregation expressions in queries (MongoDB 3.6+)',
-		pattern: new RegExp(`\\$expr${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-function-operator',
-		description: '$function — executes arbitrary JavaScript in MongoDB 4.4+',
-		pattern: new RegExp(`\\$function${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-accumulator-operator',
-		description: '$accumulator — custom aggregation with arbitrary JS execution',
-		pattern: new RegExp(`\\$accumulator${sep}`, 'i'),
-	},
-	{
-		id: 'nosql-proto-pollution',
-		description: '__proto__ — prototype pollution via object key injection',
-		pattern: /__proto__/,
-	},
-	{
-		id: 'nosql-constructor-prototype',
-		description: 'constructor.prototype — alternative prototype pollution vector (dot notation or JSON key)',
-		pattern: /constructor[\s"':.,{\[]*prototype/i,
-	},
-	{
-		id: 'nosql-proto-bracket',
-		description: '["__proto__"] — bracket-notation prototype pollution',
-		pattern: /\[["']__proto__["']\]/,
-	},
-];
-const NOSQL = NOSQL_PATTERNS;
-
-// is-unsafe\src\contexts\log.js
-const LOG_PATTERNS = [
-	{
-		id: 'log-crlf-injection',
-		description: 'CRLF injection: literal \\r or \\n embeds fake log lines',
-		pattern: /[\r\n]/,
-	},
-	{
-		id: 'log-url-encoded-crlf',
-		description: 'URL-encoded CRLF: %0d, %0a, %0D, %0A — decoded by some log parsers',
-		pattern: /%0[dDaA]/,
-	},
-	{
-		id: 'log-unicode-newline',
-		description: 'Unicode newline variants: U+2028 (line separator), U+2029 (paragraph separator)',
-		pattern: /[\u2028\u2029]/,
-	},
-	{
-		id: 'log-log4shell-jndi',
-		description: 'Log4Shell: ${jndi:...} triggers remote code execution in Apache Log4j',
-		pattern: /\$\{jndi\s*:/i,
-	},
-	{
-		id: 'log-log4shell-obfuscated',
-		description: 'Obfuscated Log4Shell: ${::-j}... lookup-bypass prefix used to evade WAF detection',
-		pattern: /\$\{::-/,
-	},
-	{
-		id: 'log-log4j-lookup',
-		description: 'Log4j lookup syntax: ${env:...}, ${sys:...}, ${ctx:...} — data exfiltration',
-		pattern: /\$\{(?:env|sys|ctx|main|map|sd|web|docker|k8s|spring)\s*:/i,
-	},
-	{
-		id: 'log-ssti-double-brace',
-		description: 'SSTI double-brace: {{expression}} — Jinja2, Twig, Handlebars, etc.',
-		pattern: /\{\{[\s\S]{0,80}\}\}/,
-	},
-	{
-		id: 'log-ssti-hash-brace',
-		description: 'SSTI hash-brace: #{expression} — Thymeleaf, Velocity, Ruby ERB',
-		pattern: /#\{[\s\S]{0,80}\}/,
-	},
-	{
-		id: 'log-ssti-dollar-brace',
-		description: 'SSTI/EL injection: ${expression with operators or method calls} — JSP EL, Freemarker, SpEL',
-		pattern: /\$\{[^}]*(?:\.|\(|\*|\+|\bclass\b|\bruntime\b|\bprocess\b|\bexec\b)[^}]{0,80}\}/i,
-	},
-	{
-		id: 'log-ssti-percent-tag',
-		description: 'SSTI ERB/ASP tag: <%= expression %> — Ruby ERB, ASP',
-		pattern: /<%=[\s\S]{0,80}%>/,
-	},
-	{
-		id: 'log-null-byte',
-		description: 'Null byte: \\x00 or %00 — can truncate log entries in C-backed loggers',
-		pattern: /\x00|%00/,
-	},
-	{
-		id: 'log-ansi-escape',
-		description: 'ANSI escape sequence: ESC[ — can manipulate terminal output when logs are tailed',
-		pattern: /\x1b\[/,
-	},
-];
-const LOG = LOG_PATTERNS;
-
-// is-unsafe\src\contexts\sql-strict.js
-const SQL_STRICT_EXTRA = [
-	{
-		id: 'sql-line-comment',
-		description: 'SQL line comment: -- followed by whitespace or end of string',
-		pattern: /--(?:\s|$)/,
-	},
-	{
-		id: 'sql-stacked-query',
-		description: 'Stacked queries: semicolon immediately followed by a SQL keyword',
-		pattern: /;\s{0,10}(?:SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC)\b/i,
-	},
-	{
-		id: 'sql-hex-encoding',
-		description: 'Hex-encoded string injection: 0x41414141 style (MySQL)',
-		pattern: /\b0x[0-9a-f]{4,}/i,
-	},
-];
-const SQL_STRICT_PATTERNS = [...SQL, ...SQL_STRICT_EXTRA];
-const SQL_STRICT = SQL_STRICT_PATTERNS;
-
-// is-unsafe\src\index.js
-HTML_CONTEXT.label  		 = 'HTML';
-XML_CONTEXT.label  			= 'XML';
-SVG.label  			= 'SVG';
-SQL.label  			= 'SQL';
-SQL_STRICT.label = 'SQL-STRICT';
-SHELL.label  		= 'SHELL';
-REDOS.label  		= 'REDOS';
-NOSQL.label  		= 'NOSQL';
-LOG.label  			= 'LOG';
-Object.freeze({
-	HTML: HTML_CONTEXT,
-	XML: XML_CONTEXT,
-	SVG,
-	SQL,
-	'SQL-STRICT': SQL_STRICT,
-	SHELL,
-	REDOS,
-	NOSQL,
-	LOG,
-});
-function assertString(value) {
-	if (typeof value !== 'string') {
-		throw new TypeError(
-			`is-unsafe: first argument must be a string, got ${typeof value}`
-		);
-	}
-}
-function assertContext(context) {
-	if (context instanceof RegExp) return;
-	if (Array.isArray(context)) {
-		if (context.length === 0) {
-			throw new TypeError('is-unsafe: context must not be an empty array');
+// @nodable
+const DEFAULT_XML_ENTITIES = {
+	apos: { regex: /&(apos|#0*39|#x0*27);/g, val: "'" },
+	gt: { regex: /&(gt|#0*62|#x0*3[Ee]);/g, val: '>' },
+	lt: { regex: /&(lt|#0*60|#x0*3[Cc]);/g, val: '<' },
+	quot: { regex: /&(quot|#0*34|#x0*22);/g, val: '"' },
+};
+const AMP_ENTITY = { regex: /&(amp|#0*38|#x0*26);/g, val: '&' };
+const SPECIAL_CHARS = new Set('!?\\\\/[]$%{}^&*()<>|+');
+function validateEntityName(name) {
+	for (const ch of name) {
+		if (SPECIAL_CHARS.has(ch)) {
+			throw new Error(`[EntityReplacer] Invalid character '${ch}' in entity name: "${name}"`);
 		}
-		if (Array.isArray(context[0])) {
-			for (const list of context) {
-				if (!Array.isArray(list) || list.length === 0) {
-					throw new TypeError(
-						'is-unsafe: each context in the array must be a non-empty pattern array (PatternList)'
-					);
+	}
+	return name;
+}
+function escapeForRegex(str) {
+	return str.replace(/[.\-+*:]/g, '\\$&');
+}
+function resolveTable(option, builtIn, enabledByDefault = false) {
+	if (option === false || option === null) return null;
+	if (option === true) return builtIn;
+	if (option === undefined) return enabledByDefault ? builtIn : null;
+	if (typeof option === 'object') return option;
+	return null;
+}
+function resolveApplyLimitsTo(spec) {
+	if (spec === 'all') return 'all';
+	if (typeof spec === 'string') return new Set([spec]);
+	if (Array.isArray(spec)) return new Set(spec);
+	return new Set(['external']);
+}
+function buildEntries(map) {
+	const entries = [];
+	for (const key of Object.keys(map)) {
+		const raw = map[key];
+		if (typeof raw === 'object' && raw !== null && (raw.val !== undefined)) {
+			entries.push([key, { regex: raw.regex ?? raw.regx, val: raw.val }]);
+		} else if (typeof raw === 'string') {
+			if (raw.indexOf('&') !== -1) continue;
+			validateEntityName(key);
+			entries.push([key, {
+				regex: new RegExp('&' + escapeForRegex(key) + ';', 'g'),
+				val: raw,
+			}]);
+		}
+	}
+	return entries;
+}
+class EntityReplacer {
+	constructor(options = {}) {
+		this._defaultTable = resolveTable(options.default, DEFAULT_XML_ENTITIES, true);
+		this._systemTable = resolveTable(options.system, null, false);
+		this._ampEnabled = options.amp !== false && options.amp !== null;
+		this._maxTotalExpansions = options.maxTotalExpansions || 0;
+		this._maxExpandedLength = options.maxExpandedLength || 0;
+		this._applyLimitsTo = resolveApplyLimitsTo(options.applyLimitsTo ?? 'external');
+		this._postCheck = typeof options.postCheck === 'function' ? options.postCheck : r => r;
+		this._limitExternal = this._applyLimitsTo === 'all' || (this._applyLimitsTo instanceof Set && this._applyLimitsTo.has('external'));
+		this._limitSystem = this._applyLimitsTo === 'all' || (this._applyLimitsTo instanceof Set && this._applyLimitsTo.has('system'));
+		this._limitDefault = this._applyLimitsTo === 'all' || (this._applyLimitsTo instanceof Set && this._applyLimitsTo.has('default'));
+		this._defaultEntries = this._defaultTable ? Object.entries(this._defaultTable) : [];
+		this._systemEntries = this._systemTable ? Object.entries(this._systemTable) : [];
+		this._persistentEntries = [];
+		this._inputEntries = [];
+		this._totalExpansions = 0;
+		this._expandedLength = 0;
+	}
+	setExternalEntities(map) {
+		this._persistentEntries = buildEntries(map);
+	}
+	addExternalEntity(key, value) {
+		validateEntityName(key);
+		if (typeof value === 'string' && value.indexOf('&') === -1) {
+			this._persistentEntries.push([key, {
+				regex: new RegExp('&' + escapeForRegex(key) + ';', 'g'),
+				val: value,
+			}]);
+		}
+	}
+	addInputEntities(map) {
+		this._totalExpansions = 0;
+		this._expandedLength = 0;
+		this._inputEntries = buildEntries(map);
+	}
+	reset() {
+		this._inputEntries = [];
+		this._totalExpansions = 0;
+		this._expandedLength = 0;
+	}
+	replace(str) {
+		if (typeof str !== 'string' || str.length === 0) return str;
+		if (str.indexOf('&') === -1) return str;
+		const original = str;
+		if (this._persistentEntries.length > 0) {
+			str = this._applyEntries(str, this._persistentEntries, this._limitExternal);
+		}
+		if (this._inputEntries.length > 0 && str.indexOf('&') !== -1) {
+			str = this._applyEntries(str, this._inputEntries, this._limitExternal);
+		}
+		if (this._defaultEntries.length > 0 && str.indexOf('&') !== -1) {
+			str = this._applyEntries(str, this._defaultEntries, this._limitDefault);
+		}
+		if (this._systemEntries.length > 0 && str.indexOf('&') !== -1) {
+			str = this._applyEntries(str, this._systemEntries, this._limitSystem);
+		}
+		if (this._ampEnabled && str.indexOf('&') !== -1) {
+			str = str.replace(AMP_ENTITY.regex, AMP_ENTITY.val);
+		}
+		str = this._postCheck(str, original);
+		return str;
+	}
+	parse(val) {
+		return this.replace(val);
+	}
+	_applyEntries(str, entries, track) {
+		const limitExpansions = track && this._maxTotalExpansions > 0;
+		const limitLength = track && this._maxExpandedLength > 0;
+		const trackAny = limitExpansions || limitLength;
+		for (let i = 0; i < entries.length; i++) {
+			if (str.indexOf('&') === -1) break;
+			const entity = entries[i][1];
+			if (!trackAny) {
+				str = str.replace(entity.regex, entity.val);
+				continue;
+			}
+			if (limitExpansions && !limitLength) {
+				let count = 0;
+				str = str.replace(entity.regex, (...args) => {
+					count++;
+					return typeof entity.val === 'function' ? entity.val(...args) : entity.val;
+				});
+				if (count > 0) {
+					this._totalExpansions += count;
+					if (this._totalExpansions > this._maxTotalExpansions) {
+						throw new Error(
+							`[EntityReplacer] Entity expansion count limit exceeded: ` +
+							`${this._totalExpansions} > ${this._maxTotalExpansions}`
+						);
+					}
+				}
+			} else if (limitLength && !limitExpansions) {
+				const before = str.length;
+				str = str.replace(entity.regex, entity.val);
+				const delta = str.length - before;
+				if (delta > 0) {
+					this._expandedLength += delta;
+					if (this._expandedLength > this._maxExpandedLength) {
+						throw new Error(
+							`[EntityReplacer] Expanded content length limit exceeded: ` +
+							`${this._expandedLength} > ${this._maxExpandedLength}`
+						);
+					}
+				}
+			} else {
+				const before = str.length;
+				let count = 0;
+				str = str.replace(entity.regex, (...args) => {
+					count++;
+					return typeof entity.val === 'function' ? entity.val(...args) : entity.val;
+				});
+				if (count > 0) {
+					this._totalExpansions += count;
+					if (this._totalExpansions > this._maxTotalExpansions) {
+						throw new Error(
+							`[EntityReplacer] Entity expansion count limit exceeded: ` +
+							`${this._totalExpansions} > ${this._maxTotalExpansions}`
+						);
+					}
+				}
+				const delta = str.length - before;
+				if (delta > 0) {
+					this._expandedLength += delta;
+					if (this._expandedLength > this._maxExpandedLength) {
+						throw new Error(
+							`[EntityReplacer] Expanded content length limit exceeded: ` +
+							`${this._expandedLength} > ${this._maxExpandedLength}`
+						);
+					}
 				}
 			}
 		}
-		return;
+		return str;
 	}
-	throw new TypeError(
-		`is-unsafe: second argument must be a PatternList (e.g. HTML), ` +
-		`an array of PatternLists (e.g. [HTML, XML]), or a RegExp. Got: ${typeof context}`
-	);
-}
-function normalise(context) {
-	if (context instanceof RegExp) return { lists: null, regex: context };
-	if (Array.isArray(context[0])) return { lists: context, regex: null };
-	return { lists: [context], regex: null };
-}
-function matchList(value, list) {
-	const label = list.label ?? 'CUSTOM';
-	for (const rule of list) {
-		if (rule.pattern.test(value)) {
-			return { context: label, id: rule.id, description: rule.description, pattern: rule.pattern };
-		}
-	}
-	return null;
-}
-function isUnsafe(value, context) {
-	assertString(value);
-	assertContext(context);
-	const { lists, regex } = normalise(context);
-	if (regex) return regex.test(value);
-	for (const list of lists) {
-		if (matchList(value, list) !== null) return true;
-	}
-	return false;
 }
 
-// fast-xml-parser\src\xmlparser\OrderedObjParser.js
+// @nodable
+const COMMON_HTML = {
+	nbsp: { regex: /&(nbsp|#0*160|#x0*[Aa]0);/g, val: '\u00a0' },
+	copy: { regex: /&(copy|#0*169|#x0*[Aa]9);/g, val: '\u00a9' },
+	reg: { regex: /&(reg|#0*174|#x0*[Aa][Ee]);/g, val: '\u00ae' },
+	trade: { regex: /&(trade|#0*8482|#x0*2122);/g, val: '\u2122' },
+	mdash: { regex: /&(mdash|#0*8212|#x0*2014);/g, val: '\u2014' },
+	ndash: { regex: /&(ndash|#0*8211|#x0*2013);/g, val: '\u2013' },
+	hellip: { regex: /&(hellip|#0*8230|#x0*2026);/g, val: '\u2026' },
+	laquo: { regex: /&(laquo|#0*171|#x0*[Aa][Bb]);/g, val: '\u00ab' },
+	raquo: { regex: /&(raquo|#0*187|#x0*[Bb][Bb]);/g, val: '\u00bb' },
+	lsquo: { regex: /&(lsquo|#0*8216|#x0*2018);/g, val: '\u2018' },
+	rsquo: { regex: /&(rsquo|#0*8217|#x0*2019);/g, val: '\u2019' },
+	ldquo: { regex: /&(ldquo|#0*8220|#x0*201[Cc]);/g, val: '\u201c' },
+	rdquo: { regex: /&(rdquo|#0*8221|#x0*201[Dd]);/g, val: '\u201d' },
+	bull: { regex: /&(bull|#0*8226|#x0*2022);/g, val: '\u2022' },
+	para: { regex: /&(para|#0*182|#x0*[Bb]6);/g, val: '\u00b6' },
+	sect: { regex: /&(sect|#0*167|#x0*[Aa]7);/g, val: '\u00a7' },
+	deg: { regex: /&(deg|#0*176|#x0*[Bb]0);/g, val: '\u00b0' },
+	frac12: { regex: /&(frac12|#0*189|#x0*[Bb][Dd]);/g, val: '\u00bd' },
+	frac14: { regex: /&(frac14|#0*188|#x0*[Bb][Cc]);/g, val: '\u00bc' },
+	frac34: { regex: /&(frac34|#0*190|#x0*[Bb][Ee]);/g, val: '\u00be' },
+	inr: { regex: /&(inr|#0*8377);/g, val: "₹" },
+};
+const CURRENCY_ENTITIES = {
+	cent: { regex: /&(cent|#0*162|#x0*[Aa]2);/g, val: '\u00a2' },
+	pound: { regex: /&(pound|#0*163|#x0*[Aa]3);/g, val: '\u00a3' },
+	yen: { regex: /&(yen|#0*165|#x0*[Aa]5);/g, val: '\u00a5' },
+	euro: { regex: /&(euro|#0*8364|#x0*20[Aa][Cc]);/g, val: '\u20ac' },
+	inr: { regex: /&(inr|#0*8377|#x0*20[Bb]9);/g, val: '\u20b9' },
+	curren: { regex: /&(curren|#0*164|#x0*[Aa]4);/g, val: '\u00a4' },
+	fnof: { regex: /&(fnof|#0*402|#x0*192);/g, val: '\u0192' },
+};
+const NUMERIC_ENTITIES = {
+	num_dec: {
+		regex: /&#0*([0-9]{1,7});/g,
+		val: (_, s) => fromCodePoint(s, 10, "&#"),
+	},
+	num_hex: {
+		regex: /&#x0*([0-9a-fA-F]{1,6});/g,
+		val: (_, s) => fromCodePoint(s, 16, "&#x"),
+	},
+};
+function fromCodePoint(str, base, prefix) {
+	const codePoint = Number.parseInt(str, base);
+	if (codePoint >= 0 && codePoint <= 0x10FFFF) {
+		return String.fromCodePoint(codePoint);
+	} else {
+		return prefix + str + ";";
+	}
+}
+
+// fast-xml-parser
 function extractRawAttributes(prefixedAttrs, options) {
 	if (!prefixedAttrs) return {};
 	const attrs = options.attributesGroupName
@@ -3207,7 +2153,7 @@ function extractNamespace(rawTagName) {
 	return undefined;
 }
 class OrderedObjParser {
-	constructor(options, externalEntities) {
+	constructor(options) {
 		this.options = options;
 		this.currentNode = null;
 		this.tagsNodeStack = [];
@@ -3223,25 +2169,13 @@ class OrderedObjParser {
 		this.ignoreAttributesFn = getIgnoreAttributesFn(this.options.ignoreAttributes);
 		this.entityExpansionCount = 0;
 		this.currentExpandedLength = 0;
-		this.doctypefound = false;
-		let namedEntities = { ...XML };
-		if (this.options.entityDecoder) {
-			this.entityDecoder = this.options.entityDecoder;
-		} else {
-			if (typeof this.options.htmlEntities === "object") namedEntities = this.options.htmlEntities;
-			else if (this.options.htmlEntities === true) namedEntities = { ...COMMON_HTML, ...CURRENCY };
-			this.entityDecoder = new EntityDecoder({
-				namedEntities: { ...namedEntities, ...externalEntities },
-				numericAllowed: this.options.htmlEntities,
-				limit: {
-					maxTotalExpansions: this.options.processEntities.maxTotalExpansions,
-					maxExpandedLength: this.options.processEntities.maxExpandedLength,
-					applyLimitsTo: this.options.processEntities.appliesTo,
-				},
-				onInputEntity: (name, value) =>
-					isUnsafe(value, [HTML_CONTEXT, XML_CONTEXT]) ? ENTITY_ACTION.BLOCK : ENTITY_ACTION.ALLOW,
-			});
-		}
+		this.entityReplacer = new EntityReplacer({
+			default: true,
+			system: this.options.htmlEntities ? { ...COMMON_HTML, ...NUMERIC_ENTITIES, ...CURRENCY_ENTITIES } : {},
+			maxTotalExpansions: this.options.processEntities.maxTotalExpansions,
+			maxExpandedLength: this.options.processEntities.maxExpandedLength,
+			applyLimitsTo: "all",
+		});
 		this.matcher = new Matcher();
 		this.readonlyMatcher = this.matcher.readOnly();
 		this.isCurrentNodeStopNode = false;
@@ -3301,9 +2235,9 @@ function resolveNameSpace(tagname) {
 	return tagname;
 }
 const attrsRegx = new RegExp('([^\\s=]+)\\s*(=\\s*([\'"])([\\s\\S]*?)\\3)?', 'gm');
-function buildAttributesMap(attrStr, jPath, tagName, force = false) {
+function buildAttributesMap(attrStr, jPath, tagName) {
 	const options = this.options;
-	if (force === true || (options.ignoreAttributes !== true && typeof attrStr === 'string')) {
+	if (options.ignoreAttributes !== true && typeof attrStr === 'string') {
 		const matches = getAllMatches(attrStr, attrsRegx);
 		const len = matches.length;
 		const attrs = {};
@@ -3354,7 +2288,7 @@ function buildAttributesMap(attrStr, jPath, tagName, force = false) {
 			}
 		}
 		if (!hasAttrs) return;
-		if (options.attributesGroupName && !options.preserveOrder) {
+		if (options.attributesGroupName) {
 			const attrCollection = {};
 			attrCollection[options.attributesGroupName] = attrs;
 			return attrCollection;
@@ -3368,10 +2302,8 @@ const parseXml = function (xmlData) {
 	let currentNode = xmlObj;
 	let textData = "";
 	this.matcher.reset();
-	this.entityDecoder.reset();
 	this.entityExpansionCount = 0;
 	this.currentExpandedLength = 0;
-	this.doctypefound = false;
 	const options = this.options;
 	const docTypeReader = new DocTypeReader(options.processEntities);
 	const xmlLen = xmlData.length;
@@ -3409,17 +2341,11 @@ const parseXml = function (xmlData) {
 				let tagData = readTagExp(xmlData, i, false, "?>");
 				if (!tagData) throw new Error("Pi Tag is not closed.");
 				textData = this.saveTextToParentTag(textData, currentNode, this.readonlyMatcher);
-				const attsMap = this.buildAttributesMap(tagData.tagExp, this.matcher, tagData.tagName, true);
-				if (attsMap) {
-					const ver = attsMap[this.options.attributeNamePrefix + "version"];
-					this.entityDecoder.setXmlVersion(Number(ver) || 1.0);
-					docTypeReader.setXmlVersion(Number(ver) || 1.0);
-				}
 				if ((options.ignoreDeclaration && tagData.tagName === "?xml") || options.ignorePiTags) ; else {
 					const childNode = new XmlNode(tagData.tagName);
 					childNode.add(options.textNodeName, "");
-					if (tagData.tagName !== tagData.tagExp && tagData.attrExpPresent && options.ignoreAttributes !== true) {
-						childNode[":@"] = attsMap;
+					if (tagData.tagName !== tagData.tagExp && tagData.attrExpPresent) {
+						childNode[":@"] = this.buildAttributesMap(tagData.tagExp, this.matcher, tagData.tagName);
 					}
 					this.addChild(currentNode, childNode, this.readonlyMatcher, i);
 				}
@@ -3436,10 +2362,8 @@ const parseXml = function (xmlData) {
 				i = endIndex;
 			} else if (c1 === 33
 				&& xmlData.charCodeAt(i + 2) === 68) {
-				if (this.doctypefound) throw new Error("Multiple DOCTYPE declarations found.");
-				this.doctypefound = true;
 				const result = docTypeReader.readDocType(xmlData, i);
-				this.entityDecoder.addInputEntities(result.entities);
+				this.entityReplacer.addInputEntities(result.entities);
 				i = result.i;
 			} else if (c1 === 33
 				&& xmlData.charCodeAt(i + 2) === 91) {
@@ -3608,7 +2532,7 @@ function replaceEntitiesValue(val, tagName, jPath) {
 			return val;
 		}
 	}
-	return this.entityDecoder.decode(val);
+	return this.entityReplacer.replace(val);
 }
 function saveTextToParentTag(textData, parentNode, matcher, isLeafNode) {
 	if (textData) {
@@ -3631,11 +2555,10 @@ function isItStopNode() {
 }
 function tagExpWithClosingIndex(xmlData, i, closingChar = ">") {
 	let attrBoundary = 0;
+	const chars = [];
 	const len = xmlData.length;
 	const closeCode0 = closingChar.charCodeAt(0);
 	const closeCode1 = closingChar.length > 1 ? closingChar.charCodeAt(1) : -1;
-	let result = '';
-	let segmentStart = i;
 	for (let index = i; index < len; index++) {
 		const code = xmlData.charCodeAt(index);
 		if (attrBoundary) {
@@ -3645,17 +2568,16 @@ function tagExpWithClosingIndex(xmlData, i, closingChar = ">") {
 		} else if (code === closeCode0) {
 			if (closeCode1 !== -1) {
 				if (xmlData.charCodeAt(index + 1) === closeCode1) {
-					result += xmlData.substring(segmentStart, index);
-					return { data: result, index };
+					return { data: String.fromCharCode(...chars), index };
 				}
 			} else {
-				result += xmlData.substring(segmentStart, index);
-				return { data: result, index };
+				return { data: String.fromCharCode(...chars), index };
 			}
-		} else if (code === 9 && !attrBoundary) {
-			result += xmlData.substring(segmentStart, index) + ' ';
-			segmentStart = index + 1;
+		} else if (code === 9) {
+			chars.push(32);
+			continue;
 		}
+		chars.push(code);
 	}
 }
 function findClosingIndex(xmlData, str, i, errMsg) {
@@ -3732,7 +2654,7 @@ function readStopNodeData(xmlData, tagName, i) {
 				const closeIndex = findClosingIndex(xmlData, "]]>", i, "StopNode is not closed.") - 2;
 				i = closeIndex;
 			} else {
-				const tagData = readTagExp(xmlData, i, false);
+				const tagData = readTagExp(xmlData, i, '>');
 				if (tagData) {
 					const openTagName = tagData && tagData.tagName;
 					if (openTagName === tagName && tagData.tagExp[tagData.tagExp.length - 1] !== "/") {
@@ -3778,7 +2700,7 @@ function sanitizeName(name, options) {
 	return name;
 }
 
-// fast-xml-parser\src\xmlparser\node2json.js
+// fast-xml-parser
 const METADATA_SYMBOL = XmlNode.getMetaDataSymbol();
 function stripAttributePrefix(attrs, prefix) {
 	if (!attrs || typeof attrs !== 'object') return {};
@@ -3818,9 +2740,6 @@ function compress(arr, options, matcher, readonlyMatcher) {
 		} else if (tagObj[property]) {
 			let val = compress(tagObj[property], options, matcher, readonlyMatcher);
 			const isLeaf = isLeafTag(val, options);
-			if (Object.keys(val).length === 0 && options.alwaysCreateTextNode) {
-				val[options.textNodeName] = "";
-			}
 			if (tagObj[":@"]) {
 				assignAttributes(val, tagObj[":@"], readonlyMatcher, options);
 			} else if (Object.keys(val).length === 1 && val[options.textNodeName] !== undefined && !options.alwaysCreateTextNode) {
@@ -3897,7 +2816,7 @@ function isLeafTag(obj, options) {
 	return false;
 }
 
-// fast-xml-parser\src\xmlparser\XMLParser.js
+// fast-xml-parser
 class XMLParser {
 		constructor(options) {
 				this.externalEntities = {};
@@ -3916,7 +2835,8 @@ class XMLParser {
 								throw Error(`${result.err.msg}:${result.err.line}:${result.err.col}`)
 						}
 				}
-				const orderedObjParser = new OrderedObjParser(this.options, this.externalEntities);
+				const orderedObjParser = new OrderedObjParser(this.options);
+				orderedObjParser.entityReplacer.setExternalEntities(this.externalEntities);
 				const orderedResult = orderedObjParser.parseXml(xmlData);
 				if (this.options.preserveOrder || orderedResult === undefined) return orderedResult;
 				else return prettify(orderedResult, this.options, orderedObjParser.matcher, orderedObjParser.readonlyMatcher);
@@ -3943,10 +2863,10 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-// @jitbit\htmlsanitizer\HtmlSanitizer.js?commonjs-module
+// @jitbit
 var HtmlSanitizer$1 = {exports: {}};
 
-// @jitbit\htmlsanitizer\HtmlSanitizer.js
+// @jitbit
 HtmlSanitizer$1.exports;
 var hasRequiredHtmlSanitizer;
 function requireHtmlSanitizer () {
@@ -3964,12 +2884,13 @@ function requireHtmlSanitizer () {
 			const _cssWhitelist = { 'background-color': true, 'color': true, 'font-size': true, 'font-weight': true, 'text-align': true, 'text-decoration': true, 'width': true };
 			const _schemaWhiteList = [ 'http:', 'https:', 'data:', 'm-files:', 'file:', 'ftp:', 'mailto:', 'pw:' ];
 			const _uriAttributes = { 'href': true, 'action': true };
-			const _parser = new DOMParser();
+			let _parser;
 			this.SanitizeHtml = function (input, extraSelector, callback) {
 				input = input.trim();
 				if (input == "") return "";
 				if (input == "<br>") return "";
-				if (input.indexOf("<body")==-1) input = "<body>" + input + "</body>";
+				if (!/<body/i.test(input)) input = "<body>" + input + "</body>";
+				_parser ||= new DOMParser();
 				let doc = _parser.parseFromString(input, "text/html");
 				if (doc.body.tagName !== 'BODY')
 					doc.body.remove();
@@ -4005,7 +2926,7 @@ function requireHtmlSanitizer () {
 						}
 						for (let i = 0; i < node.childNodes.length; i++) {
 							let subCopy = makeSanitizedCopy(node.childNodes[i]);
-							newNode.appendChild(subCopy, false);
+							newNode.appendChild(subCopy);
 						}
 						if ((newNode.tagName == "SPAN" || newNode.tagName == "B" || newNode.tagName == "I" || newNode.tagName == "U")
 							&& newNode.innerHTML.trim() == "") {
@@ -4039,11 +2960,11 @@ function requireHtmlSanitizer () {
 	return HtmlSanitizer$1.exports;
 }
 
-// @jitbit\htmlsanitizer\HtmlSanitizer.js?commonjs-es-import
+// @jitbit
 var HtmlSanitizerExports = /*@__PURE__*/ requireHtmlSanitizer();
 const HtmlSanitizer = /*@__PURE__*/getDefaultExportFromCjs(HtmlSanitizerExports);
 
-// ./activity_feed/GameNewsStore.ts
+// activity_feed/GameNewsStore.ts
 let article;
 let dataSet = {};
 let displaySet = [];
@@ -4634,7 +3555,7 @@ const NewsStore = new class GameNewsStore extends betterdiscord.Utils.Store {
 	}
 }();
 
-// ./activity_feed/components/coachmark/ActivityFeedSettingsCoachmarkStore.tsx
+// activity_feed/components/coachmark/ActivityFeedSettingsCoachmarkStore.tsx
 const ActivityFeedSettingsCoachmarkStore = new class ActivityFeedSettingsCoachmarkStore extends betterdiscord.Utils.Store {
 	static displayName = "ActivityFeedSettingsCoachmarkStore";
 	hasDismissedSettingsCoachmark;
@@ -4650,7 +3571,7 @@ const ActivityFeedSettingsCoachmarkStore = new class ActivityFeedSettingsCoachma
 	}
 }();
 
-// ./settings/settings.jsx
+// settings/settings.jsx
 const settings = {
 	main: {
 		v2Frame: {
@@ -4795,7 +3716,7 @@ function styles$1() {
 	return _styles;
 }
 
-// ./activity_feed/ActivityFeed.module.css
+// activity_feed/ActivityFeed.module.css
 const css$5 = `
 .activityFeed__2cbe2 {
 		background: var(--background-gradient-chat, var(--background-base-lower));
@@ -4910,7 +3831,7 @@ const modules_7e65654a = {
 };
 const MainClasses = modules_7e65654a;
 
-// ./activity_feed/components/application_news/ApplicationNews.module.css
+// activity_feed/components/application_news/ApplicationNews.module.css
 const css$4 = `
 .feedCarousel__94d97 {
 		display: flex;
@@ -5670,7 +4591,7 @@ const modules_98d78101 = {
 };
 const FeedClasses = modules_98d78101;
 
-// ./activity_feed/components/application_news/components/HorizontalFeedPagination.tsx
+// activity_feed/components/application_news/components/HorizontalFeedPagination.tsx
 function ArrowIcon({ type }) {
 	return BdApi.React.createElement("svg", { width: "24", height: "24", className: `${FeedClasses.arrow} ${FeedClasses[type]}` }, BdApi.React.createElement(
 		"path",
@@ -5722,7 +4643,7 @@ function HorizontalFeedPagination({ articleSet, currentArticle }) {
 	));
 }
 
-// ./activity_feed/common/components/TooltipBuilder.tsx
+// activity_feed/common/components/TooltipBuilder.tsx
 const Tooltip = ({ note, position, children, forceOpen }) => {
 	return BdApi.React.createElement(Common.Tooltip, { text: note, forceOpen, position: position || "top" }, (props) => {
 		const child = react.Children.only(children);
@@ -5736,7 +4657,7 @@ const Tooltip = ({ note, position, children, forceOpen }) => {
 	});
 };
 
-// ./activity_feed/components/application_news/components/FeedCarouselItemOverflow.tsx
+// activity_feed/components/application_news/components/FeedCarouselItemOverflow.tsx
 function FeedCarouselItemPopout({ application, articleUrl, close }) {
 	const article = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getArticleByApplicationId(application.id));
 	if (isNaN(application.id)) {
@@ -5821,7 +4742,7 @@ function FeedCarouselItemOverflow({ application, articleUrl, position }) {
 	);
 }
 
-// ./activity_feed/components/application_news/components/VerticalFeedPagination.tsx
+// activity_feed/components/application_news/components/VerticalFeedPagination.tsx
 function Subpagination({ article }) {
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
 	const thumbnail = article.news?.thumbnail?.replace(/\s/g, "%20");
@@ -5851,7 +4772,7 @@ function VerticalFeedPagination({ articleSet }) {
 	return BdApi.React.createElement("div", { className: FeedClasses.pagination }, BdApi.React.createElement("div", { className: FeedClasses.scrollerWrap }, BdApi.React.createElement("div", { className: `${FeedClasses.scroller} ${FeedClasses.verticalPaginationItemContainer}` }, articleSet.map((article) => article && BdApi.React.createElement(Subpagination, { article })))));
 }
 
-// ./activity_feed/components/application_news/components/FeedSkeleton.tsx
+// activity_feed/components/application_news/components/FeedSkeleton.tsx
 function FeedSkeleton() {
 	const type = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	if (type === "vertical") {
@@ -5862,7 +4783,7 @@ function FeedSkeleton() {
 	return;
 }
 
-// ./activity_feed/components/application_news/components/FeedSkeletonError.tsx
+// activity_feed/components/application_news/components/FeedSkeletonError.tsx
 function FeedSkeletonError({ errorText, errorDescription }) {
 	const type = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getOrientation());
 	if (type === "vertical") {
@@ -5885,7 +4806,7 @@ function FeedSkeletonError({ errorText, errorDescription }) {
 	return;
 }
 
-// ./activity_feed/components/application_news/components/Article.tsx
+// activity_feed/components/application_news/components/Article.tsx
 function FeedCarouselItem(Article2) {
 	return function WrappedComponent(props) {
 		let id = props.article.application.id;
@@ -6013,7 +4934,7 @@ class Article extends betterdiscord.React.PureComponent {
 }
 const FeedCarouselItem$1 = FeedCarouselItem(Article);
 
-// ./activity_feed/components/application_news/FeedCarousel.tsx
+// activity_feed/components/application_news/FeedCarousel.tsx
 function FeedCarousel() {
 	const articles = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getArticlesForDisplay());
 	const currentArticle = betterdiscord.Hooks.useStateFromStores([NewsStore], () => NewsStore.getCurrentArticle());
@@ -6073,12 +4994,12 @@ function FeedCarousel() {
 	));
 }
 
-// ./activity_feed/common/components/SectionHeader.tsx
+// activity_feed/common/components/SectionHeader.tsx
 const SectionHeader = ({ label }) => {
 	return BdApi.React.createElement(Common.Flex, { align: Common.Flex.Align.CENTER, className: MainClasses.headerContainer, justify: Common.Flex.Justify.BETWEEN }, BdApi.React.createElement("div", { className: MainClasses.headerText }, label));
 };
 
-// ./activity_feed/components/quick_launcher/QuickLauncher.module.css
+// activity_feed/components/quick_launcher/QuickLauncher.module.css
 const css$3 = `
 .quickLauncher__1ffe5 {
 		display: block;
@@ -6195,7 +5116,7 @@ const modules_1116a9ae = {
 };
 const QuickLauncherClasses = modules_1116a9ae;
 
-// ./activity_feed/components/quick_launcher/launcher.tsx
+// activity_feed/components/quick_launcher/launcher.tsx
 function PlayPopout({ close, launcher, game, state }) {
 	const setDisable = state;
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
@@ -6275,7 +5196,7 @@ function QuickLauncherBuilder(props) {
 	return BdApi.React.createElement("div", { ...props }, BdApi.React.createElement(SectionHeader, { label: locale.Strings.QUICK_LAUNCHER() }), gameList.length === 0 || (betterdiscord.Data.load("freezeDock") ?? settings.default.freezeDock) ? BdApi.React.createElement(LauncherEmptyBuilder, null) : BdApi.React.createElement("div", { className: betterdiscord.Utils.className((betterdiscord.Data.load("v2Dock") ?? settings.default.v2Dock) && QuickLauncherClasses.dockV2, QuickLauncherClasses.dock) }, _gameList.map((game) => BdApi.React.createElement(LauncherGameBuilder, { game, runningGames, key: game.id }))));
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/ActivityButtons.tsx
+// activity_feed/components/now_playing/activities/components/common/ActivityButtons.tsx
 const themeContext = betterdiscord.Webpack.getMangled(betterdiscord.Webpack.Filters.bySource("themePreferenceForSystemTheme", "createContext"), {
 	ClientThemeContext: betterdiscord.Webpack.Filters.byStrings("useContext")
 });
@@ -6603,7 +5524,7 @@ function handleApplicationClick({ user, currentUser, activity, application, onCl
 	return isEmbedded && !application ? openEmbeddedAppProfile : !isEmbedded && isTypePlaying ? openGameProfile : isCrunchyroll && user.id !== currentUser.id ? () => ParseCustomButton({ user, activity, index: 0 }) : null;
 }
 
-// ./activity_feed/components/now_playing/NowPlaying.module.css
+// activity_feed/components/now_playing/NowPlaying.module.css
 const css$2 = `
 .nowPlaying__93528, .whatsNew__93528 {
 		position: relative;
@@ -7669,7 +6590,7 @@ const modules_7260a078 = {
 };
 const NowPlayingClasses = modules_7260a078;
 
-// ./activity_feed/components/now_playing/activities/components/common/DiscordTag.tsx
+// activity_feed/components/now_playing/activities/components/common/DiscordTag.tsx
 function DiscordTag({ user, partiedMembers, voice }) {
 	let outputtedUsername;
 	if (voice && voice[0]) {
@@ -7692,7 +6613,7 @@ function DiscordTag({ user, partiedMembers, voice }) {
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.nameTag, style: { display: "flex", flex: 1 } }, BdApi.React.createElement("span", { className: `${NowPlayingClasses.username} username`, onClick: () => Common.UserProfileModalActionCreators.openUserProfileModal({ userId: user.id }) }, outputtedUsername));
 }
 
-// ./activity_feed/components/now_playing/PresenceTypeStore.ts
+// activity_feed/components/now_playing/PresenceTypeStore.ts
 const ActivityTypes = {
 	PLAYING: 0,
 	STREAMING: 1,
@@ -7751,7 +6672,7 @@ const PresenceTypeStore = new class PresenceTypeStore extends betterdiscord.Util
 	}
 }();
 
-// ./activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
+// activity_feed/components/now_playing/activities/components/common/FlexInfo.tsx
 function ActivityType(props) {
 	const { activity, user, game, channel, stream, streamUser, server, type } = props;
 	const useGameProfile = Common.GameProfileCheck({ trackEntryPointImpression: false, applicationId: game?.id });
@@ -7839,7 +6760,7 @@ function FlexInfo(props) {
 	return BdApi.React.createElement("div", { className, style, onClick }, BdApi.React.createElement(ActivityType, { ...props }));
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/AvatarWithPopoutWrapper.tsx
+// activity_feed/components/now_playing/activities/components/common/AvatarWithPopoutWrapper.tsx
 function AvatarWithPopoutWrapper({ className, user, status, size }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
@@ -7872,7 +6793,7 @@ function AvatarWithPopoutWrapper({ className, user, status, size }) {
 	);
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/CardTrailing.tsx
+// activity_feed/components/now_playing/activities/components/common/CardTrailing.tsx
 function PartyMemberListBuilder({ activity, users }) {
 	const emptyNum = activity?.party?.size[1] - activity?.party?.size[0];
 	const anonNum = activity?.party?.size[0] - 1;
@@ -7959,7 +6880,7 @@ function PartyFooter({ party, players, user, activity }) {
 	), isJoinable && BdApi.React.createElement(ActivityButtons, { user, activity, onAction: action })));
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/ActivityAssets.tsx
+// activity_feed/components/now_playing/activities/components/common/ActivityAssets.tsx
 function XboxImageAsset({ url }) {
 	return BdApi.React.createElement(
 		"img",
@@ -8082,7 +7003,7 @@ function VoiceGuildAsset({ channel, server, streamUser }) {
 	), BdApi.React.createElement("div", { className: NowPlayingClasses.voiceSectionIconWrapper }, BdApi.React.createElement("svg", { className: NowPlayingClasses.voiceSectionIcon, width: "24", height: "24", viewBox: "0 0 24 24" }, BdApi.React.createElement("path", { fill: "currentColor", d: "M12 3a1 1 0 0 0-1-1h-.06a1 1 0 0 0-.74.32L5.92 7H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h2.92l4.28 4.68a1 1 0 0 0 .74.32H11a1 1 0 0 0 1-1V3ZM15.1 20.75c-.58.14-1.1-.33-1.1-.92v-.03c0-.5.37-.92.85-1.05a7 7 0 0 0 0-13.5A1.11 1.11 0 0 1 14 4.2v-.03c0-.6.52-1.06 1.1-.92a9 9 0 0 1 0 17.5Z M15.16 16.51c-.57.28-1.16-.2-1.16-.83v-.14c0-.43.28-.8.63-1.02a3 3 0 0 0 0-5.04c-.35-.23-.63-.6-.63-1.02v-.14c0-.63.59-1.1 1.16-.83a5 5 0 0 1 0 9.02Z" }))));
 }
 
-// ./activity_feed/components/now_playing/activities/components/InnerBuilder.tsx
+// activity_feed/components/now_playing/activities/components/InnerBuilder.tsx
 function RegularActivityBuilder({ activity, activityProperties, user, game, players, server, v2Enabled }) {
 	const currentUser = useStateFromStores([UserStore], () => UserStore.getCurrentUser());
 	const isTwitch = ["TWITCH", "YOUTUBE"].includes(activityProperties.platform);
@@ -8155,7 +7076,7 @@ function RichTwitchActivityBuilder({ activity }) {
 	))))));
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/ActivityCardContextMenu.tsx
+// activity_feed/components/now_playing/activities/components/common/ActivityCardContextMenu.tsx
 function ActivityCardContextMenu({ user, currentActivity, currentGame }) {
 	switch (currentActivity.type) {
 		case 0: {
@@ -8183,13 +7104,13 @@ function ActivityCardContextMenu({ user, currentActivity, currentGame }) {
 	}
 }
 
-// ./activity_feed/components/now_playing/activities/components/CardActivity.tsx
+// activity_feed/components/now_playing/activities/components/CardActivity.tsx
 function ActivityCard({ user, activities, activityProperties, currentActivity, currentGame, players, server, v2Enabled }) {
 	if (currentActivity.type == 1) return;
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: NowPlayingClasses.activityContainer, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(ActivityCardContextMenu, { ...props, user, currentActivity, currentGame })) }, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, activityProperties, game: currentGame, players, server, v2Enabled }), currentActivity?.assets && currentActivity?.assets.large_image && BdApi.React.createElement(RichActivityBuilder, { user, activity: currentActivity, activityProperties, v2Enabled })), v2Enabled && currentActivity?.party && currentActivity?.party.size && BdApi.React.createElement(PartyFooter, { party: currentActivity.party, players, user, activity: currentActivity }), activities.length > 1 && activities.pop() !== currentActivity && BdApi.React.createElement("div", { className: MainClasses.sectionDivider }));
 }
 
-// ./activity_feed/components/now_playing/activities/components/CardActivityWrapper.tsx
+// activity_feed/components/now_playing/activities/components/CardActivityWrapper.tsx
 function ActivityCardWrapper({ user, activities, voice, streams, v2Enabled }) {
 	if (!activities || !activities.length) return;
 	return activities.map((activity) => {
@@ -8202,7 +7123,7 @@ function ActivityCardWrapper({ user, activities, voice, streams, v2Enabled }) {
 	});
 }
 
-// ./activity_feed/components/now_playing/activities/components/CardTwitch.tsx
+// activity_feed/components/now_playing/activities/components/CardTwitch.tsx
 function TwitchCard({ user, activity }) {
 	const currentActivity = activity?.activity;
 	const activityProperties = betterdiscord.Hooks.useStateFromStores([PresenceTypeStore], () => PresenceTypeStore.getActivityProperties(currentActivity));
@@ -8210,7 +7131,7 @@ function TwitchCard({ user, activity }) {
 	return !currentActivity || !activityProperties?.type === "STREAMING" ? BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement(RegularActivityBuilder, { user, activity: currentActivity, activityProperties, game: currentGame }), BdApi.React.createElement(RichTwitchActivityBuilder, { activity: currentActivity }), BdApi.React.createElement("div", { className: MainClasses.sectionDivider })) : null;
 }
 
-// ./activity_feed/components/now_playing/activities/components/CardStream.tsx
+// activity_feed/components/now_playing/activities/components/CardStream.tsx
 function StreamContextMenu({ stream }) {
 	return BdApi.React.createElement(betterdiscord.ContextMenu.Menu, { navId: "watch-stream-context", onClose: (e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e) }, BdApi.React.createElement(betterdiscord.ContextMenu.Item, { id: "watch-stream", label: locale.Strings.WATCH_STREAM(), action: () => {
 		return Common.SelectedChannelActionCreators.selectVoiceChannel(stream.channelId), Common.OpenStream(stream);
@@ -8232,7 +7153,7 @@ function StreamCard({ stream, streamUser, streamActivity }) {
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.streamSection, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(StreamContextMenu, { ...props, stream })) }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingSection }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: `${NowPlayingClasses.applicationStreamingAvatar} ${NowPlayingClasses.avatar}`, user: streamUser, size: "SIZE_40" }), BdApi.React.createElement(FlexInfo, { className: `${NowPlayingClasses.details} ${NowPlayingClasses.applicationStreamingDetails}`, type: "STREAM", stream: streamActivity, streamUser })), BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewWrapper, style: { paddingTop: "54.25%" } }, BdApi.React.createElement("div", { className: NowPlayingClasses.inner }, BdApi.React.createElement("div", { className: NowPlayingClasses.applicationStreamingPreviewSize, role: "button" }, BdApi.React.createElement(StreamPreview, { stream })))));
 }
 
-// ./activity_feed/components/now_playing/activities/components/CardVoice.tsx
+// activity_feed/components/now_playing/activities/components/CardVoice.tsx
 function getVoiceParticipants({ voice }) {
 	let participants = [];
 	const channelParticipants = Object.keys(VoiceStateStore.getVoiceStatesForChannel(voice));
@@ -8267,13 +7188,13 @@ function VoiceCard({ activities, voice, streams }) {
 	), activities.length ? BdApi.React.createElement("div", { className: MainClasses.sectionDivider }) : null);
 }
 
-// ./activity_feed/components/now_playing/card_shop/now_playing/CardBody.tsx
+// activity_feed/components/now_playing/card_shop/now_playing/CardBody.tsx
 function NowPlayingCardBody({ activities, user, voice, streams, v2Enabled }) {
 	const twitchActivity = activities.find((entry) => entry.activity?.type == 1) || streams.find((entry) => entry.activity?.type == 1);
 	return BdApi.React.createElement("div", { className: NowPlayingClasses.cardBody }, BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.game }, BdApi.React.createElement(Common.Flex, { className: NowPlayingClasses.gameBody }, voice && BdApi.React.createElement(VoiceCard, { activities, voice, streams, key: `voice-${voice[0]?.guild?.id || voice[0]?.channel?.id}` }), twitchActivity && BdApi.React.createElement(TwitchCard, { user, activity: twitchActivity, key: `twitch-${user.id}` }), activities && BdApi.React.createElement(ActivityCardWrapper, { user, activities, voice, streams, v2Enabled })))));
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/MessageButton.tsx
+// activity_feed/components/now_playing/activities/components/common/MessageButton.tsx
 function MessageButton({ user }) {
 	return BdApi.React.createElement(
 		ManaButtons.PrimaryButtonWithIcon,
@@ -8284,13 +7205,13 @@ function MessageButton({ user }) {
 	);
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/Splash.tsx
+// activity_feed/components/now_playing/activities/components/common/Splash.tsx
 function Splash({ splash, className }) {
 	if (!splash) return;
 	return BdApi.React.createElement("div", { className, style: { backgroundImage: `url(${splash})` } });
 }
 
-// ./activity_feed/components/now_playing/card_shop/now_playing/CardHeader.tsx
+// activity_feed/components/now_playing/card_shop/now_playing/CardHeader.tsx
 function HeaderActions$1({ card, user }) {
 	const [showPopout, setShowPopout] = react.useState(false);
 	const refDOM = react.useRef(null);
@@ -8329,7 +7250,7 @@ function NowPlayingCardHeader({ card, activities, application, splash, user, pri
 	} }, BdApi.React.createElement(Splash, { splash, className: betterdiscord.Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server) }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(AvatarWithPopoutWrapper, { className: NowPlayingClasses.avatar, user, status, size: "SIZE_40" }), BdApi.React.createElement(DiscordTag, { user, partiedMembers, voice }), BdApi.React.createElement(HeaderActions$1, { card, user }), BdApi.React.createElement(HeaderIcon, { activities, isSpotify, application })));
 }
 
-// ./activity_feed/common/components/Scroller.tsx
+// activity_feed/common/components/Scroller.tsx
 function Scroller({ children, className, dir = "ltr", orientation = "vertical", overflow = "scroll", fade = false, customTheme = false, scrollbarGutter = "stable", ref, style, type, disableFocusRingScope = false, ...other }) {
 	const scrollerClass = type === "auto" ? Common.ScrollerClasses.auto : type === "none" ? Common.ScrollerClasses.none : type === "thin" && Common.ScrollerClasses.thin;
 	const { scrollerRef, getScrollerState } = Common.ScrollerRefHandler();
@@ -8360,7 +7281,7 @@ function Scroller({ children, className, dir = "ltr", orientation = "vertical", 
 	);
 }
 
-// ./activity_feed/components/now_playing/activities/components/WhatsNewListItem.tsx
+// activity_feed/components/now_playing/activities/components/WhatsNewListItem.tsx
 function WhatsNewListItem({ player }) {
 	const user = player.user;
 	const status = player.status;
@@ -8422,7 +7343,7 @@ function WhatsNewListOverflow({ players, overflowPlayerCount, extras, v2Enabled 
 	})));
 }
 
-// ./activity_feed/components/now_playing/activities/components/CardMiniNews.tsx
+// activity_feed/components/now_playing/activities/components/CardMiniNews.tsx
 function CardMiniNews({ currentArticle, className }) {
 	const thumbnail = currentArticle.news?.thumbnail?.replace(/\s/g, "%20");
 	return BdApi.React.createElement(
@@ -8446,7 +7367,7 @@ function CardMiniNews({ currentArticle, className }) {
 	);
 }
 
-// ./activity_feed/components/now_playing/card_shop/whats_new/CardBody.tsx
+// activity_feed/components/now_playing/card_shop/whats_new/CardBody.tsx
 function WhatsNewCardBody({ players, news, v2Enabled }) {
 	let slicedPlayers = players;
 	let overflowPlayers = [];
@@ -8467,7 +7388,7 @@ function WhatsNewCardBody({ players, news, v2Enabled }) {
 	})), overflowPlayers.length > 1 && BdApi.React.createElement("div", { className: NowPlayingClasses.lastPlayedSection }, BdApi.React.createElement(WhatsNewListOverflow, { players: overflowPlayers, overflowPlayerCount, extras: extraPlayers, v2Enabled }))), news && BdApi.React.createElement("div", { className: NowPlayingClasses.section }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitleWrapper }, BdApi.React.createElement("div", { className: NowPlayingClasses.sectionTitle }, locale.Strings.NEWS()), !v2Enabled && BdApi.React.createElement("div", { className: `${NowPlayingClasses.sectionLine} ${MainClasses.sectionDivider}` })), BdApi.React.createElement(CardMiniNews, { currentArticle: news, className: NowPlayingClasses.news })));
 }
 
-// ./activity_feed/components/now_playing/activities/components/common/FollowButton.tsx
+// activity_feed/components/now_playing/activities/components/common/FollowButton.tsx
 function FollowButton({ application, fullWidth = false }) {
 	if (!application) return;
 	const originalApplication = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplicationByName(application.name));
@@ -8491,7 +7412,7 @@ function FollowButton({ application, fullWidth = false }) {
 	);
 }
 
-// ./activity_feed/components/now_playing/card_shop/whats_new/CardHeader.tsx
+// activity_feed/components/now_playing/card_shop/whats_new/CardHeader.tsx
 function HeaderActions({ game }) {
 	return BdApi.React.createElement(Common.Flex, { align: Common.Flex.Align.CENTER, className: NowPlayingClasses.headerActions, grow: true }, BdApi.React.createElement(FollowButton, { application: game }));
 }
@@ -8512,7 +7433,7 @@ function WhatsNewCardHeader({ game, splash }) {
 	return BdApi.React.createElement(Common.Flex, { align: Common.Flex.Align.CENTER, className: NowPlayingClasses.cardHeader, onContextMenu: (e) => betterdiscord.ContextMenu.open(e, (props) => BdApi.React.createElement(ActivityCardContextMenu, { ...props, user: { id: 0 }, currentActivity: { type: 0 }, currentGame: game })) }, BdApi.React.createElement(Splash, { splash, className: NowPlayingClasses.splashArt }), BdApi.React.createElement("div", { className: NowPlayingClasses.header }, BdApi.React.createElement(GameIconAsset, { url: game?.getIconURL(64, "webp"), id: game?.id, name: game?.name }), BdApi.React.createElement(GameTag, { game }), BdApi.React.createElement(HeaderActions, { game })));
 }
 
-// ./activity_feed/components/now_playing/CardBuilder.tsx
+// activity_feed/components/now_playing/CardBuilder.tsx
 function generateCardGradient(game, check, activity, voice, stream) {
 	let input;
 	switch (true) {
@@ -8594,8 +7515,8 @@ function WhatsNewCardBuilder({ card, v2Enabled }) {
 	return BdApi.React.createElement("div", { className: v2Enabled ? NowPlayingClasses.cardV2 : NowPlayingClasses.card, style: { background: v2Enabled && `linear-gradient(45deg, ${cardGrad.primaryColor}, ${cardGrad.secondaryColor})` } }, BdApi.React.createElement(WhatsNewCardHeader, { game, splash }), BdApi.React.createElement(WhatsNewCardBody, { players, news: titleNews, v2Enabled }));
 }
 
-// ./activity_feed/components/now_playing/LastPlayedStore.ts
-const LastPlayedStore = () => {
+// activity_feed/components/now_playing/LastPlayedStore.ts
+const LastPlayedStore = (() => {
 	let lastPlayedCards = [];
 	let lastFetched = betterdiscord.Data.load("lastFetched") ?? void 0;
 	let shouldPersistentlyFetch = false;
@@ -8673,10 +7594,10 @@ const LastPlayedStore = () => {
 		"LOGOUT": handleLogout
 	});
 	return dispatchMethods;
-};
+});
 const LastPlayedStore$1 = LastPlayedStore();
 
-// ./activity_feed/components/now_playing/BaseBuilder.tsx
+// activity_feed/components/now_playing/BaseBuilder.tsx
 function NowPlayingColumnBuilder({ nowPlayingCards, type }) {
 	return type === "NOW_PLAYING" ? nowPlayingCards.map((card) => [
 		BdApi.React.createElement(NowPlayingCardBuilder, { card, v2Enabled: betterdiscord.Data.load("v2Cards") ?? settings.default.v2Cards, key: card.party.priorityMembers[0].user.id }),
@@ -8709,7 +7630,7 @@ function WhatsNewBuilder(props) {
 	return;
 }
 
-// ./activity_feed/base.tsx
+// activity_feed/base.tsx
 function TabBaseBuilder() {
 	react.useEffect(() => void Common.FluxDispatcher.dispatch({ type: "APP_VIEW_SET_HOME_LINK", link: "/activity" }), []);
 	const refDOM = react.useRef(null);
@@ -8720,7 +7641,7 @@ function TabBaseBuilder() {
 	];
 }
 
-// ./activity_feed/components/coachmark/IntroCoachmark.module.css
+// activity_feed/components/coachmark/IntroCoachmark.module.css
 const css$1 = `
 .coachmark_a64822 {
 		display: flex;
@@ -8799,7 +7720,7 @@ const modules_95b05254 = {
 };
 const CoachmarkClasses = modules_95b05254;
 
-// ./activity_feed/components/coachmark/IntroCoachmark.tsx
+// activity_feed/components/coachmark/IntroCoachmark.tsx
 function IntroCoachmark({ close }) {
 	return BdApi.React.createElement("div", { className: `${CoachmarkClasses.coachmark} ${Common.PopoverClasses.popover}` }, BdApi.React.createElement("div", { className: Common.PopoverClasses.graphic }, BdApi.React.createElement("img", { className: CoachmarkClasses.image, alt: "", draggable: "false", src: "https://static.discord.com/assets/de14fab6de78b0fc2f679eb74b735151.svg" })), BdApi.React.createElement("div", { className: CoachmarkClasses.body }, BdApi.React.createElement("div", { className: CoachmarkClasses.bodyHeader }, BdApi.React.createElement("div", { className: CoachmarkClasses.title }, locale.Strings.ACTIVITY_FEED())), BdApi.React.createElement("div", { className: CoachmarkClasses.bodyContent }, BdApi.React.createElement("div", { className: CoachmarkClasses.content }, locale.Strings.ACTIVITY_FEED_COACHMARK_CONTENT_BODY()))), BdApi.React.createElement("div", { className: CoachmarkClasses.actions }, BdApi.React.createElement("button", { className: `${Common.ButtonManaClasses.button} ${Common.ButtonManaClasses.sm} ${Common.ButtonManaClasses.primary} ${CoachmarkClasses.primaryButton}`, type: "button", onClick: () => {
 		ActivityFeedSettingsCoachmarkStore.setHasDismissedSettingsCoachmark(true);
@@ -8831,7 +7752,7 @@ function IntroCoachmarkPopout({ button }) {
 	));
 }
 
-// ./settings/ActivityFeedSettings.module.css
+// settings/ActivityFeedSettings.module.css
 const css = `
 .container__97b5e {
 		display: flex;
@@ -8990,7 +7911,7 @@ const modules_a52d5642 = {
 };
 const SettingsClasses = modules_a52d5642;
 
-// ./activity_feed/extra.js
+// activity_feed/extra.js
 const styles = Object.assign(
 	{
 		wrapper: betterdiscord.Webpack.getByKeys("wrapper", "svg", "mask").wrapper,
@@ -9010,225 +7931,7 @@ const styles = Object.assign(
 	QuickLauncherClasses,
 	SettingsClasses
 );
-const extraCSS = webpackify(`
-		.nowPlayingColumn .tabularNumbers {
-				color: var(--text-default) !important;
-		}
-
-		.nowPlayingColumn :is(.actionsActivity, .customButtons) {
-				gap: 8px;
-		}
-
-		.customButtons {
-				display: flex;
-				flex-direction: column;
-		}
-
-		.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {
-				display: none;
-		}
-
-		.nowPlaying .sectionDivider:last-child {
-				display: none;
-		}
-
-		.activity .serviceButtonWrapper .sm:not(.hasText) {
-				padding: 0;
-				width: calc(var(--custom-button-button-sm-height) + 4px);
-		}
-
-		.content [role="progressbar"] {
-				background-color: var(--opacity-white-24);
-		}
-
-		.partyStatusWrapper .disabledButtonWrapper {
-				flex: 1;
-		}
-
-		.partyStatusWrapper .disabledButtonOverlay {
-				height: 24px;
-				width: 100%;
-		}
-
-		.cardV2 {
-				.headerActions :is([data-mana-component="button"], .button.lookFilled), .cardBody button {
-						color: var(--white);
-						background: var(--opacity-white-24) !important;
-						&:hover {
-								background: var(--opacity-white-36) !important;
-						}
-						&:active {
-								background: var(--opacity-white-32) !important;
-						}
-				}
-				.tabularNumbers {
-						color: var(--app-message-embed-secondary-text) !important;
-				}
-				[role="progressbar"] {
-						background-color: var(--opacity-white-24);
-				}
-				.sectionDivider {
-						border-color: var(--opacity-white-12) !important;
-						border-width: 1px;
-						margin: 12px 0 12px 0;
-				}
-				.news {
-						background-color: hsl(var(--black-hsl) / .7);
-						border-radius: var(--radius-sm);
-						margin-top: var(--space-sm);
-						outline: 1px solid var(--border-muted);
-						outline-offset: -1px;
-						padding: var(--space-lg);
-						z-index: 0;
-						.background {
-								mask: linear-gradient(0deg, transparent 10%, #000);
-								z-index: -1;
-						}
-						.${FeedClasses.body} {
-								display: flex;
-								flex-direction: column;
-								gap: var(--space-xs);
-						}
-						.title {
-								color: var(--white);
-						}
-						.description {
-								color: var(--white);
-								font-size: 14px;
-								font-weight: 400;
-								line-height: 1.2857142857142858;
-								margin: 0;
-						}
-						.timestamp {
-								color: var(--app-message-embed-secondary-text);
-								font-size: 12px;
-								font-weight: 400;
-								margin: 0;
-								text-transform: unset;
-						}
-				} 
-		}
-
-		.activityFeedV2 {
-				.nowPlaying .emptyState {
-						background-color: var(--background-mod-normal) !important;
-						border-color: var(--border-normal) !important;
-				}
-		}
-
-		.dockV2 {
-				&:is(.emptyState) {
-						background: var(--background-feedback-info);
-						border: 1px solid var(--icon-feedback-info) !important;
-						border-radius: var(--radius-sm);
-						color: var(--text-feedback-info) !important;
-						padding: 8px !important;
-						margin-bottom: var(--space-lg);
-				}
-		}
-
-		.feedCarouselV2 {
-				.arrowContainer .contents {
-						display: contents;
-				}
-		}
-
-		.nowPlaying .emptyState {
-				border: 1px solid;
-				border-radius: 5px;
-				box-sizing: border-box;
-				margin-top: 20px;
-				padding: 20px;
-				width: 100%;
-		}
-
-		.theme-light .nowPlaying .emptyState {
-				background-color: #fff;
-				border-color: var(--interactive-background-hover);
-		}
-
-		.theme-dark .nowPlaying .emptyState {
-				background-color: rgba(79, 84, 92, .3);
-				border-color: var(--background-mod-strong);
-		}
-
-		.theme-light .quickLauncher .emptyState, .theme-light .container.emptyState {
-				border-color: rgba(220,221,222,.6);
-				color: #b9bbbe;
-		}
-
-		.theme-dark .quickLauncher .emptyState, .theme-dark .container.emptyState {
-				border-color: rgba(47,49,54,.6);
-				color: #72767d;
-		}
-
-		.theme-light .nowPlayingColumn .sectionDivider {
-				border-color: var(--interactive-background-hover);
-		}
-
-		.theme-dark .nowPlayingColumn .sectionDivider {
-				border-color: var(--background-mod-strong);
-		}
-
-		.theme-dark .voiceSectionIconWrapper {
-				background-color: var(--primary-800);
-		}
-
-		.theme-light .voiceSectionIconWrapper {
-				background: var(--primary-300);
-		}
-
-		.quickLauncher .emptyState {
-				border-bottom: 1px solid;
-				font-size: 14px;
-				padding: 20px 0;
-				justify-content: flex-start;
-				align-items: center;
-		}
-
-		.container.emptyState {
-				border-bottom: 1px solid;
-				font-size: 14px;
-				margin-bottom: 20px;
-				justify-content: flex-start;
-		}
-
-		.container .emptyState {
-				position: relative;
-				padding: 0;
-				border-bottom: unset; 
-				line-height: 1.60;
-		}
-
-		.container .sectionDivider, .settingsDivider {
-				display: flex;
-				width: 100%;
-				border-bottom: 2px solid;
-				margin: 4px 0 4px 0;
-				border-color: var(--background-mod-strong);
-		}
-
-		.container .sectionDivider:last-child {
-				display: none;
-		}
-
-		.overflowUserOverflow .wrapper {
-				width: 30px !important;
-				height: 30px !important;
-		}
-
-		[data-mana-component="layer-modal"] .followGameButtonActivityFeed {
-				background-color: var(--control-overlay-secondary-background-default);
-				border-color: var(--control-overlay-secondary-border-default);
-				color: var(--control-overlay-secondary-text-default);
-				&:hover {
-						background-color: var(--control-overlay-secondary-background-hover) !important;
-				}
-				&:active {
-						background-color: var(--control-overlay-secondary-background-active) !important; 
-				}
-		}
-`);
+const extraCSS = webpackify(`\n  	.nowPlayingColumn .tabularNumbers {\n  			color: var(--text-default) !important;\n  	}\n\n  	.nowPlayingColumn :is(.actionsActivity, .customButtons) {\n  			gap: 8px;\n  	}\n\n  	.customButtons {\n  			display: flex;\n  			flex-direction: column;\n  	}\n\n  	.activityContainer:last-child:not(:only-child, :nth-child(1 of .activityContainer)) .sectionDivider {\n  			display: none;\n  	}\n\n  	.nowPlaying .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.activity .serviceButtonWrapper .sm:not(.hasText) {\n  			padding: 0;\n  			width: calc(var(--custom-button-button-sm-height) + 4px);\n  	}\n\n  	.content [role="progressbar"] {\n  			background-color: var(--opacity-white-24);\n  	}\n\n  	.partyStatusWrapper .disabledButtonWrapper {\n  			flex: 1;\n  	}\n\n  	.partyStatusWrapper .disabledButtonOverlay {\n  			height: 24px;\n  			width: 100%;\n  	}\n\n  	.cardV2 {\n  			.headerActions :is([data-mana-component="button"], .button.lookFilled), .cardBody button {\n  					color: var(--white);\n  					background: var(--opacity-white-24) !important;\n  					&:hover {\n  							background: var(--opacity-white-36) !important;\n  					}\n  					&:active {\n  							background: var(--opacity-white-32) !important;\n  					}\n  			}\n  			.tabularNumbers {\n  					color: var(--app-message-embed-secondary-text) !important;\n  			}\n  			[role="progressbar"] {\n  					background-color: var(--opacity-white-24);\n  			}\n  			.sectionDivider {\n  					border-color: var(--opacity-white-12) !important;\n  					border-width: 1px;\n  					margin: 12px 0 12px 0;\n  			}\n  			.news {\n  					background-color: hsl(var(--black-hsl) / .7);\n  					border-radius: var(--radius-sm);\n  					margin-top: var(--space-sm);\n  					outline: 1px solid var(--border-muted);\n  					outline-offset: -1px;\n  					padding: var(--space-lg);\n  					z-index: 0;\n  					.background {\n  							mask: linear-gradient(0deg, transparent 10%, #000);\n  							z-index: -1;\n  					}\n  					.${FeedClasses.body} {\n  							display: flex;\n  							flex-direction: column;\n  							gap: var(--space-xs);\n  					}\n  					.title {\n  							color: var(--white);\n  					}\n  					.description {\n  							color: var(--white);\n  							font-size: 14px;\n  							font-weight: 400;\n  							line-height: 1.2857142857142858;\n  							margin: 0;\n  					}\n  					.timestamp {\n  							color: var(--app-message-embed-secondary-text);\n  							font-size: 12px;\n  							font-weight: 400;\n  							margin: 0;\n  							text-transform: unset;\n  					}\n  			} \n  	}\n\n  	.activityFeedV2 {\n  			.nowPlaying .emptyState {\n  					background-color: var(--background-mod-normal) !important;\n  					border-color: var(--border-normal) !important;\n  			}\n  	}\n\n  	.dockV2 {\n  			&:is(.emptyState) {\n  					background: var(--background-feedback-info);\n  					border: 1px solid var(--icon-feedback-info) !important;\n  					border-radius: var(--radius-sm);\n  					color: var(--text-feedback-info) !important;\n  					padding: 8px !important;\n  					margin-bottom: var(--space-lg);\n  			}\n  	}\n\n  	.feedCarouselV2 {\n  			.arrowContainer .contents {\n  					display: contents;\n  			}\n  	}\n\n  	.nowPlaying .emptyState {\n  			border: 1px solid;\n  			border-radius: 5px;\n  			box-sizing: border-box;\n  			margin-top: 20px;\n  			padding: 20px;\n  			width: 100%;\n  	}\n\n  	.theme-light .nowPlaying .emptyState {\n  			background-color: #fff;\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlaying .emptyState {\n  			background-color: rgba(79, 84, 92, .3);\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-light .quickLauncher .emptyState, .theme-light .container.emptyState {\n  			border-color: rgba(220,221,222,.6);\n  			color: #b9bbbe;\n  	}\n\n  	.theme-dark .quickLauncher .emptyState, .theme-dark .container.emptyState {\n  			border-color: rgba(47,49,54,.6);\n  			color: #72767d;\n  	}\n\n  	.theme-light .nowPlayingColumn .sectionDivider {\n  			border-color: var(--interactive-background-hover);\n  	}\n\n  	.theme-dark .nowPlayingColumn .sectionDivider {\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.theme-dark .voiceSectionIconWrapper {\n  			background-color: var(--primary-800);\n  	}\n\n  	.theme-light .voiceSectionIconWrapper {\n  			background: var(--primary-300);\n  	}\n\n  	.quickLauncher .emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			padding: 20px 0;\n  			justify-content: flex-start;\n  			align-items: center;\n  	}\n\n  	.container.emptyState {\n  			border-bottom: 1px solid;\n  			font-size: 14px;\n  			margin-bottom: 20px;\n  			justify-content: flex-start;\n  	}\n\n  	.container .emptyState {\n  			position: relative;\n  			padding: 0;\n  			border-bottom: unset; \n  			line-height: 1.60;\n  	}\n\n  	.container .sectionDivider, .settingsDivider {\n  			display: flex;\n  			width: 100%;\n  			border-bottom: 2px solid;\n  			margin: 4px 0 4px 0;\n  			border-color: var(--background-mod-strong);\n  	}\n\n  	.container .sectionDivider:last-child {\n  			display: none;\n  	}\n\n  	.overflowUserOverflow .wrapper {\n  			width: 30px !important;\n  			height: 30px !important;\n  	}\n\n  	[data-mana-component="layer-modal"] .followGameButtonActivityFeed {\n  			background-color: var(--control-overlay-secondary-background-default);\n  			border-color: var(--control-overlay-secondary-border-default);\n  			color: var(--control-overlay-secondary-text-default);\n  			&:hover {\n  					background-color: var(--control-overlay-secondary-background-hover) !important;\n  			}\n  			&:active {\n  					background-color: var(--control-overlay-secondary-background-active) !important; \n  			}\n  	}\n`);
 function webpackify(css) {
 	for (const key in styles) {
 		let regex = new RegExp(`\\.${key}([\\s,.):>])`, "g");
@@ -9237,7 +7940,7 @@ function webpackify(css) {
 	return css;
 }
 
-// ./settings/components/sections/RefreshSection.tsx
+// settings/components/sections/RefreshSection.tsx
 function RefreshSection() {
 	return BdApi.React.createElement(BdApi.React.Fragment, null, BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.main).map((key) => {
 		const { name, note, initial, parent, changed } = settings.main[key];
@@ -9259,7 +7962,7 @@ function RefreshSection() {
 	})));
 }
 
-// ./settings/components/common/ActivityFeedSettingsButton.tsx
+// settings/components/common/ActivityFeedSettingsButton.tsx
 function ActivityFeedSettingsButton({ color, onClick, text }) {
 	return BdApi.React.createElement(Common.Flex, { grow: true }, BdApi.React.createElement(
 		"button",
@@ -9272,12 +7975,12 @@ function ActivityFeedSettingsButton({ color, onClick, text }) {
 	));
 }
 
-// ./settings/components/common/ButtonItem.tsx
+// settings/components/common/ButtonItem.tsx
 function ButtonItem({ label, description, innerText, onClick }) {
 	return BdApi.React.createElement("div", { className: SettingsClasses.buttonItem }, BdApi.React.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1 } }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}`, style: { fontWeight: 500, fontSize: "16px", color: "var(--text-strong)" } }, label), description && BdApi.React.createElement("div", { className: NowPlayingClasses.textRow }, description)), BdApi.React.createElement(ActivityFeedSettingsButton, { color: "text-subtle", onClick, text: innerText }));
 }
 
-// ./settings/components/common/RadioItem.tsx
+// settings/components/common/RadioItem.tsx
 function RadioItem({ optionKey, label, description, options, setting, setState }) {
 	return BdApi.React.createElement("div", { className: SettingsClasses.radioItem }, BdApi.React.createElement("div", { style: { display: "flex", flexDirection: "column", flex: 1, marginBottom: "var(--space-10)" } }, BdApi.React.createElement("div", { className: `${SettingsClasses.blacklistItemName} ${NowPlayingClasses.textRow}`, style: { fontWeight: 500, fontSize: "16px", color: "var(--text-strong)" } }, label), description && BdApi.React.createElement("div", { className: NowPlayingClasses.textRow }, description)), BdApi.React.createElement(
 		betterdiscord.Components.RadioInput,
@@ -9292,7 +7995,7 @@ function RadioItem({ optionKey, label, description, options, setting, setState }
 	));
 }
 
-// ./settings/components/sections/AdvancedSection.tsx
+// settings/components/sections/AdvancedSection.tsx
 function AdvancedSection() {
 	return BdApi.React.createElement("div", { className: SettingsClasses.toggleStack }, Object.keys(settings.debug).map((key) => {
 		const { name, note, innerText, initial, type, changed, options, onClick } = settings.debug[key];
@@ -9340,7 +8043,7 @@ function AdvancedSection() {
 	}));
 }
 
-// ./settings/components/sections/followed_games/ExternalSources.tsx
+// settings/components/sections/followed_games/ExternalSources.tsx
 function ExternalItemBuilder({ service }) {
 	const item = settings.external[service];
 	const [state, setState] = react.useState(betterdiscord.Data.load("external")?.[service] || item.enabled);
@@ -9384,7 +8087,7 @@ function ExternalSourcesListBuilder() {
 	}));
 }
 
-// ./settings/components/sections/followed_games/FollowedGames.tsx
+// settings/components/sections/followed_games/FollowedGames.tsx
 function FollowedGameEmptyBuilder() {
 	return BdApi.React.createElement("div", { className: SettingsClasses.emptyApplications }, BdApi.React.createElement("div", { className: SettingsClasses.emptyApplicationsImage }), BdApi.React.createElement("div", { className: `${Common.TextFormatClasses.defaultColor} ${SettingsClasses.emptyApplicationsTitle}` }, locale.Strings.ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_TITLE()), BdApi.React.createElement("div", { className: `${SettingsClasses.emptyApplicationsBody}` }, locale.Strings.ACTIVITY_FEED_FOLLOWED_GAMES_EMPTY_SUBTITLE()));
 }
@@ -9457,7 +8160,7 @@ function FollowedGameListBuilder() {
 	)) : BdApi.React.createElement("div", { className: `${SettingsClasses.container} ${MainClasses.emptyState}` }, BdApi.React.createElement("div", { className: MainClasses.emptyText }, locale.Strings.NO_RESULTS_FOUND())));
 }
 
-// ./settings/components/common/SidebarItemIcon.tsx
+// settings/components/common/SidebarItemIcon.tsx
 function NewspaperIcon() {
 	return BdApi.React.createElement(
 		"svg",
@@ -9479,7 +8182,7 @@ function NewspaperIcon() {
 	);
 }
 
-// ./settings/components/PanelBuilder.tsx
+// settings/components/PanelBuilder.tsx
 let LayoutTypes = {
 	SECTION: 1,
 	SIDEBAR_ITEM: 2,
@@ -9606,7 +8309,7 @@ const SettingsItem = async () => {
 	}
 };
 
-// ./activity_feed/components/application_news/components/GameProfileRecentNews.tsx
+// activity_feed/components/application_news/components/GameProfileRecentNews.tsx
 const GameProfileTypes = {
 	GAME_PROFILE_V2: 0,
 	GAME_PROFILE_CLASSIC: 1
@@ -9624,7 +8327,7 @@ function RecentNewsSection({ applicationId, type }) {
 	else throw Error(`Invalid GameProfileType passed: ${type}`);
 }
 
-// ./index.ts
+// index.ts
 function useSelectedState() {
 	return Router.useLocation().pathname.startsWith("/activity");
 }

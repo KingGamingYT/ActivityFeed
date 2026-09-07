@@ -15,7 +15,7 @@ const Filters = [
     { name: "ChannelActionCreators", filter: x => x.openPrivateChannel },
     { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write', 'Clipboard API not supported.'), searchExports: true },
     { name: "ClydeIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M19.73'), searchExports: true },
-    { name: "ContainerRefProvider", filter: /* @__PURE__ */ Webpack.Filters.byStrings('disableFocusRingScope', 'containerRef'), searchExports: true },
+    { name: "ContainerRefProvider", filter: /* @__PURE__ */ Webpack.Filters.byStrings('let{disableFocusRingScope', 'containerRef'), searchExports: true },
     { name: "Endpoints", filter: /* @__PURE__ */ Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("getApplicationsForGuild") },
     { name: "FetchUserApplicationStatistics", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"USER_ACTIVITY_STATISTICS_FETCH_SUCCESS"'), searchExports: true },

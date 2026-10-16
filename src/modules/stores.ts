@@ -1,6 +1,7 @@
 import { Webpack } from "betterdiscord";
 
 export const ApplicationStore = /* @__PURE__ */ Webpack.getStore("ApplicationStore");
+export const ApplicationViewStore = /* @__PURE__ */ Webpack.getStore("ApplicationViewStore");
 export const ApplicationStreamPreviewStore = /* @__PURE__ */ Webpack.getStore("ApplicationStreamPreviewStore");
 export const AuthenticationStore = /* @__PURE__ */ Webpack.getStore("AuthenticationStore");
 export const ChannelStore = /* @__PURE__ */ Webpack.getStore("ChannelStore");

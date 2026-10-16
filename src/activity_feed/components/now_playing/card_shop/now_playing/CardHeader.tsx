@@ -1,6 +1,6 @@
-import { Utils, ContextMenu } from "betterdiscord";
-import { useState, useRef } from "react";
-import { CardPopout, Common, ContextMenus } from "@modules/common";
+import { Utils } from "betterdiscord";
+import { useState, useRef, useCallback } from "react";
+import { Common, ContextMenus } from "@modules/common";
 import { ChannelStore } from "@modules/stores";
 import Tooltip from "@common/components/TooltipBuilder";
 import DiscordTag from "@now_playing/activities/components/common/DiscordTag";
@@ -21,7 +21,7 @@ function HeaderActions({card, user}) {
                 targetElementRef={refDOM}
                 clickTrap={true}
                 onRequestClose={() => setShowPopout(false)}
-                renderPopout={() => <CardPopout party={card.party} close={() => setShowPopout(false)} />}
+                renderPopout={() => <Common.CardPopout party={card.party} close={() => setShowPopout(false)} />}
                 position="left"
                 shouldShow={showPopout}>
                 {(props) => <span
@@ -60,10 +60,18 @@ function HeaderIcon({activities, isSpotify, application}) {
 
 export function NowPlayingCardHeader({card, activities, application, splash, user, priorityMembers, partiedMembers, voice, isSpotify}) {
     const status = priorityMembers[0].status;
-    const channel = ChannelStore.getDMChannelFromUserId(user.id);
+
+    const handleContextMenu = useCallback((e) => {
+        let Menus = ContextMenus();
+        const event = Object.assign(Object.create(Object.getPrototypeOf(e)), e);
+        Common.ChannelActionCreators.ensurePrivateChannel(user.id).then(channelId => {
+            const channel = ChannelStore.getChannel(channelId); 
+            return Menus.ContextMenuUser(event, user, channel);
+        });
+    }, [user]);
 
     return (
-        <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.cardHeader} onContextMenu={e => {let Menus = ContextMenus(); return Menus.ContextMenuUser(e, user, channel)}}>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={NowPlayingClasses.cardHeader} onContextMenu={e => handleContextMenu(e)}>
             <Splash splash={splash} className={Utils.className(NowPlayingClasses.splashArt, voice && activities.length === 0 && NowPlayingClasses.server)} />
             <div className={NowPlayingClasses.header}>
                 <AvatarWithPopoutWrapper className={NowPlayingClasses.avatar} user={user} status={status} size="SIZE_40" />

@@ -171,14 +171,16 @@ function getRandomArticles(numArticles: number) {
     dateLoop: for (let date of sortedDates) {
         // filter through only article keys with matching date
         let sortedKeys = keys.filter((key: any) => new Date(dataSet[key].news.timestamp).toDateString() === date);
+        const numKeys = sortedKeys.length;
         //console.log(date, sortedKeys)
         // randomly select from remaining article keys
-        for (let finalizedArticles = 0; finalizedArticles <= numArticles - lockSet.length; finalizedArticles++) {
+        for (let finalizedArticles = 1; finalizedArticles <= numArticles - lockSet.length; finalizedArticles++) {
             const rand = sortedKeys.length * Math.random() << 0;
+            console.log(finalizedArticles, numKeys)
 
-            if (finalizedArticles > sortedKeys.length) break;
+            if (finalizedArticles > numKeys) break;
             // break out of both loops if we're out of new articles or if the article length matches the requested number of articles
-            if (finalizedArticles > (totalKeys - 1) || articles.length > (numArticles - 1)) break dateLoop;
+            if (finalizedArticles > totalKeys || articles.length > (numArticles - 1)) break dateLoop;
             
             articles.push(dataSet[sortedKeys[rand]]);
             // remove key to prevent duplicate articles
@@ -187,28 +189,6 @@ function getRandomArticles(numArticles: number) {
     }
 
     return articles;
-}
-
-function setDisplayedArticles() {
-    console.log("setDisplayedArticles")
-    const randomArticles = getRandomArticles(4);
-    console.log("got random articles")
-    if (randomArticles && randomArticles !== null) {
-        // clear displayed articles in case this ends up running multiple times, for whatever reason
-        console.log("pre-reset", displaySet)
-        displaySet = [];
-        console.log("post-reset", displaySet)
-        displaySet.push.apply(displaySet, randomArticles);
-        for (let i = 0; i < displaySet.length; i++) {
-            displaySet[i] = {
-                ...displaySet[i],
-                index: i
-            };
-        }
-        console.log("post-loop", displaySet)
-        article = displaySet[0];
-    }
-    return;
 }
 
 async function parseXML(xml: Promise<string | void | null> | undefined) {
@@ -328,6 +308,8 @@ async function fetchSteamFeeds(gameId: number | string, application: any) {
     const article = getRSSItem(rssFeed);
     // sanitize description html before converting to plaintext
     const sanitizedDescription = article?.description && sanitize(article.description);
+    // some articles have youtube links as a header, if these are present, use them instead of the article link
+    const youtubeLink = article?.description && article.description.replaceAll(/&quot;/g, '').match(/(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^\s#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})(?![\w-])/g)?.[0];
     // first regex deals with periods, the second deals with most other punctuation (commas, semicolons, exclamation points, etc)
     return {
         application, 
@@ -336,12 +318,13 @@ async function fetchSteamFeeds(gameId: number | string, application: any) {
         thumbnail: article?.enclosure?._url || splash || backupThumbnail, 
         timestamp: article?.pubDate, 
         title: article?.title, 
-        url: article?.link
+        url: youtubeLink ? `https://www.youtube.com/watch?v=${youtubeLink.substring(youtubeLink.indexOf('embed/')+6)}` : article?.link
     }
 }
 
 async function getFeedGameData() {
     const gameData: Record<number | string, any> = {};
+    const skuFilter = (sku: any) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite";
     let analyticData;
     // load user application statistics, then fetch them
     await Common.FetchUserApplicationStatistics().then(analyticData = LibraryApplicationStatisticsStore.applicationStatistics);
@@ -354,11 +337,11 @@ async function getFeedGameData() {
     // get all applications and filter all which don't match criteria  
     const applicationList = Object.values(analyticData).flatMap((app: any) => { 
         const application = ApplicationStore.getApplication(app.application_id);
-        return application && application.thirdPartySkus.length > 0 && application.thirdPartySkus.some((sku: any) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite") ? application : []
+        return application && application.thirdPartySkus.length > 0 && application.thirdPartySkus.some((sku: any) => skuFilter(sku)) ? application : []
     })
     // grab game steam skus or, if it isn't applicable to the game, use the name of the game instead 
     const skuIds: number[] = applicationList.map((app: any) => {
-        const appSku = app.thirdPartySkus.find((sku: any) => ["steam", "microsoft"].includes(sku.distributor) || sku.sku === "Fortnite"); 
+        const appSku = app.thirdPartySkus.find((sku: any) => skuFilter(sku)); 
         return appSku?.sku || app.name; 
     })
 
@@ -431,8 +414,8 @@ export default new class GameNewsStore extends Utils.Store {
         blacklist = Data.load('blacklist') || [];
         followedGames = Data.load('followedGames') || [];
         lastTimeFetched = Data.load('lastTimeFetched');
-        setDisplayedArticles();
         this.emitChange();
+        return;
     }
 
     setDebugFeed(num: number) {
@@ -461,13 +444,35 @@ export default new class GameNewsStore extends Utils.Store {
         article = displaySet[0];
     }
 
-    rerollFeed() {
-        setDisplayedArticles();
-    }
-
     refreshFeed() {
         lastTimeFetched = 0;
-    } 
+    }
+    
+    setDisplayedArticles() {
+        if (this.state.isFetching) return;
+        console.log("setDisplayedArticles")
+        const randomArticles = getRandomArticles(4);
+        console.log("got random articles")
+        if (randomArticles && randomArticles !== null) {
+            // clear displayed articles in case this ends up running multiple times, for whatever reason
+            console.log("pre-reset", displaySet)
+            displaySet.length = 0;
+            if (displaySet.length === 0) {
+                console.log("post-reset", displaySet)
+                displaySet.push.apply(displaySet, randomArticles);
+                for (let i = 0; i < displaySet.length; i++) {
+                    displaySet[i] = {
+                        ...displaySet[i],
+                        index: i
+                    };
+                }
+                console.log("post-loop", displaySet)
+            }
+            article = displaySet[0];
+            this.emitChange();
+        }
+        return;
+    }
 
     getWhitelistedGames() {
         return whitelist;
@@ -600,7 +605,7 @@ export default new class GameNewsStore extends Utils.Store {
     }
 
     isFetched() {
-        return Object.values(dataSet).length > 5;
+        return !this.state.isFetching;
     }
 
     haveSettingsBeenOpened() {
@@ -692,7 +697,7 @@ export default new class GameNewsStore extends Utils.Store {
             if (index === Object.keys(gameData).length - 1) this.state = {...this.state, isFetching: false};
         }
         console.log("fetch loop finished")
-        if (this.state.isFetching === false) setDisplayedArticles();
+        if (this.state.isFetching === false) this.setDisplayedArticles();
     }
 
     get lastFetched() {

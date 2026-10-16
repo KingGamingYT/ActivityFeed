@@ -3,7 +3,7 @@ import locale from "@common/methods/locale";
 import NewsStore from "@activity_feed/GameNewsStore";
 import ActivityFeedSettingsCoachmarkStore from "@coachmark/ActivityFeedSettingsCoachmarkStore";
 
-export default {
+const settings: Record<string, any> = {
     main: {
         v2Frame: {
             name: locale.Strings.ACTIVITY_FEED_SETTINGS_REFRESHED_ACTIVITY_FEED_TITLE(),
@@ -35,11 +35,11 @@ export default {
             note: "Re-roll currently displayed articles. Will not fetch new ones.",
             innerText: "Reroll",
             type: "button",
-            onClick: () => NewsStore.rerollFeed()
+            onClick: () => NewsStore.setDisplayedArticles()
         },
         forceRefreshFeed: {
             name: "Refresh the news article feed",
-            note: <>Re-fetch news. WILL fetch new articles if they are available. <strong>Do NOT spam this! You will likely be rate limited by one of many services if not multiple!</strong></>,
+            note: "Re-fetch news. WILL fetch new articles if they are available. **Do NOT spam this! You will likely be rate limited by one of many services if not multiple!**",
             innerText: "Refresh",
             type: "button",
             onClick: () => NewsStore.refreshFeed()
@@ -137,3 +137,4 @@ export default {
         }
     }
 };
+export default settings;

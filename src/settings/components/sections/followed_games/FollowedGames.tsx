@@ -1,5 +1,5 @@
 import { Components, Hooks } from "betterdiscord";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Common } from "@modules/common";
 import { ApplicationStore, useStateFromStores } from "@modules/stores";
 import { FallbackAsset } from "@now_playing/activities/components/common/ActivityAssets";
@@ -23,27 +23,28 @@ function FollowedGameEmptyBuilder() {
 function FollowedGameItemBuilder({game, gameList, updateGameList}) {
     const [shouldFallback, setShouldFallback] = useState(false);
     const application = useStateFromStores([ApplicationStore], () => ApplicationStore.getApplication(game.applicationId));
-    const followed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(application?.id ?? game?.application_id));
-    const manuallyFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameManuallyFollowed(application?.id ?? game?.application_id));
+    const followed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameFollowed(application?.id ?? game?.applicationId));
+    const manuallyFollowed = Hooks.useStateFromStores([NewsStore], () => NewsStore.isGameManuallyFollowed(application?.id ?? game?.applicationId));
+    const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: application?.id ?? game?.applicationId});
 
     const handleUnsubscribe = (props: any) => (
-        <Common.ModalRoot.Modal 
+        <Common.Modal 
             {...props}
             title={locale.Strings.ARE_YOU_SURE()}
             actions={[
                 {text: locale.Strings.CANCEL(), variant: "secondary", fullWidth: 0, onClick: () => props.onClose()},
-                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { manuallyFollowed && updateGameList(gameList.filter(item => item.applicationId !== game.applicationId)); NewsStore.unfollowGame(application); props.onClose() }}
+                {text: locale.Strings.YES(), fullWidth: 1, onClick: () => { manuallyFollowed && updateGameList(gameList.filter((item: any) => item.applicationId !== game.applicationId)); NewsStore.unfollowGame(application); props.onClose() }}
             ]}
         >
             <>
                 <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME()}</div>
                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
             </> 
-        </Common.ModalRoot.Modal>
+        </Common.Modal>
     )
 
     const handleSubscribe = (props: any) => ( 
-        <Common.ModalRoot.Modal 
+        <Common.Modal 
             {...props}
             title={locale.Strings.ARE_YOU_SURE()}
             actions={[
@@ -55,17 +56,26 @@ function FollowedGameItemBuilder({game, gameList, updateGameList}) {
                 <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_SUBSCRIBE_TO_GAME()}</div>
                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
             </> 
-        </Common.ModalRoot.Modal>
+        </Common.Modal>
     )
 
     return (
         <div className={SettingsClasses.itemContainer} style={{ display: "flex" }}>
             { shouldFallback && !application ? ( <FallbackAsset className={SettingsClasses.itemIcon} /> ) : <img 
                 className={SettingsClasses.itemIcon} 
-                src={application?.getIconURL(64, 'webp')}
+                src={application?.getIconURL(60)}
+                onClick={useGameProfile}
                 onError={() => setShouldFallback(true)}
+                onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(SettingsClasses.clickableIcon)}
+                onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(SettingsClasses.clickableIcon)}
+                
             />}
-            <div className={SettingsClasses.itemName}>{application?.name || "Unknown Game"}</div>
+            <div 
+                className={SettingsClasses.itemName}
+                onClick={useGameProfile}
+                onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(SettingsClasses.clickableText)}
+                onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(SettingsClasses.clickableText)}
+            >{application?.name || "Unknown Game"}</div>
             { followed 
                 ? <ActivityFeedSettingsButton text={locale.Strings.UNFOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleUnsubscribe(props))} />
                 : <ActivityFeedSettingsButton text={locale.Strings.FOLLOW()} color="text-subtle" onClick={() => Common.ModalSystem.openModal(props => handleSubscribe(props))} />
@@ -98,7 +108,7 @@ export function FollowedGameListBuilder() {
 
     return (
         <>
-            <Components.SearchInput className={SettingsClasses.search} onChange={(e) => setQuery(e.toLowerCase())} placeholder={locale.Strings.SEARCH_FOR_GAMES()} />
+            <Components.SearchInput className={SettingsClasses.search} defaultValue="" onChange={(e) => setQuery(e.toLowerCase())} placeholder={locale.Strings.SEARCH_FOR_GAMES()} />
             {filtered?.length ? <div className={SettingsClasses.container}>{
                 filtered.sort((a, b) => a.name.localeCompare(b.name)).map(game => 
                     <>

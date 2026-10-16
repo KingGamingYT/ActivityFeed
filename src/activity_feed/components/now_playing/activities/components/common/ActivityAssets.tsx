@@ -1,6 +1,6 @@
 import { Plugins } from "betterdiscord"
 import { useState } from "react";
-import { Common, AvatarUtils } from "@modules/common";
+import { Common } from "@modules/common";
 import locale from "@common/methods/locale";
 import Tooltip from "@common/components/TooltipBuilder";
 import NowPlayingClasses from '@now_playing/NowPlaying.module.css';
@@ -148,9 +148,9 @@ export function VoiceGuildAsset({channel, server, streamUser}) {
             <img className={NowPlayingClasses.voiceSectionGuildImage} src=
                 {(() => {
                     switch (true) {
-                        case !! server: return AvatarUtils.getGuildIconURL({id: server.id, icon: server.icon, size: 40})
-                        case !! (channel && channel?.icon): return AvatarUtils.getChannelIconURL({id: channel.id, icon: channel.icon, size: 40})
-                        case !! streamUser: return AvatarUtils.getUserAvatarURL({id: streamUser.id, avatar: streamUser.avatar})
+                        case !! server: return Common.AvatarUtils.getGuildIconURL({id: server.id, icon: server.icon, size: 40})
+                        case !! (channel && channel?.icon): return Common.AvatarUtils.getChannelIconURL({id: channel.id, icon: channel.icon, size: 40})
+                        case !! streamUser: return Common.AvatarUtils.getUserAvatarURL({id: streamUser.id, avatar: streamUser.avatar})
                     }
                 })()} 
             />

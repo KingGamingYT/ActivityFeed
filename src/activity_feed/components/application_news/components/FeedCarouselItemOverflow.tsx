@@ -43,13 +43,14 @@ export function FeedCarouselItemPopout({application, articleUrl, close}: FeedCar
 
     return (
         <ContextMenu.Menu navId="feed-overflow" onClose={close ?? ((e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e))}>
-            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label={locale.Strings.COPY_APPLICATION_ID()} action={() => Common.Clipboard(application.id)} />}
-            {articleUrl ? <ContextMenu.Item id="copy-article-link" label={locale.Strings.COPY_ARTICLE_LINK()} action={() => Common.Clipboard(articleUrl)} /> : null}
+            {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label={locale.Strings.COPY_APPLICATION_ID()} leadingAccessory={{type: "icon", icon: () => <Common.Icons.IdIcon />}} action={() => Common.Clipboard(application.id)} />}
+            {articleUrl ? <ContextMenu.Item id="copy-article-link" label={locale.Strings.COPY_ARTICLE_LINK()} leadingAccessory={{type: "icon", icon: () => <Common.Icons.LinkIcon />}} action={() => Common.Clipboard(articleUrl)} /> : null}
             <ContextMenu.Item 
                 id="unfollow-game" 
                 label="Unfollow Game" 
+                leadingAccessory={{type: "icon", icon: () => <Common.Icons.BellSlashIcon />}}
                 action={() => Common.ModalSystem.openModal((props: any) => 
-                    <Common.ModalRoot.Modal 
+                    <Common.Modal 
                         {...props} 
                         title={locale.Strings.ARE_YOU_SURE()}
                         actions={[
@@ -59,16 +60,18 @@ export function FeedCarouselItemPopout({application, articleUrl, close}: FeedCar
                             <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_UNSUBSCRIBE_FROM_GAME()}</div>
                             <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
                         </>    
-                    </Common.ModalRoot.Modal>
+                    </Common.Modal>
             )} />
             {!Hooks.useStateFromStores([NewsStore], () => NewsStore.isArticleLockedIn(article)) && Data.load('lockedInArticles') && <ContextMenu.Item 
                 id="lock-in-article" 
                 label="Lock In Article" 
+                leadingAccessory={{type: "icon", icon: () => <Common.Icons.LockIcon />}}
                 action={() => NewsStore.lockInArticle(article)}
             />}
             {Hooks.useStateFromStores([NewsStore], () => NewsStore.isArticleLockedIn(article)) && Data.load('lockedInArticles') && <ContextMenu.Item 
                 id="unlock-article" 
                 label="Unlock Article" 
+                leadingAccessory={{type: "icon", icon: () => <Common.Icons.LockUnlockedIcon />}}
                 action={() => NewsStore.releaseLockedArticle(article)}
             />}
         </ContextMenu.Menu>

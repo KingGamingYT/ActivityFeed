@@ -1,6 +1,5 @@
 import { Hooks, Utils, Data } from "betterdiscord";
-import { useState, useEffect } from "react";
-import { useEffectEvent } from "@common/methods/common";
+import { useState, useEffect, useEffectEvent } from "react";
 import { Common } from "@modules/common";
 import { HorizontalFeedPagination, VerticalFeedPagination, FeedSkeleton, FeedSkeletonError } from "./components";
 import FeedCarouselItem from "./components/Article";
@@ -63,14 +62,14 @@ export function FeedCarousel() {
                         <Common.TransitionGroup component="span" className={FeedClasses.carousel} transitionEnter={true} transitionAppear={true} transitionLeave={true}>
                             <FeedCarouselItem article={currentArticle} key={`${currentArticle.index}`} />
                         </Common.TransitionGroup>
-                        <VerticalFeedPagination articleSet={articles} />
+                        {articles.length !== 1 ? <VerticalFeedPagination articleSet={articles} /> : null}
                     </>
                 : orientation === "horizontal" ?
                     <>
                         <Common.TransitionGroup component="span" className={FeedClasses.smallCarousel} transitionEnter={true} transitionAppear={true} transitionLeave={true}>
                             <FeedCarouselItem article={currentArticle} key={`${currentArticle.index}`} />
                         </Common.TransitionGroup>
-                        <HorizontalFeedPagination articleSet={articles} currentArticle={currentArticle} />
+                        {articles.length !== 1 ? <HorizontalFeedPagination articleSet={articles} currentArticle={currentArticle} /> : null}
                     </>
                 :
                     <FeedSkeletonError

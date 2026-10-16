@@ -30,7 +30,7 @@ export function CardMiniNews({currentArticle, className}: CardMiniNews) {
             <div className={FeedClasses.body}>
                 <div className={FeedClasses.title}>{currentArticle.news?.title || "No Title"}</div>
                 <div className={FeedClasses.description} dangerouslySetInnerHTML={{__html: currentArticle.news?.description || "No description available."}} />
-                <div className={FeedClasses.timestamp}>{Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>
+                <div className={FeedClasses.timestamp}>{Common.IntlManager.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>
             </div>
         </Common.Anchor>
 	)

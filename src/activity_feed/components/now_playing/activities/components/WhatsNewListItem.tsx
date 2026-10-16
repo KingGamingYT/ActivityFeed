@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Common, ContextMenus, AvatarUtils } from "@modules/common";
+import { useState, useRef, useCallback } from "react";
+import { Common, ContextMenus } from "@modules/common";
 import { ChannelStore, UserStore, useStateFromStores } from "@modules/stores";
 import { FlexInfo } from "@now_playing/activities/components/common/FlexInfo";
 import { InactiveTimeClock } from "@common/methods/common";
@@ -14,10 +14,18 @@ import NowPlayingClasses from "@now_playing/NowPlaying.module.css";
 export function WhatsNewListItem({player}) {
 	const user = player.user;
 	const status = player.status;
-	const channel = ChannelStore.getDMChannelFromUserId(user.id);
+
+	const handleContextMenu = useCallback((e) => {
+		let Menus = ContextMenus();
+		const event = Object.assign(Object.create(Object.getPrototypeOf(e)), e);
+		Common.ChannelActionCreators.ensurePrivateChannel(user.id).then(channelId => {
+				const channel = ChannelStore.getChannel(channelId); 
+				return Menus.ContextMenuUser(event, user, channel);
+		});
+	}, [user]);
 
 	return (
-		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => {let Menus = ContextMenus(); return Menus.ContextMenuUser(e, user, channel)}}>
+		<div className={NowPlayingClasses.lastPlayedPlayer} onContextMenu={e => handleContextMenu(e)}>
             <AvatarWithPopoutWrapper className={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} user={user} status={status} size="SIZE_40" />
             <FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
 			<MessageButton user={user} />
@@ -45,7 +53,7 @@ function WhatsNewOverflowExtraPopout({players}) {
 							onRequestClose={() => setShowPopout(false)}
 							renderPopout={() => <Common.UserProfileWrapperComponent currentUser={currentUser} user={user} />}>
 							{(props) => <div {...props} ref={popoutRef} className={NowPlayingClasses.userListItem}>
-								<Common.AvatarFetch imageClassName={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} src={AvatarUtils.getUserAvatarURL({id: user.id, avatar: user.avatar})} size={"SIZE_32"} />
+								<Common.AvatarFetch imageClassName={`${NowPlayingClasses.lastPlayedAvatar} ${NowPlayingClasses.avatar}`} src={Common.AvatarUtils.getUserAvatarURL({id: user.id, avatar: user.avatar})} size={"SIZE_32"} />
 								<FlexInfo className={`${NowPlayingClasses.details} ${NowPlayingClasses.lastPlayedDetails}`} type="LAST_PLAYED" activity={player} streamUser={user} />
 							</div>}
 						</Common.Popout>
@@ -82,7 +90,7 @@ function WhatsNewOverflowUserTooltip({player}) {
 		<div className={NowPlayingClasses.soloAvatarTooltip}>
 			<div className={MainClasses.emptyText}>{Common.UsernameUtils.getName(player.user)}</div>
 			<div className={NowPlayingClasses.soloAvatarTooltipTimestamp}>{
-				player.endedAt ? <InactiveTimeClock timestamp={ player?.endedAt } />
+				player.endedAt ? InactiveTimeClock(player?.endedAt)
                 : locale.Strings.NOW_PLAYING()	
 			}</div>
 		</div>

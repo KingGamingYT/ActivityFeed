@@ -17,7 +17,7 @@ function ExternalItemBuilder({service}) {
     const [state, setState] = useState(Data.load("external")?.[service] || item.enabled);
 
     const handleSubscribe = (props) => 
-        <Common.ModalRoot.Modal 
+        <Common.Modal 
             {...props}
             title={locale.Strings.ARE_YOU_SURE()}
             actions={[
@@ -29,10 +29,10 @@ function ExternalItemBuilder({service}) {
                 <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_SUBSCRIBE_TO_EXTERNAL()}</div>
                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
             </> 
-        </Common.ModalRoot.Modal>
+        </Common.Modal>
 
     const handleUnsubscribe = (props) => 
-        <Common.ModalRoot.Modal 
+        <Common.Modal 
             {...props}
             title={locale.Strings.ARE_YOU_SURE()}
             actions={[
@@ -44,7 +44,7 @@ function ExternalItemBuilder({service}) {
                 <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_UNSUBSCRIBE_FROM_EXTERNAL()}</div>
                 <div className={MainClasses.emptyText} style={{ fontWeight: 600 }}>{locale.Strings.ACTIVITY_FEED_ACTION_RESTART_REQUIRED()}</div>
             </> 
-        </Common.ModalRoot.Modal>
+        </Common.Modal>
 
     return (
         <div className={SettingsClasses.itemContainer} style={{ display: "flex" }}>

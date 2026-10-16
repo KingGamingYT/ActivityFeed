@@ -18,7 +18,7 @@ export function ActivityCardContextMenu({user, currentActivity, currentGame}) {
 
             return (
                 <ContextMenu.Menu navId="activity-context" onClose={(e) => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" }).finally(e)}>
-                    <ContextMenu.Item id="open-game-profile" label={locale.Strings.OPEN_GAME_PROFILE()} action={handleClick ?? useGameProfile} disabled={!handleClick || !useGameProfile} />
+                    <ContextMenu.Item id="open-game-profile" label={locale.Strings.OPEN_GAME_PROFILE()} leadingAccessory={{type: "icon", icon: () => <Common.GameControllerIcon />}} action={handleClick ?? useGameProfile} disabled={!handleClick || !useGameProfile} />
                     <ContextMenu.CheckboxItem 
                         id="follow-game" 
                         label={locale.Strings.SHOW_ON_ACTIVITY_FEED()} 

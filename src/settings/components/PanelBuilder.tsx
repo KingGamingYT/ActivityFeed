@@ -1,10 +1,20 @@
 import { Utils, Webpack } from "betterdiscord";
 import { RefreshSection, AdvancedSection } from "./sections";
 import { FollowedGameListBuilder, ExternalSourcesListBuilder } from "./sections/followed_games";
+import { UserSettingsActivityFeedFollowedItemList, UserSettingsActivityFeedExternalItemList } from "./sections/ListItems";
 import { NewspaperIcon } from "./common/SidebarItemIcon";
 import locale from "@common/methods/locale";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import SettingsClasses from "@settings/ActivityFeedSettings.module.css";
+
+interface LayoutUtils {
+    Panel: any;
+    Button: any;
+    SidebarItem: any;
+    Category: any;
+    Custom: any;
+    Accordion: any;
+}
 
 let LayoutTypes = {
     SECTION: 1,
@@ -16,10 +26,10 @@ let LayoutTypes = {
 };
 
 export default async () => {
-    const result = await Utils.forceLoad(Webpack.getBySource('USER_SETTINGS_MODAL_KEY', 'openModalLazy', '"replaceAll"', {raw: true}).id);
+    const result = await Utils.forceLoad(Webpack.getBySource<any>('"USER_SETTINGS_MODAL_OPEN"', 'openModalLazy', '"replaceAll"', {raw: true}).id);
     if (result) {
-        const layoutUtils = Webpack.getMangled(Webpack.Filters.bySource('$Root', '.ACCORDION'),
-            {
+        const layoutUtils = Webpack.getModule<LayoutUtils>(Webpack.Filters.bySource('$Root', '.ACCORDION'), {
+            map: {
                 Panel: x => String(x).includes('.PANEL,'),
                 Button: x => String(x).includes('.BUTTON,'),
                 SidebarItem: x => String(x).includes('.SIDEBAR_ITEM,'),
@@ -27,7 +37,7 @@ export default async () => {
                 Custom: x => String(x).includes('.CUSTOM,'),
                 Accordion: x => String(x).includes('.ACCORDION,')
             }
-        )
+        }) as LayoutUtils
 
         const refreshObj = 
         layoutUtils.Custom("activity_feed_visual_refresh", 
@@ -41,7 +51,7 @@ export default async () => {
         const gamesFollowedObj = 
         layoutUtils.Custom("activity_feed_games_you_follow", 
             {
-                Component: () => <FollowedGameListBuilder />,
+                Component: () => <UserSettingsActivityFeedFollowedItemList />,
                 key: "activity_feed_games_you_follow_setting",
                 type: LayoutTypes.CUSTOM
             }
@@ -50,7 +60,7 @@ export default async () => {
         const externalNewsObj = 
         layoutUtils.Custom("activitry_feed_external_news",
             {
-                Component: () => <ExternalSourcesListBuilder />,
+                Component: () => <UserSettingsActivityFeedExternalItemList />,
                 key: "activity_feed_external_news_setting",
                 type: LayoutTypes.CUSTOM
             }
@@ -70,7 +80,7 @@ export default async () => {
                 ],
                 key: "activity_feed_advanced_accordion",
                 type: LayoutTypes.ACCORDION,
-                useTitle: (opened) =>  opened ? locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN() : locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED(),
+                useTitle: (opened: boolean) =>  opened ? locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_OPEN() : locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_TITLE_CLOSED(),
                 useCollapsedSubtitle: () => locale.Strings.ACTIVITY_FEED_SETTINGS_ADVANCED_DESCRIPTION()
             }
         )
@@ -94,7 +104,7 @@ export default async () => {
                     type: LayoutTypes.CATEGORY,
                     useTitle: () => locale.Strings.GAMES_YOU_FOLLOW(),
                     useSubtitle: () => (
-                        <div className={`${SettingsClasses.subtitleContainer}`}>
+                        <div className={SettingsClasses.subtitleContainer}>
                             <div className={MainClasses.emptyText}>{locale.Strings.ACTIVITY_FEED_HEADER_DESCRIPTION_GAMES_YOU_FOLLOW()}</div>
                         </div>
                     )

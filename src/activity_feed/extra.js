@@ -14,7 +14,7 @@ const styles = Object.assign({
         lookFilled: Webpack.getByKeys('colorPrimary', 'grow').lookFilled,
         colorPrimary: Webpack.getByKeys('colorPrimary', 'grow').colorPrimary,
         contents: Webpack.getByKeys('colorPrimary', 'grow').contents,
-        popoutContentWrapper: Webpack.getByKeys('popoutContentWrapper').popoutContentWrapper
+        flex: Webpack.getByKeys('justifyStart').flex
     },
     Object.getOwnPropertyDescriptors(Webpack.getByKeys('tabularNumbers')),
     MainClasses,
@@ -130,7 +130,7 @@ export const extraCSS = webpackify(`
         }
     }
 
-    .dockV2 {
+    .activityFeedV2 {
         &:is(.emptyState) {
             background: var(--background-feedback-info);
             border: 1px solid var(--icon-feedback-info) !important;

@@ -17,7 +17,7 @@ export function AdvancedSection() {
                         label={name}
                         description={note}
                         checked={state ?? initial}
-                        onChange={(v) => {
+                        onChange={(v: any) => {
                             Data.save(key, v);
                             setState(v);
                             if (changed) changed(v);
@@ -29,7 +29,7 @@ export function AdvancedSection() {
                         description={note}
                         options={options}
                         setting={state ?? initial}
-                        setState={() => setState}
+                        setState={setState}
                     />
                     case "button": return <ButtonItem 
                         label={name}

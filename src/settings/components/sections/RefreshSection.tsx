@@ -1,4 +1,4 @@
-import { Data, Plugins } from "betterdiscord";
+import { Data } from "betterdiscord";
 import { useState } from "react";
 import { Common } from "@modules/common";
 import settings from "@settings/settings";
@@ -17,7 +17,7 @@ export function RefreshSection() {
                         description={note}
                         checked={state ?? initial}
                         disabled={parent && !Data.load(parent)}
-                        onChange={(v) => {
+                        onChange={(v: any) => {
                             Data.save(key, v);
                             setState(v);
                             if (changed) changed(v);

@@ -1,6 +1,6 @@
 
 import { ContextMenu, Hooks, Utils, React } from 'betterdiscord';
-import { Common, AvatarUtils } from "@modules/common";
+import { Common } from "@modules/common";
 import { FeedCarouselItemOverflow, FeedCarouselItemPopout } from "@application_news/components/FeedCarouselItemOverflow";
 import settings from "@settings/settings";
 import FeedClasses from "@application_news/ApplicationNews.module.css";
@@ -138,7 +138,7 @@ class Article extends React.PureComponent<CarouselItem> {
                 onMouseOver={(e) => Boolean(useGameProfile) && e.currentTarget.classList.add(FeedClasses.clickableIcon)}
                 onMouseLeave={(e) => Boolean(useGameProfile) && e.currentTarget.classList.remove(FeedClasses.clickableIcon)}
                 src={currentArticle.news?.application_id && currentArticle.application?.icon
-                    ? AvatarUtils.getApplicationIconURL({id: currentArticle.news.application_id, icon: currentArticle.application?.icon, size: 64, keepAspectRatio: false})
+                    ? Common.AvatarUtils.getApplicationIconURL({id: currentArticle.news.application_id, icon: currentArticle.application?.icon, size: 64, keepAspectRatio: false})
                     : `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${currentArticle.news.application_id}/capsule_231x87.jpg`
                 }
             />
@@ -167,7 +167,7 @@ class Article extends React.PureComponent<CarouselItem> {
                                     <div className={`${FeedClasses.titleStandard} ${FeedClasses.title}`}>{currentArticle.news?.title || "No Title"}</div>
                                     {!simple && <>
                                         <div className={FeedClasses.description} dangerouslySetInnerHTML={{__html: currentArticle.news?.description || "No description available."}} />
-                                        <div className={FeedClasses.timestamp}>{Common.intl.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>
+                                        <div className={FeedClasses.timestamp}>{Common.IntlManager.intl.data.formatDate(new Date(currentArticle.news?.timestamp), {dateStyle: "long"})}</div>
                                     </>}
                                 </div>
                             </div>

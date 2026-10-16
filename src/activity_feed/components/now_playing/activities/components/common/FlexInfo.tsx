@@ -13,6 +13,7 @@ function ActivityType(props: any) {
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
     const currentUser = useStateFromStores([ UserStore ], () => UserStore.getCurrentUser());
     const activityProperties = Hooks.useStateFromStores([ PresenceTypeStore ], () => PresenceTypeStore.getActivityProperties(activity));
+    const isRich = activity?.assets && activity?.assets.large_image && (activity?.details || activity?.state);
 
     switch (type) {
         case "REGULAR": const handleClick = handleApplicationClick({user, currentUser, activity, application: game}); return (
@@ -25,9 +26,7 @@ function ActivityType(props: any) {
                         onMouseLeave={(e) => Boolean(handleClick ?? useGameProfile) && e.currentTarget.classList.remove(NowPlayingClasses.clickableText)}
                     >{game?.name}</div>
                 </div>
-                {!activity?.assets?.large_image && <div className={NowPlayingClasses.playTime}>
-                    <TimeClock timestamp={ activity?.timestamps?.start || activity?.created_at } />
-                </div>}
+                {!isRich && <div className={NowPlayingClasses.playTime}>{TimeClock(activity?.timestamps?.start || activity?.created_at)}</div>}
             </>
         )
         case "RICH": return (
@@ -111,7 +110,7 @@ function ActivityType(props: any) {
                     <Common.LiveBadge style={{ marginLeft: "5px" }} />
                 </div>
                <div className={`${NowPlayingClasses.ellipsis} ${NowPlayingClasses.voiceSectionSubtext}`}>{
-                    activity ? Common.intl.intl.format(Common.intl.t['0wJXSh'], {name: <strong>{stream.name}</strong>}) 
+                    activity ? Common.IntlManager.intl.format(Common.IntlManager.t['0wJXSh'], {name: <strong>{stream.name}</strong>}) 
                     : locale.Strings.STREAMING()
                 }</div>
             </>
@@ -121,7 +120,7 @@ function ActivityType(props: any) {
                 <DiscordTag user={streamUser} />
                 <div className={NowPlayingClasses.playTime}>
                     {
-                        activity.endedAt ? <InactiveTimeClock timestamp={ activity?.endedAt } />
+                        activity.endedAt ? InactiveTimeClock(activity?.endedAt)
                         : locale.Strings.NOW_PLAYING()
                     }
                 </div>

@@ -1,6 +1,6 @@
 import { Utils, Data, ContextMenu } from 'betterdiscord';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Common, AvatarUtils, shell } from '@modules/common';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Common, shell } from '@modules/common';
 import { ApplicationStore, ConnectedAppsStore, DispatchApplicationStore, GameStore, LaunchableGameStore, LibraryApplicationStore, RunningGameStore, UserSettingsProtoStore, useStateFromStores } from '@modules/stores';
 import SectionHeader from '@activity_feed/common/components/SectionHeader';
 import locale from "@activity_feed/common/methods/locale";
@@ -8,11 +8,11 @@ import settings from "@settings/settings";
 import MainClasses from "@activity_feed/ActivityFeed.module.css";
 import QuickLauncherClasses from "./QuickLauncher.module.css";
 
-function PlayPopout({close, launcher, game, state}) {
+function PlayPopout({launcher, game, state}) {
     const setDisable = state;
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: game?.id});
     return (
-        <ContextMenu.Menu navId="launcher-context-menu" onClose={close}>
+        <ContextMenu.Menu navId="launcher-context-menu" onClose={() => Common.FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" })}>
             <ContextMenu.Item id="play-game" label={locale.Strings.PLAY_GAME()} action={() => { setDisable(true); launcher(); }} />
             <ContextMenu.Item id="open-game-profile" label={locale.Strings.OPEN_GAME_PROFILE()} action={useGameProfile} disabled={!useGameProfile} />
             {UserSettingsProtoStore.settings.appearance.developerMode && <ContextMenu.Item id="copy-app-id" label={locale.Strings.COPY_APPLICATION_ID()} action={() => Common.Clipboard(game.id)} />}
@@ -43,7 +43,6 @@ export function LauncherGameBuilder({game, runningGames}) {
     const libraryApplication = new Common.BasicLibraryApplication({fullGame});
     const useGameProfile = Common.GameProfileCheck({trackEntryPointImpression: false, applicationId: fullGame?.id ?? game?.id});
     const refDOM = useRef(null)
-    const [showPopout, setShowPopout] = useState(false);
     //console.log(steamLibraryPaths)
 
     function openGame() {
@@ -56,25 +55,19 @@ export function LauncherGameBuilder({game, runningGames}) {
         }
     }
 
+    const handleShiftClick = useCallback((e) => { ContextMenu.open(e, (props) => <PlayPopout {...props} launcher={openGame} game={fullGame} state={setDisable} />) }, [fullGame, openGame, setDisable]);
+
     return (
-        <Common.Popout 
-            targetElementRef={refDOM}
-            clickTrap={true}
-            onRequestClose={() => setShowPopout(false)}
-            renderPopout={() => <PlayPopout close={() => setShowPopout(false) } launcher={openGame} game={fullGame} state={setDisable} />}
-            position={"right"}
-            shouldShow={showPopout}
-            >{(props) => <Common.Flex {...props} align={Common.Flex.Align.CENTER} className={QuickLauncherClasses.dockItem} direction={Common.Flex.Direction.VERTICAL} onClick={(e) => e.shiftKey && !disableCheck && setShowPopout(true)} ref={refDOM} style={{ flex: "0 0 auto" }}>
-                <div className={Utils.className(QuickLauncherClasses.dockIcon, disableCheck && QuickLauncherClasses.dockIconDisabled)} style={{ backgroundImage: `url(${AvatarUtils.getApplicationIconURL({id: fullGame?.id, icon: fullGame?.icon, size: 64})})` }} onClick={useGameProfile} />
-                <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
-                <button 
-                    className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
-                    disabled={disableCheck}
-                    onClick={() => { setDisable(true); openGame(); }}>
-                    <div className={`${Common.ButtonVoidClasses.contents}`}>{locale.Strings.PLAY()}</div>
-                </button>
-            </Common.Flex>
-        }</Common.Popout>
+        <Common.Flex align={Common.Flex.Align.CENTER} className={QuickLauncherClasses.dockItem} direction={Common.Flex.Direction.VERTICAL} onClick={e => e.shiftKey && !disableCheck && handleShiftClick(e)} ref={refDOM} style={{ flex: "0 0 auto" }}>
+            <div className={Utils.className(QuickLauncherClasses.dockIcon, disableCheck && QuickLauncherClasses.dockIconDisabled)} style={{ backgroundImage: `url(${Common.AvatarUtils.getApplicationIconURL({id: fullGame?.id, icon: fullGame?.icon, size: 64})})` }} onClick={e => e.shiftKey && !disableCheck ? handleShiftClick(e) : useGameProfile} />
+            <div className={QuickLauncherClasses.dockItemText}>{game.name}</div>
+            <button 
+                className={`${QuickLauncherClasses.dockItemPlay} ${Common.ButtonVoidClasses.button} ${Common.ButtonVoidClasses.lookFilled} ${Common.ButtonVoidClasses.colorGreen} ${Common.ButtonVoidClasses.sizeSmall} ${Common.ButtonVoidClasses.fullWidth} ${Common.ButtonVoidClasses.grow}`} 
+                disabled={disableCheck}
+                onClick={() => { setDisable(true); openGame(); }}>
+                <div className={`${Common.ButtonVoidClasses.contents}`}>{locale.Strings.PLAY()}</div>
+            </button>
+        </Common.Flex>
     )
 }
 

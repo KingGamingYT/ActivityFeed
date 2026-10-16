@@ -1,21 +1,32 @@
 import { Webpack } from "betterdiscord";
 
-const Filters = [
+type FilterEntry = {
+    name: string;
+    filter: any;
+    searchExports?: boolean;
+    target?: string;
+    declarationFilter?: any;
+}
+
+const Filters: FilterEntry[] = [
     { name: "ActivityActions", filter: /* @__PURE__ */ Webpack.Filters.byStrings('display', 'getUserOutbox') },
     { name: "ActivityCardClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('gameState', 'clickableImage') },
     { name: "ActivityTimer", filter: /* @__PURE__ */ Webpack.Filters.byStrings('timestamps', '.TEXT_FEEDBACK_POSITIVE'), searchExports: true },
     { name: "Anchor", filter: /* @__PURE__ */ Webpack.Filters.byStrings("role", "useDefaultUnderlineStyles"), searchExports: true },
-    { name: "Animated", filter: x => x.Easing && x.accelerate },
+    { name: "Animated", filter: (x: any) => x.Easing && x.accelerate },
     { name: "AvatarFetch", filter: /* @__PURE__ */ Webpack.Filters.byStrings('src', 'statusColor', 'size', 'isMobile'), searchExports: true },
+    { name: "AvatarUtils", filter: /* @__PURE__ */ Webpack.Filters.bySource('GUILD_ICON', '"icons"'), declarationFilter: Webpack.Filters.byKeys('getGuildMemberAvatarSource') },
     { name: "BasicLibraryApplication", filter: /* @__PURE__ */ Webpack.Filters.byPrototypeKeys('getDistributor') },
     { name: "ButtonVoidClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('lookFilled', 'button') },
-    { name: "ButtonManaClasses", filter: x => x.primary && x.hasText && !x.hasTrailing },
+    { name: "ButtonManaClasses", filter: (x: any) => x.primary && x.hasText && !x.hasTrailing },
     { name: "CallButtons", filter: /* @__PURE__ */ Webpack.Filters.byStrings('PRESS_JOIN_CALL_BUTTON') },
+    { name: "CardPopout", filter: /* @__PURE__ */ Webpack.Filters.bySource("ACTIVITY_FEED_GUILD_VISITED"), declarationFilter: Webpack.Filters.byStrings("ACTIVITY_FEED_GUILD_VISITED") },
     { name: "CaretClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('caret', 'caret--center') },
-    { name: "ChannelActionCreators", filter: x => x.openPrivateChannel },
+    { name: "ChannelActionCreators", filter: (x: any) => x.openPrivateChannel },
     { name: "Clipboard", filter: /* @__PURE__ */ Webpack.Filters.byStrings('navigator.clipboard.write', 'Clipboard API not supported.'), searchExports: true },
     { name: "ClydeIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M19.73'), searchExports: true },
     { name: "ContainerRefProvider", filter: /* @__PURE__ */ Webpack.Filters.byStrings('let{disableFocusRingScope', 'containerRef'), searchExports: true },
+    { name: "discord-intl", filter: (x: any) => x.runtimeHashMessageKey && x.IntlManager},
     { name: "Endpoints", filter: /* @__PURE__ */ Webpack.Filters.byKeys("GUILD_EMOJI", "GUILD_EMOJIS"), searchExports: true },
     { name: "FetchApplications", filter: /* @__PURE__ */ Webpack.Filters.byKeys("getApplicationsForGuild") },
     { name: "FetchUserApplicationStatistics", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"USER_ACTIVITY_STATISTICS_FETCH_SUCCESS"'), searchExports: true },
@@ -27,50 +38,51 @@ const Filters = [
     { name: "GameControllerIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.09v4.91a3.09'),  searchExports: true },
     { name: "GameFetchModule", filter: /* @__PURE__ */ Webpack.Filters.bySource("type:\"GAME_FETCH_SUCCESS\",gameIds:") },
     { name: "GameProfileCheck", filter: /* @__PURE__ */ Webpack.Filters.byStrings('gameProfileModalChecks',  'onOpened') },
-    { name: "GradientComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('darken'), searchExports: true },
     { name: "HeaderBar", filter: /* @__PURE__ */ Webpack.Filters.byKeys("Icon", "Divider") }, 
-    { name: "HTTPUtils", filter: x => typeof x === "object" && x.del && x.put, searchExports: true },
-    { name: "intl", filter: x=>x.t && x.t.formatToMarkdownString },
+    { name: "HTTPUtils", filter: (x: any) => typeof x === "object" && x.del && x.put, searchExports: true },
+    { name: "Icons", filter: /* @__PURE__ */ Webpack.Filters.bySource('AIcon'), declarationFilter: (x: any) => Object(x) && x?.AIcon },
+    { name: "IntlManager", filter: (x: any) => x.t && x.t.formatToMarkdownString },
     { name: "IsGameLaunchable", filter: /* @__PURE__ */ Webpack.Filters.byStrings('ConnectedAppsStore', 'branchId') },
-    { name: "LibraryApplicationUtils", filter: x => x.installApplication },
+    { name: "JoinButton", filter: /* @__PURE__ */ Webpack.Filters.bySource('"PRESS_JOIN_BUTTON"'), declarationFilter: Webpack.Filters.byStrings('"PRESS_JOIN_BUTTON"') },
+    { name: "LibraryApplicationUtils", filter: (x: any) => x.installApplication },
     { name: "Link", filter: /* @__PURE__ */ Webpack.Filters.byStrings('Anchor', 'href', 'stopPropagation'), searchExports: true },
     { name: "LinkButton", filter: /* @__PURE__ */ Webpack.Filters.byStrings('route', 'iconClassName'), searchExports: true },
     { name: "LinkButtonClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('linkButtonIcon') },
     { name: "LiveBadge", filter: /* @__PURE__ */ Webpack.Filters.byStrings('shape', '.ROUND') },
     { name: "Lodash", filter: /* @__PURE__ */ Webpack.Filters.byKeys('throttle') },
-    { name: "Mask", filter: x => x.Masks },
+    { name: "Mask", filter: (x: any) => x.Masks },
     { name: "MediaProgressBar", filter: /* @__PURE__ */ Webpack.Filters.byStrings('start', 'end', 'duration', 'percentage'), searchExports: true },
-    { name: "ModalSystem", filter: x=> x.openModal },
-    { name: "ModalRoot", filter: x => x.Modal },
+    { name: "Modal", filter: /* @__PURE__ */ Webpack.Filters.byStrings("leadingLayout:", "actions:", ".message"), searchExports: true },
+    { name: "ModalSystem", filter: (x: any) => x.openModal },
     { name: "NintendoSwitchNeutralIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('colorClass', 'M10.04'), searchExports: true },
     { name: "OpenAlbum", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.ALBUM', '.EPISODE'), searchExports: true },
     { name: "OpenArtist", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"no artist ids in metadata"'), searchExports: true },
     { name: "OpenLink", filter: /* @__PURE__ */ Webpack.Filters.byStrings('UserProfile', 'activity', 'application', 'void') },
     { name: "OpenStream", filter: /* @__PURE__ */ Webpack.Filters.byStrings('guildId', 'getWindowOpen', 'CHANNEL_CALL_POPOUT'), searchExports: true },
     { name: "OpenTrack", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.TRACK', 'isProtocolRegistered'), searchExports: true },
-    { name: "OpenUserSettings", filter: x=> x.openUserSettings },
+    { name: "OpenUserSettings", filter: (x: any) => x.openUserSettings },
     { name: "Popout", filter: /* @__PURE__ */ Webpack.Filters.byStrings("Unsupported animation config:"), searchExports: true },
-    { name: "PopoverClasses", filter: x => x.graphic && x.closeButton },
+    { name: "PopoverClasses", filter: (x: any) => x.graphic && x.closeButton },
     { name: "PositionClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('noWrap') },
     { name: "ScrollerClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('customTheme', 'thin') },
-    { name: "ScrollerHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('"rtl"', 'getComputedStyle') },
     { name: "ScrollerAnimationHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('animate', 'Math.max(0,', 'scrollPosition') },
     { name: "ScrollerGutterHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('scrollbarGutter', 'ownerDocument') },
     { name: "ScrollerRefHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('offsetWidth', 'dirty') },
     { name: "ScrollerScrollHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('getNodeWindow', 'clamp') },
     { name: "ScrollerStyleHandler", filter: /* @__PURE__ */ Webpack.Filters.byStrings('arguments[2]:"scroll"') },
     { name: "ScrollerOverflowPopoutClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('popoutWrapper', 'size24') },
-    { name: "SelectedChannelActionCreators", filter: x=> x.selectVoiceChannel, searchExports: true },
+    { name: "SelectedChannelActionCreators", filter: (x: any) => x.selectVoiceChannel, searchExports: true },
+    { name: "SimpleMarkdownWrapper", filter: (x: any) => x.reactParserFor },
     { name: "Spinner", filter: /* @__PURE__ */ Webpack.Filters.byStrings('="wanderingCubes'), searchExports:true },
     { name: "SupportsAskToJoin", filter: /* @__PURE__ */ Webpack.Filters.byStrings("JOIN)&&", "&&!!(0,"), searchExports: true },
     { name: "TextFormatClasses", filter: /* @__PURE__ */ Webpack.Filters.byKeys('defaultColor') },
-    { name: "Text", filter: x => x?.render && x?.render?.toString().includes('tabularNumbers'), searchExports: true },
+    { name: "Text", filter: /* @__PURE__ */ Webpack.Filters.byStrings('.style', '"data-text-variant"'), searchExports: true },
     { name: "Tooltip", filter: /* @__PURE__ */ Webpack.Filters.byPrototypeKeys("renderTooltip"), searchExports: true },
     { name: "TransitionGroup", filter: /* @__PURE__ */ Webpack.Filters.byStrings("transitionAppear"), searchExports: true },
     { name: "UseStreamPreviewURL", filter: /* @__PURE__ */ Webpack.Filters.byStrings(".canBasicChannel", "previewUrl:", ".CONNECT", "getVoiceChannelId") },
-    { name: "UserProfileModalActionCreators", filter: x=>x.openUserProfileModal },
+    { name: "UserProfileModalActionCreators", filter: (x: any) => x.openUserProfileModal },
     { name: "UserProfileWrapperComponent", filter: /* @__PURE__ */ Webpack.Filters.byStrings('onClickContainer:', 'user:', '.isNonUserBot()?') },
-    { name: "UsernameUtils", filter: x => x.humanizeStatus },
+    { name: "UsernameUtils", filter: (x: any) => x.humanizeStatus },
     { name: "VoiceList", filter: /* @__PURE__ */ Webpack.Filters.byStrings('maxUsers', 'guildId', 'getNickname') },
     { name: "XboxNeutralIcon", filter: /* @__PURE__ */ Webpack.Filters.byStrings('22.95c-1.7-.16-3.4-.77-4.88-1.73-1.24-.8-1.52-1.13-1.52-1.8'), searchExports: true },
     { name: "ManaSwitch", filter: Webpack.Filters.byStrings('SWITCH_BACKGROUND_DEFAULT'), searchExports: true }
@@ -79,10 +91,11 @@ const Filters = [
 export const bulkData = /* @__PURE__ */ Webpack.getBulk(...Filters);
 
 const CommonExport = () => {
-    const result = {};
+    const result: Record<string, any> = {};
     Filters.forEach((component, index) => {
         result[component.name] = component.target ? bulkData[index][component.target] : bulkData[index];
     });
+    console.log({...result})
     return result;
 }
 
@@ -105,7 +118,6 @@ export const ContextMenus = () => {
     return {ContextMenuUser, ContextMenuActivityFeed};
 }
 
-export const CardPopout = Webpack.getBySource("ACTIVITY_FEED_GUILD_VISITED", { declarationFilter: Webpack.Filters.byStrings("ACTIVITY_FEED_GUILD_VISITED") });
 export const AccountPanel = Webpack.getMangled(Webpack.Filters.bySource('"AccountCoachmark"'), {
     Settings: Webpack.Filters.byStrings('webBuildOverride')
 }, { mapDeclarations: true });
@@ -142,8 +154,6 @@ export const ApplicationAssetUtils = Webpack.getMangled(Webpack.Filters.bySource
     getAssetImageFromURL: Webpack.Filters.byStrings('toString'),
     getAssetImage: Webpack.Filters.byStrings('"getAssetImage: size must === [number, number] for Twitch"')
 });
-
-export const AvatarUtils = Webpack.getBySource('GUILD_ICON', '"icons"', {declarationFilter: Webpack.Filters.byKeys('getGuildMemberAvatarSource')});
 
 export const SettingsRoot = Webpack.waitForModule((m) => m?.key === "$Root", { searchExports: true, searchDefault: false });
 export const RecentlyPlayedByApplicationId = Webpack.waitForModule(Webpack.Filters.byStrings('GLOBAL_FEED', 'application_id', 'useMemo'), {searchExports: true});

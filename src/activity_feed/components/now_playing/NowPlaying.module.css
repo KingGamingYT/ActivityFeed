@@ -646,8 +646,11 @@
     margin-right: 8px;
 }
 
-.maskStack:not(:first-child) {
-    margin-left: -4px;
+.maskStack {}
+
+.partyList > div:not(:last-of-type, :only-child) > .maskStack,
+.partyList > :is(.maskStack, div:has(> .maskStack)):not(:last-of-type) {
+    margin-right: -4px;
 }
 
 .emptyUser, .player {

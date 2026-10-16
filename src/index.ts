@@ -1,5 +1,5 @@
 import { Webpack, Patcher, DOM, Utils, ReactUtils } from "betterdiscord";
-import { createElement } from "react";
+import { createElement, useContext } from "react";
 import { container, AccountPanel, Common, SettingsRoot, Router } from "@modules/common";
 import { ApplicationStore } from "@modules/stores";
 import { TabBaseBuilder } from "@activity_feed/base";
@@ -50,8 +50,9 @@ export default class ActivityFeed {
     async start() {
         const settingsItem = await SettingsItem();
         setInterval(async () => {
-            if ( NewsStore.shouldFetch() === true ) await NewsStore.fetchFeeds();
-        }, 100)
+            if (NewsStore.shouldFetch() === true) await NewsStore.fetchFeeds();
+        }, 100);
+        if (NewsStore.shouldFetch() === false) NewsStore.setDisplayedArticles();
 
         let ContentInventoryCard = Webpack.getMangled(Webpack.Filters.bySource('disableGameProfileLinks', 'ANDROID'), {
             ContentInventoryCardHeader: x => String(x).includes('"ContentPopout"')
@@ -135,19 +136,19 @@ export default class ActivityFeed {
 
         await Webpack.waitForModule(Webpack.Filters.bySource('"GAME_PROFILE_GET_SHOP_COLLECTION_START"')).then(() => {
             GameProfileModal = Webpack.getMangled(Webpack.Filters.bySource('"GAME_PROFILE_GET_SHOP_COLLECTION_START"'), {
-                GameProfileV2Trailing: x => String(x).includes('"game-profile-add-favorite-game"'),
-                GameProfileLeftColumn: x => Webpack.Filters.byRegex(/trackAction:.}\)/)(x.type)
-            }, {mapDeclarations: true})
+                GameProfileV2Trailing: Webpack.Filters.byStrings('"game-profile-add-favorite-game"'),
+                GameProfileLeftColumn: x => Webpack.Filters.byRegex(/let{selectTab:.,getScrollOffset:.}/)(x.type),
+                useGameProfileContext: x => x?.Provider
+            }, {mapDeclarations: true});
 
             Patcher.after(GameProfileModal, "GameProfileV2Trailing", (that, [props], res) => {
-                console.log(props)
-                const game = props.game;
+                const { game } = useContext(GameProfileModal.useGameProfileContext);
                 const application = ApplicationStore.getApplication(game.id) ?? ApplicationStore.getApplicationByName(game.name);
                 !Object.values(res.props.children).find(x => String(x?.type)?.includes('follow')) && res.props.children.splice(0, 0, createElement(FollowButton, { application, fullWidth: true }));
             })
 
             Patcher.after(GameProfileModal.GameProfileLeftColumn, "type", (that, [props], res) => {
-                const game = props.game;
+                const { game } = useContext(GameProfileModal.useGameProfileContext);
                 !Object.values(res.props.children).find(x => String(x?.type).includes('RECENT_NEWS')) && res.props.children.splice(1, 0,
                     createElement(RecentNewsSection, { applicationId: game.id, type: 0 })
                 )

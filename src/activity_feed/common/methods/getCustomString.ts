@@ -1,6 +1,6 @@
 import { Common } from "@modules/common";
 
-const i18n = {
+const i18n: Record<string, any> = {
     "en-US": {
         TEST: "hi! this is a test string for the i18n system! i am so tired!",
         ACTIVITY_FEED: "Activity Feed",
@@ -35,7 +35,7 @@ const i18n = {
         COPY_ARTICLE_LINK: "Copy Article Link",
         EXTERNAL_NEWS: "External News",
         GAMES_YOU_FOLLOW: "Games You Follow",
-        MORE_RECENT_PLAYERS_SECTION_TITLE: ({playerCount}) => `+${playerCount} more recent players`,
+        MORE_RECENT_PLAYERS_SECTION_TITLE: ({playerCount}: {playerCount: number}) => `+${playerCount} more recent players`,
         NEWS: "News",
         NOW_PLAYING_EMPTY_TITLE: "Nobody is playing anything right now...",
         NOW_PLAYING_EMPTY_SUBTITLE: "When someone starts playing a game we'll show it here!",
@@ -83,8 +83,8 @@ const i18n = {
     "id": {},
 }
 
-export function getCustomString(str, parameter) {
-    const locale = Common.intl.intl.currentLocale;
+export function getCustomString(str: string, parameter: object) {
+    const locale = Common.IntlManager.intl.currentLocale;
     const defaultLocale = "en-US";
     if (!i18n[locale]?.[str] && !i18n[defaultLocale]?.[str]) console.warn(`Requested message ${str} does not have a value in the requested locale ${locale} nor the default locale ${defaultLocale}`);
     if (parameter && i18n[defaultLocale]?.[str] instanceof Function) {

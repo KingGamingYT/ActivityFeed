@@ -15,7 +15,7 @@ function WhatsNewOverflowUserTooltip({player}) {
 		<div className={NowPlayingClasses.soloAvatarTooltip}>
 			<div className={MainClasses.emptyText}>{Common.UsernameUtils.getName(player.user)}</div>
 			<div className={NowPlayingClasses.soloAvatarTooltipTimestamp}>{
-				player.endedAt ? <InactiveTimeClock timestamp={ player?.endedAt } />
+				player.endedAt ? InactiveTimeClock(player?.endedAt)
                 : locale.Strings.NOW_PLAYING()	
 			}</div>
 		</div>

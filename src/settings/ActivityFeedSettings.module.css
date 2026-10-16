@@ -44,6 +44,23 @@
 
 .itemContainer .itemDescription {}
 
+.itemSettingDescription {
+    color: var(--text-default);
+    display: block;
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 4px;
+}
+
+.itemSettingLabel {
+    color: var(--text-strong);
+    display: block;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 16px;
+    margin-bottom: 4px;
+}
+
 .unfollowButton {
     flex: 0 1 auto;
     font-weight: 400;
@@ -128,6 +145,16 @@
     margin-top: 8px;
     padding: 0 80px;
     text-align: center;
+}
+
+.clickableIcon {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.clickableText {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .newspaperIcon {}
